@@ -1,0 +1,248 @@
+---
+title: 'Set up IUCN extinction risk categories over time'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+```
+
+# Summary
+
+Get IUCN current risk assessments and historical assessments over time, for all IUCN marine species
+
+# Data Sources
+
+### IUCN Red List
+
+# Methods
+
+## Compare AquaMaps/IUCN crosslisted species to Red List assessments
+
+### Get IUCN historical assessments for AquaMaps/IUCN crosslisted spp
+
+`get_from_api()` is a function to access the IUCN API, given a url (specific to data sought), parameter, and key (stored in ohi/git-annex), as well as a delay if desired (to ease the load on the IUCN API server). `mc_get_from_api()` runs the `get_from_api()` function across multiple cores for speed...
+
+``` {r setup_API_functions}
+
+library(parallel)
+library(jsonlite)
+
+### api_key stored on git-annex so outside users can use their own key
+api_file <- file.path(dir_M, 'git-annex/globalprep/spp_ico', 
+                      'api_key.csv')
+api_key <- scan(api_file, what = 'character')
+
+get_from_api <- function(url, param, api_key, delay) {
+  
+  i <- 1; tries <- 5; success <- FALSE
+  
+  while(i <= tries & success == FALSE) {
+    message('try #', i)
+       Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
+       api_info <- fromJSON(sprintf(url, param, api_key)) 
+       if (class(api_info) != 'try-error') {
+         success <- TRUE
+       } else {
+         warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
+       }
+    message('... successful? ', success)
+    i <- i + 1
+  }
+    
+  if (class(api_info) == 'try-error') { ### multi tries and still try-error
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'try-error after multiple attempts')
+  } else if (class(api_info$result) != 'data.frame') { ### result isn't data frame for some reason
+    api_return <- data.frame(param_id  = param,
+                             api_error = paste('non data.frame output: ', class(api_info$result), ' length = ', length(api_info$result)))
+  } else if (length(api_info$result) == 0) { ### result is empty
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'zero length data.frame')
+  } else {
+    api_return <- api_info %>%
+      data.frame(stringsAsFactors = FALSE)
+  }
+  
+  return(api_return)
+}
+
+mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
+  
+  if(is.null(cores)) 
+    numcores <- ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
+  else 
+    numcores <- cores
+  
+  out_list <- parallel::mclapply(param_vec, 
+                          function(x) get_from_api(url, x, api_key, delay),
+                          mc.cores   = numcores,
+                          mc.cleanup = TRUE) 
+  
+  if(any(sapply(out_list, class) != 'data.frame')) {
+    error_list <- out_list[sapply(out_list, class) != 'data.frame']
+    message('List items are not data frame: ', paste(sapply(error_list, class), collapse = '; '))
+    message('might be causing the bind_rows() error; returning the raw list instead')
+    return(out_list)
+  }
+  
+  out_df <- out_list %>%
+    bind_rows()
+  out_df <- out_df %>%
+    setNames(names(.) %>%
+               str_replace('result.', ''))
+  return(out_df)
+}
+
+```
+
+We first read in the AquaMaps species list, and filter down to just those species cross-listed with IUCN codes.  This list is saved locally for reference.
+
+``` {r get_am_iucn_crosslists}
+
+spp_list_file <- file.path(dir_git, 'data', 'am_iucn_crosslisted_spp.csv')
+
+if(!file.exists(spp_list_file)) {
+  am_spp_list <- read_csv(file.path(dir_am_data, 'csv', 'speciesoccursum.csv')) %>%
+    clean_df_names()
+  
+  am_iucn_crosslist <- am_spp_list %>%
+    filter(!is.na(iucn_id))
+  
+  write_csv(am_iucn_crosslist, spp_list_file)
+} else {
+  git_prov(file.path(dir_am_data, 'csv', 'speciesoccursum.csv'), filetype = 'input')
+  git_prov(am_iucn_crosslist, filetype = 'output')
+}
+
+```
+
+``` {r get_iucn_past_assessments}
+spp_timeseries_file <- file.path(dir_git, 'data', 'iucn_spp_cat_timeseries.csv')
+
+if(!file.exists(spp_timeseries_file)) {
+
+  spp_list_file <- file.path(dir_git, 'data', 'am_iucn_crosslisted_spp.csv')
+  am_iucn_crosslist <- read_csv(spp_list_file)
+
+  spp_hist_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
+  
+  sid_list <- am_iucn_crosslist %>%
+    .$iucn_id %>%
+    unique() %>%
+    sort()
+    
+  ptm <- proc.time()
+  spp_past_df <- mc_get_from_api(spp_hist_url, sid_list, api_key, delay = 1, cores = 16)
+  proc.time() - ptm
+  
+  
+  ### Clean up the time series: reclassify old codes to current
+  cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv'))
+  
+  spp_past_df1 <- spp_past_df %>%
+    left_join(cat_lookup, by = c('code', 'category')) %>%
+    rename(iucn_sid = name,
+           old_cat  = code,
+           cat_txt  = category,
+           cat_ts   = code_current)
+  
+  pop_cat <- data.frame(cat_ts       = c("LC", "NT", "VU", "EN", "CR", "EX", "NE", "DD"), 
+                        cat_ts_score = c(   0,  0.2,  0.4,  0.6,  0.8,  1.0,  NA,   NA))
+    
+  spp_past_df1 <- spp_past_df1 %>% 
+    left_join(pop_cat, by = 'cat_ts') %>%
+    filter(!is.na(cat_ts_score) & !is.na(year)) %>%
+    arrange(iucn_sid, year)
+  
+  write_csv(spp_past_df1, spp_timeseries_file)
+} else {
+  git_prov(spp_timeseries_file, filetype = 'output')
+}
+
+```
+
+``` {r get_iucn_current_assessment}
+
+spp_current_file <- file.path(dir_git, 'data', 'iucn_spp_cat_current.csv')
+
+if(!file.exists(spp_current_file)) {
+
+  spp_list_file <- file.path(dir_setup, 'int', 'am_iucn_crosslisted_spp.csv')
+  am_iucn_crosslist <- read_csv(spp_list_file)
+
+  spp_curr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/id/%s?token=%s'
+  
+  sid_list <- am_iucn_crosslist %>%
+    .$iucn_id %>%
+    unique() %>%
+    sort()
+  
+  # sid_list <- sid_list[1:100]
+    
+  ptm <- proc.time()
+  spp_current_df <- mc_get_from_api(spp_curr_url, sid_list, api_key, delay = 1, cores = 16)
+  proc.time() - ptm
+  
+  spp_current_df1 <- spp_current_df %>%
+    select(iucn_sid = name, sciname = scientific_name,
+           kingdom, phylum, class, order, family, 
+           main_common_name, 
+           published_year, code = category, 
+           criteria, aoo_km2, eoo_km2, 
+           depth_upper, depth_lower)
+  
+  ### Clean up the time series: reclassify old codes to current and add scores
+  cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv')) %>%
+    select(-category)
+  
+  spp_current_df2 <- spp_current_df1 %>%
+    left_join(cat_lookup, by = c('code')) %>%
+    rename(old_cat  = code,
+           cat      = code_current) %>%
+    filter(!is.na(cat_score)) %>%
+    mutate(iucn_sid = as.integer(iucn_sid)) %>%
+    arrange(iucn_sid)
+  
+  write_csv(spp_current_df2, spp_current_file)
+} else {
+  git_prov(spp_current_file, filetype = 'output')
+}
+
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+

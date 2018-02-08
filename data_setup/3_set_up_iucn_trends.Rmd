@@ -1,0 +1,598 @@
+---
+title: 'Set up IUCN extinction risk trends'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+```
+
+# Summary
+
+Determine IUCN extinction risk trends for marine species by regressing time series assessments against population trends
+
+# Data Sources
+
+### IUCN Red List
+
+# Methods
+
+## Get IUCN historical assessments for IUCN marine species
+
+`get_from_api()` is a function to access the IUCN API, given a url (specific to data sought), parameter, and key (stored in ohi/git-annex), as well as a delay if desired (to ease the load on the IUCN API server). `mc_get_from_api()` runs the `get_from_api()` function across multiple cores for speed...
+
+``` {r setup_API_functions}
+
+library(parallel)
+library(jsonlite)
+
+### api_key stored on git-annex so outside users can use their own key
+api_file <- file.path(dir_M, 'git-annex/globalprep/spp_ico', 
+                      'api_key.csv')
+api_key <- scan(api_file, what = 'character')
+
+get_from_api <- function(url, param, api_key, delay) {
+  
+  i <- 1; tries <- 5; success <- FALSE
+  
+  while(i <= tries & success == FALSE) {
+    message('try #', i)
+       Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
+       api_info <- fromJSON(sprintf(url, param, api_key)) 
+       if (class(api_info) != 'try-error') {
+         success <- TRUE
+       } else {
+         warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
+       }
+    message('... successful? ', success)
+    i <- i + 1
+  }
+    
+  if (class(api_info) == 'try-error') { ### multi tries and still try-error
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'try-error after multiple attempts')
+  } else if (class(api_info$result) != 'data.frame') { ### result isn't data frame for some reason
+    api_return <- data.frame(param_id  = param,
+                             api_error = paste('non data.frame output: ', class(api_info$result), ' length = ', length(api_info$result)))
+  } else if (length(api_info$result) == 0) { ### result is empty
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'zero length data.frame')
+  } else {
+    api_return <- api_info %>%
+      data.frame(stringsAsFactors = FALSE)
+  }
+  
+  return(api_return)
+}
+
+mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
+  
+  if(is.null(cores)) 
+    numcores <- ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
+  else 
+    numcores <- cores
+  
+  out_list <- parallel::mclapply(param_vec, 
+                          function(x) get_from_api(url, x, api_key, delay),
+                          mc.cores   = numcores,
+                          mc.cleanup = TRUE) 
+  
+  if(any(sapply(out_list, class) != 'data.frame')) {
+    error_list <- out_list[sapply(out_list, class) != 'data.frame']
+    message('List items are not data frame: ', paste(sapply(error_list, class), collapse = '; '))
+    message('might be causing the bind_rows() error; returning the raw list instead')
+    return(out_list)
+  }
+  
+  out_df <- out_list %>%
+    bind_rows()
+  out_df <- out_df %>%
+    setNames(names(.) %>%
+               str_replace('result.', ''))
+  return(out_df)
+}
+
+```
+
+### IUCN species habitat info for all species from API
+
+From the full IUCN species list, send each IUCN species ID into the API to get the habitats listed for that species.  Combine all habitat dataframes into a master dataframe of all habitats for all species.  Note that many species do not have habitat information and will be listed as NA for habitat variables.
+
+``` {r get_spp_info_from_api}
+
+### Get all pages and bind into total species list.  This is pretty fast.
+
+spp_info_from_api_file <- file.path(dir_setup, 'trend_calcs/spp_info_from_api.csv')
+reload <- TRUE
+
+if(!file.exists(spp_info_from_api_file) | reload) {
+  
+  message('Using API to create full species list from scratch')
+  
+  spp_npage_url <- sprintf('http://apiv3.iucnredlist.org/api/v3/speciescount?token=%s', api_key)
+  n_spp <- fromJSON(spp_npage_url) %>%
+    .$count %>% as.integer()
+  n_pages <- ceiling(n_spp/10000)
+  
+  spp_page_url <- 'http://apiv3.iucnredlist.org/api/v3/species/page/%s?token=%s'
+  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key, delay = 1)
+
+  spp_df_all <- spp_df_all %>%
+    dplyr::select(-infra_rank, -infra_name, -count, -page) %>%
+    rename(iucn_sid = taxonid, sciname = scientific_name) %>%
+    setNames(names(.) %>%
+               str_replace('_name', ''))
+  
+  message('Full list length: ', nrow(spp_df_all), '; unique species IDs: ', length(spp_df_all$iucn_sid %>% unique()))
+  write_csv(spp_df_all, spp_info_from_api_file)
+  
+} else {
+  
+  message('File of API species list exists: \n  ', spp_info_from_api_file)
+  git_prov(spp_info_from_api_file, filetype = 'output')
+  
+}
+
+```
+
+``` {r determine_spp_habs}
+### For each species ID on the total list, get a dataframe of habitats.
+### This is slow.  Skip if possible.
+
+spp_habs_from_api_file <- file.path(dir_setup, 'trend_calcs/spp_habs_from_api.csv')
+reload <- FALSE
+
+if(!file.exists(spp_habs_from_api_file) | reload) {
+  
+  message('Using API to determine species habitats from full species info list')
+  
+  spp_info_from_api_file <- file.path(dir_setup, 'trend_calcs/spp_info_from_api.csv')
+  spp_ids_all <- read_csv(spp_info_from_api_file) %>%
+    .$iucn_sid
+  
+  spp_habs_url <- 'http://apiv3.iucnredlist.org/api/v3/habitats/species/id/%s?token=%s'
+  
+  
+  ### Breaking this into chunks...
+  ### 500 spp takes 184 seconds; at that rate, 87851 species should take 
+  ###   about 9 hrs.  Each chunk will save to tmp for later combining.
+  
+  chunk_size <- 2000
+  n_chunks <- ceiling(length(spp_ids_all)/chunk_size)
+  
+  if(!dir.exists(file.path(dir_setup, 'tmp'))) 
+    dir.create(file.path(dir_setup, 'tmp'))
+  
+  for(j in 1:n_chunks) { 
+    ### j <- 2
+    spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
+    chunk_file <- file.path(dir_setup, 'tmp', 
+                    sprintf('spp_habs_chunk_%s_%s.csv', 
+                            min(spp_index), max(spp_index)))
+    
+    if(!file.exists(chunk_file)) {
+      message('Getting habitat info for species ', min(spp_index), ' to ', max(spp_index))
+      
+      spp_ids_chunk <- spp_ids_all[spp_index]
+      spp_habs_chunk <- mc_get_from_api(spp_habs_url, spp_ids_chunk, api_key, cores = 12, delay = .5)
+
+      message('... found ', nrow(spp_habs_chunk), ' habitat rows for these species')
+      
+      write_csv(spp_habs_chunk, chunk_file)
+      
+    } else {
+      
+      message('Chunk file ', chunk_file, ' already exists; skipping these spp')
+      
+    }
+  }
+  
+  ### fields: 
+  ### id | code | habitat | suitability | season | majorimportance
+
+  spp_hab_chunk_files <- list.files(file.path(dir_setup, 'tmp'), 
+                                    pattern = 'spp_habs_chunk', 
+                                    full.names = TRUE)
+  
+  spp_habs_df <- lapply(spp_hab_chunk_files, FUN = function(x) {
+    read.csv(x) %>%
+      mutate(code = as.character(code))}) %>%
+    bind_rows() %>%
+    rename(iucn_sid = id) %>%
+    mutate(iucn_sid = ifelse(is.na(iucn_sid), param_id, iucn_sid)) %>%
+    arrange(iucn_sid)
+  
+  spp_errors <- spp_habs_df %>%
+    filter(!is.na(api_error) & api_error != 'no data.frame') %>%
+    .$iucn_sid
+  ### all these errors are due to returning a zero-length list instead of a data.frame
+
+  write_csv(spp_habs_df, file.path(dir_setup, 'trend_calcs', 'spp_habs_from_api.csv'))
+  
+} else {
+  
+  message('File of species habitats from API exists: \n  ', spp_habs_from_api_file)
+  git_prov(spp_habs_from_api_file, filetype = 'output')
+  
+}
+
+
+```
+
+-----
+
+### Habitat inclusion list
+
+From the habitats gleaned in the previous chunk, generate an inclusion list based on those that are considered marine.  "Included" habitats are determined from inspection of the habitat list; we are including habitats 9-13, plus 15.11, 15.12, 15.13.
+
+``` {r generate_hab_inclusion_list, eval = TRUE}
+
+hab_inclusion_file <- file.path(dir_setup, 'trend_calcs', 'iucn_habitat_categories.csv')
+
+hab_cats <- read_csv(spp_habs_from_api_file, col_types = 'icccccci') %>%
+  select(habitat, code) %>%
+  distinct() %>%
+  separate(code, c('cat', 'subcat1', 'subcat2'),
+           remove = FALSE, convert = TRUE) %>%
+  arrange(cat, subcat1, subcat2) %>%
+  mutate(include = ifelse(cat %in% c(9:13), TRUE, FALSE),
+         include = ifelse(cat == 15 & subcat1 %in% c(11, 12, 13), TRUE, include))
+### Note these "include" values were determined by inspecting the 
+
+write_csv(hab_cats, hab_inclusion_file)
+
+```
+
+-----
+
+``` {r determine_marine_spp_from_api}
+
+spp_habs_from_api <- read_csv(file.path(dir_setup, 'trend_calcs/spp_habs_from_api.csv'),
+                              col_types = 'iccccc__')
+### 'code' is character since it is in the form x.xx.xxx
+
+hab_marine <- read_csv(file.path(dir_setup, 'trend_calcs', 'iucn_habitat_categories.csv'))
+
+### also pull all IUCN IDs from AquaMaps; some of these may have NA habitat
+### results from above, but should still be considered marine.
+am_iucn_ids <- read_csv(file.path(dir_am_data, 
+                                  'csv/speciesoccursum.csv')) %>%
+  mutate(iucn_id = as.integer(iucn_id)) %>%
+  filter(!is.na(iucn_id)) %>%
+  .$iucn_id
+
+### using inner_join, use marine hab lookup to attach to the full spp habitat
+### list, adding more info and filtering to just marine habitats
+spp_marine_habs <- spp_habs_from_api %>%
+  left_join(hab_marine, by = c('habitat', 'code')) %>%
+  filter(include == TRUE | iucn_sid %in% am_iucn_ids) %>%
+  mutate(habitat = ifelse(is.na(habitat), 'marine from AquaMaps', habitat))
+
+write_csv(spp_marine_habs, file.path(dir_setup, 'trend_calcs/spp_marine_from_api.csv'))
+
+```
+  
+-----
+
+## Get all historic assessments for marine species
+
+``` {r get_species_past_assessments}
+
+spp_list <- read_csv(file.path(dir_setup, 'trend_calcs', 'spp_marine_from_api.csv'))
+
+spp_cat_ts_file <- file.path(dir_setup, 'trend_calcs', 'spp_cat_timeseries_all_marine.csv')
+
+if(!file.exists(spp_cat_ts_file)) {
+
+  spp_hist_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
+  
+  sid_list <- spp_list %>%
+    filter(!is.na(iucn_sid)) %>% 
+    .$iucn_sid %>%
+    unique() %>%
+    sort()
+    
+  ptm <- proc.time()
+  spp_past_df <- mc_get_from_api(spp_hist_url, sid_list, api_key, delay = 1, cores = 16)
+  proc.time() - ptm
+  
+  
+  ### Clean up the time series: reclassify old codes to current
+  cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv'))
+  
+  spp_past_df1 <- spp_past_df %>%
+    left_join(cat_lookup, by = c('code', 'category')) %>%
+    rename(iucn_sid = name,
+           old_cat  = code,
+           cat_txt  = category,
+           cat_ts   = code_current)
+  
+  pop_cat <- data.frame(cat_ts       = c("LC", "NT", "VU", "EN", "CR", "EX", "NE", "DD"), 
+                        cat_ts_score = c(   0,  0.2,  0.4,  0.6,  0.8,  1.0,  NA,   NA))
+    
+  spp_past_df1 <- spp_past_df1 %>% 
+    left_join(pop_cat, by = 'cat_ts') %>%
+    filter(!is.na(cat_ts_score) & !is.na(year)) %>%
+    arrange(iucn_sid, year)
+  
+  write_csv(spp_past_df1, spp_cat_ts_file)
+} else {
+  
+  git_prov(file.path(dir_setup, 'raw', 'risk_code_lookup.csv'), filetype = 'input')
+  git_prov(spp_cat_ts_file, filetype = 'output')
+  spp_past_df1 <- read_csv(spp_cat_ts_file, nogit = TRUE)
+  
+}
+
+```
+
+## Get all population trends for marine species
+
+``` {r get_trends}
+
+trends_file <- file.path(dir_setup, 'trend_calcs', 'spp_cat_ts_and_trends.csv')
+
+if(!file.exists(trends_file)) {
+  ### Filter to just the valid species and get narratives.
+  spp_list_valid <- read_csv(spp_cat_ts_file) %>%
+    filter(!is.na(cat_score) & !is.na(cat_ts_score))
+  
+  spp_ids_valid <- spp_list_valid$iucn_sid %>%
+    unique() %>%
+    .[!is.na(.)]
+  
+  ### /api/v3/species/narrative/id/:id?token='YOUR TOKEN'
+  spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s?token=%s'
+  
+  spp_narr <- vector('list', length = length(spp_ids_valid))
+  for(i in seq_along(spp_ids_valid)) { # i <- 1
+    spp_id <- spp_ids_valid[i]
+    cat(i, 'Trying ', spp_id, '\n')
+    spp_narr_tmp <- get_from_api(spp_narr_url, spp_id, api_key, delay = .1)
+    spp_narr[[i]] <- spp_narr_tmp
+  }
+  
+  spp_narr1 <- spp_narr %>%
+    bind_rows() %>%
+    select(iucn_sid = name, pop_trend = result.populationtrend) %>%
+    mutate(iucn_sid = as.integer(iucn_sid)) %>%
+    left_join(spp_list_valid, by = 'iucn_sid')
+  
+  trend_scores <- c('decreasing' = -.5, 'stable' = 0, 'increasing' = +.5)
+  
+  spp_narr1 <- spp_narr1 %>%
+    mutate(trend_score = trend_scores[pop_trend]) %>%
+    distinct()
+  
+  write_csv(spp_narr1, trends_file)
+  ### the mclapply version seems to hang for some reason.
+  # spp_narr_iucn <- mc_get_from_api(spp_narr_url,
+  #                             spp_iucn_ids_valid,
+  #                             api_key, cores = 12, delay = .5)
+
+}
+
+```
+
+## Regress species with multiple recent historic assessments against population trends
+
+From data gathered in the execution of SPP v2017, collect species data on past assessments (category) and population trend.  Combine and save.  Note that trend has to be assumed to be related to the most recent assessment only - not included in historical assessment API call.
+
+For this analysis we will focus only on assessments performed since 1991, the year of v1.0 Red List.
+
+``` {r gather_data_clip_from_1991}
+
+cat_trend_91 <- read_csv(file.path(dir_setup, 'trend_calcs/spp_cat_ts_and_trends.csv')) %>%
+  select(iucn_sid, year, cat_ts, cat_ts_score, pop_trend, trend_score) %>%
+  distinct() %>%
+  filter(year >= 1991 & !is.na(cat_ts_score) & !is.na(trend_score)) %>%
+  group_by(iucn_sid) %>%
+  mutate(n_assess = n()) %>%
+  ungroup()
+
+lm_91 <- cat_trend_91 %>%
+  filter(n_assess >= 3) %>%
+  group_by(iucn_sid) %>%
+  do(calc_trend = lm( cat_ts_score ~ year, data = .)[['coefficients']][['year']]) %>%
+  mutate(calc_trend = round(calc_trend, 5))
+
+pop_trend_vec <- c('increasing' = 1, 'decreasing' = -1, 'stable' = 0)
+trend_91 <- cat_trend_91 %>%
+  filter(n_assess > 1) %>%
+  group_by(iucn_sid) %>%
+  summarize(years  = paste(year, collapse = ', '),
+            cat_ts = paste(cat_ts, collapse = ', '),
+            scores = paste(cat_ts_score, collapse = ', '),
+            pop_trend_desc = first(pop_trend)) %>%
+  ungroup() %>%
+  left_join(lm_91, by = 'iucn_sid') %>%
+  mutate(pop_trend = pop_trend_vec[pop_trend_desc])
+
+write_csv(trend_91, file.path(dir_setup, 'trend_calcs/trend_lm_vs_pop_91.csv'))
+
+DT::datatable(trend_91)
+```
+
+``` {r gather_data_clip_from_2001}
+
+cat_trend_01 <- read_csv(file.path(dir_setup, 'trend_calcs/spp_cat_ts_and_trends.csv')) %>%
+  select(iucn_sid, year, cat_ts, cat_ts_score, pop_trend, trend_score) %>%
+  distinct() %>%
+  filter(year >= 2001 & !is.na(cat_ts_score) & !is.na(trend_score)) %>%
+  group_by(iucn_sid) %>%
+  mutate(n_assess = n()) %>%
+  ungroup()
+
+lm_01 <- cat_trend_01 %>%
+  filter(n_assess >= 3) %>%
+  group_by(iucn_sid) %>%
+  do(calc_trend = lm( cat_ts_score ~ year, data = .)[['coefficients']][['year']]) %>%
+  mutate(calc_trend = round(calc_trend, 5))
+
+pop_trend_vec <- c('increasing' = 1, 'decreasing' = -1, 'stable' = 0)
+trend_01 <- cat_trend_01 %>%
+  filter(n_assess > 1) %>%
+  group_by(iucn_sid) %>%
+  summarize(years  = paste(year,   collapse = ', '),
+            cat_ts = paste(cat_ts, collapse = ', '),
+            scores = paste(cat_ts_score, collapse = ', '),
+            pop_trend_desc = first(pop_trend)) %>%
+  ungroup() %>%
+  left_join(lm_01, by = 'iucn_sid') %>%
+  mutate(pop_trend = pop_trend_vec[pop_trend_desc])
+
+write_csv(trend_01, file.path(dir_setup, 'trend_calcs/trend_lm_vs_pop_01.csv'))
+
+DT::datatable(trend_01)
+
+ggplot(trend_01 %>%
+         filter(!is.na(calc_trend)), 
+       aes(x = calc_trend)) +
+  ggtheme_plot() +
+  # geom_histogram() +
+  geom_density()
+```
+
+Note that the category scores are higher for higher-risk assessments; so a decreasing population should result in an increasing risk score and vice versa.
+
+``` {r explore_rels}
+
+trend_91 <- read_csv(file.path(dir_setup, 'trend_calcs/trend_lm_vs_pop_91.csv')) %>%
+  filter(!is.na(pop_trend)) %>%
+  mutate(pop_trend_desc = factor(pop_trend_desc, levels = c('decreasing', 'stable', 'increasing')))
+
+trend_regr_91 <- lm(calc_trend ~ pop_trend, data = trend_91)
+
+x <- summary(trend_regr_91)
+
+
+### BASED ON FILTERING SINCE 1991 (IUCN Red List v1.0)
+# lm(formula = calc_trend ~ pop_trend, data = trend_91)
+# 
+# Residuals:
+#       Min        1Q    Median        3Q       Max 
+# -0.063587 -0.003587 -0.000202  0.003183  0.056413 
+# 
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  0.0002019  0.0003152   0.641    0.522    
+# pop_trend   -0.0033852  0.0003778  -8.961   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.008467 on 903 degrees of freedom
+#   (530 observations deleted due to missingness)
+# Multiple R-squared:  0.08166,	Adjusted R-squared:  0.08064 
+# F-statistic: 80.29 on 1 and 903 DF,  p-value: < 2.2e-16  
+
+
+trend_01 <- read_csv(file.path(dir_setup, 'trend_calcs/trend_lm_vs_pop_01.csv')) %>%
+  filter(!is.na(pop_trend)) %>%
+  mutate(pop_trend_desc = factor(pop_trend_desc, levels = c('decreasing', 'stable', 'increasing')))
+
+trend_regr_01 <- lm(calc_trend ~ pop_trend, data = trend_01)
+
+y <- summary(trend_regr_01)
+
+### BASED ON FILTERING SINCE 2001 (v3.1)
+# lm(formula = calc_trend ~ pop_trend, data = trend_01)
+# 
+# Residuals:
+#       Min        1Q    Median        3Q       Max 
+# -0.065338 -0.003243  0.000134  0.000134  0.062467 
+# 
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -0.0001344  0.0003971  -0.339    0.735    
+# pop_trend   -0.0033773  0.0004776  -7.071 3.46e-12 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.009911 on 769 degrees of freedom
+#   (504 observations deleted due to missingness)
+# Multiple R-squared:  0.06105,	Adjusted R-squared:  0.05983 
+# F-statistic:    50 on 1 and 769 DF,  p-value: 3.456e-12
+
+trend_plot <- ggplot(trend_01, aes(x = pop_trend, y = calc_trend, group = pop_trend)) +
+  geom_violin(color = 'grey60', fill = 'grey80') +
+  geom_jitter(color = 'blue', alpha = .4) +
+  geom_abline(intercept = trend_regr_01$coefficients[['(Intercept)']],
+              slope = trend_regr_01$coefficients[['pop_trend']],
+              color = 'darkred') +
+  scale_x_continuous(breaks = c(-1, 0, 1), labels = c('decreasing', 'stable', 'increasing')) +
+  coord_cartesian(ylim = c(-.1, .1)) +
+  labs(x = 'text population trend',
+       y = 'calculated trend from category time series') +
+  annotate('text', x = 0.1, y = -.06, 
+           label = paste0('R^2: ', round(y$r.squared, 5), 
+                          '\nslope = ', round(y$coefficients[2, 1], 5),
+                          '\np (slope) = ', signif(y$coefficients[2, 4], 5)),
+           hjust = 0)
+
+print(trend_plot)
+
+```
+
+One risk category shift would be 0.2 "risk units" (i.e. LC = 0, NT = .2, ..., EX = 1.0); so a decreasing population is likely to increase risk score by about 0.00338 units per year, or on average, take about 60 years to change risk status by one category.  For species on the high and low ends of trends based on time series, about -.06 to +.06, we can read this as changing by as much as one category every three to four years.
+
+## Save species to trend lookup 
+
+``` {r save_spp_trends}
+
+### manual values from linear regression:
+trend_score_lookup <- c('decreasing' = .0034, 'stable' = 0, 'increasing' = -.0034)
+
+trend_91 <- read_csv(file.path(dir_setup, 'trend_calcs/trend_lm_vs_pop_91.csv')) %>%
+  select(iucn_sid, calc_trend) %>% distinct()
+
+trend_df <- read_csv(file.path(dir_setup, 'trend_calcs/spp_cat_ts_and_trends.csv')) %>%
+  select(iucn_sid, year, cat_ts, cat_ts_score, pop_trend) %>%
+  distinct() %>%
+  left_join(trend_91, by = 'iucn_sid') %>%
+  mutate(trend_score = ifelse(is.na(calc_trend), trend_score_lookup[pop_trend], calc_trend),
+         trend_source = case_when(!is.na(calc_trend)  ~ 'lm', 
+                                  !is.na(trend_score) ~ 'regr',
+                                  TRUE ~ 'NA')) %>%
+  select(iucn_sid, trend_score, trend_source) %>%
+  distinct()
+
+write_csv(trend_df, file.path(dir_git, 'data/trend_by_spp.csv'))
+
+DT::datatable(trend_df)
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+
