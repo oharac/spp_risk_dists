@@ -42,9 +42,9 @@ library(provRmd); prov_setup()
 source('~/github/src/R/rast_tools.R') 
   ### raster plotting and analyzing scripts
 
-thresh <- .01
-thresh_tag <- '01'
-sample_df_file <- file.path(dir_o_anx, 'samples', paste0('sample_dataframe_', thresh_tag, '.csv'))
+thresh <- .0025
+thresh_tag <- '0025'
+sample_df_file <- file.path(dir_o_anx, 'samples', paste0('global_sample_df_', thresh_tag, '.csv'))
 
 ```
 
@@ -61,11 +61,11 @@ Using the LOICZID raster and rasters of WDPA and MEOW regions, create crosstabs 
 Using the random ocean raster, set a threshold to sample a proportion of cells (e.g. p = .01 is 1% of ocean cells).  From this, build a dataframe of these cells with the following info:
 
 * LOICZID (for attaching species health and trend info)
-* risk and trend by LOICZID
+* risk, log risk, var, and trend by LOICZID
 * MPA year
 * MEOW ID number
 
-``` {r get_rasts}
+``` {r get_rasts_using_random_rast, eval = FALSE}
 
 rand_ocean_rast  <- raster(file.path(dir_o_anx, 'spatial/rand_ocean_base.tif'))
 
@@ -135,11 +135,61 @@ if(!file.exists(sample_df_file)) {
            lat     = as.numeric(lat))
   
   risk_df  <- read_csv(file.path(dir_git, 'data/current_risk_by_loiczid.csv'), 
-                       col_types = 'iid')
+                       col_types = 'iiddd')
   trend_df <- read_csv(file.path(dir_git, 'data/spp_trend_by_loiczid.csv'), 
                        col_types = 'iid')
   
   big_df <- big_df %>%
+    left_join(risk_df %>% rename(n_spp_risk = n_spp), by = 'loiczid') %>%
+    left_join(trend_df %>% rename(n_spp_trend = n_spp), by = 'loiczid')
+
+  write_csv(big_df, sample_df_file)
+}
+```
+
+``` {r get_rasts_using_sample}
+
+if(!file.exists(sample_df_file)) {
+  
+  loiczid_rast <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
+    ### already masked to ocean cells
+  
+  wdpa_rast <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_iv_dec2017.tif'))
+  # wdpa_marine_all  <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_all_dec2017.tif'))
+  # wdpa_marine_i_vi <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_vi_dec2017.tif'))
+
+  meow_rast <- raster(file.path(dir_o_anx, 'meow/meow_rast_934m.tif'))
+  
+  lat_rast <- raster(file.path(dir_o_anx, 'spatial/latitude_rast.tif'))
+  
+  big_stack <- stack(list(loiczid_rast, wdpa_rast, meow_rast, lat_rast))
+  
+  ### There are 745,366,050 cells in the rasters; 416,190,801 are ocean.
+  ### NOTE: sampleRandom with na.rm = TRUE apparently doesn't get exactly
+  ###   that number of cells, esp as sample size -> total size, 
+  ###   but tries to get close.
+  ### NOTE: for my purpose, set na.rm = FALSE; otherwise if ANY layer has
+  ###   NA seems to drop it - so (e.g.) won't sample outside protected areas.
+  ### Returns a dataframe with colnames = raster names and 
+  ###   row values = cell values
+  ### To get around a million samples (.25% sample), put size = 2 million
+  system.time({
+    stack_sample_df <- sampleRandom(big_stack, size = 2000000, 
+                                    na.rm = FALSE) %>%
+      as.data.frame() %>%
+      setNames(c('loiczid', 'mpa_yr', 'meow_id', 'lat')) %>%
+      filter(!is.na(loiczid))
+      ###   200 pts:   2.44 s   (109 obs kept)
+      ###  2000 pts:  13.09 s  (1097 obs kept)
+      ### 20000 pts:  97.29 s (11179 obs kept)
+  })
+  
+  risk_df  <- read_csv(file.path(dir_git, 'data/current_risk_by_loiczid.csv'), 
+                       col_types = 'iiddd')
+  trend_df <- read_csv(file.path(dir_git, 'data/spp_trend_by_loiczid.csv'), 
+                       col_types = 'iid')
+  
+  big_df <- stack_sample_df %>%
     left_join(risk_df %>% rename(n_spp_risk = n_spp), by = 'loiczid') %>%
     left_join(trend_df %>% rename(n_spp_trend = n_spp), by = 'loiczid')
 

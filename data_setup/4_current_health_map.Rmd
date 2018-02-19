@@ -54,11 +54,11 @@ Create a map of the distribution of current species health - all species in Aqua
 
 ## Spatial distribution of current extinction risk
 
-### Aggregate mean risk by cell
+### Aggregate mean risk and variance by cell
 
 Here we will use a probability threshold of 0.60 to determine species presence.  We filter out any species with NA for iucn_sid or cat_score.
 
-``` {r create_df_of_risk_by_cell}
+``` {r create_df_of_mean_risk_by_cell}
 
 cell_risk_file <- file.path(dir_git, 'data', 'current_risk_by_loiczid.csv')
 
@@ -86,7 +86,10 @@ if(!file.exists(cell_risk_file)) {
     filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
     filter(prob >= 0.60) %>%
     group_by(loiczid) %>%
-    summarize(n_spp = n(), mean_risk = mean(cat_score))
+    summarize(n_spp = n(), 
+              mean_risk = mean(cat_score),
+              var_risk  = var(cat_score),
+              log_mean_risk = ifelse(mean_risk == 0, NA, log(mean_risk)))
   
   write_csv(spp_cells_risk_sum, cell_risk_file)
   
@@ -110,7 +113,7 @@ loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 ### gotta force the mean_risk column to be double; there are lots of zero
 ### values so will default to thinking that column is integer.
 risk_by_cell <- read_csv(file.path(dir_git, 'data', 'current_risk_by_loiczid.csv'),
-                         col_types = 'iid')
+                         col_types = 'iiddd')
 
 risk_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'mean_risk')
 nspp_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'n_spp')
@@ -122,7 +125,51 @@ risk_clipped <- risk_rast
 values(risk_clipped)[values(nspp_rast) < 5] <- NA
 
 plot(risk_clipped)
+
 ```
+
+### histogram of mean risk
+
+Looks skewed; does it make sense to look at log risk?  Looks like risk (with zeros excluded) might be distributed closer to log-normal.
+
+``` {r mean_risk_histogram}
+
+### gotta force the mean_risk column to be double; there are lots of zero
+### values so will default to thinking that column is integer.
+risk_by_cell <- read_csv(file.path(dir_git, 'data', 'current_risk_by_loiczid.csv'),
+                         col_types = 'iiddd')
+
+mean_risk_hist <- ggplot(risk_by_cell) + 
+  ggtheme_plot() +
+  geom_histogram(aes(x = mean_risk))
+print(risk_incl_zeros)
+
+log_risk_hist <- ggplot(risk_by_cell) + 
+  ggtheme_plot() +
+  geom_histogram(aes(x = log_mean_risk))
+print(log_risk_hist)
+
+```
+
+``` {r log_mean_risk_raster}
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+### gotta force the mean_risk column to be double; there are lots of zero
+### values so will default to thinking that column is integer.
+risk_by_cell <- read_csv(file.path(dir_git, 'data', 'current_risk_by_loiczid.csv'),
+                         col_types = 'iiddd')
+
+log_risk_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'log_mean_risk')
+
+plot(log_risk_rast)
+
+var_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'var_risk')
+
+plot(var_rast)
+
+```
+
 
 ## Spatial distribution of trend in extinction risk
 
@@ -183,7 +230,7 @@ loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 trend_by_cell <- read_csv(file.path(dir_git, 'data', 'spp_trend_by_loiczid.csv'),
                          col_types = 'iid')
 
-trend_rast <- subs(loiczid_rast, trend_by_cell, by = 'loiczid', which = 'mean_trend')
+trend_rast   <- subs(loiczid_rast, trend_by_cell, by = 'loiczid', which = 'mean_trend')
 nspp_tr_rast <- subs(loiczid_rast, trend_by_cell, by = 'loiczid', which = 'n_spp')
 
 plot(trend_rast)

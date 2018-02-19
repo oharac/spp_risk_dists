@@ -206,6 +206,8 @@ if(!file.exists(lat_rast_file)) {
 
 ## Create U(0, 1) raster and mask to oceans
 
+IS THIS NOW OBSOLETE?  Instead, sample from the raster stack?
+
 ``` {r create_uniform_random_rast}
 
 rand_rast_file  <- file.path(dir_o_anx, 'spatial/rand_ocean_base.tif')

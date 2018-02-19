@@ -57,6 +57,33 @@ Using the LOICZID raster and rasters of WDPA and MEOW regions, create crosstabs 
 
 ## Cross tab each raster to LOICZID
 
+Create ocean area to loiczid lookup just to compare areas to AquaMaps values
+``` {r crosstab_ocean_area}
+
+loiczid_moll    <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
+
+ocean_area_lookup_file <- file.path(dir_git, 'data/ocean_area_lookup.csv')
+if(!file.exists(ocean_area_lookup_file)) {
+  ocean_xtab <- crosstab(loiczid_moll, 
+                                ocean_base, 
+                                progress = 'text',
+                                useNA = TRUE)
+  
+  ocean_area_lookup <- ocean_xtab %>%
+    as.data.frame() %>%
+    setNames(c('loiczid', 'ocean_flag', 'cells')) %>%
+    filter(cells > 0 & !is.na(loiczid)) %>%
+    mutate(ocean_area_km2 = cells / (.934^2)) %>%
+    select(-ocean_flag, -cells)
+  
+  write_csv(ocean_area_lookup, ocean_area_lookup_file)
+} 
+
+ocean_area_lookup <- read_csv(ocean_area_lookup_file)
+
+```
+
+
 ``` {r crosstab_wdpa_marine_all}
 
 loiczid_moll    <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
@@ -72,10 +99,13 @@ if(!file.exists(wdpa_mar_all_lookup_file)) {
   wdpa_mar_all_lookup <- wdpa_mar_all_xtab %>%
     as.data.frame() %>%
     setNames(c('loiczid', 'year', 'cells')) %>%
-    filter(cells > 0)
+    filter(cells > 0 & !is.na(loiczid)) %>%
+    filter(!is.na(year)) %>%
+    mutate(wdpa_yr_km2 = cells / (.934^2)) %>%
+    select(-cells)
   
   write_csv(wdpa_mar_all_lookup, wdpa_mar_all_lookup_file)
-}
+} 
 
 ```
 
@@ -95,10 +125,14 @@ if(!file.exists(wdpa_i_vi_lookup_file)) {
   wdpa_i_vi_lookup <- wdpa_i_vi_xtab %>%
     as.data.frame() %>%
     setNames(c('loiczid', 'year', 'cells')) %>%
-    filter(cells > 0)
+    filter(cells > 0 & !is.na(loiczid)) %>%
+    filter(!is.na(year)) %>%
+    mutate(wdpa_yr_km2 = cells / (.934^2)) %>%
+    select(-cells)  
   
   write_csv(wdpa_i_vi_lookup, wdpa_i_vi_lookup_file)
 }
+
 
 ```
 
@@ -117,8 +151,10 @@ if(!file.exists(wdpa_i_iv_lookup_file)) {
   wdpa_i_iv_lookup <- wdpa_i_iv_xtab %>%
     as.data.frame() %>%
     setNames(c('loiczid', 'year', 'cells')) %>%
-    filter(cells > 0)
-
+    filter(cells > 0 & !is.na(loiczid)) %>%
+    filter(!is.na(year)) %>%
+    mutate(wdpa_yr_km2 = cells / (.934^2)) %>%
+    select(-cells)
   write_csv(wdpa_i_iv_lookup, wdpa_i_iv_lookup_file)
 }
 
@@ -138,8 +174,10 @@ if(!file.exists(meow_lookup_file)) {
   meow_lookup <- meow_xtab %>%
     as.data.frame() %>%
     setNames(c('loiczid', 'eco_code', 'cells')) %>%
-    filter(cells > 0)
-
+    filter(cells > 0 & !is.na(loiczid)) %>%
+    filter(!is.na(eco_code)) %>%
+    select(-cells)
+  
   write_csv(meow_lookup, meow_lookup_file)
 }
 

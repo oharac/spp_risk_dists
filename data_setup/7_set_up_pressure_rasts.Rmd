@@ -1,0 +1,114 @@
+---
+title: 'Set up CHI mean pressure rasters to loiczid'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+### bring in ocean raster (all 1 or NA values)
+ocean_base <- raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+
+```
+
+# Summary
+
+Using the LOICZID raster and rasters of CHI pressures layers, create mean and var pressures for each LOICZID cell
+
+# Data Sources
+
+# Methods
+
+## Identify pressures layers
+
+``` {r}
+
+dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
+                     'global_impact_model_2013', 
+                     'normalized_by_one_time_period', 
+                     'averaged_by_num_ecosystems')
+### cumulative impacts data (all 2013 pressures combined)
+ci <- raster(file.path(dir_prs, 'all_layers/global_cumul_impact_2013_all_layers.tif'))
+# ci
+# plot(ci)
+
+### individual pressures (2013)
+### stressor data combined with the pressure X habitat vulnerability matrix and habitat raster layers 
+pressure_example <- raster(file.path(dir_prs, 'by_threat/shipping_combo.tif'))
+# pressure_example
+# plot(pressure_example)
+
+prs_layers <- list.files(file.path(dir_prs, 'by_threat'), pattern = '.tif$')
+#  [1] "artisanal_fishing_combo.tif"             "demersal_destructive_fishing_combo.tif" 
+#  [3] "demersal_nondest_high_bycatch_combo.tif" "demersal_nondest_low_bycatch_combo.tif" 
+#  [5] "inorganic_combo.tif"                     "invasives_combo.tif"                    
+#  [7] "night_lights_combo.tif"                  "ocean_acidification_combo.tif"          
+#  [9] "ocean_pollution_combo.tif"               "oil_rigs_combo.tif"                     
+# [11] "pelagic_high_bycatch_combo.tif"          "pelagic_low_bycatch_combo.tif"          
+# [13] "plumes_fert_combo.tif"                   "plumes_pest_combo.tif"                  
+# [15] "population_combo.tif"                    "shipping_combo.tif"                     
+# [17] "slr_combo.tif"                           "sst_combo.tif"                          
+# [19] "uv_combo.tif" 
+
+### stressors (data rescaled from 0-1 using max value)
+dir_stress <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
+                        'impact_layers/final_impact_layers/threats_2013_final',
+                        'normalized_by_one_time_period')
+stressor <- raster(file.path(dir_stress, 'shipping.tif'))
+
+stress_layers <- list.files(dir_stress, pattern = '.tif$')
+#  [1] "artisanal_fishing.tif"             "demersal_destructive_fishing.tif" 
+#  [3] "demersal_nondest_high_bycatch.tif" "demersal_nondest_low_bycatch.tif" 
+#  [5] "inorganic.tif"                     "invasives.tif"                    
+#  [7] "night_lights.tif"                  "ocean_acidification.tif"          
+#  [9] "ocean_pollution.tif"               "oil_rigs.tif"                     
+# [11] "pelagic_high_bycatch.tif"          "pelagic_low_bycatch.tif"          
+# [13] "plumes_fert.tif"                   "plumes_pest.tif"                  
+# [15] "population.tif"                    "shipping.tif"                     
+# [17] "slr.tif"                           "sst.tif"                          
+# [19] "uv.tif"
+
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+
