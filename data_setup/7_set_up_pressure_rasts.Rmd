@@ -36,7 +36,7 @@ dir_spatial <- file.path(dir_git, 'spatial')
 dir_anx     <- file.path(dir_M, 'git-annex')
 dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
 # ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 ### support scripts
 source('~/github/src/R/rast_tools.R') 
@@ -106,9 +106,160 @@ stress_layers <- list.files(dir_stress, pattern = '.tif$')
 
 ```
 
+## Choose layers and inspect distributions
+
+For the purposes of this investigation, we will use the pressures which include stress and habitat vulnerability.
+
+To aggregate the 934 m cells to half-degree cells, we will use zonal stats to match LOICZID to cells, and take a mean.  
+
+* Since many (most? all?) of the layers are probably heavily right-skewed, should we use a log-normal mean to get a better sense of the central tendency?
+  * Note that values within each cell may not be log-normally distributed...
+  * Note that we'll have to remove zeros.  We can (maybe?) add zeros back in, doing an area-weighted simple average of the log-normal mean (for non-zero areas) and zero (for zero areas).
+* For simplicity, in order to get to the spatial analysis, I will begin with a simple mean of values within each LOICZID zone.
+
+First inspect each layer to get an idea of distributions:
+
+* mask to ocean base raster to exclude land cells and mollweide corners
+* take a random sample of values to simplify the distribution plotting
+* some layers should be clipped to coastal areas (e.g. sea level rise) but we'll gloss over this for now...
+    * for such pressures, should zero values be OK?  i.e. will a zero for that layer in the open ocean create the same effect as an NA for that layer?
+    
+This chunk will not create a raster, but rather a dataframe of mean pressure to LOICZID.
+
+``` {r inspect_prs_layers}
+
+dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
+                     'global_impact_model_2013', 
+                     'normalized_by_one_time_period', 
+                     'averaged_by_num_ecosystems')
+
+prs_layers <- list.files(file.path(dir_prs, 'by_threat'), 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in prs_layers) { ### layer <- prs_layers[1]
+  lyr_rast_raw <- raster(layer)
+  lyr_rast <- mask(lyr_rast_raw, ocean_base)
+  
+  lyr_distr_file <- sprintf('prs_distr_plots/%s_dist.png', names(lyr_rast))
+  
+  if(!file.exists(lyr_distr_file)) {
+    message('generating distr plot for: ', lyr_distr_file)
+    lyr_sample <- base::sample(values(lyr_rast), 10000000)
+    lyr_sample_narm <- lyr_sample[!is.na(lyr_sample)]
+    lyr_zeros_removed <- lyr_sample_narm[lyr_sample_narm > 0]
+    lyr_sample_df <- data.frame(val = lyr_zeros_removed)
+    
+    plot_name <- sprintf('%s (%.4fpct of vals = 0, removed)',
+                         names(lyr_rast), 100 * (length(lyr_sample_narm) - 
+                                                   length(lyr_zeros_removed)) / length(lyr_sample_narm))
+    lyr_dist <- ggplot(lyr_sample_df, aes(x = val)) +
+      ggtheme_plot() +
+      geom_density() +
+      labs(title = plot_name,
+           x = 'rescaled pressure')
+    
+    ggsave(lyr_distr_file, plot = lyr_dist)
+    
+  } else {
+    message('layer distr plot already exists: ', lyr_distr_file)
+  }
+}
+
+```
+
+### Fishing layers
+
+![](prs_distr_plots/artisanal_fishing_combo_dist.png)            
+![](prs_distr_plots/demersal_destructive_fishing_combo_dist.png)  
+![](prs_distr_plots/demersal_nondest_high_bycatch_combo_dist.png)  
+![](prs_distr_plots/demersal_nondest_low_bycatch_combo_dist.png)  
+![](prs_distr_plots/pelagic_high_bycatch_combo_dist.png)      
+![](prs_distr_plots/pelagic_low_bycatch_combo_dist.png)  
+
+### Climate layers
+
+![](prs_distr_plots/ocean_acidification_combo_dist.png)    
+![](prs_distr_plots/slr_combo_dist.png)                         
+![](prs_distr_plots/sst_combo_dist.png)                          
+![](prs_distr_plots/uv_combo_dist.png)
+
+### Pollution layers
+![](prs_distr_plots/inorganic_combo_dist.png)
+![](prs_distr_plots/ocean_pollution_combo_dist.png)
+![](prs_distr_plots/plumes_fert_combo_dist.png)             
+![](prs_distr_plots/plumes_pest_combo_dist.png)          
+
+### Other human impacts
+
+![](prs_distr_plots/invasives_combo_dist.png)                
+![](prs_distr_plots/night_lights_combo_dist.png)                 
+![](prs_distr_plots/oil_rigs_combo_dist.png)                     
+![](prs_distr_plots/population_combo_dist.png)                 
+![](prs_distr_plots/shipping_combo_dist.png)                 
+
+## Create simple aggregated pressures layers
+
+For each pressure layer at Mollweide 934m projection:
+
+* create a dataframe of LOICZID values and pressure values
+* summarize mean, variance, and number of cells to LOICZID cells after clipping out NA values.
+
+
+``` {r prs_aggregate_simple}
+
+dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
+                     'global_impact_model_2013', 
+                     'normalized_by_one_time_period', 
+                     'averaged_by_num_ecosystems')
+
+prs_layers <- list.files(file.path(dir_prs, 'by_threat'), 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in prs_layers) { ### layer <- prs_layers[1]
+  lyr_rast_raw <- raster(layer)
+  
+  lyr_name <- names(lyr_rast_raw)
+  
+  lyr_simple_file <- file.path(dir_git, sprintf('prs_to_loiczid/%s_simple.csv', lyr_name))
+  
+  if(!file.exists(lyr_simple_file)) {
+    
+    if(!exists('vals_loiczid_moll')) {
+      message('Initializing vals_loiczid_moll vector...')
+      loiczid_moll_rast <- raster(file.path(dir_o_anx, 'spatial', 'loiczid_moll_934m.tif'))
+      vals_loiczid_moll <- values(loiczid_moll_rast)
+    }
+
+    message('generating simple pressure summary to LOICZID for: ', lyr_name)
+    message('... masking raw pressure layer to ocean base')
+    lyr_rast <- mask(lyr_rast_raw, ocean_base)
+
+    lyr_df <- data.frame(loiczid = vals_loiczid_moll,
+                         prs_val = values(lyr_rast))
+    
+    lyr_summary_df <- lyr_df %>%
+      filter(!is.na(loiczid)) %>%
+      group_by(loiczid) %>%
+      summarize(prs_mean = mean(prs_val, na.rm = TRUE),
+                prs_var  = var(prs_val, na.rm = TRUE),
+                n_zero   = sum(prs_val == 0, na.rm = TRUE),
+                n_na     = sum(is.na(prs_val)))
+    
+    write_csv(lyr_summary_df, lyr_simple_file)
+    
+  } else {
+    message('simple pressure summary already exists for: ', 
+            lyr_name, '\n  ', lyr_simple_file)
+  }
+}
+
+```
+
 -----
 
 ``` {r prov_footer, results = 'asis'}
-prov_wrapup(commit_outputs = FALSE)
+# prov_wrapup(commit_outputs = FALSE)
 ```
 
