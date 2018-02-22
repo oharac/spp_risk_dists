@@ -192,6 +192,7 @@ if(!file.exists(lat_rast_file)) {
   
   loiczid_lats <- read_csv(file.path(dir_o_anx, 'am_files', 'am_cells.csv')) %>%
     select(loiczid, lat = centerlat)
+  write_csv(loiczid_lats, file.path(dir_git, 'data/latitude_lookup.csv'))
   
   loiczid_rast <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
   

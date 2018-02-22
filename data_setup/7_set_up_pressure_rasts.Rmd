@@ -108,7 +108,7 @@ stress_layers <- list.files(dir_stress, pattern = '.tif$')
 
 ## Choose layers and inspect distributions
 
-For the purposes of this investigation, we will use the pressures which include stress and habitat vulnerability.
+For the purposes of this investigation, we will use the stressors which include stress but exclude habitat vulnerability.
 
 To aggregate the 934 m cells to half-degree cells, we will use zonal stats to match LOICZID to cells, and take a mean.  
 
@@ -126,22 +126,21 @@ First inspect each layer to get an idea of distributions:
     
 This chunk will not create a raster, but rather a dataframe of mean pressure to LOICZID.
 
-``` {r inspect_prs_layers}
+``` {r inspect_stressor_layers}
 
-dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
-                     'global_impact_model_2013', 
-                     'normalized_by_one_time_period', 
-                     'averaged_by_num_ecosystems')
+dir_stress <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
+                        'impact_layers/final_impact_layers/threats_2013_final',
+                        'normalized_by_one_time_period')
 
-prs_layers <- list.files(file.path(dir_prs, 'by_threat'), 
+stress_layers <- list.files(file.path(dir_prs, 'by_threat'), 
                          pattern = '.tif$', 
                          full.names = TRUE)
 
-for (layer in prs_layers) { ### layer <- prs_layers[1]
+for (layer in stress_layers) { ### layer <- stress_layers[1]
   lyr_rast_raw <- raster(layer)
   lyr_rast <- mask(lyr_rast_raw, ocean_base)
   
-  lyr_distr_file <- sprintf('prs_distr_plots/%s_dist.png', names(lyr_rast))
+  lyr_distr_file <- sprintf('stressor_distr_plots/%s_dist.png', names(lyr_rast))
   
   if(!file.exists(lyr_distr_file)) {
     message('generating distr plot for: ', lyr_distr_file)
@@ -217,7 +216,7 @@ prs_layers <- list.files(file.path(dir_prs, 'by_threat'),
                          pattern = '.tif$', 
                          full.names = TRUE)
 
-for (layer in prs_layers) { ### layer <- prs_layers[1]
+for (layer in prs_layers) { ### layer <- prs_layers[3]
   lyr_rast_raw <- raster(layer)
   
   lyr_name <- names(lyr_rast_raw)
@@ -245,7 +244,8 @@ for (layer in prs_layers) { ### layer <- prs_layers[1]
       summarize(prs_mean = mean(prs_val, na.rm = TRUE),
                 prs_var  = var(prs_val, na.rm = TRUE),
                 n_zero   = sum(prs_val == 0, na.rm = TRUE),
-                n_na     = sum(is.na(prs_val)))
+                n_na     = sum(is.na(prs_val))) %>%
+      mutate(loiczid = as.integer(loiczid))
     
     write_csv(lyr_summary_df, lyr_simple_file)
     

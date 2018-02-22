@@ -1,0 +1,320 @@
+---
+title: 'Regress health and trend vs pressure groups'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+At the LOICZID raster scale (0.5° cells), compare ecosystem risk and trends to pressures layers.  Pressures are aggregated to LOICZID in a data_setup script.
+
+# Data Sources
+
+# Fishing pressures
+
+## Build data frame of pressure means and variances.
+
+Read in the various fishing pressure layers from prs_to_loiczid folder.  Join them.
+
+``` {r fis_prs}
+
+fis_prs_files <- list.files('prs_to_loiczid', 
+                            pattern = 'demersal|pelagic|artisanal',
+                            full.names = TRUE)
+
+rm(fis_prs_df)
+for(prs_file in fis_prs_files) {  ### prs_file <- fis_prs_files[3]
+  prs_name <- basename(prs_file) %>%
+    str_replace('_combo_simple.csv', '')
+  
+  # cat('Processing', prs_name, '...\n')
+  
+  tmp <- read_csv(prs_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(prs_name, '_mean'), paste0(prs_name, '_var'), 
+               paste0(prs_name, '_zeros')))
+  
+  if(!exists('fis_prs_df')) {
+    fis_prs_df <- tmp    ### create it the first time through the loop
+  } else {
+    fis_prs_df <- fis_prs_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_prs_df <- full_join(risk_df, fis_prs_df, by = 'loiczid')
+
+fis_prs_mdl <- lm(mean_risk ~ artisanal_fishing_mean + 
+                    demersal_destructive_fishing_mean + 
+                    demersal_nondest_high_bycatch_mean +
+                    pelagic_high_bycatch_mean +
+                    pelagic_low_bycatch_mean,
+                  data = risk_v_prs_df)
+
+# summary(fis_prs_mdl)
+### overall R^2 of about .0186
+
+```
+
+``` {r pollution_prs}
+
+poll_prs_files <- list.files('prs_to_loiczid', 
+                            pattern = 'inorg|poll|plume',
+                            full.names = TRUE)
+
+rm(poll_prs_df)
+for(prs_file in poll_prs_files) {  ### prs_file <- poll_prs_files[3]
+  prs_name <- basename(prs_file) %>%
+    str_replace('_combo_simple.csv', '')
+  
+  # cat('Processing', prs_name, '...\n')
+  
+  tmp <- read_csv(prs_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(prs_name, '_mean'), paste0(prs_name, '_var'), 
+               paste0(prs_name, '_zeros')))
+  
+  if(!exists('poll_prs_df')) {
+    poll_prs_df <- tmp    ### create it the first time through the loop
+  } else {
+    poll_prs_df <- poll_prs_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_prs_df <- full_join(risk_df, poll_prs_df, by = 'loiczid')
+
+poll_prs_mdl <- lm(mean_risk ~ inorganic_mean + 
+                    ocean_pollution_mean + 
+                    plumes_fert_mean +
+                    plumes_pest_mean,
+                  data = risk_v_prs_df)
+
+# summary(poll_prs_mdl)
+### overall R^2 of about .0027
+
+```
+
+``` {r other_prs}
+
+other_prs_files <- list.files('prs_to_loiczid', 
+                            pattern = 'invasive|oil_rigs|night|pop|shipping',
+                            full.names = TRUE)
+
+rm(other_prs_df)
+for(prs_file in other_prs_files) {  ### prs_file <- other_prs_files[3]
+  prs_name <- basename(prs_file) %>%
+    str_replace('_combo_simple.csv', '')
+  
+  # cat('Processing', prs_name, '...\n')
+  
+  tmp <- read_csv(prs_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(prs_name, '_mean'), paste0(prs_name, '_var'), 
+               paste0(prs_name, '_zeros')))
+  
+  if(!exists('other_prs_df')) {
+    other_prs_df <- tmp    ### create it the first time through the loop
+  } else {
+    other_prs_df <- other_prs_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_prs_df <- full_join(risk_df, other_prs_df, by = 'loiczid')
+
+other_prs_mdl <- lm(mean_risk ~ invasives_mean + 
+                      night_lights_mean + 
+                      oil_rigs_mean +
+                      population_mean + 
+                      shipping_mean,
+                  data = risk_v_prs_df)
+
+# summary(other_prs_mdl)
+### overall R^2 of about .004
+
+```
+
+``` {r cc_prs}
+
+cc_prs_files <- list.files('prs_to_loiczid', 
+                            pattern = 'slr|sst|uv|acid',
+                            full.names = TRUE)
+
+rm(cc_prs_df)
+for(prs_file in cc_prs_files) {  ### prs_file <- cc_prs_files[3]
+  prs_name <- basename(prs_file) %>%
+    str_replace('_combo_simple.csv', '')
+  
+  # cat('Processing', prs_name, '...\n')
+  
+  tmp <- read_csv(prs_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(prs_name, '_mean'), paste0(prs_name, '_var'), 
+               paste0(prs_name, '_zeros')))
+  
+  if(!exists('cc_prs_df')) {
+    cc_prs_df <- tmp    ### create it the first time through the loop
+  } else {
+    cc_prs_df <- cc_prs_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_prs_df <- full_join(risk_df, cc_prs_df, by = 'loiczid')
+
+cc_prs_mdl1 <- lm(mean_risk ~ ocean_acidification_mean + ### on its own, R^2 = .0567
+                    slr_mean + ### on its own, R^2 = .0198
+                    sst_mean + ### on its own, R^2 = .0457
+                    uv_mean,   ### on its own, R^2 = .2321, estimate = .149
+                  data = risk_v_prs_df)
+
+# summary(cc_prs_mdl)
+### overall R^2 of about .2491
+# 
+# lm(formula = mean_risk ~ ocean_acidification_mean + slr_mean + 
+#     sst_mean + uv_mean, data = risk_v_prs_df)
+# 
+# Residuals:
+#      Min       1Q   Median       3Q      Max 
+# -0.18961 -0.03230 -0.00785  0.03381  0.74510 
+# 
+# Coefficients:
+#                           Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)              0.0161118  0.0007317   22.02   <2e-16 ***
+# ocean_acidification_mean 0.0106473  0.0007576   14.05   <2e-16 ***
+# slr_mean                 0.0495576  0.0009001   55.06   <2e-16 ***
+# sst_mean                 0.0046886  0.0002571   18.23   <2e-16 ***
+# uv_mean                  0.1491433  0.0007626  195.56   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.06043 on 159359 degrees of freedom
+#   (22644 observations deleted due to missingness)
+# Multiple R-squared:  0.2491,	Adjusted R-squared:  0.2491 
+# F-statistic: 1.322e+04 on 4 and 159359 DF,  p-value: < 2.2e-16	
+
+lat_df <- read_csv(file.path(dir_data, 'latitude_lookup.csv'), col_types = 'dd')
+
+risk_v_prs_df <- risk_v_prs_df %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat))
+
+cc_prs_mdl1 <- lm(mean_risk ~ uv_mean +   ### on its own, R^2 = .2321
+                    # lat_abs +
+                    # n_spp +
+                    lat, ### on its own, R^2 = .0740
+                  data = risk_v_prs_df)
+
+# summary(cc_prs_mdl1)
+### overall R^2 of about .255 with lat, and .234 with lat_abs (and .256 with both)
+
+ggplot(risk_v_prs_df, aes(x = uv_mean, y = mean_risk)) +
+  geom_point(alpha = .01)
+
+ggplot(risk_v_prs_df, aes(x = lat, y = uv_mean)) +
+  geom_point(alpha = .01)
+
+ggplot(risk_v_prs_df, aes(x = lat_abs, y = uv_mean)) +
+  geom_point(alpha = .01)
+
+ggplot(risk_v_prs_df, aes(x = lat, y = mean_risk)) +
+  geom_point(alpha = .01)
+
+ggplot(risk_v_prs_df, aes(x = lat, y = n_spp)) +
+  geom_point(alpha = .01)
+
+```
+
+There seems to be a strong correlation between UV pressure (number of extreme UV events over five-year period) on its own and mean species extinction risk.  This does not seem to be due to latitude-driven differences in UV events.  Other possibilities?
+
+``` {r plot_uv_and_mean_risk}
+
+mean_risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'), col_types = 'dddii') %>%
+  filter(n_spp > 5)
+uv_df <- read_csv(file.path(dir_git, 'prs_to_loiczid/uv_combo_simple.csv'), col_types = 'ddddd')
+
+loiczid_rast <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+
+risk_rast <- subs(loiczid_rast, mean_risk_df, by = 'loiczid', which = 'mean_risk')
+
+uv_rast <- subs(loiczid_rast, uv_df, by = 'loiczid', which = 'prs_mean')
+
+```
+
+### Mean spp risk (n_spp > 5)
+
+``` {r}
+plot(risk_rast)
+```
+
+### UV pressure 
+
+``` {r}
+plot(uv_rast)
+```
+
+Looks like the way that UV is rescaled as a pressure conforms to pelagic vs coastal/shallow.  Why is UV pressure higher in open oceans rather than shallows where corals may occur?  Is it related to NPP?
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+

@@ -1,0 +1,322 @@
+---
+title: 'Regress health and trend vs MPAs'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+thresh <- .0025
+thresh_tag <- '0025'
+sample_df_file <- file.path(dir_o_anx, 'samples', paste0('global_sample_df_', thresh_tag, '.csv'))
+
+```
+
+# Summary
+
+Using the LOICZID raster and rasters of WDPA and MEOW regions, create crosstabs of AquaMaps cells per each zone or protection year
+
+# Data Sources
+
+# Methods
+
+## Build data frame
+
+Using the random ocean raster, set a threshold to sample a proportion of cells (e.g. p = .01 is 1% of ocean cells).  From this, build a dataframe of these cells with the following info:
+
+* LOICZID (for attaching species health and trend info)
+* risk, log risk, var, and trend by LOICZID
+* MPA year
+* MEOW ID number
+
+``` {r get_rasts_using_random_rast, eval = FALSE}
+
+rand_ocean_rast  <- raster(file.path(dir_o_anx, 'spatial/rand_ocean_base.tif'))
+
+if(!file.exists(sample_df_file)) {
+  
+  sample_rast_file <- file.path(dir_o_anx, 'samples', sprintf('rand_ocean_sample_%s.tif', thresh_tag))
+  
+  if(!file.exists(sample_rast_file)) {
+    ocean_sample_rast <- rand_ocean_rast %>%
+      calc(fun = function(x) ifelse(x > thresh, NA, 1),
+           filename = sample_rast_file)
+  }
+  ocean_sample_rast <- raster(sample_rast_file)
+
+  
+  loiczid_sample_file <- file.path(dir_o_anx, 'samples', sprintf('loiczid_sample_%s.tif', thresh_tag))
+  if(!file.exists(loiczid_sample_file)) {
+    # cat('creating LOICZID sample raster\n')
+    loiczid_sample <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif')) %>%
+      mask(ocean_sample_rast,
+           # progress = 'text',
+           filename = loiczid_sample_file)
+  } 
+  loiczid_sample <- raster(loiczid_sample_file)
+
+  
+  # wdpa_marine_all  <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_all_dec2017.tif'))
+  # wdpa_marine_i_vi <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_vi_dec2017.tif'))
+  wdpa_sample_file <- file.path(dir_o_anx, 'samples', sprintf('wdpa_i_iv_sample_%s.tif', thresh_tag))
+  if(!file.exists(wdpa_sample_file)) {
+    # cat('creating WDPA sample raster\n')
+    wdpa_sample <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_iv_dec2017.tif')) %>%
+      mask(ocean_sample_rast,
+           # progress = 'text',
+           filename = wdpa_sample_file)
+  } 
+  wdpa_sample <- raster(wdpa_sample_file)
+
+  
+  meow_sample_file <- file.path(dir_o_anx, 'samples', sprintf('meow_sample_%s.tif', thresh_tag))
+  if(!file.exists(meow_sample_file)) {
+    # cat('creating MEOW sample raster\n')
+    meow_sample <- raster(file.path(dir_o_anx, 'meow/meow_rast_934m.tif')) %>%
+      mask(ocean_sample_rast,
+           # progress = 'text',
+           filename = meow_sample_file)
+  } 
+  meow_sample <- raster(meow_sample_file)
+  
+  lat_sample_file <- file.path(dir_o_anx, 'samples', sprintf('lat_sample_%s.tif', thresh_tag))
+  if(!file.exists(lat_sample_file)) {
+    # cat('creating MEOW sample raster\n')
+    lat_sample <- raster(file.path(dir_o_anx, 'spatial/latitude_rast.tif')) %>%
+      mask(ocean_sample_rast,
+           progress = 'text',
+           filename = lat_sample_file)
+  } 
+  lat_sample <- raster(lat_sample_file)
+  
+  big_df <- data.frame(loiczid = values(loiczid_sample),
+                       mpa_yr  = values(wdpa_sample),
+                       meow_id = values(meow_sample),
+                       lat     = values(lat_sample)) %>%
+    filter(!is.na(loiczid)) %>%
+    mutate(mpa_yr  = as.integer(mpa_yr),
+           meow_id = as.integer(meow_id),
+           lat     = as.numeric(lat))
+  
+  risk_df  <- read_csv(file.path(dir_git, 'data/current_risk_by_loiczid.csv'), 
+                       col_types = 'iiddd')
+  trend_df <- read_csv(file.path(dir_git, 'data/spp_trend_by_loiczid.csv'), 
+                       col_types = 'iid')
+  
+  big_df <- big_df %>%
+    left_join(risk_df %>% rename(n_spp_risk = n_spp), by = 'loiczid') %>%
+    left_join(trend_df %>% rename(n_spp_trend = n_spp), by = 'loiczid')
+
+  write_csv(big_df, sample_df_file)
+}
+```
+
+``` {r get_rasts_using_sample}
+
+if(!file.exists(sample_df_file)) {
+  
+  loiczid_rast <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
+    ### already masked to ocean cells
+  
+  wdpa_rast <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_iv_dec2017.tif'))
+  # wdpa_marine_all  <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_all_dec2017.tif'))
+  # wdpa_marine_i_vi <- raster(file.path(dir_o_anx, 'wdpa/wdpa_mar_i_vi_dec2017.tif'))
+
+  meow_rast <- raster(file.path(dir_o_anx, 'meow/meow_rast_934m.tif'))
+  
+  lat_rast <- raster(file.path(dir_o_anx, 'spatial/latitude_rast.tif'))
+  
+  big_stack <- stack(list(loiczid_rast, wdpa_rast, meow_rast, lat_rast))
+  
+  ### There are 745,366,050 cells in the rasters; 416,190,801 are ocean.
+  ### NOTE: sampleRandom with na.rm = TRUE apparently doesn't get exactly
+  ###   that number of cells, esp as sample size -> total size, 
+  ###   but tries to get close.
+  ### NOTE: for my purpose, set na.rm = FALSE; otherwise if ANY layer has
+  ###   NA seems to drop it - so (e.g.) won't sample outside protected areas.
+  ### Returns a dataframe with colnames = raster names and 
+  ###   row values = cell values
+  ### To get around a million samples (.25% sample), put size = 2 million
+  system.time({
+    stack_sample_df <- sampleRandom(big_stack, size = 2000000, 
+                                    na.rm = FALSE) %>%
+      as.data.frame() %>%
+      setNames(c('loiczid', 'mpa_yr', 'meow_id', 'lat')) %>%
+      filter(!is.na(loiczid))
+      ###   200 pts:   2.44 s   (109 obs kept)
+      ###  2000 pts:  13.09 s  (1097 obs kept)
+      ### 20000 pts:  97.29 s (11179 obs kept)
+  })
+  
+  risk_df  <- read_csv(file.path(dir_git, 'data/current_risk_by_loiczid.csv'), 
+                       col_types = 'iiddd')
+  trend_df <- read_csv(file.path(dir_git, 'data/spp_trend_by_loiczid.csv'), 
+                       col_types = 'iid')
+  
+  big_df <- stack_sample_df %>%
+    left_join(risk_df %>% rename(n_spp_risk = n_spp), by = 'loiczid') %>%
+    left_join(trend_df %>% rename(n_spp_trend = n_spp), by = 'loiczid')
+
+  write_csv(big_df, sample_df_file)
+}
+```
+
+``` {r compare_trend_to_risk}
+
+big_df <- read_csv(sample_df_file, col_types = 'iiiidid')
+
+risk_trend_df <- big_df %>%
+  select(mean_risk, mean_trend, n_spp_risk, n_spp_trend) %>%
+  filter(!is.na(mean_risk) & !is.na(mean_trend)) %>%
+  mutate(biodiversity = case_when(n_spp_risk <= 20 ~ 'low',
+                                  n_spp_risk > 20 & n_spp_risk <= 100 ~ 'medium',
+                                  n_spp_risk > 100 ~ 'high',
+                                  TRUE ~ 'oops'),
+         biodiversity = factor(biodiversity, levels = c('low', 'medium', 'high')))
+
+# quantile(risk_trend_df$n_spp_risk, c(0.10, 0.5, 0.9, .95), na.rm = TRUE)
+# 10%   50%   90%   95% 
+#   8    36    68   138 
+
+ggplot(risk_trend_df %>% filter(n_spp_risk >= 5) %>% distinct(), aes(x = mean_risk, y = mean_trend)) +
+  geom_point(aes(color = biodiversity), alpha = .2) +
+  scale_color_manual(values = c('low' = 'darkred', 'medium' = 'darkgreen', 'high' = 'darkblue')) +
+  ggtheme_plot() +
+  facet_grid(biodiversity ~ ., scales = 'free_y')
+
+```
+
+``` {r set_up_mpa_df}
+
+big_df <- read_csv(sample_df_file, col_types = 'iiiidid')
+
+mpa_risk_trend_df <- big_df %>%
+  select(mpa_yr, mean_risk, mean_trend, n_spp_risk, n_spp_trend) %>%
+  filter(!is.na(mean_risk)) %>%
+  mutate(biodiversity = case_when(n_spp_risk <= 20 ~ 'low',
+                                  n_spp_risk >  20 & n_spp_risk <= 100 ~ 'medium',
+                                  n_spp_risk > 100 ~ 'high',
+                                  TRUE ~ 'oops'),
+         biodiversity = factor(biodiversity, levels = c('low', 'medium', 'high'))) %>%
+  mutate(protected = !is.na(mpa_yr),
+         mpa_age   = ifelse(!is.na(mpa_yr) & mpa_yr < 2000, 'old', 'new'))
+
+```
+
+### Mean risk, MPA vs no MPA
+
+``` {r}
+
+ggplot(mpa_risk_trend_df %>% 
+         filter(n_spp_risk >= 5) %>% distinct(), 
+       aes(x = protected, y = mean_risk)) +
+  geom_jitter(alpha = .2, height = 0, width = .25, color = 'slateblue') +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  ggtheme_plot() +
+  facet_grid(. ~ biodiversity)
+
+risk_mpa_vs_nompa <- lm(mean_risk ~ protected, data = mpa_risk_trend_df)
+summary(risk_mpa_vs_nompa)
+
+```
+
+### Mean trend, MPA vs no MPA
+
+``` {r}
+
+ggplot(mpa_risk_trend_df %>% 
+         filter(n_spp_risk >= 5) %>% distinct(), 
+       aes(x = protected, y = mean_trend)) +
+  geom_jitter(alpha = .2, height = 0, width = .25, color = 'slateblue') +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  ggtheme_plot() +
+  facet_grid(. ~ biodiversity)
+
+trend_mpa_vs_nompa <- lm(mean_trend ~ protected, data = mpa_risk_trend_df)
+summary(trend_mpa_vs_nompa)
+
+```
+
+### Mean risk, old MPA vs new MPA
+
+``` {r}
+
+ggplot(mpa_risk_trend_df %>% 
+         filter(n_spp_risk >= 5) %>% distinct(), 
+       aes(x = mpa_age, y = mean_risk)) +
+  geom_jitter(alpha = .2, height = 0, width = .25, color = 'slateblue') +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  ggtheme_plot() +
+  facet_grid(. ~ biodiversity)
+
+risk_mpa_old_v_new <- lm(mean_risk ~ mpa_age, data = mpa_risk_trend_df)
+summary(risk_mpa_old_v_new)
+
+```
+
+### Mean trend, old MPA vs new MPA
+
+``` {r}
+
+ggplot(mpa_risk_trend_df %>% 
+         filter(n_spp_risk >= 5) %>% distinct(), 
+       aes(x = mpa_age, y = mean_trend)) +
+  geom_jitter(alpha = .2, height = 0, width = .25, color = 'slateblue') +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  ggtheme_plot() +
+  facet_grid(. ~ biodiversity)
+
+trend_mpa_old_v_new <- lm(mean_trend ~ mpa_age, data = mpa_risk_trend_df)
+summary(trend_mpa_old_v_new)
+
+```
+
+## Other things
+
+- does risk or trend correlate with North/South latitude?
+- does risk or trend correlate with number of species?
+- seems like risk (and trend) changes with latitude; how do MPAs change with latitude?  if health increases with increasing latitude, and MPAs do not increase with increasing latitude, places bound on effect size?
+
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+
