@@ -1,5 +1,5 @@
 ---
-title: 'Set up CHI mean pressure rasters to loiczid'
+title: 'Set up CHI mean stressor rasters to loiczid'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -49,13 +49,13 @@ ocean_base <- raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'
 
 # Summary
 
-Using the LOICZID raster and rasters of CHI pressures layers, create mean and var pressures for each LOICZID cell
+Using the LOICZID raster and rasters of CHI stressors layers, create mean and var stressors for each LOICZID cell
 
 # Data Sources
 
 # Methods
 
-## Identify pressures layers
+## Identify stressors layers
 
 ``` {r}
 
@@ -87,12 +87,12 @@ prs_layers <- list.files(file.path(dir_prs, 'by_threat'), pattern = '.tif$')
 # [19] "uv_combo.tif" 
 
 ### stressors (data rescaled from 0-1 using max value)
-dir_stress <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
+dir_stressor_orig <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
                         'impact_layers/final_impact_layers/threats_2013_final',
                         'normalized_by_one_time_period')
-stressor <- raster(file.path(dir_stress, 'shipping.tif'))
+stressor <- raster(file.path(dir_stressor_orig, 'shipping.tif'))
 
-stress_layers <- list.files(dir_stress, pattern = '.tif$')
+stressor_layers_orig <- list.files(dir_stressor_orig, pattern = '.tif$')
 #  [1] "artisanal_fishing.tif"             "demersal_destructive_fishing.tif" 
 #  [3] "demersal_nondest_high_bycatch.tif" "demersal_nondest_low_bycatch.tif" 
 #  [5] "inorganic.tif"                     "invasives.tif"                    
@@ -122,28 +122,62 @@ First inspect each layer to get an idea of distributions:
 * mask to ocean base raster to exclude land cells and mollweide corners
 * take a random sample of values to simplify the distribution plotting
 * some layers should be clipped to coastal areas (e.g. sea level rise) but we'll gloss over this for now...
-    * for such pressures, should zero values be OK?  i.e. will a zero for that layer in the open ocean create the same effect as an NA for that layer?
+    * for such stressors, should zero values be OK?  i.e. will a zero for that layer in the open ocean create the same effect as an NA for that layer?
     
-This chunk will not create a raster, but rather a dataframe of mean pressure to LOICZID.
+``` {r extend_stressor_layers, eval = FALSE}
+### this chunk is necessary to ensure extents and resolution of stressor
+### layers match each other and the ocean_base raster.
 
-``` {r inspect_stressor_layers}
-
-dir_stress <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
-                        'impact_layers/final_impact_layers/threats_2013_final',
-                        'normalized_by_one_time_period')
-
-stress_layers <- list.files(file.path(dir_prs, 'by_threat'), 
+stressor_layers_orig <- list.files(dir_stressor_orig, 
                          pattern = '.tif$', 
                          full.names = TRUE)
 
-for (layer in stress_layers) { ### layer <- stress_layers[1]
+dir_stressor_anx <- file.path(dir_o_anx, 'stressors_fullext')
+
+for(lyr in stressor_layers_orig) { ### lyr <- stressor_layers_orig[10]
+
+  rast_full_ext_file <- file.path(dir_stressor_anx, basename(lyr))
+  if(!file.exists(rast_full_ext_file)) {
+    lyr_rast <- raster(lyr)
+    if(!isTRUE(all.equal(extent(ocean_base), extent(lyr_rast)))) {
+      message('Extending ', lyr, ' and saving to:\n  ', rast_full_ext_file)
+      # lyr_rast <- lyr_rast %>%
+      #   extend(ocean_base,
+      #          progress = 'text',
+      #          filename = rast_full_ext_file)
+      lyr_rast1 <- lyr_rast %>% ### for ocean_pollution and invasives, since extend didn't work...
+        projectRaster(ocean_base, method = 'ngb',
+               progress = 'text',
+               filename = rast_full_ext_file, overwrite = TRUE)
+    } else {
+      message('Copying ', lyr, ' to:\n  ', rast_full_ext_file)
+      file.copy(lyr, rast_full_ext_file)
+    }
+  } else {
+    message('Full-extent stressor raster file exists: \n  ', rast_full_ext_file)
+  }
+
+}
+
+```
+    
+``` {r inspect_stressor_layers, eval = TRUE}
+
+dir_stressor_anx <- file.path(dir_o_anx, 'stressors_fullext')
+
+stressor_layers <- list.files(dir_stressor_anx, 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in stressor_layers) { ### layer <- stressor_layers[1]
+
   lyr_rast_raw <- raster(layer)
-  lyr_rast <- mask(lyr_rast_raw, ocean_base)
   
-  lyr_distr_file <- sprintf('stressor_distr_plots/%s_dist.png', names(lyr_rast))
+  lyr_distr_file <- sprintf('stressor_distr_plots/%s_distr.png', names(lyr_rast_raw))
   
   if(!file.exists(lyr_distr_file)) {
     message('generating distr plot for: ', lyr_distr_file)
+    lyr_rast <- mask(lyr_rast_raw, ocean_base)
     lyr_sample <- base::sample(values(lyr_rast), 10000000)
     lyr_sample_narm <- lyr_sample[!is.na(lyr_sample)]
     lyr_zeros_removed <- lyr_sample_narm[lyr_sample_narm > 0]
@@ -156,7 +190,7 @@ for (layer in stress_layers) { ### layer <- stress_layers[1]
       ggtheme_plot() +
       geom_density() +
       labs(title = plot_name,
-           x = 'rescaled pressure')
+           x = 'rescaled stressor')
     
     ggsave(lyr_distr_file, plot = lyr_dist)
     
@@ -169,59 +203,54 @@ for (layer in stress_layers) { ### layer <- stress_layers[1]
 
 ### Fishing layers
 
-![](prs_distr_plots/artisanal_fishing_combo_dist.png)            
-![](prs_distr_plots/demersal_destructive_fishing_combo_dist.png)  
-![](prs_distr_plots/demersal_nondest_high_bycatch_combo_dist.png)  
-![](prs_distr_plots/demersal_nondest_low_bycatch_combo_dist.png)  
-![](prs_distr_plots/pelagic_high_bycatch_combo_dist.png)      
-![](prs_distr_plots/pelagic_low_bycatch_combo_dist.png)  
+![](stressor_distr_plots/artisanal_fishing_distr.png)            
+![](stressor_distr_plots/demersal_destructive_fishing_distr.png)  
+![](stressor_distr_plots/demersal_nondest_high_bycatch_distr.png)  
+![](stressor_distr_plots/demersal_nondest_low_bycatch_distr.png)  
+![](stressor_distr_plots/pelagic_high_bycatch_distr.png)      
+![](stressor_distr_plots/pelagic_low_bycatch_distr.png)  
 
 ### Climate layers
 
-![](prs_distr_plots/ocean_acidification_combo_dist.png)    
-![](prs_distr_plots/slr_combo_dist.png)                         
-![](prs_distr_plots/sst_combo_dist.png)                          
-![](prs_distr_plots/uv_combo_dist.png)
+![](stressor_distr_plots/ocean_acidification_distr.png)    
+![](stressor_distr_plots/slr_distr.png)                         
+![](stressor_distr_plots/sst_distr.png)                          
+![](stressor_distr_plots/uv_distr.png)
 
 ### Pollution layers
-![](prs_distr_plots/inorganic_combo_dist.png)
-![](prs_distr_plots/ocean_pollution_combo_dist.png)
-![](prs_distr_plots/plumes_fert_combo_dist.png)             
-![](prs_distr_plots/plumes_pest_combo_dist.png)          
+![](stressor_distr_plots/inorganic_distr.png)
+![](stressor_distr_plots/ocean_pollution_distr.png)
+![](stressor_distr_plots/plumes_fert_distr.png)             
+![](stressor_distr_plots/plumes_pest_distr.png)          
 
 ### Other human impacts
 
-![](prs_distr_plots/invasives_combo_dist.png)                
-![](prs_distr_plots/night_lights_combo_dist.png)                 
-![](prs_distr_plots/oil_rigs_combo_dist.png)                     
-![](prs_distr_plots/population_combo_dist.png)                 
-![](prs_distr_plots/shipping_combo_dist.png)                 
+![](stressor_distr_plots/invasives_distr.png)                
+![](stressor_distr_plots/night_lights_distr.png)                 
+![](stressor_distr_plots/oil_rigs_distr.png)                     
+![](stressor_distr_plots/population_distr.png)                 
+![](stressor_distr_plots/shipping_distr.png)                 
 
-## Create simple aggregated pressures layers
+## Create simple aggregated stressors layers
 
-For each pressure layer at Mollweide 934m projection:
+For each stressor layer at Mollweide 934m projection:
 
-* create a dataframe of LOICZID values and pressure values
+* create a dataframe of LOICZID values and stressor values
 * summarize mean, variance, and number of cells to LOICZID cells after clipping out NA values.
 
 
-``` {r prs_aggregate_simple}
+``` {r stressor_aggregate_simple, eval = TRUE}
 
-dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
-                     'global_impact_model_2013', 
-                     'normalized_by_one_time_period', 
-                     'averaged_by_num_ecosystems')
-
-prs_layers <- list.files(file.path(dir_prs, 'by_threat'), 
+stressor_layers <- list.files(dir_stressor_anx, 
                          pattern = '.tif$', 
                          full.names = TRUE)
 
-for (layer in prs_layers) { ### layer <- prs_layers[3]
+for (layer in stressor_layers) { ### layer <- stressor_layers[15]
   lyr_rast_raw <- raster(layer)
   
   lyr_name <- names(lyr_rast_raw)
   
-  lyr_simple_file <- file.path(dir_git, sprintf('prs_to_loiczid/%s_simple.csv', lyr_name))
+  lyr_simple_file <- file.path(dir_git, sprintf('stressor_to_loiczid/%s_simple.csv', lyr_name))
   
   if(!file.exists(lyr_simple_file)) {
     
@@ -231,26 +260,28 @@ for (layer in prs_layers) { ### layer <- prs_layers[3]
       vals_loiczid_moll <- values(loiczid_moll_rast)
     }
 
-    message('generating simple pressure summary to LOICZID for: ', lyr_name)
-    message('... masking raw pressure layer to ocean base')
-    lyr_rast <- mask(lyr_rast_raw, ocean_base)
+    message('generating simple stressor summary to LOICZID for: ', lyr_name)
+    message('... masking raw stressor layer to ocean base')
+    lyr_rast <- mask(lyr_rast_raw, ocean_base, progress = 'text')
 
+    message('... converting values to dataframe')
     lyr_df <- data.frame(loiczid = vals_loiczid_moll,
-                         prs_val = values(lyr_rast))
+                         stressor_val = values(lyr_rast))
     
+    message('... summarizing data frame')
     lyr_summary_df <- lyr_df %>%
       filter(!is.na(loiczid)) %>%
       group_by(loiczid) %>%
-      summarize(prs_mean = mean(prs_val, na.rm = TRUE),
-                prs_var  = var(prs_val, na.rm = TRUE),
-                n_zero   = sum(prs_val == 0, na.rm = TRUE),
-                n_na     = sum(is.na(prs_val))) %>%
+      summarize(stressor_mean = mean(stressor_val, na.rm = TRUE),
+                stressor_var  = var (stressor_val, na.rm = TRUE),
+                n_zero   = sum(stressor_val == 0, na.rm = TRUE),
+                n_na     = sum(is.na(stressor_val))) %>%
       mutate(loiczid = as.integer(loiczid))
     
     write_csv(lyr_summary_df, lyr_simple_file)
     
   } else {
-    message('simple pressure summary already exists for: ', 
+    message('simple stressor summary already exists for: ', 
             lyr_name, '\n  ', lyr_simple_file)
   }
 }
