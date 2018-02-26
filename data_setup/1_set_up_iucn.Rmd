@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/ohibc/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,8 +22,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 
-source('~/github/src/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 dir_git <- '~/github/spp_health_dists'
 dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
@@ -32,7 +31,7 @@ dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
 dir_setup   <- file.path(dir_git, 'data_setup')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
 # ### provenance tracking
-# library(provRmd); prov_setup()
+library(provRmd); prov_setup()
 
 ```
 

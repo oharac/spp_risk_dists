@@ -53,7 +53,7 @@ Almost any variable of interest has spatial autocorrelation. That can be a probl
 We will be working with temperature data for California. You can download the climate data used in the examples.
 
 ``` {r}
-d <- read.csv("data/precipitation.csv")
+d <- read.csv("http://rspatial.org/analysis/data/precipitation.csv")
 head(d)
 ##      ID                 NAME   LAT    LONG ALT  JAN FEB MAR APR MAY JUN
 ## 1 ID741         DEATH VALLEY 36.47 -116.87 -59  7.4 9.5 7.5 3.4 1.7 1.0

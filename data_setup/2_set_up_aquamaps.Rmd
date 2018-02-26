@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -23,8 +23,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 library(raster)
 
-source('~/github/src/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 dir_git <- '~/github/spp_health_dists'
 
@@ -60,9 +59,9 @@ Set up AquaMaps distributions for species with IUCN threat assessments.
 
 ``` {r join_health_to_am_list}
 
-spp_timeseries_file <- file.path(dir_setup, 'int', 'spp_cat_timeseries.csv')
+spp_timeseries_file <- file.path(dir_git, 'data', 'iucn_spp_cat_timeseries.csv')
 
-spp_cat_current_file <- file.path(dir_setup, 'int', 'spp_cat_current.csv')
+spp_cat_current_file <- file.path(dir_git, 'data', 'iucn_spp_cat_current.csv')
 
 spp_current_ts <- read_csv(spp_timeseries_file) %>%
   group_by(iucn_sid) %>%
@@ -157,6 +156,54 @@ if(!file.exists(am_spp_cells_file)) {
   
 }
 
+```
+
+## Consider excluding pelagics
+
+A rough filter based on total ocean area of species range could be useful to exclude species whose range is essentially ocean-basin-wide.  Since IUCN scores are equal over the entire range, it is difficult to see any effect of species risk from very localized pressures.
+
+``` {r plot_distr_of_spp_range}
+
+am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
+
+am_spp_cells <- read_csv(am_spp_cells_file)
+
+am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv')) %>%
+  select("LOICZID", "CellArea", "OceanArea", "PWater") %>%
+  clean_df_names() %>%
+  distinct()
+
+am_range_summary <- am_spp_cells %>%
+  filter(prob >= .60) %>%
+  left_join(am_cells, by = 'loiczid') %>%
+  group_by(am_sid) %>%
+  summarize(area_km2 = sum(oceanarea),
+            log_area = log(area_km2))
+
+# quantile(am_range_summary$area_km2, c(0.01, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.99)) %>% round(-3)
+#        1%       10%       25%       50%       75%       90%       95%       99% 
+#     26000    188000    455000   1701000   5487000   8369000  11209000 127676000 
+       
+# max(am_range_summary$area_km2)
+#   245559322
+
+ggplot(am_range_summary) +
+  ggtheme_plot() +
+  geom_density(aes(x = area_km2)) +
+  geom_vline(xintercept = 15000000, color = 'red', alpha = .5)
+
+ggplot(am_range_summary) +
+  ggtheme_plot() +
+  geom_density(aes(x = log_area)) +
+  geom_vline(xintercept = log(15000000), color = 'red', alpha = .5)
+
+am_with_scores <- read_csv(file.path(dir_setup, 'int/am_with_scores.csv'))
+
+am_range_summary <- am_range_summary %>%
+  left_join(am_with_scores %>% select(am_sid, iucn_sid = iucn_id, sciname, iucn_code),
+            by = 'am_sid')
+  
+write_csv(am_range_summary, file.path(dir_git, 'data', 'am_spp_range_summary.csv'))
 ```
 
 -----
