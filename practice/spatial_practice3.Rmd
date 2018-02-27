@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohara_hdr.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -26,7 +26,7 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 dir_anx     <- file.path(dir_M, 'git-annex/bcprep')
 
 ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 ### support scripts
 # source('https://github.com/oharac/src/tree/master/R/rast_tools.R')) 
@@ -115,7 +115,7 @@ We are going to interpolate (estimate for unsampled locations) the precipitation
 RMSE <- function(observed, predicted) {
   sqrt(mean((predicted - observed)^2, na.rm=TRUE))
 }
-Get the RMSE for the Null-model
+# Get the RMSE for the Null-model
 
 null <- RMSE(mean(dsp$prec), dsp$prec)
 null
@@ -129,6 +129,7 @@ Proximity polygons can be used to interpolate categorical variables. Another ter
 
 ``` {r}
 library(dismo)
+library(deldir)
 v <- voronoi(dta)
 ## Loading required namespace: deldir
 plot(v)
@@ -159,13 +160,15 @@ Now evaluate with 5-fold cross validation.
 ``` {r}
 set.seed(5132015)
 kf <- kfold(nrow(dta))
+  ### assign cluster numbers to the length of a dataset; default k = 5
 
 rmse <- rep(NA, 5)
 for (k in 1:5) {
+  ### iterate over each value of k, alternating test and others as train
   test <- dta[kf == k, ]
   train <- dta[kf != k, ]
-  v <- voronoi(train)
-  p <- extract(v, test)
+  v <- dismo::voronoi(train)
+  p <- raster::extract(v, test)
   rmse[k] <- RMSE(test$prec, p$prec)
 }
 rmse
@@ -174,13 +177,14 @@ mean(rmse)
 ## [1] 196.7708
 1 - (mean(rmse) / null)
 ## [1] 0.5479875
+
 ```
 
 Question 1: Describe what each step in the code chunk above does
 
 Question 2: How does the proximity-polygon approach compare to the NULL model?
 
-Question 3: You would not typically use proximty polygons for rainfall data. For what kind of data would you use them?
+Question 3: You would not typically use proximity polygons for rainfall data. For what kind of data would you use them?
 
 ### Nearest neighbour interpolation
 
@@ -225,10 +229,10 @@ mean(rmsenn)
 
 ### Inverse distance weighted
 
-A more commonly used method is “inverse distance weighted” interpolation. The only difference with the nearest neighbour approach is that pointns that are further away get less weight in predicting a value a location.
+A more commonly used method is “inverse distance weighted” interpolation. The only difference with the nearest neighbour approach is that points that are further away get less weight in predicting a value a location.
 
 ``` {r}
-gs <- gstat(formula=prec~1, locations=dta)
+gs <- gstat(formula=prec~1, locations=dta) ### no idp=0 (distance unweighted) and no nmax=5 (use all pts?)
 idw <- interpolate(r, gs)
 ## [inverse distance weighted interpolation]
 idwr <- mask(idw, vr)
@@ -266,6 +270,10 @@ Question 5: Inspect the arguments used for and make a map of the IDW model below
 
 ``` {r}
 gs2 <- gstat(formula=prec~1, locations=dta, nmax=1, set=list(idp=1))
+idw <- interpolate(r, gs2)
+## [inverse distance weighted interpolation]
+idwr <- mask(idw, vr)
+plot(idwr)
 ```
 
 
@@ -280,7 +288,7 @@ Download “airqual.csv” to interpolate ozone levels for California (averages 
 Read the data file. To get easier numbers to read, I multiply OZDLYAV with 1000
 
 ``` {r}
-x <- read.csv("data/airqual.csv")
+x <- read.csv("http://rspatial.org/analysis/data/airqual.csv")
 x$OZDLYAV <- x$OZDLYAV * 1000
 ```
 
@@ -394,7 +402,7 @@ plot(idp)
 ```
 
 
-We can find good values for the idw parameters (distance decay and number of neighbours) through optimization. For simplicity’s sake I do not do that k times here. The optim function may be a bit hard to grasp at first. But the essence is simple. You provide a function that returns a value that you want to minimize (or maximize) given a number of unknown parameters. Your provide initial values for these parameters, and optim then searches for the optimal values (for which the function returns the lowest number).
+We can find good values for the idw parameters (distance decay and number of neighbours) through optimization. For simplicity’s sake I do not do that k times here. The optim function may be a bit hard to grasp at first. But the essence is simple. You provide a function that returns a value that you want to minimize (or maximize) given a number of unknown parameters. You provide initial values for these parameters, and optim then searches for the optimal values (for which the function returns the lowest number).
 
 ``` {r}
 RMSE <- function(observed, predicted) {
@@ -468,26 +476,28 @@ k <- kfold(aq, nfolds)
 ensrmse <- tpsrmse <- krigrmse <- idwrmse <- rep(NA, 5)
 
 for (i in 1:nfolds) {
-  test <- aq[k!=i,]
-  train <- aq[k==i,]
-  m <- gstat(formula=OZDLYAV~1, locations=train, nmax=opt$par[1], set=list(idp=opt$par[2]))
-  p1 <- predict(m, newdata=test, debug.level=0)$var1.pred
-  idwrmse[i] <-  RMSE(test$OZDLYAV, p1)
+  test        <- aq[k != i, ]
+  train       <- aq[k == i, ]
+  m           <- gstat(formula = OZDLYAV ~ 1, locations = train, nmax = opt$par[1], 
+                       set = list(idp = opt$par[2]))
+  p1          <- predict(m, newdata = test, debug.level = 0)$var1.pred
+  idwrmse[i]  <- RMSE(test$OZDLYAV, p1)
 
-  m <- gstat(formula=OZDLYAV~1, locations=train, model=fve)
-  p2 <- predict(m, newdata=test, debug.level=0)$var1.pred
-  krigrmse[i] <-  RMSE(test$OZDLYAV, p2)
+  m           <- gstat(formula = OZDLYAV ~ 1, locations = train, model = fve)
+  p2          <- predict(m, newdata = test, debug.level = 0)$var1.pred
+  krigrmse[i] <- RMSE(test$OZDLYAV, p2)
 
-  m <- Tps(coordinates(train), train$OZDLYAV)
-  p3 <- predict(m, coordinates(test))
-  tpsrmse[i] <-  RMSE(test$OZDLYAV, p3)
+  m           <- Tps(coordinates(train), train$OZDLYAV)
+  p3          <- predict(m, coordinates(test))
+  tpsrmse[i]  <- RMSE(test$OZDLYAV, p3)
 
-  w <- c(idwrmse[i], krigrmse[i], tpsrmse[i])
-  weights <- w / sum(w)
-  ensemble <- p1 * weights[1] + p2 * weights[2] + p3 * weights[3]
-  ensrmse[i] <-  RMSE(test$OZDLYAV, ensemble)
+  w           <- c(idwrmse[i], krigrmse[i], tpsrmse[i])
+  weights     <- w / sum(w)
+  ensemble    <- p1 * weights[1] + p2 * weights[2] + p3 * weights[3]
+  ensrmse[i]  <- RMSE(test$OZDLYAV, ensemble)
 
 }
+
 rmi <- mean(idwrmse)
 rmk <- mean(krigrmse)
 rmt <- mean(tpsrmse)
@@ -497,6 +507,7 @@ rms
 rme <- mean(ensrmse)
 rme
 ## [1] 7.718896
+
 ```
 
 Question 6: Which method performed best?
