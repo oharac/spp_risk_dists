@@ -50,13 +50,11 @@ At the LOICZID raster scale (0.5° cells), compare species risk trends to stress
 
 # Data Sources
 
-# Methods
-
-## Build data frame of stressor means and variances.
+# Methods {.tabset}
 
 For each stressors group, read in the various stressor layers from stressor_to_loiczid folder.  Join them and regress them against mean trend.  In each case, limit analysis to cells with at least 5 species indicated.
 
-### Fisheries stressors
+## Fisheries stressors
 
 ``` {r fis_prs}
 
@@ -102,7 +100,7 @@ summary(fis_stressor_mdl)
 
 ```
 
-### Pollution stressors
+## Pollution stressors
 
 ``` {r pollution_prs}
 
@@ -147,7 +145,7 @@ summary(poll_stressor_mdl)
 
 ```
 
-### Other non-climate stressors
+## Other non-climate stressors
 
 ``` {r other_prs}
 
@@ -193,7 +191,7 @@ summary(other_stressor_mdl)
 
 ```
 
-### Climate stressors
+## Climate stressors
 
 ``` {r cc_prs}
 
@@ -242,7 +240,7 @@ summary(cc_stressor_mdl)
 
 ```
 
-#### What about UV, ocean acidification, and latitude?
+### What about UV, ocean acidification, and latitude?
 
 UV and ocean acidification both look strongly correlated.  Add latitude to the regression model for climate stressors; UV may be correlated with latitude due to ozone hole; consider both latitude and absolute value of latitude (as a measure of symmetric distance toward poles).  Here we see that latitude on its own is a very strong predictor of trend.
 
@@ -266,16 +264,24 @@ cc_stressor_mdl2 <- lm(mean_trend ~ lat_abs,
 summary(cc_stressor_mdl2)
 
 ggplot(trend_v_stressor_df, aes(x = uv_mean, y = mean_trend)) +
-  geom_point(alpha = .01)
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
 
 ggplot(trend_v_stressor_df, aes(x = ocean_acidification_mean, y = mean_trend)) +
-  geom_point(alpha = .01)
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
 
 ggplot(trend_v_stressor_df, aes(x = lat, y = uv_mean)) +
-  geom_point(alpha = .01)
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
 
 ggplot(trend_v_stressor_df, aes(x = lat, y = ocean_acidification_mean)) +
-  geom_point(alpha = .01)
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
 
 ```
 

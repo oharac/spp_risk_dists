@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohara_hdr.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -58,21 +58,31 @@ risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
   filter(n_spp > 0) %>%
   mutate(log_n_spp = log(n_spp))
 
+x <- risk_df %>% filter(mean_risk == 0)
+
+ggplot(x, aes(x = n_spp)) +
+  ggtheme_plot() +
+  geom_histogram() +
+  labs(title = 'n_spp for (mean_risk == 0)')
+
 ggplot(risk_df, aes(x = mean_risk)) +
   ggtheme_plot() +
-  geom_histogram()
+  geom_histogram() +
+  labs(title = 'mean_risk across all cells')
 
 ggplot(risk_df, aes(x = log_mean_risk)) +
   ggtheme_plot() +
-  geom_histogram()
+  geom_histogram() +
+  labs(title = 'log(mean_risk) across all non-NA cells')
 
-ggplot(risk_df %>% filter(n_spp > 0), aes(x = n_spp)) +
-  ggtheme_plot() +
-  geom_histogram()
-
-ggplot(risk_df, aes(x = log_n_spp)) +
-  ggtheme_plot() +
-  geom_histogram()
+# ggplot(risk_df %>% filter(n_spp > 0), aes(x = n_spp)) +
+#   ggtheme_plot() +
+#   geom_histogram() +
+#   labs(title = 'number of species by cell')
+# 
+# ggplot(risk_df, aes(x = log_n_spp)) +
+#   ggtheme_plot() +
+#   geom_histogram()
 
 trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
                     col_types = 'ddd')
