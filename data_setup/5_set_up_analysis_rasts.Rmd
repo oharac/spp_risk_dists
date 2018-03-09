@@ -191,8 +191,8 @@ lat_rast_file  <- file.path(dir_o_anx, 'spatial/latitude_rast.tif')
 if(!file.exists(lat_rast_file)) {
   
   loiczid_lats <- read_csv(file.path(dir_o_anx, 'am_files', 'am_cells.csv')) %>%
-    select(loiczid, lat = centerlat)
-  write_csv(loiczid_lats, file.path(dir_git, 'data/latitude_lookup.csv'))
+    select(loiczid, lat = centerlat, long = centerlong)
+  write_csv(loiczid_lats, file.path(dir_git, 'data/latlong_lookup.csv'))
   
   loiczid_rast <- raster(file.path(dir_o_anx, 'spatial/loiczid_moll_934m.tif'))
   
@@ -201,6 +201,39 @@ if(!file.exists(lat_rast_file)) {
          progress = 'text',
          by = 'loiczid', which = 'lat', 
          filename = lat_rast_file)
+}
+
+```
+
+## Create Longhurst raster
+
+to WGS84, just to match LOICZID to Longhurst zones
+``` {r create_Longhurst_rast}
+
+longh_to_loiczid_file  <- file.path(dir_git, 'data/longhurst_cells.csv')
+
+if(!file.exists(longh_to_loiczid_file)) {
+  
+  longhurst_sf <- st_read(file.path(dir_spatial, 'longhurst_v4_2010', 
+                                    'Longhurst_world_v4_2010.shp')) %>%
+    mutate(id = 1:nrow(.))
+  ### already in WGS84 lat long
+  
+  loiczid_rast_wgs84 <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+  longhurst_rast <- fasterize::fasterize(longhurst_sf, loiczid_rast_wgs84,
+                                         field = 'id')
+  
+  longhurst_to_loiczid <- raster::crosstab(longhurst_rast, loiczid_rast_wgs84) %>%
+    as.data.frame() %>%
+    setNames(c('longhurst', 'loiczid', 'freq')) %>%
+    filter(freq > 0 & !is.na(longhurst)) %>%
+    mutate(longhurst = as.integer(longhurst)) %>%
+    select(-freq) %>%
+    left_join(longhurst_sf %>% 
+                as.data.frame() %>% select(id, code = ProvCode, desc = ProvDescr),
+              by = c('longhurst' = 'id'))
+  
+  write_csv(longhurst_to_loiczid, longh_to_loiczid_file)
 }
 
 ```
