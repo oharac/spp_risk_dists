@@ -223,11 +223,29 @@ if(!file.exists(longh_to_loiczid_file)) {
   longhurst_rast <- fasterize::fasterize(longhurst_sf, loiczid_rast_wgs84,
                                          field = 'id')
   
-  longhurst_to_loiczid <- raster::crosstab(longhurst_rast, loiczid_rast_wgs84) %>%
+  ### Interpolate using nearest neighbor
+  library(gstat)
+
+  xy <- data.frame(xyFromCell(longhurst_rast, 1:ncell(longhurst_rast))) 
+    ### get xy coords into dataframe
+  v  <- getValues(longhurst_rast)                                                  
+    ### get cell values 
+  tmpdf <- cbind(xy, v) %>% 
+    filter(!is.na(v))                           
+    ### create dataframe of x,y, and values; remove NAs (throws error since these are cells we are interpolating over)
+  mg <- gstat(id = "v", formula = v ~ 1, 
+              locations = ~ x + y, data = tmpdf,
+              nmax = 7, set = list(idp = 0))
+  
+  longh_interp <- interpolate(longhurst_rast, mg) #, progress = 'text')
+    ### interpolate across NA cells
+
+  longhurst_to_loiczid <- raster::crosstab(longh_interp, loiczid_rast_wgs84) %>%
     as.data.frame() %>%
     setNames(c('longhurst', 'loiczid', 'freq')) %>%
     filter(freq > 0 & !is.na(longhurst)) %>%
-    mutate(longhurst = as.integer(longhurst)) %>%
+    mutate(longhurst = as.double(longhurst),
+           loiczid   = as.double(loiczid)) %>%
     select(-freq) %>%
     left_join(longhurst_sf %>% 
                 as.data.frame() %>% select(id, code = ProvCode, desc = ProvDescr),

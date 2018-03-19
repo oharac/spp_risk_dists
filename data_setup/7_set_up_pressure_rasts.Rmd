@@ -87,12 +87,11 @@ prs_layers <- list.files(file.path(dir_prs, 'by_threat'), pattern = '.tif$')
 # [19] "uv_combo.tif" 
 
 ### stressors (data rescaled from 0-1 using max value)
-dir_stressor_orig <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo', 
+dir_stressor_orig <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
                         'impact_layers/final_impact_layers/threats_2013_final',
                         'normalized_by_one_time_period')
-stressor <- raster(file.path(dir_stressor_orig, 'shipping.tif'))
 
-stressor_layers_orig <- list.files(dir_stressor_orig, pattern = '.tif$')
+# stressor_layers_orig <- list.files(dir_stressor_orig, pattern = '.tif$')
 #  [1] "artisanal_fishing.tif"             "demersal_destructive_fishing.tif" 
 #  [3] "demersal_nondest_high_bycatch.tif" "demersal_nondest_low_bycatch.tif" 
 #  [5] "inorganic.tif"                     "invasives.tif"                    
@@ -103,6 +102,7 @@ stressor_layers_orig <- list.files(dir_stressor_orig, pattern = '.tif$')
 # [15] "population.tif"                    "shipping.tif"                     
 # [17] "slr.tif"                           "sst.tif"                          
 # [19] "uv.tif"
+# stressor <- raster(file.path(dir_stressor_orig, 'shipping.tif'))
 
 ```
 
@@ -124,19 +124,26 @@ First inspect each layer to get an idea of distributions:
 * some layers should be clipped to coastal areas (e.g. sea level rise) but we'll gloss over this for now...
     * for such stressors, should zero values be OK?  i.e. will a zero for that layer in the open ocean create the same effect as an NA for that layer?
     
-``` {r extend_stressor_layers, eval = FALSE}
+``` {r extend_stressor_layers, eval = TRUE}
 ### this chunk is necessary to ensure extents and resolution of stressor
 ### layers match each other and the ocean_base raster.
 
-stressor_layers_orig <- list.files(dir_stressor_orig, 
-                         pattern = '.tif$', 
-                         full.names = TRUE)
+# stressor_layers_orig <- list.files(dir_stressor_orig, 
+#                          pattern = '.tif$', 
+#                          full.names = TRUE)
+
+dir_stressor_new <- file.path(dir_M, 'git-annex/impact_acceleration/stressors/')
+strs_new <- list.files(dir_stressor_new, recursive = TRUE, full.names = TRUE)
+strs_new <- strs_new[str_detect(strs_new, 'final') & str_detect(strs_new, 'sst_2012|_2016')]
+
 
 dir_stressor_anx <- file.path(dir_o_anx, 'stressors_fullext')
 
-for(lyr in stressor_layers_orig) { ### lyr <- stressor_layers_orig[10]
+for(lyr in strs_new) { ### lyr <- strs_new[1]
+# for(lyr in stressor_layers_orig) { ### lyr <- stressor_layers_orig[10]
 
-  rast_full_ext_file <- file.path(dir_stressor_anx, basename(lyr))
+  rast_full_ext_file <- file.path(dir_stressor_anx, basename(lyr) %>% 
+                                    str_replace('_rescaled_mol', ''))
   if(!file.exists(rast_full_ext_file)) {
     lyr_rast <- raster(lyr)
     if(!isTRUE(all.equal(extent(ocean_base), extent(lyr_rast)))) {
@@ -162,8 +169,6 @@ for(lyr in stressor_layers_orig) { ### lyr <- stressor_layers_orig[10]
 ```
     
 ``` {r inspect_stressor_layers, eval = TRUE}
-
-dir_stressor_anx <- file.path(dir_o_anx, 'stressors_fullext')
 
 stressor_layers <- list.files(dir_stressor_anx, 
                          pattern = '.tif$', 
@@ -213,9 +218,13 @@ for (layer in stressor_layers) { ### layer <- stressor_layers[1]
 ### Climate layers
 
 ![](stressor_distr_plots/ocean_acidification_distr.png)    
-![](stressor_distr_plots/slr_distr.png)                         
-![](stressor_distr_plots/sst_distr.png)                          
+![](stressor_distr_plots/oa_2016_distr.png)    
+![](stressor_distr_plots/slr_distr.png)
+![](stressor_distr_plots/slr_2016_distr.png)    
+![](stressor_distr_plots/sst_distr.png)  
+![](stressor_distr_plots/sst_2012_distr.png)                          
 ![](stressor_distr_plots/uv_distr.png)
+![](stressor_distr_plots/uv_2016_distr.png)    
 
 ### Pollution layers
 ![](stressor_distr_plots/inorganic_distr.png)
@@ -225,11 +234,14 @@ for (layer in stressor_layers) { ### layer <- stressor_layers[1]
 
 ### Other human impacts
 
+![](stressor_distr_plots/direct_human_2016_distr.png)   
 ![](stressor_distr_plots/invasives_distr.png)                
 ![](stressor_distr_plots/night_lights_distr.png)                 
-![](stressor_distr_plots/oil_rigs_distr.png)                     
+![](stressor_distr_plots/oil_rigs_distr.png)   
+![](stressor_distr_plots/benthic_str_2016_distr.png)
 ![](stressor_distr_plots/population_distr.png)                 
-![](stressor_distr_plots/shipping_distr.png)                 
+
+![](stressor_distr_plots/shipping_2016_distr.png)                 
 
 ## Create simple aggregated stressors layers
 
@@ -238,6 +250,20 @@ For each stressor layer at Mollweide 934m projection:
 * create a dataframe of LOICZID values and stressor values
 * summarize mean, variance, and number of cells to LOICZID cells after clipping out NA values.
 
+``` {r check_stressor_minmax, eval = FALSE}
+
+stressor_layers <- list.files(dir_stressor_anx, 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in stressor_layers[c(8, 18, 19)]) { ### layer <- stressor_layers[15]
+  lyr_rast_raw <- raster(layer)
+  
+  print(summary(lyr_rast_raw))
+  
+}
+
+```
 
 ``` {r stressor_aggregate_simple, eval = TRUE}
 
@@ -276,7 +302,7 @@ for (layer in stressor_layers) { ### layer <- stressor_layers[15]
                 stressor_var  = var (stressor_val, na.rm = TRUE),
                 n_zero   = sum(stressor_val == 0, na.rm = TRUE),
                 n_na     = sum(is.na(stressor_val))) %>%
-      mutate(loiczid = as.integer(loiczid))
+      mutate(loiczid = as.double(loiczid))
     
     write_csv(lyr_summary_df, lyr_simple_file)
     
