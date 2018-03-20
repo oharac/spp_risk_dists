@@ -3,10 +3,6 @@ title: Impacts of global climate stressors and marine protected areas on biodive
 author: Casey O'Hara
 date: March 19, 2018
 output:
-  pdf_document:
-    toc: no
-  word_document:
-    toc: no
   html_document:
     code_folding: hide
     highlight: haddock
@@ -17,6 +13,13 @@ output:
     toc: no
     toc_depth: 3
     toc_float: no
+  word_document:
+    toc: no
+  pdf_document:
+    toc: no
+    latex_engine: xelatex
+header-includes: 
+  - \usepackage{float}
 ---
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
@@ -26,6 +29,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 library(raster)
 library(kableExtra)
+# library(stargazer)
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
@@ -45,7 +49,7 @@ dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
 
 ```
 
-# Introduction
+# Introduction {.tabset}
 
 Our global oceans provide valuable social, economic, and ecological benefits for people (REF: Halpern et al 2012, 2015, etc), but no area of the ocean is untouched, directly or indirectly, by negative effects of human activity (REF: Halpern et al 2008, other CHI).  Cumulative impact assessments have greatly improved our understanding of the spatial distributions of anthropogenic stressors, though most such assessments make simplifying assumptions about the relationships between impacts and pressures, such as additivity of multiple pressures (which may miss synergistic or antagonistic effects among pressures) and linearity of impacts with pressure (which may miss non-linear responses to cumulative pressures) (REF https://www.frontiersin.org/articles/10.3389/fmars.2016.00153/full).  
 
@@ -53,17 +57,17 @@ Anthropogenic pressures can impact species directly through physiological harms 
 
 Here we compare a suite of anthropogenic stressors to a global map of ecosystem health, as measured by species extinction risk relative to biodiversity, to better understand ecosystem responses to such cumulative impacts.  By assessing stressors and biodiversity risk in conjunction with presence or absence of marine protected areas (MPAs), we can develop a general sense of the effectiveness of such protections in mitigating human impacts on biodiversity.
 
-The remainder of this paper will be organized as follows: in the Methods section we will briefly outline the methodology behind the preparation of each of the data layers to be used in the regression; then we will progressively develop methods to calculate covariance matrices and standard errors for an OLS regression.  In the Results section we will summarize regression coefficient estimates and standard errors calculated in a number of different ways, and calculate $t$ statistics to determine significance of each coefficient.  The Discussion section examines the effects of each of the regressors in light of real-world expectations and explanations, as well as limitations of the analysis as performed here.  Finally, in Next Steps, we outline potential improvements to the analysis methods, and suggest a number of variations to the regression model to explore and refine our understanding of the effects of various anthropogenic stressors on ecosystem health and biodiversity risk.
+The remainder of this paper will be organized as follows: the Methods section briefly outlines the methodology behind the preparation of each of the data layers to be used in the regression, then proceeds to progressively develop methods to calculate covariance matrices and standard errors for an OLS regression.  The Results section summarizes regression coefficient estimates and standard errors calculated in a number of different ways, and calculates $t$ statistics to determine significance of each coefficient.  The Discussion section examines the effects of each of the regressors in light of real-world expectations and explanations, as well as limitations of the analysis as performed here.  Finally, the Next Steps section outlines potential improvements to the analysis methods, and suggests a number of variations to the regression model to explore and refine our understanding of the effects of various anthropogenic stressors on ecosystem health and biodiversity risk.
 
-# Methods
+## Methods {.tabset}
 
-## Preparing data layers
+### Preparing data layers
 
-### Spatial distribution of biodiversity risk
+#### Spatial distribution of biodiversity risk
 
 For this study, we will define biodiversity risk as the average conservation status of all species within a particular location; a low score suggests a healthy ecosystem at low risk of disruption due to species extinction.  This is largely based upon the methodology underlying the Ocean Health Index Biodiversity/Species goal.
 
-The International Union for Conservation of Nature (IUCN) Red List of Threatened Species provides the most comprehensive catalog of species conservation status, assessing the extinction risk of terrestrial species (XXX as of Version XXX) and marine species (XXX as of Version XXX) based upon quantitative criteria and expert opinion.  We reclassified the six levels of extinction risk (excluding Data Deficient and Not Evaluated) to a linear 0 to 1 scale of relative risk, in which Least Concern is scored as 0, Near Threatened as 0.2, to Extinct as 1.0.  This rescaling is based on the Biodiversity/Species goal of the Ocean Health Index (REF Halpern et al, 2012, 2015).
+The International Union for Conservation of Nature (IUCN) Red List of Threatened Species provides the most comprehensive catalog of species conservation status, assessing the extinction risk of terrestrial species (XXX as of Version 2018-1) and marine species (XXX as of Version 2018-1) based upon quantitative criteria and expert opinion.  We reclassified the six levels of extinction risk (excluding Data Deficient and Not Evaluated) to a linear 0 to 1 scale of relative risk, in which Least Concern is scored as 0, Near Threatened as 0.2, to Extinct as 1.0.  This rescaling is based on the Biodiversity/Species goal of the Ocean Health Index (REF Halpern et al, 2012, 2015).
 
 To determine spatial distribution of each species, we use AquaMaps modeled species distribution data to assign species presence to half-degree cells across the global oceans.  AquaMaps determines a 'probability of occurrence' for each species/cell combination, based on the species' environmental preferences and the environmental conditions within that cell.  we assign a cutoff of 0.60 probability of occurrence as the minimum threshold for 'presence' within a cell (REF AquaMaps marine mammal paper).
 
@@ -120,27 +124,27 @@ ggplot(nspp_rast) +
 
 ```
 
-### Spatial distribution of anthropogenic stressors
+#### Spatial distribution of anthropogenic stressors
 
 The most recent global cumulative impact study (Halpern et al 2015) includes fine-resolution spatial distributions of 19 anthropogenic stressors (intensity of activity or stressor) and pressures (impact of stressor on habitats, weighted by the vulnerability of the habitat to the stressor).  For the purposes of this initial exploration, we use cumulative impact data layers for three climate stressors: sea surface temperature, ultraviolet radiation, and ocean acidification.  Detailed methods of each data layer can be found in the supplemental information for the original studies (Halpern et al 2008, 2015) but are briefly outlined here.
 
-#### Sea surface temperature (SST)
+##### Sea surface temperature (SST)
 
 Weekly sea surface temperature data generated by NOAA based on satellite data provides a spatial and temporal distribution of sea surface temperature anomalies.  A climatological SST mean and variance were calculated for each spatial point during the reference period of 1985-1990.  For both the reference period and the study period of 2005-2010, the number of positive extreme SST events (weeks in which the local SST exceeded the climatological mean + 1 standard deviation) was tallied; the reference count was subtracted from the study period count to measure the change in frequency of extreme events.
 
 
-#### Ultraviolet radiation (UV)
+##### Ultraviolet radiation (UV)
 
 Similar to the SST data, Ultraviolet radiation data are generated, based on satellite data, in this case by NASA.  A climatological mean and variance of UV radiation were calculated based on a reference period of (???), and then a count of positive extreme events was calculated for the study period of 2008 to 2012, in a similar manner as for SST.  In the case of UV, the score was based only on the count of extreme events in the study period, rather than the difference between the study period and reference period, since the time between the reference period and study period is relatively short.
 
 
-#### Ocean acidification (OA)
+##### Ocean acidification (OA)
 
 Ocean acidification from increases in atmospheric CO<sub>2</sub> reduces the aragonite saturation state $\Omega$ of ocean water.  As $\Omega$ decreases toward 1, calcifying organisms such as corals and shell-forming invertebrates are less able to create calcium carbonate structures.  Below $\Omega = 1$, existing shells begin to dissolve.  OA scores are based on the difference between $\Omega$ from a modeled pre-industrial value (circa 1870) and current values (2000-2009) (decreases are positive-valued).  These values are then normalized by the difference between the 1870 value and a value of 1:
 $$x_{OA} = \frac{\Omega_{1870} - \Omega_{2016}}{\Omega_{1870} - 1}$$
 As an example, a 0.1 decrease in $\Omega$ from 3.1 to 3.0 is expected to have far smaller impact than a 0.1 decrease from 1.2 to 1.1.
 
-#### Rescaling and spatially transforming stressor layers
+##### Rescaling and spatially transforming stressor layers
 
 For all but one of the stressors studied in REF Halpern et al 2015, global values were highly skewed with a few instances of extremely high outliers that could tend to distort the model results.  Each layer was therefore transformed using a $log(x + 1)$ transformation and then normalized to the 99.99th percentile log-transformed value, resulting in a score from 0 to 1.  Additionally, for the OA stressor, any location with a raw $\Omega \leq 1$ was given a maximum stressor value of 1.
 
@@ -172,7 +176,11 @@ for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_file
       full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
   }
 }
-sst_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'sst_2012_mean') %>%
+
+cc_stressor_df <- cc_stressor_df %>%
+  setNames(names(cc_stressor_df) %>% str_replace('[0-9]{4}_', ''))
+
+sst_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'sst_mean') %>%
   rasterToPoints() %>%
   as.data.frame()
 
@@ -190,7 +198,7 @@ ggplot(sst_rast) +
 
 ```{r}
 
-uv_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'uv_2016_mean') %>%
+uv_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'uv_mean') %>%
   rasterToPoints() %>%
   as.data.frame()
 
@@ -208,7 +216,7 @@ ggplot(uv_rast) +
 
 ```{r}
 
-oa_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'oa_2016_mean') %>%
+oa_rast <- subs(loiczid_rast, cc_stressor_df, by = 'loiczid', which = 'oa_mean') %>%
   rasterToPoints() %>%
   as.data.frame()
 
@@ -216,7 +224,7 @@ ggplot(oa_rast) +
   ggtheme_plot() +
   theme(axis.title = element_blank(),
         axis.text  = element_blank()) +
-  geom_raster(aes(x, y, fill = oa_2016_mean)) +
+  geom_raster(aes(x, y, fill = oa_mean)) +
   geom_sf(data = ctrys50m, fill = 'grey55', color = 'grey45', size = .25) +
   scale_fill_distiller(palette = 'RdYlGn') +
   labs(fill = 'OA stressor',
@@ -224,7 +232,7 @@ ggplot(oa_rast) +
 
 ```
 
-### Spatial distribution of marine protected areas
+#### Spatial distribution of marine protected areas
 
 The World Database on Protected Areas (WDPA), a joint project between the United Nations Environmental Programme (UNEP) and the IUCN, offers a comprehensive global database of terrestrial and marine protected areas.  For the purposes of this analysis, we include all protected areas that are officially designated, and that are categorized under the IUCN's protected area categories I through VI.  Park boundaries were rasterized to the native resolution of the stressor layers (1 km Mollweide), and then aggregated back to the 0.5° cells for analysis, with the cell values representing the proportion of the cell's marine area under such protection. 
 
@@ -249,7 +257,8 @@ ggplot(mpa_rast) +
 
 ```
 
-## Developing the regression methodology
+\newpage
+### Developing the regression methodology
 
 In this section of the Methods, we will focus on the development of the regression methodology rather than simply the final regression method used in the analysis, as the development seems more relevant for the purposes of this class project.  Each step along the way we'll build on the basic OLS regression and show some intermediate results, to see how these results change as we account for heteroskedasticity-robust standard errors and cluster-robust standard errors.
 
@@ -274,7 +283,7 @@ The response variable $\mathbf{y}$ is the mean extinction risk of all species wi
 
 To be able to run the regression manually, we eliminate any cells with `NA` values in $y$, $x_{UV}$, $x_{SST}$, and/or $x_{OA}$.  This filter, combined with filtering for $n_{spp} >= 5$, leaves 143,890 observations out of 159,535 total observations. 
 
-### Regression
+#### Regression
 
 Defining $\mathbf{X}$ as the matrix of regressors noted above, and $\mathbf{y}$ as our response variable, we can estimate our regression coefficients $\beta$: 
 $$\widehat{\mathbf{\beta}} = (\mathbf{X'X})^{-1}\mathbf{X'y}$$
@@ -283,38 +292,15 @@ $$\mathbf{y} = \mathbf{X\widehat{\beta}} + \widehat{\mathbf{e}}$$
 $$ \mathbf{\widehat e} = \mathbf{y} - \mathbf{X \widehat{\beta}}$$
 ``` {r create_data_frame}
 
-cc_stressor_files <- list.files('stressor_to_loiczid', 
-                            pattern = 'slr|sst|uv|oa',
-                            full.names = TRUE)
-
-if(exists('cc_stressor_df')) rm(cc_stressor_df)
-for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_files[3]
-  stressor_name <- basename(stressor_file) %>%
-    str_replace('_simple.csv', '')
-  
-  # cat('Processing', stressor_name, '...\n')
-  
-  tmp <- read_csv(stressor_file, col_types = 'ddddd') %>%
-    select(-n_na) %>%
-    setNames(c('loiczid', 
-               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
-               paste0(stressor_name, '_zeros')))
-  
-  if(!exists('cc_stressor_df')) {
-    cc_stressor_df <- tmp    ### create it the first time through the loop
-  } else {
-    cc_stressor_df <- cc_stressor_df %>%
-      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
-  }
-}
+### use cc_stressor_df from before
 
 risk_df <- read_csv(file.path(dir_data, 'risk_by_cell_all.csv'),
                     col_types = 'ddddd')
 
 lat_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd') %>%
   select(loiczid, lat) %>%
-  mutate(dummySouth = as.integer(lat < 0),
-         latAbs     = abs(lat))
+  mutate(dummyS = as.integer(lat < 0),
+         latAbs = abs(lat))
 
 mpa_df <- read_csv(file.path(dir_data, 'wdpa_i_vi_lookup.csv'), col_types = 'ddd') %>%
   left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
@@ -328,13 +314,13 @@ risk_v_stressor_df <- full_join(risk_df, cc_stressor_df, by = 'loiczid') %>%
   select(loiczid, 
          mean_risk,
          # log_mean_risk, 
-         sst_2012_mean, oa_2016_mean, uv_2016_mean, 
-         latAbs, dummySouth) %>%
+         sst_mean, oa_mean, uv_mean, 
+         latAbs, dummyS) %>%
   # filter(!is.na(log_mean_risk)) %>%
   filter(!is.na(mean_risk)) %>%
-  filter(!is.na(sst_2012_mean)) %>%
-  filter(!is.na(oa_2016_mean)) %>%
-  filter(!is.na(uv_2016_mean)) %>%
+  filter(!is.na(sst_mean)) %>%
+  filter(!is.na(oa_mean)) %>%
+  filter(!is.na(uv_mean)) %>%
   left_join(mpa_df, by = 'loiczid') %>%
   mutate(mpa_pct = ifelse(is.na(mpa_pct), 0, mpa_pct),
          mean_risk = 100 * mean_risk)
@@ -350,10 +336,10 @@ loiczid_vec <- risk_v_stressor_df$loiczid
 n_obs <- length(y)
 
 X <- risk_v_stressor_df %>%
-  mutate(oa_S  = oa_2016_mean * dummySouth,
-         sst_S = sst_2012_mean * dummySouth,
-         uv_S  = uv_2016_mean * dummySouth,
-         latS  = latAbs * dummySouth,
+  mutate(oa_S  = oa_mean * dummyS,
+         sst_S = sst_mean * dummyS,
+         uv_S  = uv_mean * dummyS,
+         latS  = latAbs * dummyS,
          const = 1) %>%
   select(-loiczid, -mean_risk) %>%
   as.matrix()
@@ -365,7 +351,7 @@ beta_hat <- solve(Xt_X) %*% Xt_y ### why 'solve' for inverse? jeez, R, be intuit
 
 ```
 
-### Estimation of error variance
+#### Estimation of error variance
 
 Since $\mathbf{e}$ is not directly observable, we can approximate the error variance
 $$\widetilde{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n e_i^2$$
@@ -399,7 +385,7 @@ R_2 <- term2 / term1
 
 The coefficient of determination, $R^2 = \frac{\sum(\widehat{y}_i - \bar y)^2}{\sum(y_i - \bar y)^2} = 1 - \frac{\sum \widehat{e}_i^2}{\sum(y_i - \bar y)^2}$ = `r round(R_2, 4)`; the model accounts for about 30% of the observed variation in the response variable.
 
-### Prediction errors
+#### Prediction errors
 
 Estimates to this point have been based on the basic OLS methodology, and as such our residuals are constructed based on the entire data set, including the point we are trying to predict.  To get at a true prediction, we drop the value to be predicted to determine the leave-one-out OLS estimator.  
 
@@ -434,15 +420,15 @@ sig_tilde <- 1/n_obs * sum(e_tilde^2)
 
 ```
 
-We calculated a value of $\widetilde \sigma^2$ = `r round(sig_tilde, 6)`, very close to $\widehat \sigma^2$ = `r round(sig_hat, 6)`, as would be expected with such a large $n$.  Removing one out of nearly 144,000 observations means the impact of that one observation will be very small, especially since the error terms are all within a close neighborhood of zero (+/- 0.5).  
+We calculated a value of $\widetilde \sigma^2$ = `r round(sig_tilde, 5)`, very close to $\widehat \sigma^2$ = `r round(sig_hat, 5)`, as would be expected with such a large $n$.  Removing one out of nearly 144,000 observations means the impact of that one observation will be very small, especially since the error terms are all within a close neighborhood of zero (+/- 0.5).  
 
-### Variance of least-squares estimator (homoskedastic)
+#### Variance of least-squares estimator (homoskedastic)
 
 If we can assume i.i.d. sampling and a homoskedastic linear regression model, we can calculate our covariance matrix estimator as 
 $$\mathbf{V_{\hat{\beta}}} = \sigma^2 (\mathbf{X'X})^{-1}$$
 Our estimator $\widehat{\sigma}^2$ is a biased estimator for $\sigma^2$, but since $k \ll n$ it should be very close; we can correct it using a scaling factor of $\frac{n}{n-k} = \frac{143,890}{143,890-11} = 1.000076$.  Our $\widetilde{\sigma}^2$ estimator from the leave-one-out OLS regression should be unbiased and need no adjustment.  We can calculate covariance matrix estimators for each and determine standard errors for our regression coefficients from $\sqrt{diag(\mathbf{\widehat{V}_\beta})}$.
 
-``` {r}
+``` {r, fig.pos = 'H'}
 k_regr <- length(beta_hat)
 
 V_hat1 <- (n_obs)/(n_obs - k_regr) * sig_hat[1] * solve(Xt_X)
@@ -457,20 +443,23 @@ beta_se_df <- data.frame(estimate = rownames(beta_hat),
                          se_tilde = se_tilde1) %>%
   mutate(t_hat   = round(beta_hat / se_hat, 2),
          t_tilde = round(beta_hat / se_tilde, 2),
-         se_hat  = round(se_hat, 5),
-         se_tilde = round(se_tilde, 5))
+         se_hat  = round(se_hat, 4),
+         se_tilde = round(se_tilde, 4),
+         beta_hat = round(beta_hat, 2))
 
-knitr::kable(beta_se_df, format = 'latex', caption = 'Table i: Standard errors and t statistics',
-             col.names = c('Estimate', '$\\widehat\\beta$', 
-                           '$\\widehat\\sigma$',
-                           '$\\widetilde\\sigma_{loo}$',
-                           '$\\hat t$',
-                           '$\\widetilde t_{loo}$')) %>%
+knitr::kable(beta_se_df, format = 'latex', caption = 'Std errors and t stats',
+             col.names = c('Estimate', 'B^', 
+                           'se^',
+                           'se~',
+                           't^',
+                           't~')) %>%
   kable_styling('striped', full_width = FALSE)
 
 ```
 
-### Beyond basic OLS regression
+See Table 1 for a summary of standard errors calculated from residuals, including a degree-of-freedom adjustment to account for bias toward zero, and prediction errors calculated using a leave-one-out process.
+
+### Heteroskedasticity
 
 We expect our residuals to be i.i.d. and normally distributed with mean 0, but these assumptions do not appear to be entirely valid.
 
@@ -500,7 +489,7 @@ kurtosis = m4 / (m2^2)
 
 ```
 
-While the residuals appear to be roughly normally distributed based on the histogram, we can calculate skewness = `r round(skewness, 4)` and kurtosis = `r round(kurtosis, 4)`; a perfect normal distribution would have skewness = 0 and kurtosis = 3.  High kurtosis indicates that the true variance will be proportionally that much greater (in this case, `r round(kurtosis, 4)` times greater) than the covariance matrix calculated under the homoskedastic assumption.  In addition, plotting the residuals spatially shows significant spatial heterogeneity, so we will need to consider cluster- and heteroskedasticity-robust methods of estimating our standard errors.
+While the residuals appear to be roughly normally distributed based on the histogram, we can calculate skewness = `r round(skewness, 4)` and kurtosis = `r round(kurtosis, 4)`; a perfect normal distribution would have skewness = 0 and kurtosis = 3.  High kurtosis indicates that the true variance may be proportionally that much greater (in this case, `r round(kurtosis, 4)` times greater) than the covariance matrix calculated under the homoskedastic assumption.  In addition, plotting the residuals spatially shows significant spatial heterogeneity, so we will need to consider cluster- and heteroskedasticity-robust methods of estimating our standard errors.
 
 ``` {r plot_resids}
 ehat_df <- data.frame(loiczid_vec,
@@ -523,7 +512,7 @@ ggplot(e_hat_rast) +
 ```
 
 
-### Heteroskedasticity-robust standard errors
+#### Heteroskedasticity-robust standard errors
 
 Earlier we calculated an estimate of error variance:
 
@@ -538,7 +527,7 @@ We can address the bias as in equation 4.30:
 
 $$s^2 = \frac{1}{n - k} \sum_{i=1}^n \widehat e_i^2$$
 
-### Covariance matrix estimation under heteroskedasticity
+#### Covariance matrix estimation under heteroskedasticity
 
 Hansen presents several good candidates for determining heteroskedasticity-robust estimators of the covariance matrix; here we will calculate two versions:
 
@@ -583,9 +572,10 @@ These estimator matrices estimate the variance of the distribution of $\widehat 
 
 $$s(\widehat\beta_{j}) = \sqrt{\mathbf{\widehat{V}_{\widehat\beta_j}}} = \sqrt{[\mathbf{\widehat{V}_{\widehat\beta}}]_{jj}}$$
 
-Calculating for both adjusted White and Andrews robust standard errors, and comparing to the leave-one-out homoskedastic standard error ($\widetilde\sigma_{loo}$) calculated earlier:
+Table 2 compares of standard errors calculated for both adjusted White and Andrews robust standard errors, and compares to the leave-one-out homoskedastic standard error ($\widetilde\sigma_{loo}$) calculated earlier.
 
-``` {r calc_std_errors2}
+
+``` {r calc_std_errors2, fig.pos = 'H'}
 
 se_white   <- diag(V_white) %>% sqrt()
 se_andrews <- diag(V_andrews) %>% sqrt()
@@ -598,24 +588,25 @@ beta_se_df2 <- data.frame(estimate = rownames(beta_hat),
   mutate(t_tilde = round(beta_hat / se_tilde, 2),
          t_white = round(beta_hat / se_white, 2),
          t_andrews = round(beta_hat / se_andrews, 2),
-         se_tilde = round(se_tilde, 5),
-         se_white = round(se_white, 5),
-         se_andrews = round(se_andrews, 5))
+         se_tilde = round(se_tilde, 4),
+         se_white = round(se_white, 4),
+         se_andrews = round(se_andrews, 4),
+         beta_hat = round(beta_hat, 2))
 
 knitr::kable(beta_se_df2, format = 'latex', 
-             caption = 'Table ii: Standard errors and t statistics',
-             col.names = c('Estimate', '$\\widehat\\beta$', 
-                           '$\\widetilde\\sigma_{loo}$',
-                           '$\\widehat\\sigma_{W}$',
-                           '$\\widetilde\\sigma_{A}$',
-                           '$t_{loo}$',
-                           '$t_{W}$',
-                           '$t_{A}$')) %>%
+             caption = 'Std errors and t stats',
+             col.names = c('Estimate', 'B^', 
+                           'se~(loo)',
+                           'se^(W)',
+                           'se~(A)',
+                           't(loo)',
+                           't(W)',
+                           't(A)')) %>%
   kable_styling('striped', full_width = FALSE)
 
 ```
 
-### Measures of Fit (4.17)
+#### Comparing Measures of Fit
 
 Previously we calculated $R^2$ for our OLS estimators under homoskedasticity:
 $$R^2 = \frac{\sum(\widehat{y}_i - \bar y)^2}{\sum(y_i - \bar y)^2} = 1 - \frac{\sum \widehat{e}_i^2}{\sum(y_i - \bar y)^2}$$
@@ -627,7 +618,7 @@ or this one (well-adjusted?), which fully corrects this issue:
 
 $$\widetilde{R}^2 = 1 - \frac{\widetilde{\sigma}^2}{\widehat{\sigma}_y^2} = 1 - \frac{\sum \widetilde{e}_i^2}{\sum(y_i - \bar y)^2}$$
 
-``` {r calc_alternate_rsquareds}
+``` {r calc_alternate_rsquareds, fig.pos = 'H'}
 
 ### Regular R^2 (repeated from above)
 y_bar <- mean(y)
@@ -646,15 +637,17 @@ e_tilde <- (1 - h_ii)^-1 * e_hat
 
 tilde_R2 <- 1 - sum(e_tilde^2) / sum((y - y_bar)^2)
 
-r2_df <- data.frame('fit' = c('Std $R^2$', 'Adj $R^2$', 'Well-adj $R^2$'),
+r2_df <- data.frame('fit' = c('Std R^2', 'Adj R^2', 'Well-adj R^2'),
                     'value' = c(R2, adj_R2, tilde_R2))
 
-knitr::kable(r2_df, format = 'latex', caption = 'Table iii: Measures of fit',
+knitr::kable(r2_df, format = 'latex', caption = 'Measures of fit',
              col.names = c('Measure of fit', 'value')) %>%
   kable_styling('striped', full_width = FALSE)
 ```
 
-### Cluster-robust standard errors
+See Table 3 for a comparison of $R^2$ values calculated using different methods.
+
+### Spatial clustering
 
 From the map of standard errors above, it is clear that there is spatial heterogeneity in the distribution of errors.  This may be due to spatial autocorrelation or some other spatially-distributed variable that is not accounted for in the regression.  One way to deal with spatial autocorrelation is to calculate a spatial weights matrix, in which one cell is affected by neighboring cells based on some relationship, for example inverse distance.  However, in this case the resulting matrix would contain on the order of 60 billion cells.  Instead we will look at spatial clustering to develop a more robust understanding of the variance in our estimators.  
 
@@ -733,10 +726,10 @@ clust_vec <- risk_clusters$longhurst
 clust_ids <- unique(clust_vec)
 
 X <- risk_clusters %>%
-  mutate(oa_S  = oa_2016_mean * dummySouth,
-         sst_S = sst_2012_mean * dummySouth,
-         uv_S  = uv_2016_mean * dummySouth,
-         latS  = latAbs * dummySouth,
+  mutate(oa_S  = oa_mean * dummyS,
+         sst_S = sst_mean * dummyS,
+         uv_S  = uv_mean * dummyS,
+         latS  = latAbs * dummyS,
          const = 1) %>%
   select(-loiczid, -mean_risk, -longhurst) %>%
   as.matrix()
@@ -818,14 +811,15 @@ se_tilde_clust <- sqrt(diag(V_tilde_clust))
 ```
 
 
-### Cluster robust standard errors
+#### Cluster-robust standard errors
 
 Calculating standard errors from the square root of the diagonal of the covariance matrix estimators based upon a simple Longhurst biogeographical province clustering:
 
 $$s(\widehat\beta_{j}) = \sqrt{\mathbf{\widehat{V}_{\widehat\beta_j}}} = \sqrt{[\mathbf{\widehat{V}_{\widehat\beta}}]_{jj}}$$
 
-Here we compare the standard error terms $s(\widehat\beta)$ calculated using unclustered Andrews covariance matrix estimator $\mathbf{\widetilde V_{\widehat\beta_A}}$, as well as standard and alternative (leave-one-out) clustered covariance matrix estimators $\mathbf{\widehat{V}_{\widehat\beta_{cluster}}}$ and $\mathbf{\widetilde{V}_{\widehat\beta_{cluster}}}$.
-``` {r calc_std_errors3}
+In Table 4 we compare the standard error terms $s(\widehat\beta)$ calculated using unclustered Andrews covariance matrix estimator $\mathbf{\widetilde V_{\widehat\beta_A}}$, as well as standard and alternative (leave-one-out) clustered covariance matrix estimators $\mathbf{\widehat{V}_{\widehat\beta_{cluster}}}$ and $\mathbf{\widetilde{V}_{\widehat\beta_{cluster}}}$.
+
+``` {r calc_std_errors3, fig.pos = 'H'}
 
 beta_se_df3 <- data.frame(estimate = rownames(beta_hat),
                           beta_hat,
@@ -835,27 +829,29 @@ beta_se_df3 <- data.frame(estimate = rownames(beta_hat),
   mutate(t_andrews     = round(beta_hat / se_andrews, 2),
          t_hat_clust   = round(beta_hat / se_hat_clust, 2),
          t_tilde_clust = round(beta_hat / se_tilde_clust, 2),
-         se_andrews    = round(se_andrews, 5),
-         se_hat_clust  = round(se_hat_clust, 5),
-         se_tilde_clust = round(se_tilde_clust, 5))
+         se_andrews    = round(se_andrews, 4),
+         se_hat_clust  = round(se_hat_clust, 4),
+         se_tilde_clust = round(se_tilde_clust, 4),
+         beta_hat       = round(beta_hat, 2))
 
 knitr::kable(beta_se_df3, format = 'latex', 
-             caption = 'Table iv: Standard errors and t statistics',
-             col.names = c('Estimate', '$\\widehat\\beta$', 
-                           '$\\widetilde\\sigma_{A}$',
-                           '$\\widehat\\sigma_{clust}$',
-                           '$\\widetilde\\sigma_{alt.clust}$',
-                           '$t_{A}$',
-                           '$t_{clust}$',
-                           '$t_{alt.clust}$')) %>%
+             caption = 'Comparing Andrews unclustered (A), std (hat) and alt (tilde) cluster methods',
+             col.names = c('Estimate', 'B^', 
+                           'se~(A)',
+                           'se^(54)',
+                           'se~(54)',
+                           't~(A)',
+                           't^(54)',
+                           't~(54)')) %>%
   kable_styling('striped', full_width = FALSE)
+
 ```
 
 #### Effect of cluster number and size on standard errors
 
 Hansen notes in section 4.21 that the number of clusters in a cluster-robust approach is analogous to the number of observations in a non-clustered approach, and also that cluster sizes are generally assumed to be homogeneous.  In clustering on Longhurst provinces, we limit ourselves to only 54 clusters, which vary greatly in the number of in-cluster observations.  For this final modification we will re-cluster our data using a K-means approach to create spatially compact clusters informed by the Longhurst boundaries, breaking apart large provinces and consolidating tiny provinces.
 
-Here we will use the alternative cluster calculation (leave-one-cluster-out approach) and iterate over several analysis at different numbers of clusters to see the effect of increasing numbers of smaller clusters on the results.
+In Table 5 we use the alternative cluster calculation (leave-one-cluster-out approach) and iterate the analysis over different numbers of clusters to see the effect of increasing numbers of clusters on the results.
 
 ``` {r set up kmeans clustering}
 
@@ -952,13 +948,13 @@ y <- cluster_df$mean_risk
 n_obs <- length(y)
 
 X <- cluster_df %>%
-  mutate(oa_S  = oa_2016_mean * dummySouth,
-         sst_S = sst_2012_mean * dummySouth,
-         uv_S  = uv_2016_mean * dummySouth,
-         latS  = latAbs * dummySouth,
+  mutate(oa_S  = oa_mean * dummyS,
+         sst_S = sst_mean * dummyS,
+         uv_S  = uv_mean * dummyS,
+         latS  = latAbs * dummyS,
          const = 1) %>%
-  select(sst_2012_mean, oa_2016_mean, uv_2016_mean, 
-         latAbs, dummySouth, mpa_pct, oa_S, sst_S, uv_S, latS, const) %>%
+  select(sst_mean, oa_mean, uv_mean, 
+         latAbs, dummyS, mpa_pct, oa_S, sst_S, uv_S, latS, const) %>%
   as.matrix()
 
 ### Calculate Beta_hat, though should be identical to original beta_hat
@@ -1044,7 +1040,7 @@ se_hat_clust_500 <- sqrt(diag(V_hat_clust_500))
 
 ```
 
-``` {r gather diff kmeans cluster results}
+``` {r gather diff kmeans cluster results, eval = TRUE, fig.pos = 'H'}
 
 se_tilde_kmeans_df <- se_tilde_kmeans %>%
   setNames(paste0('se_tilde_', n_clusts)) %>%
@@ -1055,30 +1051,32 @@ beta_se_df4 <- data.frame(estimate = rownames(beta_hat),
                           se_tilde_clust,
                           se_hat_clust_500) %>%
   bind_cols(se_tilde_kmeans_df) %>%
+  select(-se_tilde_100, -se_tilde_250) %>%
   mutate(t_54  = round(beta_hat / se_tilde_clust, 2),
          t_150 = round(beta_hat / se_tilde_150, 2),
          t_tilde_clust_500 = round(beta_hat / se_tilde_500, 2),
          t_hat_clust_500   = round(beta_hat / se_hat_clust_500, 2),
-         se_tilde_100 = round(se_tilde_100, 5),
-         se_tilde_150 = round(se_tilde_150, 5),
-         se_tilde_250 = round(se_tilde_250, 5),
-         se_tilde_500 = round(se_tilde_500, 5),
-         se_tilde_clust = round(se_tilde_clust, 5),
-         se_hat_clust_500 = round(se_hat_clust_500, 5))
+         # se_tilde_100 = round(se_tilde_100, 4),
+         se_tilde_150 = round(se_tilde_150, 4),
+         # se_tilde_250 = round(se_tilde_250, 4),
+         se_tilde_500 = round(se_tilde_500, 4),
+         se_tilde_clust = round(se_tilde_clust, 4),
+         se_hat_clust_500 = round(se_hat_clust_500, 4),
+         beta_hat = round(beta_hat, 2))
 
 knitr::kable(beta_se_df4,  format = 'latex',
-             caption = 'Table v: Standard errors and t statistics',
-             col.names = c('Estimate', '$\\widehat\\beta$', 
-                           '$\\widetilde\\sigma_{alt.clust,54}$',
-                           '$\\widetilde\\sigma_{alt.clust,100}$',
-                           '$\\widetilde\\sigma_{alt.clust,150}$',
-                           '$\\widetilde\\sigma_{alt.clust,250}$',
-                           '$\\widetilde\\sigma_{alt.clust,500}$',
-                           '$\\widehat\\sigma_{clust,500}$',
-                           '$t_{alt.clust,54}$',
-                           '$t_{alt.clust,150}$',
-                           '$t_{alt.clust,500}$',
-                           '$t_{clust,500}$')) %>%
+             caption = 'Comparison of std (hat) and alt (tilde) clustering for various cluster sizes',
+             col.names = c('Estimate', 'B^', 
+                           'se~(54)',
+                           # 'se~(100)',
+                           'se~(150)',
+                           # 'se~(250)',
+                           'se~(500)',
+                           'se^(500)',
+                           't~(54)',
+                           't~(150)',
+                           't~(500)',
+                           't^(500)')) %>%
   kable_styling('striped', full_width = FALSE)
 
 beta_plot_df <- beta_se_df4 %>%
@@ -1098,67 +1096,69 @@ ggplot(beta_plot_df, aes(x = clust, y = se, color = estimate)) +
        y     = 'Cluster-robust standard error')
 ```
 
-# Results
+\newpage
+## Results
 
-- table of beta and standard errors for classic OLS, leave-one-out homosked (pred errors), adjusted White heterosked, and cluster-robust leave-one-out
+Due to the nature of this report, in which the methodology was developed in parallel with the analysis, we have already seen the results for a number of different assumptions and methods.  Table 6 summarizes resulting beta terms and the standard errors calculated from covariance matrices under four assumptions and methods: 
 
-Due to the nature of this report, in which the methodology was developed in parallel with the analysis, we have already seen the results for a number of different assumptions and methods.  Here we summarize resulting beta terms and the standard errors calculated from covariance matrices under six assumptions and methods: 
+1. prediction errors (leave-one-out) assuming homoskedasticity (Hansen eq. 4.36, using $\widetilde\sigma^2$ estimator) 
+    * NOTE: our classic OLS standard errors, assuming homoskedasticity (Hansen eq. 4.36, using $s^2$ estimator), are essentially identical to our prediction errors so are excluded from the table for clarity.
+2. heteroskedasticity-robust leave-one-out prediction errors a la Andrews (4.40)
+    * NOTE: our heteroskedasticity-robust adjusted White standard errors (4.38) are essentially identical to our heteroskedasticity-robust leave-one-out prediction errors so are excluded from the table for clarity.
+3. finite-sample-adjusted cluster-robust standard errors a la White (4.53)
+4. cluster-robust prediction errors (leave-one-cluster-out) assuming heteroskedasticity (described in Hansen section 4.20, no equation number)
 
-1. classic OLS standard errors, assuming homoskedasticity (Hansen eq. 4.36, using $s^2$ estimator)
-2. prediction errors (leave-one-out) assuming homoskedasticity (Hansen eq. 4.36, using $\widetilde\sigma^2$ estimator) 
-3. heteroskedasticity-robust adjusted White standard errors (4.38)
-4. heteroskedasticity-robust leave-one-out prediction errors (4.40)
-5. finite-sample-adjusted cluster-robust standard errors a la White (4.53)
-6. cluster-robust prediction errors (leave-one-cluster-out) assuming heteroskedasticity (described in Hansen section 4.20, no equation number)
-
-Clustered errors calculated using 500 clusters based upon latitude, longitude, and Longhurst province boundaries.
+Clustered errors are calculated using 500 clusters based upon latitude, longitude, and Longhurst province boundaries.
 
 
-``` {r results table}
+``` {r results table, eval = TRUE, fig.pos = 'H'}
 
 results_df <- beta_se_df %>%
   left_join(beta_se_df2) %>%
   left_join(beta_se_df3) %>%
   left_join(beta_se_df4) %>%
   select(estimate, beta_hat, 
-         se_hat,   t_hat,
+         # se_hat,   t_hat,
          se_tilde, t_tilde,
-         se_white, t_white,
+         # se_white, t_white,
          se_andrews, t_andrews,
          se_hat_clust_500, t_hat_clust_500, 
          se_tilde_500, t_tilde_clust_500) %>%
-  mutate(beta_hat = round(beta_hat, 3))
+  mutate(beta_hat = round(beta_hat, 2),
+         t_tilde = round(t_tilde, 1),
+         # t_white = round(t_white, 1),
+         t_andrews = round(t_andrews, 1))
   
 knitr::kable(results_df, format = 'latex',
-             caption = 'Table 1',
-             col.names = c('Estimate', '$\\widehat\\beta$', 
-                           '$se_1$',
-                           '$t.stat_{1}$',
-                           '$se_2$',
-                           '$t.stat_2$',
-                           '$se_3$',
-                           '$t.stat_3$',
-                           '$se_4$',
-                           '$t.stat_4$',
-                           '$se_5$',
-                           '$t.stat_5$',
-                           '$se_6$',
-                           '$t.stat_6$')) %>%
+             caption = 'Comparison of std errors and t stats across multiple methods of covariance matrix estimators',
+             col.names = c('Estimate', 'B^', 
+                           # 'se^1',
+                           # 't^1',
+                           'se~1',
+                           't~1',
+                           # 'se^2',
+                           # 't^2',
+                           'se~2',
+                           't~2',
+                           'se^3',
+                           't^3',
+                           'se~4',
+                           't~4')) %>%
   kable_styling('striped', full_width = FALSE) %>%
-  column_spec(c(2, 4, 6, 8, 10, 12), border_right = TRUE) %>%
+  column_spec(c(2, 4, 6, 8), border_right = TRUE) %>%
   add_header_above(c(' ' = 2,
-                     '$\\mathbf{\\widehat V^0_{\\hat\\beta}}$' = 2,
-                     '$\\mathbf{\\widetilde V^0_{\\hat\\beta}}$' = 2,
-                     '$\\mathbf{\\widehat V_{\\hat\\beta}}$' = 2,
-                     '$\\mathbf{\\widetilde V_{\\hat\\beta}}$' = 2,
-                     '$\\mathbf{\\widehat V_{\\hat\\beta_{clust}}}$' = 2,
-                     '$\\mathbf{\\widetilde V_{\\hat\\beta_{alt.clust}}}$' = 2))
+                     # 'V^0(B^)' = 2,
+                     'V~0(B^)' = 2,
+                     # 'V^(B^)' = 2,
+                     'V~(B^)' = 2,
+                     'V^(B^)(500)' = 2,
+                     'V~(B^)(500)' = 2))
 
 ```
 
-Basing significance on prediction errors calculated from the alternative cluster-robust covariance matrix estimator $\mathbf{\widetilde V_{\hat\beta_{alt.clust}}}$, it appears that the dummy for south latitudes, $\delta_{\lambda}$, as well as the interaction terms $\delta_{\lambda}x_{UV}$, $\delta_{\lambda}x_{SST}$, and $\delta_{\lambda}x_{OA}$, are not statistically significant ($|t| > 1.96$).  In addition, $x_{UV}$ just misses the critical value for $p = .05$.  
+Basing significance on prediction errors calculated from the alternative cluster-robust covariance matrix estimator $\mathbf{\widetilde V_{\hat\beta_{alt.clust}}}$, it appears that the dummy for south latitudes, $\delta_{\lambda}$, as well as the interaction terms $\delta_{\lambda}x_{UV}$, $\delta_{\lambda}x_{SST}$, and $\delta_{\lambda}x_{OA}$, are not statistically significant at $p = .05$ ($|t| < 1.96$); $x_{UV}$ just misses the critical value for significance.  
 
-# Discussion
+## Discussion
 
 The global cumulative impact assessment (REF Halpern et al 2008, 2015) predicts impacts to marine ecosystems based upon intensity of stressors and vulnerability of specific habitat types.  Here we reverse that, comparing a set of spatially distributed stressors -- in this case only a subset of the entire suite of stressors included in the overall cumulative impact framework -- to a measure of ecosystem health in order to infer the impacts of stressors.  The direction and magnitude of regression coefficients between ecosystem health and stressor intensity can lend validity to the cumulative impacts approach, and where the coefficients do not match expectations (e.g. ocean acidification, as noted below) we can search for underlying causes that confound our expectations. 
 
@@ -1177,7 +1177,7 @@ Very surprising, however, is the large negative coefficient for ocean acidificat
 ``` {r whats up with oa, eval = FALSE}
 
 oa_max_cells <- oa_rast %>% 
-  filter(oa_2016_mean == 1) %>%
+  filter(oa_mean == 1) %>%
   left_join(latlong_df, by = c('x' = 'long', 'y' = 'lat'))
 oa_spp_cells <- read_csv(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')) 
 
@@ -1251,7 +1251,7 @@ ggplot(cluster_count_df2, aes(x = count)) +
 
 What is the "right" number of clusters?  Clusters essentially take the place of individual observations in the error calculation; so for between-cluster comparisons, maximizing the number of clusters is desirable.  But for reliable in-cluster results, each cluster needs an appropriate (and approximately equal) number of observations.   Intuitively this would mean the ideal number of clusters would be $g = \sqrt n$ - in this case, with 143,890 observations, we'd want ~380 clusters.  In the limit, as cluster count $g$ approaches the count of individual cells $n$, we should probably approach the results for the unclustered analysis (in this case, the adjusted White heteroskedastic-robust analysis).  
 
-# Next steps
+## Next steps
 
 Based on the methods, results, and discussion, there is still a long way to go in this project.  We found some reassuring results in the correlations between sea surface temperature and ultraviolet exposure with our definition of biodiversity risk; on the other hand, the correlation between risk and ocean acidification wildly confounds initial expectations.  While we see positive results due to the protection afforded by MPAs, we must be cautious in inferring causal connections without further examination.  
 
@@ -1262,6 +1262,7 @@ Now that we have established a basic methodology for this regression analysis, w
 * Look into other methods of accounting for spatial dependence, including spatially explicit clustering methods and tractable methods for incorporating spatial weights matrices.
 * Perform the analysis on a finer scale and with observations based upon equal area, for example the 934m cell resolution in Mollweide equal-area projection at which the cumulative impact stressor layers are available.
 * Identify analysis methods already native to R, rather than coding regressions from scratch.  While from a student perspective it has been pedagogically more interesting and informative to code the regressions and error calculations based upon matrix manipulations, if peer-reviewed methods already exist to perform these analyses, we should take advantage, both to ensure accuracy and to improve readability of code.
+* Update AquaMaps, IUCN, and WDPA Marine Protected Area data; the data used in this analysis are two years old and have since been updated to include many more species distributions through Aquamaps and more species extinction risk assessments through IUCN. The WDPA MPA database is updated monthly and is likely to include additional protected areas as well.
 
 ### Alternate models for regression
 
