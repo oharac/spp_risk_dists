@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Feb 26 08:33:12 2018 by ohara" />
+<meta name="author" content="Compiled on Thu Mar 29 11:23:38 2018 by ohara" />
 
 
 <title>Set up AquaMaps species distribution files</title>
@@ -279,7 +279,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Set up AquaMaps species distribution files</h1>
-<h4 class="author"><em><em>Compiled on Mon Feb 26 08:33:12 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Mar 29 11:23:38 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -297,6 +297,7 @@ dir_am_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_
 
 ### goal specific folders and info
 dir_setup   &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_setup'</span>)
+dir_data    &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
 dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_health_dists'</span>)
 <span class="co"># </span><span class="al">###</span><span class="co"> provenance tracking</span>
 <span class="kw">library</span>(provRmd); <span class="kw">prov_setup</span>()
@@ -409,8 +410,8 @@ am_with_scores &lt;-<span class="st"> </span>am_all <span class="op">%&gt;%</spa
   
 }</code></pre></div>
 </div>
-<div id="consider-excluding-pelagics" class="section level2">
-<h2><span class="header-section-number">3.4</span> Consider excluding pelagics</h2>
+<div id="species-ranges" class="section level2">
+<h2><span class="header-section-number">3.4</span> Species ranges</h2>
 <p>A rough filter based on total ocean area of species range could be useful to exclude species whose range is essentially ocean-basin-wide. Since IUCN scores are equal over the entire range, it is difficult to see any effect of species risk from very localized pressures.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">am_spp_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'am_files'</span>, <span class="st">'am_spp_cells.csv'</span>)
 
@@ -421,8 +422,8 @@ am_cells &lt;-<span class="st"> </span>data.table<span class="op">::</span><span
 <span class="st">  </span><span class="kw">clean_df_names</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">distinct</span>()</code></pre></div>
 <pre><code>## 
-Read 77.2% of 259200 rows
-Read 259200 rows and 111 (of 111) columns from 0.165 GB file in 00:00:03</code></pre>
+Read 61.7% of 259200 rows
+Read 259200 rows and 111 (of 111) columns from 0.165 GB file in 00:00:04</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">am_range_summary &lt;-<span class="st"> </span>am_spp_cells <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(prob <span class="op">&gt;=</span><span class="st"> </span>.<span class="dv">60</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(am_cells, <span class="dt">by =</span> <span class="st">'loiczid'</span>) <span class="op">%&gt;%</span>
@@ -454,6 +455,47 @@ am_range_summary &lt;-<span class="st"> </span>am_range_summary <span class="op"
             <span class="dt">by =</span> <span class="st">'am_sid'</span>)
   
 <span class="kw">write_csv</span>(am_range_summary, <span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>, <span class="st">'am_spp_range_summary.csv'</span>))</code></pre></div>
+</div>
+<div id="species-taxa" class="section level2">
+<h2><span class="header-section-number">3.5</span> Species taxa</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">am_spp_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'am_files'</span>, <span class="st">'am_spp_cells.csv'</span>)
+
+am_spp_cells &lt;-<span class="st"> </span><span class="kw">read_csv</span>(am_spp_cells_file)
+
+am_taxa &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_am_data, <span class="st">'csv'</span>, <span class="st">'speciesoccursum.csv'</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">clean_df_names</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">sciname =</span> <span class="kw">paste</span>(<span class="kw">str_trim</span>(genus), <span class="kw">str_trim</span>(species))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="dt">am_sid =</span> speciesid, sciname, <span class="dt">common_name =</span> fbname, 
+         kingdom, phylum, class, <span class="dt">iucn_sid =</span> iucn_id) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>()
+
+am_taxa_sum &lt;-<span class="st"> </span>am_taxa <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(kingdom, phylum) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n_spp =</span> <span class="kw">n</span>())
+
+chordata_sum &lt;-<span class="st"> </span>am_taxa <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(phylum <span class="op">==</span><span class="st"> 'Chordata'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(class) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n_spp =</span> <span class="kw">n</span>())
+
+taxa_groups &lt;-<span class="st"> </span>am_taxa <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(kingdom, phylum, class) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">taxa =</span> <span class="kw">case_when</span>(kingdom <span class="op">==</span><span class="st"> 'Plantae'</span>  <span class="op">~</span><span class="st"> 'plant'</span>,
+                          kingdom <span class="op">!=</span><span class="st"> 'Animalia'</span> <span class="op">~</span><span class="st"> 'bact/chrom/proto'</span>,
+                          phylum <span class="op">!=</span><span class="st"> 'Chordata'</span>  <span class="op">~</span><span class="st"> 'invertebrate'</span>, 
+                            ### note: one blank phylum that seems to be a fish?
+                          class <span class="op">==</span><span class="st"> 'Mammalia'</span>   <span class="op">~</span><span class="st"> 'mammal'</span>,
+                          class <span class="op">==</span><span class="st"> 'Aves'</span>       <span class="op">~</span><span class="st"> 'bird'</span>,
+                          <span class="kw">str_detect</span>(class, <span class="st">'Actin|Sarc'</span>)    <span class="op">~</span><span class="st"> 'bony fish'</span>,
+                          <span class="kw">str_detect</span>(class, <span class="st">'Elasmo|Holo'</span>)   <span class="op">~</span><span class="st"> 'cart fish'</span>,
+                          <span class="kw">str_detect</span>(class, <span class="st">'Rept|Amph'</span>)     <span class="op">~</span><span class="st"> 'rept/amph'</span>,
+                          <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> 'other vertebrate'</span>))
+  
+am_taxa_sum1 &lt;-<span class="st"> </span>am_taxa <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(taxa_groups, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'kingdom'</span>, <span class="st">'phylum'</span>, <span class="st">'class'</span>))
+
+<span class="kw">write_csv</span>(am_taxa_sum1, <span class="kw">file.path</span>(dir_data, <span class="st">'am_spp_taxa.csv'</span>))</code></pre></div>
 <hr />
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">prov_wrapup</span>(<span class="dt">commit_outputs =</span> <span class="ot">FALSE</span>)</code></pre></div>
 </div>
@@ -461,12 +503,12 @@ am_range_summary &lt;-<span class="st"> </span>am_range_summary <span class="op"
 <div id="provenance" class="section level1">
 <h1><span class="header-section-number">4</span> Provenance</h1>
 <ul>
-<li><em>Run ID: 5 (e852aba); run tag: “standard run”</em></li>
-<li><em>Run elapsed time: 13.307 seconds; run memory usage: 2335.2 MB</em></li>
+<li><em>Run ID: 6 (850b1e3); run tag: “standard run”</em></li>
+<li><em>Run elapsed time: 87.063 seconds; run memory usage: 4536.3 MB</em></li>
 <li><em>System info: </em>
 <ul>
 <li><em>System: Linux, Release: 4.4.0-112-generic. Machine: x86_64. User: ohara.</em></li>
-<li><em>R version: R version 3.4.3 (2017-11-30), Platform: x86_64-pc-linux-gnu, Running under: Ubuntu 14.04.5 LTS.</em></li>
+<li><em>R version: R version 3.4.4 (2018-03-15), Platform: x86_64-pc-linux-gnu, Running under: Ubuntu 14.04.5 LTS.</em></li>
 <li><em>Attached base packages: stats, graphics, grDevices, utils, datasets, methods, base</em></li>
 <li><em>Other attached packages: bindrcpp_0.2, provRmd_0.1.1, stringr_1.2.0, RColorBrewer_1.1-2, dplyr_0.7.2, purrr_0.2.3, readr_1.1.0, tidyr_0.7.0, tibble_1.3.4, ggplot2_2.2.1.9000, tidyverse_1.1.1, raster_2.5-8, sp_1.2-5</em></li>
 </ul></li>
@@ -476,159 +518,183 @@ am_range_summary &lt;-<span class="st"> </span>am_range_summary <span class="op"
 <!-- Generated by graphviz version 2.38.0 (20140413.2041)
  -->
 <!-- Title: %3 Pages: 1 -->
-<svg width="905pt" height="361pt" viewBox="0.00 0.00 905.48 360.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="1014pt" height="361pt" viewBox="0.00 0.00 1014.48 360.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 356.8)">
 <title>
 %3
 </title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-356.8 901.476,-356.8 901.476,4 -4,4"></polygon> <!-- 8 --> <g id="node1" class="node">
-<title>
-8
-</title>
-<g id="a_node1"><a xlink:title="no version control info found"> <polygon fill="#fffacc" stroke="red" stroke-width="3" points="489.12,-194.4 435.12,-194.4 435.12,-158.4 489.12,-158.4 489.12,-194.4"></polygon> <text text-anchor="middle" x="462.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">rast_tools.R</text> </a> </g> </g> <!-- 9 --> <g id="node2" class="node">
+<polygon fill="white" stroke="none" points="-4,4 -4,-356.8 1010.48,-356.8 1010.48,4 -4,4"></polygon> <!-- 9 --> <g id="node1" class="node">
 <title>
 9
 </title>
-<g id="a_node2"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="51.1205" cy="-334.8" rx="51.2412" ry="18"></ellipse> <text text-anchor="middle" x="51.1205" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_spp_cat_timeseries.csv</text> </a> </g> </g> <!-- 3 --> <g id="node13" class="node">
-<title>
-3
-</title>
-<g id="a_node13"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="253.994,-273.6 104.247,-273.6 104.247,-237.6 253.994,-237.6 253.994,-273.6"></polygon> <text text-anchor="middle" x="179.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#join_health_to_am_list</text> </a> </g> </g> <!-- 9&#45;&gt;3 --> <g id="edge2" class="edge">
-<title>
-9-&gt;3
-</title>
-<g id="a_edge2"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M75.8001,-318.915C95.8235,-306.838 124.231,-289.705 146.192,-276.46"></path> <polygon fill="#334766" stroke="#334766" points="147.117,-277.946 150.494,-273.865 145.309,-274.949 147.117,-277.946"></polygon> </a> </g> <text text-anchor="middle" x="125.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10 --> <g id="node3" class="node">
+<g id="a_node1"><a xlink:title="no version control info found"> <polygon fill="#fffacc" stroke="red" stroke-width="3" points="636.12,-194.4 582.12,-194.4 582.12,-158.4 636.12,-158.4 636.12,-194.4"></polygon> <text text-anchor="middle" x="609.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">rast_tools.R</text> </a> </g> </g> <!-- 10 --> <g id="node2" class="node">
 <title>
 10
 </title>
-<g id="a_node3"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="166.12" cy="-334.8" rx="46.185" ry="18"></ellipse> <text text-anchor="middle" x="166.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_spp_cat_current.csv</text> </a> </g> </g> <!-- 10&#45;&gt;3 --> <g id="edge3" class="edge">
+<g id="a_node2"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="51.1205" cy="-334.8" rx="51.2412" ry="18"></ellipse> <text text-anchor="middle" x="51.1205" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_spp_cat_timeseries.csv</text> </a> </g> </g> <!-- 3 --> <g id="node14" class="node">
+<title>
+3
+</title>
+<g id="a_node14"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="241.994,-273.6 92.2466,-273.6 92.2466,-237.6 241.994,-237.6 241.994,-273.6"></polygon> <text text-anchor="middle" x="167.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#join_health_to_am_list</text> </a> </g> </g> <!-- 10&#45;&gt;3 --> <g id="edge2" class="edge">
 <title>
 10-&gt;3
 </title>
-<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M169.006,-316.667C170.891,-305.473 173.37,-290.747 175.403,-278.677"></path> <polygon fill="#334766" stroke="#334766" points="177.139,-278.906 176.243,-273.685 173.687,-278.325 177.139,-278.906"></polygon> </a> </g> <text text-anchor="middle" x="179.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11 --> <g id="node4" class="node">
+<g id="a_edge2"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M74.0383,-318.548C92.0854,-306.537 117.391,-289.696 137.063,-276.604"></path> <polygon fill="#334766" stroke="#334766" points="138.231,-277.929 141.424,-273.702 136.291,-275.015 138.231,-277.929"></polygon> </a> </g> <text text-anchor="middle" x="119.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11 --> <g id="node3" class="node">
 <title>
 11
 </title>
-<g id="a_node4"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="271.12" cy="-334.8" rx="40.0381" ry="18"></ellipse> <text text-anchor="middle" x="271.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">speciesoccursum.csv</text> </a> </g> </g> <!-- 11&#45;&gt;3 --> <g id="edge4" class="edge">
+<g id="a_node3"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="166.12" cy="-334.8" rx="46.185" ry="18"></ellipse> <text text-anchor="middle" x="166.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_spp_cat_current.csv</text> </a> </g> </g> <!-- 11&#45;&gt;3 --> <g id="edge3" class="edge">
 <title>
 11-&gt;3
 </title>
-<g id="a_edge4"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M252.944,-318.548C238.751,-306.638 218.898,-289.978 203.354,-276.935"></path> <polygon fill="#334766" stroke="#334766" points="204.456,-275.575 199.501,-273.702 202.206,-278.256 204.456,-275.575"></polygon> </a> </g> <text text-anchor="middle" x="234.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12 --> <g id="node5" class="node">
+<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M166.342,-316.667C166.486,-305.573 166.675,-291.009 166.83,-279.001"></path> <polygon fill="#334766" stroke="#334766" points="168.584,-278.708 166.899,-273.685 165.084,-278.662 168.584,-278.708"></polygon> </a> </g> <text text-anchor="middle" x="173.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12 --> <g id="node4" class="node">
 <title>
 12
 </title>
-<g id="a_node5"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#9ce68a" stroke="yellow" stroke-width="3" cx="328.12" cy="-176.4" rx="38.7264" ry="18"></ellipse> <text text-anchor="middle" x="328.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_with_scores.csv</text> </a> </g> </g> <!-- 4 --> <g id="node16" class="node">
+<g id="a_node4"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="271.12" cy="-334.8" rx="40.0381" ry="18"></ellipse> <text text-anchor="middle" x="271.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">speciesoccursum.csv</text> </a> </g> </g> <!-- 12&#45;&gt;3 --> <g id="edge4" class="edge">
+<title>
+12-&gt;3
+</title>
+<g id="a_edge4"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M251.068,-318.915C235.07,-307.04 212.486,-290.275 194.771,-277.125"></path> <polygon fill="#334766" stroke="#334766" points="195.437,-275.44 190.379,-273.865 193.351,-278.251 195.437,-275.44"></polygon> </a> </g> <text text-anchor="middle" x="229.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 4 --> <g id="node18" class="node">
 <title>
 4
 </title>
-<g id="a_node16"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="619.168,-115.2 465.073,-115.2 465.073,-79.2 619.168,-79.2 619.168,-115.2"></polygon> <text text-anchor="middle" x="542.12" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#plot_distr_of_spp_range</text> </a> </g> </g> <!-- 12&#45;&gt;4 --> <g id="edge12" class="edge">
+<g id="a_node18"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="378.168,-115.2 224.073,-115.2 224.073,-79.2 378.168,-79.2 378.168,-115.2"></polygon> <text text-anchor="middle" x="301.12" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#plot_distr_of_spp_range</text> </a> </g> </g> <!-- 12&#45;&gt;4 --> <g id="edge15" class="edge">
 <title>
 12-&gt;4
 </title>
-<g id="a_edge12"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M357.876,-164.666C392.047,-152.339 448.722,-131.893 490.207,-116.928"></path> <polygon fill="#334766" stroke="#334766" points="490.824,-118.565 494.934,-115.222 489.637,-115.273 490.824,-118.565"></polygon> </a> </g> <text text-anchor="middle" x="448.624" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13 --> <g id="node6" class="node">
+<g id="a_edge15"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M273.326,-316.476C278.681,-274.421 292.364,-166.97 298.301,-120.344"></path> <polygon fill="#334766" stroke="#334766" points="300.056,-120.413 298.952,-115.232 296.584,-119.971 300.056,-120.413"></polygon> </a> </g> <text text-anchor="middle" x="293.624" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13 --> <g id="node5" class="node">
 <title>
 13
 </title>
-<g id="a_node6"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="724.12" cy="-334.8" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="724.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">hcaf_v6.csv</text> </a> </g> </g> <!-- 7 --> <g id="node14" class="node">
+<g id="a_node5"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="193.12" cy="-176.4" rx="38.7264" ry="18"></ellipse> <text text-anchor="middle" x="193.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_with_scores.csv</text> </a> </g> </g> <!-- 8 --> <g id="node17" class="node">
 <title>
-7
+8
 </title>
-<g id="a_node14"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="716.491,-273.6 569.75,-273.6 569.75,-237.6 716.491,-237.6 716.491,-273.6"></polygon> <text text-anchor="middle" x="643.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#set_up_loiczid_raster</text> </a> </g> </g> <!-- 13&#45;&gt;7 --> <g id="edge6" class="edge">
+<g id="a_node17"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="514.158,-115.2 396.083,-115.2 396.083,-79.2 514.158,-79.2 514.158,-115.2"></polygon> <text text-anchor="middle" x="455.12" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#spp_range</text> </a> </g> </g> <!-- 13&#45;&gt;8 --> <g id="edge12" class="edge">
 <title>
-13-&gt;7
+13-&gt;8
 </title>
-<g id="a_edge6"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M716.708,-317.327C712.397,-308.965 706.379,-299.033 699.12,-291.6 693.719,-286.068 687.277,-281.022 680.718,-276.59"></path> <polygon fill="#334766" stroke="#334766" points="681.313,-274.888 676.169,-273.621 679.4,-277.819 681.313,-274.888"></polygon> </a> </g> <text text-anchor="middle" x="712.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 2 --> <g id="node15" class="node">
-<title>
-2
-</title>
-<g id="a_node15"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="897.332,-273.6 734.909,-273.6 734.909,-237.6 897.332,-237.6 897.332,-273.6"></polygon> <text text-anchor="middle" x="816.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#get_loiczid_for_scored_spp</text> </a> </g> </g> <!-- 13&#45;&gt;2 --> <g id="edge8" class="edge">
-<title>
-13-&gt;2
-</title>
-<g id="a_edge8"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M740.568,-319.998C754.767,-308.084 775.48,-290.703 791.629,-277.152"></path> <polygon fill="#334766" stroke="#334766" points="792.924,-278.349 795.629,-273.795 790.674,-275.668 792.924,-278.349"></polygon> </a> </g> <text text-anchor="middle" x="778.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 14 --> <g id="node7" class="node">
+<g id="a_edge12"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M224.985,-166.011C266.336,-153.827 339.424,-132.291 392.155,-116.753"></path> <polygon fill="#334766" stroke="#334766" points="392.892,-118.361 397.193,-115.269 391.902,-115.003 392.892,-118.361"></polygon> </a> </g> <text text-anchor="middle" x="338.624" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 14 --> <g id="node6" class="node">
 <title>
 14
 </title>
-<g id="a_node7"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="643.12" cy="-176.4" rx="31.6167" ry="18"></ellipse> <text text-anchor="middle" x="643.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">loiczid_raster.tif</text> </a> </g> </g> <!-- 15 --> <g id="node8" class="node">
+<g id="a_node6"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="828.12" cy="-334.8" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="828.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">hcaf_v6.csv</text> </a> </g> </g> <!-- 7 --> <g id="node15" class="node">
+<title>
+7
+</title>
+<g id="a_node15"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="825.491,-273.6 678.75,-273.6 678.75,-237.6 825.491,-237.6 825.491,-273.6"></polygon> <text text-anchor="middle" x="752.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#set_up_loiczid_raster</text> </a> </g> </g> <!-- 14&#45;&gt;7 --> <g id="edge6" class="edge">
+<title>
+14-&gt;7
+</title>
+<g id="a_edge6"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M815.086,-318.645C807.9,-310.466 798.716,-300.293 790.12,-291.6 785.397,-286.823 780.184,-281.845 775.172,-277.192"></path> <polygon fill="#334766" stroke="#334766" points="776.254,-275.809 771.391,-273.706 773.881,-278.382 776.254,-275.809"></polygon> </a> </g> <text text-anchor="middle" x="803.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 2 --> <g id="node16" class="node">
+<title>
+2
+</title>
+<g id="a_node16"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="1006.33,-273.6 843.909,-273.6 843.909,-237.6 1006.33,-237.6 1006.33,-273.6"></polygon> <text text-anchor="middle" x="925.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#get_loiczid_for_scored_spp</text> </a> </g> </g> <!-- 14&#45;&gt;2 --> <g id="edge8" class="edge">
+<title>
+14-&gt;2
+</title>
+<g id="a_edge8"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M845.017,-320.353C860.028,-308.405 882.195,-290.764 899.406,-277.065"></path> <polygon fill="#334766" stroke="#334766" points="900.846,-278.156 903.668,-273.673 898.666,-275.418 900.846,-278.156"></polygon> </a> </g> <text text-anchor="middle" x="885.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 15 --> <g id="node7" class="node">
 <title>
 15
 </title>
-<g id="a_node8"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="816.12" cy="-334.8" rx="44.8772" ry="18"></ellipse> <text text-anchor="middle" x="816.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">hcaf_species_native.csv</text> </a> </g> </g> <!-- 15&#45;&gt;2 --> <g id="edge9" class="edge">
-<title>
-15-&gt;2
-</title>
-<g id="a_edge9"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M816.12,-316.667C816.12,-305.573 816.12,-291.009 816.12,-279.001"></path> <polygon fill="#334766" stroke="#334766" points="817.871,-278.685 816.12,-273.685 814.371,-278.685 817.871,-278.685"></polygon> </a> </g> <text text-anchor="middle" x="822.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 16 --> <g id="node9" class="node">
+<g id="a_node7"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="719.12" cy="-176.4" rx="31.6167" ry="18"></ellipse> <text text-anchor="middle" x="719.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">loiczid_raster.tif</text> </a> </g> </g> <!-- 16 --> <g id="node8" class="node">
 <title>
 16
 </title>
-<g id="a_node9"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="750.12" cy="-176.4" rx="34.8738" ry="18"></ellipse> <text text-anchor="middle" x="750.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_spp_cells.csv</text> </a> </g> </g> <!-- 16&#45;&gt;4 --> <g id="edge11" class="edge">
+<g id="a_node8"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="925.12" cy="-334.8" rx="44.8772" ry="18"></ellipse> <text text-anchor="middle" x="925.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">hcaf_species_native.csv</text> </a> </g> </g> <!-- 16&#45;&gt;2 --> <g id="edge9" class="edge">
 <title>
-16-&gt;4
+16-&gt;2
 </title>
-<g id="a_edge11"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M722.5,-165.148C689.58,-152.93 633.907,-132.267 593.1,-117.121"></path> <polygon fill="#334766" stroke="#334766" points="593.496,-115.402 588.2,-115.302 592.278,-118.683 593.496,-115.402"></polygon> </a> </g> <text text-anchor="middle" x="659.624" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 17 --> <g id="node10" class="node">
+<g id="a_edge9"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M925.12,-316.667C925.12,-305.573 925.12,-291.009 925.12,-279.001"></path> <polygon fill="#334766" stroke="#334766" points="926.871,-278.685 925.12,-273.685 923.371,-278.685 926.871,-278.685"></polygon> </a> </g> <text text-anchor="middle" x="931.624" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 17 --> <g id="node9" class="node">
 <title>
 17
 </title>
-<g id="a_node10"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="542.12" cy="-18" rx="52.4466" ry="18"></ellipse> <text text-anchor="middle" x="542.12" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_spp_range_summary.csv</text> </a> </g> </g> <!-- 1 --> <g id="node11" class="node">
+<g id="a_node9"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="804.12" cy="-176.4" rx="34.8738" ry="18"></ellipse> <text text-anchor="middle" x="804.12" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_spp_cells.csv</text> </a> </g> </g> <!-- 17&#45;&gt;8 --> <g id="edge11" class="edge">
+<title>
+17-&gt;8
+</title>
+<g id="a_edge11"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M777.851,-164.395C772.074,-162.216 765.941,-160.085 760.12,-158.4 678.429,-134.751 581.752,-117.408 519.485,-107.567"></path> <polygon fill="#334766" stroke="#334766" points="519.527,-105.802 514.316,-106.755 518.984,-109.26 519.527,-105.802"></polygon> </a> </g> <text text-anchor="middle" x="692.624" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 17&#45;&gt;4 --> <g id="edge14" class="edge">
+<title>
+17-&gt;4
+</title>
+<g id="a_edge14"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M777.946,-164.042C772.162,-161.885 766.004,-159.852 760.12,-158.4 679.109,-138.403 469.56,-128.101 387.12,-115.2 385.96,-115.018 384.791,-114.832 383.616,-114.642"></path> <polygon fill="#334766" stroke="#334766" points="383.642,-112.873 378.424,-113.783 383.071,-116.326 383.642,-112.873"></polygon> </a> </g> <text text-anchor="middle" x="641.624" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 18 --> <g id="node10" class="node">
+<title>
+18
+</title>
+<g id="a_node10"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="455.12" cy="-18" rx="52.4466" ry="18"></ellipse> <text text-anchor="middle" x="455.12" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_spp_range_summary.csv</text> </a> </g> </g> <!-- 19 --> <g id="node11" class="node">
+<title>
+19
+</title>
+<g id="a_node11"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="301.12" cy="-18" rx="34.6458" ry="18"></ellipse> <text text-anchor="middle" x="301.12" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">am_spp_taxa.csv</text> </a> </g> </g> <!-- 1 --> <g id="node12" class="node">
 <title>
 1
 </title>
-<g id="a_node11"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="551.478,-352.8 464.763,-352.8 464.763,-316.8 551.478,-316.8 551.478,-352.8"></polygon> <text text-anchor="middle" x="508.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd</text> </a> </g> </g> <!-- 6 --> <g id="node12" class="node">
+<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="522.478,-352.8 435.763,-352.8 435.763,-316.8 522.478,-316.8 522.478,-352.8"></polygon> <text text-anchor="middle" x="479.12" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd</text> </a> </g> </g> <!-- 6 --> <g id="node13" class="node">
 <title>
 6
 </title>
-<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="514.487,-273.6 409.754,-273.6 409.754,-237.6 514.487,-237.6 514.487,-273.6"></polygon> <text text-anchor="middle" x="462.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#setup</text> </a> </g> </g> <!-- 1&#45;&gt;6 --> <g id="edge14" class="edge">
+<g id="a_node13"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="661.487,-273.6 556.754,-273.6 556.754,-237.6 661.487,-237.6 661.487,-273.6"></polygon> <text text-anchor="middle" x="609.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#setup</text> </a> </g> </g> <!-- 1&#45;&gt;6 --> <g id="edge17" class="edge">
 <title>
 1-&gt;6
 </title>
-<g id="a_edge14"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M496.573,-316.505C492.928,-310.908 488.941,-304.638 485.442,-298.8 481.526,-292.266 477.447,-285.045 473.816,-278.451"></path> <polygon fill="#665233" stroke="#665233" points="475.317,-277.548 471.382,-274.002 472.247,-279.229 475.317,-277.548"></polygon> </a> </g> <text text-anchor="middle" x="507.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;3 --> <g id="edge15" class="edge">
+<g id="a_edge17"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M507.972,-316.667C528.084,-304.723 554.967,-288.759 575.963,-276.29"></path> <polygon fill="#665233" stroke="#665233" points="576.944,-277.743 580.35,-273.685 575.157,-274.734 576.944,-277.743"></polygon> </a> </g> <text text-anchor="middle" x="569.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;3 --> <g id="edge18" class="edge">
 <title>
 1-&gt;3
 </title>
-<g id="a_edge15"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M464.771,-323.628C411.968,-311.238 321.795,-290.079 256.873,-274.845"></path> <polygon fill="#665233" stroke="#665233" points="257.119,-273.105 251.851,-273.666 256.319,-276.512 257.119,-273.105"></polygon> </a> </g> <text text-anchor="middle" x="375.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;7 --> <g id="edge16" class="edge">
+<g id="a_edge18"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M435.778,-326.366C400.266,-319.977 348.817,-310.034 304.442,-298.8 277.468,-291.971 247.925,-283.08 223.175,-275.221"></path> <polygon fill="#665233" stroke="#665233" points="223.586,-273.515 218.291,-273.664 222.523,-276.85 223.586,-273.515"></polygon> </a> </g> <text text-anchor="middle" x="326.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;7 --> <g id="edge19" class="edge">
 <title>
 1-&gt;7
 </title>
-<g id="a_edge16"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M538.081,-316.667C558.968,-304.723 586.885,-288.759 608.688,-276.29"></path> <polygon fill="#665233" stroke="#665233" points="609.772,-277.687 613.243,-273.685 608.034,-274.648 609.772,-277.687"></polygon> </a> </g> <text text-anchor="middle" x="601.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge17" class="edge">
+<g id="a_edge19"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M522.378,-321.567C566.656,-309.046 636.007,-289.435 686.938,-275.032"></path> <polygon fill="#665233" stroke="#665233" points="687.473,-276.7 691.808,-273.655 686.52,-273.332 687.473,-276.7"></polygon> </a> </g> <text text-anchor="middle" x="645.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge20" class="edge">
 <title>
 1-&gt;2
 </title>
-<g id="a_edge17"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M551.649,-320.987C592.27,-309.044 647.38,-292.879 652.442,-291.6 677.401,-285.291 704.688,-279.158 729.702,-273.833"></path> <polygon fill="#665233" stroke="#665233" points="730.145,-275.528 734.673,-272.779 729.419,-272.104 730.145,-275.528"></polygon> </a> </g> <text text-anchor="middle" x="674.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge18" class="edge">
+<g id="a_edge20"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M522.332,-326.711C589.211,-315.686 721.805,-293.613 834.12,-273.6 835.604,-273.336 837.101,-273.068 838.608,-272.797"></path> <polygon fill="#665233" stroke="#665233" points="839.158,-274.477 843.768,-271.867 838.537,-271.032 839.158,-274.477"></polygon> </a> </g> <text text-anchor="middle" x="748.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;8 --> <g id="edge21" class="edge">
+<title>
+1-&gt;8
+</title>
+<g id="a_edge21"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M449.511,-316.603C434.723,-306.23 418.279,-291.545 410.12,-273.6 386.213,-221.013 419.809,-153.551 440.678,-119.661"></path> <polygon fill="#665233" stroke="#665233" points="442.236,-120.47 443.405,-115.303 439.269,-118.613 442.236,-120.47"></polygon> </a> </g> <text text-anchor="middle" x="425.46" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge22" class="edge">
 <title>
 1-&gt;4
 </title>
-<g id="a_edge18"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M519.928,-316.698C523.144,-311.215 526.252,-304.962 528.12,-298.8 547.045,-236.388 545.805,-158.242 543.752,-120.561"></path> <polygon fill="#665233" stroke="#665233" points="545.484,-120.191 543.446,-115.302 541.99,-120.395 545.484,-120.191"></polygon> </a> </g> <text text-anchor="middle" x="564.46" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 5 --> <g id="node17" class="node">
+<g id="a_edge22"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M444.043,-316.69C435.136,-311.556 425.895,-305.489 418.12,-298.8 359.619,-248.473 323.192,-161.263 308.534,-120.457"></path> <polygon fill="#665233" stroke="#665233" points="310.009,-119.378 306.692,-115.249 306.71,-120.546 310.009,-119.378"></polygon> </a> </g> <text text-anchor="middle" x="375.46" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 5 --> <g id="node19" class="node">
 <title>
 5
 </title>
-<g id="a_node17"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/9606332936da75b515ea86cc9711b9b91bd45024"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="392.154,-273.6 272.086,-273.6 272.086,-237.6 392.154,-237.6 392.154,-273.6"></polygon> <text text-anchor="middle" x="332.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;5 --> <g id="edge19" class="edge">
+<g id="a_node19"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/b5b3ea4bf49d2acff9f0ece6103cd91d34951de3"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="539.154,-273.6 419.086,-273.6 419.086,-237.6 539.154,-237.6 539.154,-273.6"></polygon> <text text-anchor="middle" x="479.12" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_aquamaps.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;5 --> <g id="edge23" class="edge">
 <title>
 1-&gt;5
 </title>
-<g id="a_edge19"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M469.06,-316.667C441.489,-304.573 404.52,-288.357 375.943,-275.822"></path> <polygon fill="#665233" stroke="#665233" points="376.353,-274.091 371.071,-273.685 374.947,-277.296 376.353,-274.091"></polygon> </a> </g> <text text-anchor="middle" x="447.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 6&#45;&gt;8 --> <g id="edge1" class="edge">
+<g id="a_edge23"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M479.12,-316.667C479.12,-305.573 479.12,-291.009 479.12,-279.001"></path> <polygon fill="#665233" stroke="#665233" points="480.871,-278.685 479.12,-273.685 477.371,-278.685 480.871,-278.685"></polygon> </a> </g> <text text-anchor="middle" x="500.46" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 6&#45;&gt;9 --> <g id="edge1" class="edge">
 <title>
-6-&gt;8
+6-&gt;9
 </title>
-<g id="a_edge1"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M462.12,-237.467C462.12,-226.373 462.12,-211.809 462.12,-199.801"></path> <polygon fill="#665233" stroke="#665233" points="463.871,-199.485 462.12,-194.485 460.371,-199.485 463.871,-199.485"></polygon> </a> </g> <text text-anchor="middle" x="483.46" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3&#45;&gt;12 --> <g id="edge5" class="edge">
+<g id="a_edge1"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M609.12,-237.467C609.12,-226.373 609.12,-211.809 609.12,-199.801"></path> <polygon fill="#665233" stroke="#665233" points="610.871,-199.485 609.12,-194.485 607.371,-199.485 610.871,-199.485"></polygon> </a> </g> <text text-anchor="middle" x="630.46" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3&#45;&gt;13 --> <g id="edge5" class="edge">
 <title>
-3-&gt;12
+3-&gt;13
 </title>
-<g id="a_edge5"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M212.188,-237.467C238.016,-224.085 273.585,-205.656 298.491,-192.751"></path> <polygon fill="#3d6633" stroke="#3d6633" points="299.379,-194.263 303.013,-190.409 297.769,-191.155 299.379,-194.263"></polygon> </a> </g> <text text-anchor="middle" x="281.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 7&#45;&gt;14 --> <g id="edge7" class="edge">
+<g id="a_edge5"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M172.891,-237.467C176.687,-226.195 181.689,-211.342 185.77,-199.226"></path> <polygon fill="#3d6633" stroke="#3d6633" points="187.518,-199.517 187.456,-194.22 184.201,-198.4 187.518,-199.517"></polygon> </a> </g> <text text-anchor="middle" x="204.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 7&#45;&gt;15 --> <g id="edge7" class="edge">
 <title>
-7-&gt;14
+7-&gt;15
 </title>
-<g id="a_edge7"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M643.12,-237.467C643.12,-226.373 643.12,-211.809 643.12,-199.801"></path> <polygon fill="#3d6633" stroke="#3d6633" points="644.871,-199.485 643.12,-194.485 641.371,-199.485 644.871,-199.485"></polygon> </a> </g> <text text-anchor="middle" x="666.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;16 --> <g id="edge10" class="edge">
+<g id="a_edge7"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M744.797,-237.467C739.902,-226.016 733.427,-210.869 728.204,-198.651"></path> <polygon fill="#3d6633" stroke="#3d6633" points="729.772,-197.865 726.197,-193.955 726.553,-199.241 729.772,-197.865"></polygon> </a> </g> <text text-anchor="middle" x="760.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;17 --> <g id="edge10" class="edge">
 <title>
-2-&gt;16
+2-&gt;17
 </title>
-<g id="a_edge10"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M801.473,-237.467C791.305,-225.574 777.729,-209.694 767.09,-197.249"></path> <polygon fill="#3d6633" stroke="#3d6633" points="768.183,-195.834 763.603,-193.171 765.522,-198.109 768.183,-195.834"></polygon> </a> </g> <text text-anchor="middle" x="807.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 4&#45;&gt;17 --> <g id="edge13" class="edge">
+<g id="a_edge10"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M898.267,-237.467C877.812,-224.417 849.835,-206.566 829.702,-193.721"></path> <polygon fill="#3d6633" stroke="#3d6633" points="830.431,-192.111 825.275,-190.897 828.549,-195.062 830.431,-192.111"></polygon> </a> </g> <text text-anchor="middle" x="891.127" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 8&#45;&gt;18 --> <g id="edge13" class="edge">
 <title>
-4-&gt;17
+8-&gt;18
 </title>
-<g id="a_edge13"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M542.12,-79.0668C542.12,-67.9726 542.12,-53.4093 542.12,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="543.871,-41.0853 542.12,-36.0853 540.371,-41.0853 543.871,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="565.127" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
+<g id="a_edge13"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M455.12,-79.0668C455.12,-67.9726 455.12,-53.4093 455.12,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="456.871,-41.0853 455.12,-36.0853 453.371,-41.0853 456.871,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="478.127" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 4&#45;&gt;19 --> <g id="edge16" class="edge">
+<title>
+4-&gt;19
+</title>
+<g id="a_edge16"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M301.12,-79.0668C301.12,-67.9726 301.12,-53.4093 301.12,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="302.871,-41.0853 301.12,-36.0853 299.371,-41.0853 302.871,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="324.127" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
 </svg>
-<div id="htmlwidget-21dfd3ca5120b7a95d56" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-21dfd3ca5120b7a95d56">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 5 (e852aba): standard run (Mon Feb 26 08:33:28 2018)<\/caption>","data":[[0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13],["2_set_up_aquamaps.Rmd","2_set_up_aquamaps.Rmd#get_loiczid_for_scored_spp","2_set_up_aquamaps.Rmd#join_health_to_am_list","2_set_up_aquamaps.Rmd#plot_distr_of_spp_range","2_set_up_aquamaps.Rmd#prov_footer","2_set_up_aquamaps.Rmd#setup","2_set_up_aquamaps.Rmd#set_up_loiczid_raster","rast_tools.R","iucn_spp_cat_timeseries.csv","iucn_spp_cat_current.csv","speciesoccursum.csv","am_with_scores.csv","hcaf_v6.csv","loiczid_raster.tif","hcaf_v6.csv","hcaf_species_native.csv","am_spp_cells.csv","am_spp_cells.csv","am_with_scores.csv","am_spp_range_summary.csv"],["prov_footer","get_loiczid_for_scored_spp","join_health_to_am_list","plot_distr_of_spp_range","prov_footer","setup","set_up_loiczid_raster","setup","join_health_to_am_list","join_health_to_am_list","join_health_to_am_list","join_health_to_am_list","set_up_loiczid_raster","set_up_loiczid_raster","get_loiczid_for_scored_spp","get_loiczid_for_scored_spp","get_loiczid_for_scored_spp","plot_distr_of_spp_range","plot_distr_of_spp_range","plot_distr_of_spp_range"],["~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/src/R","~/github/spp_health_dists/data","~/github/spp_health_dists/data","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/github/spp_health_dists/data_setup/int","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/github/spp_health_dists/spatial","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/git-annex/spp_health_dists/am_files","~/git-annex/spp_health_dists/am_files","~/github/spp_health_dists/data_setup/int","~/github/spp_health_dists/data"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","sourced_script","input","input","input","output","input","output","input","input","output","input","input","output"],[true,true,true,true,true,true,true,null,false,false,null,true,null,false,null,null,null,null,true,null],["9606332","9606332","9606332","9606332","9606332","9606332","9606332",null,"9606332","9606332",null,"9606332",null,"9606332",null,null,null,null,"9606332",null]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d348d3fae81543327625" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d348d3fae81543327625">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 6 (850b1e3): standard run (Thu Mar 29 11:25:07 2018)<\/caption>","data":[[0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],["2_set_up_aquamaps.Rmd","2_set_up_aquamaps.Rmd#get_loiczid_for_scored_spp","2_set_up_aquamaps.Rmd#join_health_to_am_list","2_set_up_aquamaps.Rmd#plot_distr_of_spp_range","2_set_up_aquamaps.Rmd#prov_footer","2_set_up_aquamaps.Rmd#setup","2_set_up_aquamaps.Rmd#set_up_loiczid_raster","2_set_up_aquamaps.Rmd#spp_range","rast_tools.R","iucn_spp_cat_timeseries.csv","iucn_spp_cat_current.csv","speciesoccursum.csv","am_with_scores.csv","hcaf_v6.csv","loiczid_raster.tif","hcaf_v6.csv","hcaf_species_native.csv","am_spp_cells.csv","am_spp_cells.csv","am_with_scores.csv","am_spp_range_summary.csv","am_spp_cells.csv","speciesoccursum.csv","am_spp_taxa.csv"],["prov_footer","get_loiczid_for_scored_spp","join_health_to_am_list","plot_distr_of_spp_range","prov_footer","setup","set_up_loiczid_raster","spp_range","setup","join_health_to_am_list","join_health_to_am_list","join_health_to_am_list","join_health_to_am_list","set_up_loiczid_raster","set_up_loiczid_raster","get_loiczid_for_scored_spp","get_loiczid_for_scored_spp","get_loiczid_for_scored_spp","spp_range","spp_range","spp_range","plot_distr_of_spp_range","plot_distr_of_spp_range","plot_distr_of_spp_range"],["~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/src/R","~/github/spp_health_dists/data","~/github/spp_health_dists/data","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/github/spp_health_dists/data_setup/int","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/github/spp_health_dists/spatial","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/git-annex/spp_health_dists/am_files","~/git-annex/spp_health_dists/am_files","~/github/spp_health_dists/data_setup/int","~/github/spp_health_dists/data","~/git-annex/spp_health_dists/am_files","/home/shares/ohi/git-annex/globalprep/_raw_data/aquamaps/d2017/csv","~/github/spp_health_dists/data"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","sourced_script","input","input","input","output","input","output","input","input","output","input","input","output","input","input","output"],[true,true,true,true,true,true,true,true,null,false,false,null,false,null,false,null,null,null,null,false,false,null,null,null],["b5b3ea4","b5b3ea4","b5b3ea4","b5b3ea4","b5b3ea4","b5b3ea4","b5b3ea4","b5b3ea4",null,"9606332","9606332",null,"b5b3ea4",null,"9606332",null,null,null,null,"b5b3ea4","b5b3ea4",null,null,null]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 

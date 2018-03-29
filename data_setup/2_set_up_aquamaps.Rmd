@@ -31,6 +31,7 @@ dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
 
 ### goal specific folders and info
 dir_setup   <- file.path(dir_git, 'data_setup')
+dir_data    <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
 # ### provenance tracking
 library(provRmd); prov_setup()
@@ -158,11 +159,11 @@ if(!file.exists(am_spp_cells_file)) {
 
 ```
 
-## Consider excluding pelagics
+## Species ranges
 
 A rough filter based on total ocean area of species range could be useful to exclude species whose range is essentially ocean-basin-wide.  Since IUCN scores are equal over the entire range, it is difficult to see any effect of species risk from very localized pressures.
 
-``` {r plot_distr_of_spp_range}
+``` {r spp_range}
 
 am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
 
@@ -204,6 +205,50 @@ am_range_summary <- am_range_summary %>%
             by = 'am_sid')
   
 write_csv(am_range_summary, file.path(dir_git, 'data', 'am_spp_range_summary.csv'))
+```
+
+## Species taxa
+
+``` {r plot_distr_of_spp_range}
+
+am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
+
+am_spp_cells <- read_csv(am_spp_cells_file)
+
+am_taxa <- read_csv(file.path(dir_am_data, 'csv', 'speciesoccursum.csv')) %>%
+  clean_df_names() %>%
+  mutate(sciname = paste(str_trim(genus), str_trim(species))) %>%
+  select(am_sid = speciesid, sciname, common_name = fbname, 
+         kingdom, phylum, class, iucn_sid = iucn_id) %>%
+  distinct()
+
+am_taxa_sum <- am_taxa %>% 
+  group_by(kingdom, phylum) %>%
+  summarize(n_spp = n())
+
+chordata_sum <- am_taxa %>%
+  filter(phylum == 'Chordata') %>%
+  group_by(class) %>%
+  summarize(n_spp = n())
+
+taxa_groups <- am_taxa %>%
+  select(kingdom, phylum, class) %>%
+  distinct() %>%
+  mutate(taxa = case_when(kingdom == 'Plantae'  ~ 'plant',
+                          kingdom != 'Animalia' ~ 'bact/chrom/proto',
+                          phylum != 'Chordata'  ~ 'invertebrate', 
+                            ### note: one blank phylum that seems to be a fish?
+                          class == 'Mammalia'   ~ 'mammal',
+                          class == 'Aves'       ~ 'bird',
+                          str_detect(class, 'Actin|Sarc')    ~ 'bony fish',
+                          str_detect(class, 'Elasmo|Holo')   ~ 'cart fish',
+                          str_detect(class, 'Rept|Amph')     ~ 'rept/amph',
+                          TRUE ~ 'other vertebrate'))
+  
+am_taxa_sum1 <- am_taxa %>%
+  left_join(taxa_groups, by = c('kingdom', 'phylum', 'class'))
+
+write_csv(am_taxa_sum1, file.path(dir_data, 'am_spp_taxa.csv'))
 ```
 
 -----
