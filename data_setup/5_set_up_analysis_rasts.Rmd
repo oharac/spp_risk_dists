@@ -256,6 +256,45 @@ if(!file.exists(longh_to_loiczid_file)) {
 
 ```
 
+## Create EEZ raster
+
+to WGS84, to match LOICZID to EEZ presence/absence
+``` {r create_eez_rast}
+
+eez_to_loiczid_file  <- file.path(dir_git, 'data/eez_cells.csv')
+
+if(!file.exists(eez_to_loiczid_file)) {
+  
+  eez_sf <- st_read(file.path(dir_M, 'git-annex/globalprep/spatial', 
+                                    'v2017/regions_2017_update.shp'))
+  ### in Mollweide... :/
+  eez_wgs84 <- eez_sf %>% 
+    st_transform(4326) %>%
+    filter(type_w_ant == 'eez')
+  
+  # ggplot(eez_wgs84) +
+  #   geom_sf(aes(color = rgn_id))
+
+  
+  loiczid_rast_wgs84 <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+  eez_rast <- fasterize::fasterize(eez_wgs84, loiczid_rast_wgs84,
+                                         field = 'rgn_id')
+  
+  eez_rast <- eez_rast / eez_rast
+
+  eez_to_loiczid <- raster::crosstab(eez_rast, loiczid_rast_wgs84) %>%
+    as.data.frame() %>%
+    setNames(c('eez', 'loiczid', 'freq')) %>%
+    filter(freq > 0 & !is.na(eez)) %>%
+    mutate(eez = as.double(eez),
+           loiczid   = as.double(loiczid)) %>%
+    select(-freq)
+  
+  write_csv(eez_to_loiczid, eez_to_loiczid_file)
+}
+
+```
+
 ## Create U(0, 1) raster and mask to oceans
 
 IS THIS NOW OBSOLETE?  Instead, sample from the raster stack?
