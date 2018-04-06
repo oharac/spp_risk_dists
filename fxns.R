@@ -27,6 +27,105 @@ plot_map <- function(rast_df, value, plot_title, leg_title, pal = 'RdYlGn', show
   
 }
 
+
+##################################################=
+### Functions for generating regressor dataframe
+##################################################=
+
+gen_stressor_df <- function() {
+  
+  stressor_files <- list.files('stressor_to_loiczid', 
+                               # pattern = 'slr_2016|sst_2012|uv_2016|oa_2016',
+                               full.names = TRUE)
+  
+  if(exists('stressor_df')) rm(stressor_df)
+  for(stressor_file in stressor_files) {  ### stressor_file <- stressor_files[3]
+    stressor_name <- basename(stressor_file) %>%
+      str_replace('_simple.csv', '')
+    
+    # cat('Processing', stressor_name, '...\n')
+    
+    tmp <- read_csv(stressor_file, col_types = 'ddddd') %>%
+      select(-n_na, -contains('var'), -contains('zero'))
+    
+    if(!str_detect(stressor_name, '^oa|^uv|^sst|^slr')) {
+      tmp <- tmp %>%
+        mutate(stressor_mean = ifelse(is.na(stressor_mean), 0, stressor_mean))
+    }
+    tmp <- tmp %>%
+      setNames(c('loiczid', 
+                 paste0(stressor_name, '_mean')))
+    
+    if(!exists('stressor_df')) {
+      stressor_df <- tmp    ### create it the first time through the loop
+    } else {
+      stressor_df <- stressor_df %>%
+        full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+    }
+  }
+  
+  stressor_df <- stressor_df %>%
+    setNames(names(stressor_df) %>% str_replace('[0-9]{4}_', ''))
+  
+  return(stressor_df)
+  
+}
+
+gen_regression_df <- function(risk_by_cell_df, stressor_df) {
+    
+  lat_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd') %>%
+    mutate(dummyS = as.integer(lat < 0),
+           latAbs = abs(lat)) %>%
+    select(loiczid, latAbs, dummyS)
+  
+  
+  mpa1_6_df <- read_csv(file.path(dir_data, 'wdpa_i_vi_lookup.csv'), col_types = 'ddd') %>%
+    left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
+    group_by(loiczid) %>%
+    summarize(mpa1_6_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+  
+  mpa1_4_df <- read_csv(file.path(dir_data, 'wdpa_i_iv_lookup.csv'), col_types = 'ddd') %>%
+    left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
+    group_by(loiczid) %>%
+    summarize(mpa1_4_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+  
+  mpa_new_1_6_df <- read_csv(file.path(dir_data, 'wdpa_i_vi_lookup.csv'), col_types = 'ddd') %>%
+    left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
+    group_by(loiczid) %>%
+    filter(year >= 2006) %>%
+    summarize(mpa_new_1_6_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+  
+  mpa_new_1_4_df <- read_csv(file.path(dir_data, 'wdpa_i_iv_lookup.csv'), col_types = 'ddd') %>%
+    left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
+    group_by(loiczid) %>%
+    filter(year >= 2006) %>%
+    summarize(mpa_new_1_4_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+  
+  eez_df <- read_csv(file.path(dir_data, 'eez_cells.csv'))
+  
+  risk_v_stressor_df <- full_join(risk_by_cell_df, stressor_df, by = 'loiczid') %>%
+    left_join(lat_df, by = 'loiczid') %>%
+    filter(n_spp >= 5) %>%
+    # filter(!is.na(log_mean_risk)) %>%
+    filter(!is.na(mean_risk)) %>%
+    filter(!is.na(sst_mean)) %>%
+    filter(!is.na(oa_mean)) %>%
+    filter(!is.na(uv_mean)) %>%
+    left_join(eez_df, by = 'loiczid') %>%
+    left_join(mpa1_6_df, by = 'loiczid') %>%
+    left_join(mpa1_4_df, by = 'loiczid') %>%
+    left_join(mpa_new_1_6_df, by = 'loiczid') %>%
+    left_join(mpa_new_1_4_df, by = 'loiczid') %>%
+    mutate(eez         = ifelse(is.na(eez), 0, eez),
+           mpa1_6_pct  = ifelse(is.na(mpa1_6_pct), 0, mpa1_6_pct),
+           mpa1_4_pct  = ifelse(is.na(mpa1_4_pct), 0, mpa1_4_pct),
+           mpa_new_1_4_pct = ifelse(is.na(mpa_new_1_4_pct), 0, mpa_new_1_4_pct),
+           mpa_new_1_6_pct = ifelse(is.na(mpa_new_1_6_pct), 0, mpa_new_1_6_pct))
+
+  return(risk_v_stressor_df)
+}
+
+
 ##################################################=
 ### Functions for generating spatial clustering
 ##################################################=
