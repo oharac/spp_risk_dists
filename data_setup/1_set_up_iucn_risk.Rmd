@@ -190,6 +190,7 @@ if(!file.exists(spp_timeseries_file)) {
     left_join(pop_cat, by = 'cat_ts') %>%
     filter(!is.na(cat_ts_score) & !is.na(year)) %>%
     arrange(iucn_sid, year) %>%
+    select(iucn_sid, year, cat_ts, cat_ts_score) %>%
     mutate(iucn_version = api_version)
   
   write_csv(spp_past_df1, spp_timeseries_file)
