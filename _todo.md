@@ -1,39 +1,67 @@
-To Do, ideas, etc:
+General direction:
 
-- Convert all rasters to wgs84 half degree cells.
-    - easy for loiczid and lat
-    - for loiczid, create a dataframe of ocean area to compare to AquaMaps cell data
-    - for MPAs, create a dataframe of loiczid to year lookup by proportional cell area
-        - note that this will be proportion of ocean area protected by mpas
-    - for meow, same thing as mpas
-    - for CHI pressures, for each loiczid, find log mean? or regular mean?
-        - remove zeros, log, mean, exp, then weight back with zeros?
+Update of Selig 2014
 
-- Compare mean risk and/or trend to CHI pressures
-    - pressures
-        - which ones in particular? choose a few that seem interesting
-    - latitude
-        - interaction with pressures? e.g. same pressure has a greater impact at different latitudes?
-    - number of species
-        - greater species richness in a cell might mean reduced effect of pressures on mean risk due to ecosystem resilience?
-        - greater species richness will also probably reduce variance - is this just a statistical effect or can we say this has some physical meaning?
-        - there is probably decent correlation between number of species and latitude
-
-- Compare pressures to MPAs - are MPAs really helping?
-    - we should see pressures reduced in MPAs - reduced human activity 
-        - do pressures layers account for MPAs already or are they independent?
+- Original study
+    - IUCN, BLI, AM data for spp dists (~12000ish spp total) to calculate for each cell:
+        - Species richness
+        - Range rarity
+        - Relative range rarity
+    - compare to CHI overall map - 
+        - high impact (high threat - vocab here? can we frame it as a verb?  as potential for degradation etc?)
+        - low impact  (low threat)
+    - at coarse scale (hexagons at 2200 km^2?)
+- New study
+    - Add more species with updated data sets
+        - possibly "core habitat"? i.e. 60% AM abnd IUCN AOO maps?
+        - Same metrics - richness, range rarity, rel range rarity
+    - Add IUCN extinction risk
+        - mean(risk), var(risk) across all spp - to identify impacted/degraded areas
+        - threatened/endangered spp count and relative endangered spp count - another measure of conservation priority
+    - Analyze newest CHI overall impact - analyze at finer scale e.g. 1 km^2?
+    - Add in the rate of change as additional filter - bad and getting worse; pristine but getting worse.
+    - Can we incorporate acceleration into this as well? e.g. stabilizing?  or highly variable impacts?
+- SI
+    - break into taxonomic groups
+    - separate analysis by range sizes (endemism?)
+    - analyze by stressor clusters
     
-- Compare species health to MPAs 
-    - old/new MPAs
-    - number of species protected by MPAs
-    
-- Stats analyses:
-    - log-mean vs UV, OA, SST, lat, (lat > 0)
-        - do this using matrix notation, not just lm()
-        - do this focusing on non-pelagic critters, i.e. limit the range to smallish-ranged creatures
-    - estimate vs predictor
-    - variance - spatially and overall
-    - cluster robust standard errors
+- To do - spp dists only
+    - describe need - is there an overarching need for a global map of risk 
+      to biodiversity? what does this provide that others can't just do
+        - mean is easy to "get"; variance might be tougher
+        - this is basically just publishing as standalone something that has
+          been done previously in OHI assessments - what does this offer
+          above and beyond that?
+        - what additional analyses or commentary we can provide to make this
+          a valuable exercise?
+        - using IUCN subpop maps to refine
+    - update spatial data
+        - update spatial data for IUCN
+            - download from Red List spatial data site 
+                - EOO maps for comprehensively assessed species
+            - download from Red List spatial API? 
+                - Need to get a token
+                - what kind of data available? EOOs for more species? AOOs?
+            - Get data from Gina Ralph
+        - update spatial data from Bird Life International
+            - do they have AOO maps? or just EOO?
+        - update spatial data from AquaMaps
+    - can we publish this as essentially a product?
+        - using half degree cells, do we need to include AquaMaps?
+        - boosting resolution?
+            - analyze IUCN at higher resolution, e.g. quarter degree cells
+                - but flakiness of IUCN border seems to reduce value of this
+                - clipping to depth would be a good add
+            - can we do something with AquaMaps to improve without changing
+              the underlying data
+                - e.g. limit ranges to Longhurst provinces or ecoregions?
+                - reproject to .25 deg cells, using same params except 
+                  clipping to new bottom depth and maybe distance to shore
+        - is there value in doing this at 1 km^2 resolution?
+            - plays well with Cumulative Impacts... but not really any
+              additional information value at that higher res
+    - Investigate probability-weighted vs. simple clip areas
     
     
     

@@ -1,0 +1,327 @@
+---
+title: 'Regress trend vs stressor groups'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+At the LOICZID raster scale (0.5° cells), compare species risk trends to stressors layers.  Stressors are aggregated to LOICZID in a data_setup script.
+
+# Data Sources
+
+# Methods {.tabset}
+
+For each stressors group, read in the various stressor layers from stressor_to_loiczid folder.  Join them and regress them against mean trend.  In each case, limit analysis to cells with at least 5 species indicated.
+
+## Fisheries stressors
+
+``` {r fis_prs}
+
+fis_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'demersal|pelagic|artisanal',
+                            full.names = TRUE)
+
+rm(fis_stressor_df)
+for(stressor_file in fis_stressor_files) {  ### stressor_file <- fis_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('fis_stressor_df')) {
+    fis_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    fis_stressor_df <- fis_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd')
+
+trend_v_stressor_df <- full_join(trend_df, fis_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5)
+
+fis_stressor_mdl <- lm(mean_trend ~ artisanal_fishing_mean + 
+                    demersal_destructive_fishing_mean + 
+                    demersal_nondest_high_bycatch_mean +
+                    pelagic_high_bycatch_mean +
+                    pelagic_low_bycatch_mean,
+                  data = trend_v_stressor_df)
+
+summary(fis_stressor_mdl)
+
+```
+
+## Pollution stressors
+
+``` {r pollution_prs}
+
+poll_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'inorg|poll|plume',
+                            full.names = TRUE)
+
+rm(poll_stressor_df)
+for(stressor_file in poll_stressor_files) {  ### stressor_file <- poll_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('poll_stressor_df')) {
+    poll_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    poll_stressor_df <- poll_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd')
+
+trend_v_stressor_df <- full_join(trend_df, poll_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5)
+
+poll_stressor_mdl <- lm(mean_trend ~ inorganic_mean + 
+                    ocean_pollution_mean + 
+                    plumes_fert_mean +
+                    plumes_pest_mean,
+                  data = trend_v_stressor_df)
+
+summary(poll_stressor_mdl)
+
+```
+
+## Other non-climate stressors
+
+``` {r other_prs}
+
+other_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'invasive|oil_rigs|night|pop|shipping',
+                            full.names = TRUE)
+
+rm(other_stressor_df)
+for(stressor_file in other_stressor_files) {  ### stressor_file <- other_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('other_stressor_df')) {
+    other_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    other_stressor_df <- other_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd')
+
+trend_v_stressor_df <- full_join(trend_df, other_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5)
+
+other_stressor_mdl <- lm(mean_trend ~ invasives_mean + 
+                      night_lights_mean + 
+                      oil_rigs_mean +
+                      population_mean + 
+                      shipping_mean,
+                  data = trend_v_stressor_df)
+
+summary(other_stressor_mdl)
+
+```
+
+## Climate stressors
+
+``` {r cc_prs}
+
+cc_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'slr|sst|uv|acid',
+                            full.names = TRUE)
+
+rm(cc_stressor_df)
+for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('cc_stressor_df')) {
+    cc_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    cc_stressor_df <- cc_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd')
+
+lat_df <- read_csv(file.path(dir_data, 'latitude_lookup.csv'), col_types = 'dd')
+
+trend_v_stressor_df <- full_join(trend_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat)) %>%
+  filter(n_spp >= 5)
+
+cc_stressor_mdl <- lm(mean_trend ~ ocean_acidification_mean + ### on its own, R^2 = .4204
+                    slr_mean + ### on its own, R^2 ~ 0
+                    sst_mean + ### on its own, R^2 = .0321
+                    uv_mean,   ### on its own, R^2 = .1526
+                  data = trend_v_stressor_df)
+
+summary(cc_stressor_mdl)
+
+```
+
+### What about UV, ocean acidification, and latitude?
+
+UV and ocean acidification both look strongly correlated.  Add latitude to the regression model for climate stressors; UV may be correlated with latitude due to ozone hole; consider both latitude and absolute value of latitude (as a measure of symmetric distance toward poles).  Here we see that latitude on its own is a very strong predictor of trend.
+
+``` {r cc_and_lat}
+
+trend_v_stressor_df <- full_join(trend_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat)) %>%
+  filter(n_spp >= 5)
+
+cc_stressor_mdl1 <- lm(mean_trend ~ ocean_acidification_mean +
+                    slr_mean +
+                    sst_mean +
+                    uv_mean +
+                    lat_abs,
+                  data = trend_v_stressor_df)
+summary(cc_stressor_mdl1)
+
+cc_stressor_mdl2 <- lm(mean_trend ~ lat_abs,
+                  data = trend_v_stressor_df)
+summary(cc_stressor_mdl2)
+
+ggplot(trend_v_stressor_df, aes(x = uv_mean, y = mean_trend)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+ggplot(trend_v_stressor_df, aes(x = ocean_acidification_mean, y = mean_trend)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+ggplot(trend_v_stressor_df, aes(x = lat, y = uv_mean)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+ggplot(trend_v_stressor_df, aes(x = lat, y = ocean_acidification_mean)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+```
+
+``` {r plot_uv_and_mean_trend}
+
+mean_trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'), col_types = 'ddd') %>%
+  filter(n_spp >= 5)
+uv_df <- read_csv(file.path(dir_git, 'stressor_to_loiczid/uv_simple.csv'), col_types = 'ddddd')
+oa_df <- read_csv(file.path(dir_git, 'stressor_to_loiczid/ocean_acidification_simple.csv'), col_types = 'ddddd')
+
+loiczid_rast <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+
+trend_rast <- subs(loiczid_rast, mean_trend_df, by = 'loiczid', which = 'mean_trend')
+
+uv_rast <- subs(loiczid_rast, uv_df, by = 'loiczid', which = 'stressor_mean')
+oa_rast <- subs(loiczid_rast, oa_df, by = 'loiczid', which = 'stressor_mean')
+
+```
+
+### Mean trend (n_spp > 5)
+
+``` {r}
+plot(trend_rast)
+```
+
+### UV stressor 
+
+``` {r}
+plot(uv_rast)
+```
+
+### OA stressor 
+
+``` {r}
+plot(oa_rast)
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+# prov_wrapup(commit_outputs = FALSE)
+```
+

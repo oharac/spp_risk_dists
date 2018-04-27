@@ -58,29 +58,40 @@ Set up AquaMaps distributions for species with IUCN threat assessments.
 
 ## Identify AquaMaps species with valid IUCN risk assessments
 
+Gets the most recent IUCN API version and looks for those files.  If those files are not present, will not run properly; run `1_set_up_iucn_risk.Rmd` to get latest values.
+
 ``` {r join_health_to_am_list}
 
-spp_timeseries_file <- file.path(dir_git, 'data', 'iucn_spp_cat_timeseries.csv')
+api_version <- jsonlite::fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
+  .$version
 
-spp_cat_current_file <- file.path(dir_git, 'data', 'iucn_spp_cat_current.csv')
+spp_timeseries_file <- file.path(dir_git, 'data',
+                                 sprintf('iucn_risk_timeseries_%s.csv', api_version))
+
+spp_cat_current_file <- file.path(dir_git, 'data', 
+                              sprintf('iucn_risk_current_%s.csv', api_version))
 
 spp_current_ts <- read_csv(spp_timeseries_file) %>%
   group_by(iucn_sid) %>%
   filter(year == max(year)) %>%
-  select(iucn_sid, old_cat, cat = cat_ts, cat_score)
+  select(iucn_sid, cat_ts, cat_ts_score)
 
 spp_current <- read_csv(spp_cat_current_file) %>%
   filter(!is.na(iucn_sid)) %>%
-  full_join(spp_current_ts)
+  full_join(spp_current_ts) %>%
+  mutate(cat       = ifelse(is.na(cat), cat_ts, cat),
+         cat_score = ifelse(is.na(cat_score), cat_ts_score, cat_score)) %>%
+  select(iucn_sid, sciname, main_common_name, cat, cat_score) %>%
+  distinct()
 
 am_all <- read_csv(file.path(dir_am_data, 'csv', 'speciesoccursum.csv'))
 
 am_with_scores <- am_all %>%
   clean_df_names() %>%
-  select(am_sid = speciesid, am_g = genus, am_s = species, iucn_id, iucn_code) %>%
-  left_join(spp_current, by = c('iucn_id' = 'iucn_sid', 'iucn_code' = 'cat')) %>%
-  filter(!is.na(iucn_id) | !is.na(iucn_code)) %>%
-  filter(iucn_code != 'N.E.' & iucn_code != 'DD') %>%
+  select(am_sid = speciesid, am_g = genus, am_s = species, iucn_sid = iucn_id) %>%
+  inner_join(spp_current, by = c('iucn_sid')) %>%
+  mutate(sciname = ifelse(is.na(sciname), paste(am_g, am_s, sep = ' '), sciname)) %>%
+  select(-am_g, -am_s) %>%
   distinct()
 
 write_csv(am_with_scores, file.path(dir_setup, 'int/am_with_scores.csv'))
@@ -89,17 +100,17 @@ write_csv(am_with_scores, file.path(dir_setup, 'int/am_with_scores.csv'))
 
 ## Set up AquaMaps LOICZID raster
 
-This chunk sets up the LOICZID raster.
+This chunk sets up the LOICZID raster based on the AquaMaps HCAF file.
 
 ``` {r set up loiczid raster}
 
 loiczid_rast_file <- file.path(dir_git, 'spatial/loiczid_raster.tif')
 
 if(!file.exists(loiczid_rast_file)) {
-  am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv')) %>%
-    select(LOICZID, CenterLat, CenterLong) %>%
+  am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
+                                select = c('LOICZID', 'CenterLat', 'CenterLong')) %>%
     clean_df_names() %>%
-    select(x = centerlong, y = centerlat, value = loiczid)
+    rename(x = centerlong, y = centerlat, value = loiczid)
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'), filetype = 'input')
   
   loiczid_rast <- rasterFromXYZ(am_cells, crs = CRS('+init=epsg:4326'))
@@ -109,7 +120,6 @@ if(!file.exists(loiczid_rast_file)) {
   message('LOICZID raster exists: \n  ', loiczid_rast_file)
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'), filetype = 'input')
   git_prov(loiczid_rast_file, filetype = 'output')
-  
 }
 
 ```
@@ -118,7 +128,6 @@ if(!file.exists(loiczid_rast_file)) {
 
 This chunk takes the full AquaMaps species-cell lookup, cell ID lookup, and AM-to-IUCN category lookup, and creates a cleaned file of AquaMaps species-cells by LOICZID for only those species with valid IUCN categories.
 
-
 ``` {r get_loiczid_for_scored_spp}
 
 am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
@@ -126,9 +135,9 @@ am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
 if(!file.exists(am_spp_cells_file)) {
   library(data.table)
 
-  am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv')) %>%
-    select("CsquareCode", "LOICZID", "CenterLat", "CenterLong", "CellArea", 
-           "OceanArea", "PWater") %>%
+  am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
+                                select = c('CsquareCode', 'LOICZID', 'CenterLat',
+                                           'CenterLong', 'CellArea', 'OceanArea', 'PWater')) %>%
     clean_df_names() %>%
     distinct()
   
@@ -161,59 +170,66 @@ if(!file.exists(am_spp_cells_file)) {
 
 ## Species ranges
 
-A rough filter based on total ocean area of species range could be useful to exclude species whose range is essentially ocean-basin-wide.  Since IUCN scores are equal over the entire range, it is difficult to see any effect of species risk from very localized pressures.
+Species range may be used in a couple of different ways:
+
+* a rough filter to separate species by overall range
+* to calculate range rarity and relative range rarity
+    * this may also be useful in the SPP goal - i.e. rather than area-weighting species within an EEZ, use a range rarity weighting?
+        * this basically gives priority to species in an EEZ who don't live anywhere else
+        * maybe there is a min threshold for range rarity so global species (e.g. whales, tuna) don't completely drop out of the calcs
+        * global species could also be weighted based on range rarity calculated only within EEZs (i.e. don't count high seas cells in the range area)
+        
+To determine this, we can look at a few options:
+
+* range counting all cells equally, for 0% threshold and 60% threshold
+* range counting all cells by their probability of occurrence, e.g. a 1% cell with 2000 km^2 area only adds 20 km^2 to the calculation
 
 ``` {r spp_range}
 
 am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
 
-am_spp_cells <- read_csv(am_spp_cells_file)
-
-am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv')) %>%
-  select("LOICZID", "CellArea", "OceanArea", "PWater") %>%
+am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
+                              select = c('LOICZID', 'CellArea', 'OceanArea', 'PWater')) %>%
   clean_df_names() %>%
   distinct()
 
-am_range_summary <- am_spp_cells %>%
-  filter(prob >= .60) %>%
-  left_join(am_cells, by = 'loiczid') %>%
+am_spp_cells_areas <- data.table::fread(am_spp_cells_file) %>%
+  left_join(am_cells, by = 'loiczid')
+
+am_range_0_pct <- am_spp_cells_areas %>%
+  filter(prob >= 0) %>%
   group_by(am_sid) %>%
-  summarize(area_km2 = sum(oceanarea),
-            log_area = log(area_km2))
+  summarize(area_km2_0pct = sum(oceanarea))
 
-# quantile(am_range_summary$area_km2, c(0.01, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.99)) %>% round(-3)
-#        1%       10%       25%       50%       75%       90%       95%       99% 
-#     26000    188000    455000   1701000   5487000   8369000  11209000 127676000 
-       
-# max(am_range_summary$area_km2)
-#   245559322
+am_range_60_pct <- am_spp_cells_areas %>%
+  filter(prob >= .60) %>%
+  group_by(am_sid) %>%
+  summarize(area_km2_60pct = sum(oceanarea))
 
-ggplot(am_range_summary) +
+am_range_probwt <- am_spp_cells_areas %>%
+  group_by(am_sid) %>%
+  summarize(area_km2_probwt = sum(oceanarea * prob))
+
+am_range_summary <- am_range_0_pct %>%
+  left_join(am_range_60_pct, by = 'am_sid') %>%
+  left_join(am_range_probwt, by = 'am_sid')
+
+ggplot(am_range_summary %>%
+         gather(calc, area, contains('area_km2'))) +
   ggtheme_plot() +
-  geom_density(aes(x = area_km2)) +
-  geom_vline(xintercept = 15000000, color = 'red', alpha = .5)
+  geom_density(aes(x = area, color = calc)) +
+  xlim(c(0, 5e7))
 
-ggplot(am_range_summary) +
-  ggtheme_plot() +
-  geom_density(aes(x = log_area)) +
-  geom_vline(xintercept = log(15000000), color = 'red', alpha = .5)
+am_range_summary %>% summary()
 
-am_with_scores <- read_csv(file.path(dir_setup, 'int/am_with_scores.csv'))
-
-am_range_summary <- am_range_summary %>%
-  left_join(am_with_scores %>% select(am_sid, iucn_sid = iucn_id, sciname, iucn_code),
-            by = 'am_sid')
-  
 write_csv(am_range_summary, file.path(dir_git, 'data', 'am_spp_range_summary.csv'))
 ```
 
 ## Species taxa
 
+Use taxonomic data from AquaMaps to divide the species up for further analysis.
+
 ``` {r plot_distr_of_spp_range}
-
-am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
-
-am_spp_cells <- read_csv(am_spp_cells_file)
 
 am_taxa <- read_csv(file.path(dir_am_data, 'csv', 'speciesoccursum.csv')) %>%
   clean_df_names() %>%
@@ -242,7 +258,7 @@ taxa_groups <- am_taxa %>%
                           class == 'Aves'       ~ 'bird',
                           str_detect(class, 'Actin|Sarc')    ~ 'bony fish',
                           str_detect(class, 'Elasmo|Holo')   ~ 'cart fish',
-                          str_detect(class, 'Rept|Amph')     ~ 'rept/amph',
+                          str_detect(class, 'Rept|Amph')     ~ 'rept amph',
                           TRUE ~ 'other vertebrate'))
   
 am_taxa_sum1 <- am_taxa %>%

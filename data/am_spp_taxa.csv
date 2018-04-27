@@ -12984,13 +12984,13 @@ W-Cha-105440,Parasagitta elegans,NA,Animalia,Chaetognatha,Not assigned,NA,invert
 URM-M-171,Pleurobrachia pileus,sea gooseberry,Animalia,Ctenophora,Tentaculata,NA,invertebrate
 W-Cep-104906,Branchiostoma lanceolatum,NA,Animalia,Chordata,Cephalochordata,NA,other vertebrate
 W-Prl-101160,Priapulus caudatus,NA,Animalia,Priapulida,Priapulomorpha,NA,invertebrate
-Rep-2666,Caretta caretta,loggerhead turtle,Animalia,Chordata,Reptilia,3897,rept/amph
-Rep-2941,Chelonia mydas,green sea turtle,Animalia,Chordata,Reptilia,4615,rept/amph
-Rep-5181,Eretmochelys imbricata,hawksbill turtle,Animalia,Chordata,Reptilia,8005,rept/amph
-Rep-6936,Lepidochelys olivacea,Olive ridley turtle,Animalia,Chordata,Reptilia,11534,rept/amph
-Rep-4381,Dermochelys coriacea,leatherback turtle,Animalia,Chordata,Reptilia,6494,rept/amph
-Rep-6935,Lepidochelys kempii,Kemp's ridley turtle,Animalia,Chordata,Reptilia,11533,rept/amph
-Rep-3460,Crocodylus porosus,saltwater crocodile,Animalia,Chordata,Reptilia,5668,rept/amph
+Rep-2666,Caretta caretta,loggerhead turtle,Animalia,Chordata,Reptilia,3897,rept amph
+Rep-2941,Chelonia mydas,green sea turtle,Animalia,Chordata,Reptilia,4615,rept amph
+Rep-5181,Eretmochelys imbricata,hawksbill turtle,Animalia,Chordata,Reptilia,8005,rept amph
+Rep-6936,Lepidochelys olivacea,Olive ridley turtle,Animalia,Chordata,Reptilia,11534,rept amph
+Rep-4381,Dermochelys coriacea,leatherback turtle,Animalia,Chordata,Reptilia,6494,rept amph
+Rep-6935,Lepidochelys kempii,Kemp's ridley turtle,Animalia,Chordata,Reptilia,11533,rept amph
+Rep-3460,Crocodylus porosus,saltwater crocodile,Animalia,Chordata,Reptilia,5668,rept amph
 ITS-Mam-180488,Physeter macrocephalus,sperm whale,Animalia,Chordata,Mammalia,41755,mammal
 ITS-Mam-180491,Kogia breviceps,pygmy sperm whale,Animalia,Chordata,Mammalia,11047,mammal
 ITS-Mam-180492,Kogia sima,dwarf sperm whale,Animalia,Chordata,Mammalia,11048,mammal
@@ -13153,7 +13153,7 @@ W-Msc-215228,Arca navicularis,Indo-Pacific ark,Animalia,Mollusca,Bivalvia,NA,inv
 ITS-660062,Stercorarius maccormicki,south polar skua,Animalia,Chordata,Aves,22694218,bird
 SLB-88712,Lithodes murrayi,Subantarctic stone crab,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 W-Msc-207675,Tridacna maxima,elongate giant clam,Animalia,Mollusca,Bivalvia,22138,invertebrate
-Rep-6242,Hydrophis elegans,elegant seasnake,Animalia,Chordata,Reptilia,176734,rept/amph
+Rep-6242,Hydrophis elegans,elegant seasnake,Animalia,Chordata,Reptilia,176734,rept amph
 W-Msc-140463,Modiolus auriculatus,eared horse mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-140779,Atrina pectinata,comb pen shell,Animalia,Mollusca,Bivalvia,NA,invertebrate
 ITS-660061,Stercorarius antarcticus,brown skua,Animalia,Chordata,Aves,22694183,bird
@@ -13440,7 +13440,7 @@ ITS-97054,Plesionika heterocarpus,NA,Animalia,Arthropoda,Malacostraca,NA,inverte
 ITS-97064,Heterocarpus ensifer,armed nylon shrimp,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 ITS-97071,Heterocarpus dorsalis,Madagascar nylon shrimp,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 ITS-97083,Chlorotocus crassicornis,green shrimp,Animalia,Arthropoda,Malacostraca,NA,invertebrate
-ITS-97319,Acanthacaris caeca,Atlantic deep lobster,Animalia,Chordata,Reptilia,170000,rept/amph
+ITS-97319,Acanthacaris caeca,Atlantic deep lobster,Animalia,Chordata,Reptilia,170000,rept amph
 ITS-97665,Scyllarus chacei,Chace slipper lobster,Animalia,Arthropoda,Malacostraca,185042,invertebrate
 ITS-97666,Scyllarus arctus,small European locust lobster,Animalia,Arthropoda,Malacostraca,169949,invertebrate
 ITS-97682,Parribacus antarcticus,sculptured mitten lobster,Animalia,Arthropoda,Malacostraca,170071,invertebrate
@@ -13826,7 +13826,7 @@ ITS-154808,Aspidosiphon albus,NA,Animalia,Sipuncula,Phascolosomatidea,NA,inverte
 W-Bra-183339,Pelagodiscus atlanticus,NA,Animalia,Brachiopoda,Inarticulata,NA,invertebrate
 W-Bra-235385,Novocrania anomala,NA,Animalia,Brachiopoda,Inarticulata,NA,invertebrate
 W-Bra-235676,Neothyris lenticularis,NA,Animalia,Brachiopoda,Articulata,NA,invertebrate
-Rep-6750,Laticauda colubrina,yellow-lipped sea krait,Animalia,Chordata,Reptilia,176750,rept/amph
+Rep-6750,Laticauda colubrina,yellow-lipped sea krait,Animalia,Chordata,Reptilia,176750,rept amph
 SLB-49732,Phoca largha,larga seal,Animalia,Chordata,Mammalia,17023,mammal
 ITS-Mam-180515,Mesoplodon bidens,Sowerby's beaked whale,Animalia,Chordata,Mammalia,13241,mammal
 ITS-Mam-180516,Mesoplodon layardii,strap-toothed whale,Animalia,Chordata,Mammalia,13249,mammal
@@ -13887,7 +13887,7 @@ W-Msc-393904,Pecten fumatus,NA,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-422914,Ruditapes decussatus,grooved carpet shell,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-207674,Tridacna squamosa,fluted giant clam,Animalia,Mollusca,Bivalvia,22140,invertebrate
 W-Msc-504475,Trisidos tortuosa,propellor ark,Animalia,Mollusca,Bivalvia,NA,invertebrate
-Rep-383,Aipysurus laevis,olive-brown seasnake,Animalia,Chordata,Reptilia,176704,rept/amph
+Rep-383,Aipysurus laevis,olive-brown seasnake,Animalia,Chordata,Reptilia,176704,rept amph
 W-Bch-207551,Varuna litterata,oceanic paddler crab,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 W-Msc-208435,Lithophaga teres,Cylinder date mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-216652,Atrina vexillum,flag pen shell,Animalia,Mollusca,Bivalvia,NA,invertebrate
@@ -14089,7 +14089,7 @@ W-Ase-292752,Metrodira subulata,NA,Animalia,Echinodermata,Asteroidea,NA,inverteb
 SLB-158071,Petrolisthes militaris,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 W-Por-165705,Stylissa carteri,NA,Animalia,Porifera,Demospongiae,NA,invertebrate
 W-Por-165651,Acanthella cavernosa,NA,Animalia,Porifera,Demospongiae,NA,invertebrate
-Rep-2093,Boa constrictor,NA,Animalia,Chordata,Reptilia,NA,rept/amph
+Rep-2093,Boa constrictor,NA,Animalia,Chordata,Reptilia,NA,rept amph
 W-Oph-212384,Ophiocoma pica,NA,Animalia,Echinodermata,Ophiuroidea,NA,invertebrate
 W-Ase-254823,Iconaster longimanus,icon star,Animalia,Echinodermata,Asteroidea,NA,invertebrate
 W-Ase-178188,Linckia guildingi,NA,Animalia,Echinodermata,Asteroidea,NA,invertebrate
@@ -14694,10 +14694,10 @@ W-Bra-104066,Platidia anomioides,NA,Animalia,Brachiopoda,Articulata,NA,invertebr
 W-Bra-235615,Terebratalia transversa,lampshell,Animalia,Brachiopoda,Articulata,NA,invertebrate
 W-Cha-266709,Aidanosagitta oceania,arrow worm,Animalia,Chaetognatha,Not assigned,NA,invertebrate
 W-Cha-105437,Mesosagitta minima,NA,Animalia,Chaetognatha,Not assigned,NA,invertebrate
-SLB-184619,Pelamis platura,pelagic sea snake,Animalia,Chordata,Reptilia,176738,rept/amph
-Rep-3445,Crocodylus acutus,American crocodyle,Animalia,Chordata,Reptilia,5659,rept/amph
-Rep-2410,Caiman crocodilus,NA,Animalia,Chordata,Reptilia,NA,rept/amph
-Rep-196,Acrochordus granulatus,file snake,Animalia,Chordata,Reptilia,176769,rept/amph
+SLB-184619,Pelamis platura,pelagic sea snake,Animalia,Chordata,Reptilia,176738,rept amph
+Rep-3445,Crocodylus acutus,American crocodyle,Animalia,Chordata,Reptilia,5659,rept amph
+Rep-2410,Caiman crocodilus,NA,Animalia,Chordata,Reptilia,NA,rept amph
+Rep-196,Acrochordus granulatus,file snake,Animalia,Chordata,Reptilia,176769,rept amph
 ITS-Mam-180496,Berardius bairdii,Baird's beaked whale,Animalia,Chordata,Mammalia,2763,mammal
 ITS-Mam-180505,Hyperoodon planifrons,Southern bottlenose whale,Animalia,Chordata,Mammalia,10708,mammal
 ITS-Mam-180509,Mesoplodon europaeus,Gervais' beaked whale,Animalia,Chordata,Mammalia,13245,mammal
@@ -14742,9 +14742,9 @@ W-Msc-393937,Pecten novaezelandiae,scallop,Animalia,Mollusca,Bivalvia,NA,inverte
 W-Msc-464492,Pinctada maxima,silverlip pearl oyster,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-208448,Pteria penguin,penguin wing oyster,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-207670,Tridacna gigas,giant clam,Animalia,Mollusca,Bivalvia,22137,invertebrate
-Rep-379,Aipysurus duboisii,reef shallows seasnake,Animalia,Chordata,Reptilia,176748,rept/amph
-Rep-380,Aipysurus eydouxii,spine-tailed seasnake,Animalia,Chordata,Reptilia,176757,rept/amph
-Rep-6239,Hydrophis cyanocinctus,annulated sea snake,Animalia,Chordata,Reptilia,176726,rept/amph
+Rep-379,Aipysurus duboisii,reef shallows seasnake,Animalia,Chordata,Reptilia,176748,rept amph
+Rep-380,Aipysurus eydouxii,spine-tailed seasnake,Animalia,Chordata,Reptilia,176757,rept amph
+Rep-6239,Hydrophis cyanocinctus,annulated sea snake,Animalia,Chordata,Reptilia,176726,rept amph
 W-Bch-395028,Plagusia squamosa,tuberculated Sally-light-foot,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 W-Msc-504511,Glycymeris reevei,Reeve's bittersweet,Animalia,Mollusca,Bivalvia,NA,invertebrate
 ITS-174749,Phalacrocorax nigrogularis,Socotra cormorant,Animalia,Chordata,Aves,22696802,bird
@@ -14926,7 +14926,7 @@ W-Por-167984,Echinodictyum mesenterinum,NA,Animalia,Porifera,Demospongiae,NA,inv
 W-Por-169378,Iotrochota baculifera,purple-staining sponge,Animalia,Porifera,Demospongiae,NA,invertebrate
 W-Bch-238404,Arcania gracilis,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 W-Ech-214457,Pseudoboletia indiana,NA,Animalia,Echinodermata,Echinoidea,NA,invertebrate
-ITS-773729,Rhinella marina,marine toad,Animalia,Chordata,Amphibia,NA,rept/amph
+ITS-773729,Rhinella marina,marine toad,Animalia,Chordata,Amphibia,NA,rept amph
 W-Ase-213299,Fromia milleporella,NA,Animalia,Echinodermata,Asteroidea,NA,invertebrate
 SLB-158070,Petrolisthes lamarckii,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 SLB-158287,Raphidopus ciliatus,hairy-leg porcelain crab,Animalia,Arthropoda,Malacostraca,NA,invertebrate
@@ -15536,8 +15536,8 @@ W-Bch-442920,Thalamita spinimana,spiny claw swimming crab,Animalia,Arthropoda,Ma
 W-Bch-208826,Charybdis annulata,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 SLB-88643,Aulacomya ater,Chilean ribbed mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-504474,Trisidos semitorta,half-propellor ark,Animalia,Mollusca,Bivalvia,NA,invertebrate
-SLB-88877,Enhydrina schistosa,beaked sea snake,Animalia,Chordata,Reptilia,176719,rept/amph
-SLB-88909,Hydrophis ornatus,ornate reef seasnake,Animalia,Chordata,Reptilia,176737,rept/amph
+SLB-88877,Enhydrina schistosa,beaked sea snake,Animalia,Chordata,Reptilia,176719,rept amph
+SLB-88909,Hydrophis ornatus,ornate reef seasnake,Animalia,Chordata,Reptilia,176737,rept amph
 W-Msc-214951,Modiolus philippinarum,Philippine horse mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-506190,Stavelia subdistorta,distorted mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-208462,Isognomon ephippium,saddle tree oyster,Animalia,Mollusca,Bivalvia,NA,invertebrate
@@ -16269,7 +16269,7 @@ W-Bra-235704,Campages furcifera,NA,Animalia,Brachiopoda,Articulata,NA,invertebra
 W-Cha-105415,Eukrohnia fowleri,NA,Animalia,Chaetognatha,Not assigned,NA,invertebrate
 W-Cha-105441,Parasagitta friderici,NA,Animalia,Chaetognatha,Not assigned,NA,invertebrate
 W-Cep-214516,Branchiostoma belcheri,NA,Animalia,Chordata,Cephalochordata,NA,other vertebrate
-Rep-8732,Natator depressa,flatback turtle,Animalia,Chordata,Reptilia,14363,rept/amph
+Rep-8732,Natator depressa,flatback turtle,Animalia,Chordata,Reptilia,14363,rept amph
 ITS-Mam-180636,Arctocephalus townsendi,Guadalupe fur seal,Animalia,Chordata,Mammalia,2061,mammal
 ITS-Mam-180411,Pontoporia blainvillei,franciscana,Animalia,Chordata,Mammalia,17978,mammal
 ITS-Mam-180451,Cephalorhynchus heavisidii,Heaviside's dolphin,Animalia,Chordata,Mammalia,4161,mammal
@@ -16311,9 +16311,9 @@ W-Msc-367822,Perna viridis,Asian brown mussel,Animalia,Mollusca,Bivalvia,NA,inve
 SLB-88791,Plesiopenaeus edwardsianus,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 SLB-88793,Pollicipes pollicipes,stalked barnacle,Animalia,Arthropoda,Maxillopoda,NA,invertebrate
 W-Msc-367756,Ruditapes philippinarum,Japanese carpet shell,Animalia,Mollusca,Bivalvia,NA,invertebrate
-Rep-6276,Hydrophis spiralis,yellow sea snake,Animalia,Chordata,Reptilia,176717,rept/amph
-SLB-88920,Lapemis curtus,Hardwicke's spine-bellied seasnake,Animalia,Chordata,Reptilia,176746,rept/amph
-Rep-6754,Laticauda laticaudata,brown-lipped sea krait,Animalia,Chordata,Reptilia,176771,rept/amph
+Rep-6276,Hydrophis spiralis,yellow sea snake,Animalia,Chordata,Reptilia,176717,rept amph
+SLB-88920,Lapemis curtus,Hardwicke's spine-bellied seasnake,Animalia,Chordata,Reptilia,176746,rept amph
+Rep-6754,Laticauda laticaudata,brown-lipped sea krait,Animalia,Chordata,Reptilia,176771,rept amph
 W-Bch-210291,Cardisoma carnifex,brown land crab,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 ITS-174747,Phalacrocorax neglectus,bank cormorant,Animalia,Chordata,Aves,22696766,bird
 W-Msc-394350,Decatopecten amiculum,cloak scallop,Animalia,Mollusca,Bivalvia,NA,invertebrate
@@ -16496,7 +16496,7 @@ W-Bch-209576,Gomeza bicornis,masked burrowing crab,Animalia,Arthropoda,Malacostr
 SLB-118765,Liotina peronii,NA,Animalia,Mollusca,Gastropoda,NA,invertebrate
 W-Msc-216265,Neritopsis radula,radula nerite,Animalia,Mollusca,Gastropoda,NA,invertebrate
 W-Msc-208494,Chama brassica,NA,Animalia,Mollusca,Bivalvia,NA,invertebrate
-Rep-6256,Hydrophis macdowelli,McDowell's sea snake,Animalia,Chordata,Reptilia,176745,rept/amph
+Rep-6256,Hydrophis macdowelli,McDowell's sea snake,Animalia,Chordata,Reptilia,176745,rept amph
 SLB-144214,Sargassum polycystum,Rough-stemmed sargassum,Chromista,Ochrophyta,Phaeophyceae,NA,bact/chrom/proto
 SLB-142689,Chlorodesmis fastigiata,turtle weed,Plantae,Chlorophyta,Bryopsidophyceae,NA,plant
 SLB-145880,Caulerpa verticillata,NA,Plantae,Chlorophyta,Bryopsidophyceae,NA,plant
@@ -17129,9 +17129,9 @@ SLB-88753,Paralomis spinosissima,Antarctic stone crab,Animalia,Arthropoda,Malaco
 W-Msc-382205,Tridacna derasa,smooth giant clam,Animalia,Mollusca,Bivalvia,22136,invertebrate
 W-Msc-504339,Scapharca pilula,pill ark,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Bch-442077,Schizophrys dama,pronghorn decorator crab,Animalia,Arthropoda,Malacostraca,NA,invertebrate
-SLB-88859,Astrotia stokesii,Stokes' sea snake,Animalia,Chordata,Reptilia,176708,rept/amph
-Rep-4964,Emydocephalus annulatus,turtle-headed seasnake,Animalia,Chordata,Reptilia,176720,rept/amph
-Rep-6233,Hydrophis caerulescens,dwarf seasnake,Animalia,Chordata,Reptilia,176715,rept/amph
+SLB-88859,Astrotia stokesii,Stokes' sea snake,Animalia,Chordata,Reptilia,176708,rept amph
+Rep-4964,Emydocephalus annulatus,turtle-headed seasnake,Animalia,Chordata,Reptilia,176720,rept amph
+Rep-6233,Hydrophis caerulescens,dwarf seasnake,Animalia,Chordata,Reptilia,176715,rept amph
 W-Msc-213523,Tucetona pectunculus,scalloplike bittersweet shell,Animalia,Mollusca,Bivalvia,NA,invertebrate
 SLB-88981,Modiolus aratus,furrowed horse mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 ITS-176932,Sterna sandvicensis,sandwich tern,Animalia,Chordata,Aves,22694591,bird
@@ -17879,7 +17879,7 @@ ITS-156744,Barentsia gracilis,NA,Animalia,Kamptozoa,Not assigned,NA,invertebrate
 W-Cha-266257,Parasagitta tenuis,NA,Animalia,Chaetognatha,Not assigned,NA,invertebrate
 W-Cep-212957,Epigonichthys cultellus,NA,Animalia,Chordata,Cephalochordata,NA,other vertebrate
 W-Prl-265143,Priapulopsis australis,NA,Animalia,Priapulida,Priapulomorpha,NA,invertebrate
-Rep-455,Amblyrhynchus cristatus,marine iguana,Animalia,Chordata,Reptilia,1086,rept/amph
+Rep-455,Amblyrhynchus cristatus,marine iguana,Animalia,Chordata,Reptilia,1086,rept amph
 ITS-Mam-180633,Arctocephalus australis,South American fur seal,Animalia,Chordata,Mammalia,2055,mammal
 ITS-Mam-180512,Mesoplodon carlhubbsi,Hubb's beaked whale,Animalia,Chordata,Mammalia,13243,mammal
 ITS-Mam-180455,Lissodelphis peronii,Southern right whale dolphin,Animalia,Chordata,Mammalia,12126,mammal
@@ -18677,8 +18677,8 @@ W-Msc-504346,Scapharca cornea,corneous ark,Animalia,Mollusca,Bivalvia,NA,inverte
 W-Msc-207660,Haliotis midae,perlemoen abalone,Animalia,Mollusca,Gastropoda,NA,invertebrate
 W-Msc-506159,Mytilus coruscus,Far eastern mussel,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-413374,Turbo sarmaticus,giant periwrinkle,Animalia,Mollusca,Gastropoda,NA,invertebrate
-SLB-88849,Acalyptophis peronii,spiny-headed seasnake,Animalia,Chordata,Reptilia,176756,rept/amph
-Rep-6237,Hydrophis coggeri,Cogger's sea snake,Animalia,Chordata,Reptilia,176743,rept/amph
+SLB-88849,Acalyptophis peronii,spiny-headed seasnake,Animalia,Chordata,Reptilia,176756,rept amph
+Rep-6237,Hydrophis coggeri,Cogger's sea snake,Animalia,Chordata,Reptilia,176743,rept amph
 ITS-723253,Calonectris edwardsii,Cape Verde shearwater,Animalia,Chordata,Aves,22729421,bird
 ITS-561969,Phalacrocorax harrisi,flightless cormorant,Animalia,Chordata,Aves,22696756,bird
 SLB-89230,Spondylus barbatus,bearded thorny oyster,Animalia,Mollusca,Bivalvia,NA,invertebrate
@@ -20960,7 +20960,7 @@ W-Msc-386036,Lepidozona coreanica,Korean chiton,Animalia,Mollusca,Polyplacophora
 W-Msc-504351,Scapharca globosa,globose ark,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-393716,Mizuhopecten yessoensis,large weathervane scallop,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-504357,Anadara broughtonii,NA,Animalia,Mollusca,Bivalvia,NA,invertebrate
-Rep-6257,Disteira major,olive-headed seasnake,Animalia,Chordata,Reptilia,176729,rept/amph
+Rep-6257,Disteira major,olive-headed seasnake,Animalia,Chordata,Reptilia,176729,rept amph
 W-Msc-504639,Estellacar olivacea,olive ark,Animalia,Mollusca,Bivalvia,NA,invertebrate
 ITS-561967,Phalacrocorax featherstoni,Pitt Island shag,Animalia,Chordata,Aves,22696907,bird
 SLB-89357,Verongula rigida,pitted sponge,Animalia,Porifera,Demospongiae,NA,invertebrate
@@ -23076,7 +23076,7 @@ SLB-131044,Prionalpheus sulu,NA,Animalia,Arthropoda,Malacostraca,NA,invertebrate
 SLB-88658,Chlamys farreri,Farrer's scallop,Animalia,Mollusca,Bivalvia,NA,invertebrate
 SLB-88659,Chlamys nobilis,noble scallop,Animalia,Mollusca,Bivalvia,NA,invertebrate
 W-Msc-367843,Mesodesma donacium,Macha clam,Animalia,Mollusca,Bivalvia,NA,invertebrate
-Rep-6240,Hydrophis czeblukovi,fine-spined seasnake,Animalia,Chordata,Reptilia,176730,rept/amph
+Rep-6240,Hydrophis czeblukovi,fine-spined seasnake,Animalia,Chordata,Reptilia,176730,rept amph
 SLB-103041,Metaverruca trisulcata,NA,Animalia,Arthropoda,Maxillopoda,NA,invertebrate
 W-Por-169757,Plakinastrella onkodes,NA,Animalia,Porifera,Demospongiae,NA,invertebrate
 SLB-89400,Agelas conifera,brown tube sponge,Animalia,Porifera,Demospongiae,NA,invertebrate

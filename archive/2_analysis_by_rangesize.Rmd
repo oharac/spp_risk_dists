@@ -1,0 +1,456 @@
+---
+title: Impacts of global climate stressors and marine protected areas on biodiversity risk
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output:
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    includes:
+      in_header: ~/github/src/templates/ohara_hdr.html
+    number_sections: no
+    theme: cerulean
+    toc: no
+    toc_depth: 3
+    toc_float: no
+  word_document:
+    toc: no
+  pdf_document:
+    toc: no
+    latex_engine: xelatex
+header-includes: 
+  - \usepackage{float}
+---
+
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(kableExtra)
+# library(stargazer)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+source('fxns.R')
+
+```
+
+
+## Methods 
+
+### Preparing data layers
+
+``` {r mean_risk_raster}
+
+### gotta force the mean_risk column to be double; there are lots of zero
+### values so will default to thinking that column is integer.
+risk_by_cell_df <- read_csv(file.path(dir_data, 'risk_by_cell_by_range.csv'),
+                         col_types = 'dcdd') %>%
+  filter(n_spp >= 5) %>%
+  mutate(mean_risk = 100 * mean_risk)
+
+
+for(gp in risk_by_cell_df$range_gp %>% unique()) {
+  tmp_df <- risk_by_cell_df %>%
+    filter(range_gp == gp)
+  
+  risk_map <- plot_map(tmp_df, 'mean_risk', 
+                       leg_title = 'Mean Risk',
+                       plot_title = paste0('Mean extinction risk, range = ', gp))
+  
+  print(risk_map)
+
+  nspp_map <- plot_map(tmp_df, 'n_spp', 
+                       leg_title = 'N spp',
+                       plot_title = paste0('# of included spp, range = ', gp),
+                       pal = 'RdYlBu')
+  
+  print(nspp_map)
+}
+
+```
+
+
+``` {r cc_rasts}
+
+stressor_df <- gen_stressor_df()
+
+```
+
+### Regression
+
+``` {r create_data_frame}
+
+### use stressor_df and risk_by_cell_df from before
+
+risk_v_stressor_df <- gen_regression_df(risk_by_cell_df, stressor_df)
+
+```
+
+### Spatial clustering on marine ecoregions
+
+Clustering our observations by marine ecoregions, we can determine a clustered robust covariance matrix estimator analogous to the robust adjusted White estimator:
+$$\mathbf{\widehat{V}_{\widehat\beta_{cluster}}} = a_n(\mathbf{X'X})^{-1}\widehat\Omega_n (\mathbf{X'X})^{-1}$$
+where
+$$\widehat\Omega_n = \sum_{g=1}^G \mathbf{X_g'\hat e_g \hat e_g' X_g}$$
+and 
+$$a_n = \left(\frac{n-1}{n-k}\right)\left(\frac{G}{G-1}\right)$$
+
+
+We can also calculate an alternative cluster-robust covariance matrix estimator based on cluster-level prediction errors and a leave-one-cluster-out type of process, as detailed in Hansen:
+$$\mathbf{\widetilde{V}_{\widehat\beta_{cluster}}} = (\mathbf{X'X})^{-1}\left(\sum_{g=1}^G \mathbf{X'}_g \widetilde e_g \widetilde e_g' \mathbf{X}_g \right) (\mathbf{X'X})^{-1}$$
+
+where 
+
+$$\widetilde e_g = \mathbf{y}_g - \mathbf{X}_g \widehat \beta_{-g}$$
+
+#### Cluster-robust standard errors
+
+Calculating standard errors from the square root of the diagonal of the covariance matrix estimators based upon a simple marine ecoregion clustering:
+
+$$s(\widehat\beta_{j}) = \sqrt{\mathbf{\widehat{V}_{\widehat\beta_j}}} = \sqrt{[\mathbf{\widehat{V}_{\widehat\beta}}]_{jj}}$$
+
+Calculate standard errors based on adjusted clusters; this should aggregate ecoregions that are too small and divide ecoregions that are too large.  For these let's focus on the entire range, not just the coastal range; therefore let's use the Longhurst provinces as a clustering input.
+
+### Small range organisms
+
+``` {r cluster_on_small_range}
+
+risk_small_range_df <- risk_v_stressor_df %>%
+  filter(range_gp == 'small') %>%
+  filter(n_spp >= 5)
+### 31740 cells --> 150 clusters is fine
+
+longh_lookup <- read_csv(file.path(dir_data, 'longhurst_cells.csv'))
+rgn_df <- risk_small_range_df %>%
+  left_join(longh_lookup, by = 'loiczid') %>%
+  select(loiczid, longhurst)
+
+clust_df <- gen_clusters(rgn_df, rgn_wt = 3, 
+                       n_clusts = 100, 
+                       n_starts = 25)
+
+##############################################=
+### Quality check the generated clusters
+##############################################=
+
+cell_count <- clust_df %>%
+  group_by(id_adj) %>%
+  summarize(n_cells = n())
+
+cell_count_summary <- summary(cell_count$n_cells) %>%
+  broom::tidy()
+
+knitr::kable(cell_count_summary, format = 'html',
+             caption = 'Cell counts per adjusted cluster (small range)') %>%
+  kable_styling('striped', full_width = FALSE)
+
+### Plot but with randomized region IDs to vary the colors...
+tmp <- clust_df$id_adj %>% unique()
+rnd_ids <- data.frame(old_id = tmp,
+                      new_id = sample(tmp, length(tmp), replace = FALSE))
+clust_df_plot <- clust_df %>%
+  left_join(rnd_ids, by = c('id_adj' = 'old_id'))
+  
+clust_map <- plot_map(clust_df_plot, 'new_id', 
+                      leg_title = 'Clusters',
+                      plot_title = 'Adjusted clustering (small range)',
+                      pal = 'RdYlBu',
+                      show.legend = FALSE)
+print(clust_map)
+
+##############################################=
+### Calculate the covariance matrix V tilde
+##############################################=
+cluster_df <- risk_small_range_df %>%
+  left_join(clust_df, by = c('loiczid'))
+
+y <- cluster_df$mean_risk
+
+### what if I remove the interaction terms?
+X <- cluster_df %>%
+  mutate(# oa_S  = oa_mean * dummyS,
+         # sst_S = sst_mean * dummyS,
+         # uv_S  = uv_mean * dummyS,
+         # latS  = latAbs * dummyS,
+         const = 1) %>%
+  select(-loiczid, -mean_risk, -range_gp, -id_adj) %>%
+  as.matrix()
+
+clust_vec <- cluster_df$id_adj
+
+### Calculate Beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat <- Xt_X %*% Xt_y
+
+V_tilde_k <- calc_V_tilde(X, y, clust_vec)
+
+se_tilde_k <- diag(V_tilde_k) %>% sqrt()
+
+##############################################=
+### Calculate the covariance matrix V hat
+##############################################=
+
+V_hat_k <- calc_V_hat(X, y, clust_vec)
+
+se_hat_k <- sqrt(diag(V_hat_k))
+
+```
+
+``` {r results_small, eval = TRUE}
+
+beta_se_df <- data.frame(estimate = rownames(beta_hat),
+                         beta_hat,
+                         se_hat_k,
+                         se_tilde_k) %>%
+  mutate(t_hat_k    = round(beta_hat / se_hat_k, 2) %>% abs(),
+         t_tilde_k  = round(beta_hat / se_tilde_k, 2) %>% abs(),
+         se_tilde_k = round(se_tilde_k, 4),
+         se_hat_k   = round(se_hat_k, 4),
+         beta_hat   = round(beta_hat, 2)) %>%
+  arrange(desc(t_tilde_k))
+
+knitr::kable(beta_se_df,  format = 'html',
+             caption = 'Cluster robust std errors (small range)',
+             col.names = c('Estimate', 'B^', 
+                           'se^(cl)',
+                           'se~(cl)',
+                           't^(cl)',
+                           't~(cl)')) %>%
+  kable_styling('striped', full_width = FALSE)
+
+```
+
+
+### Medium range organisms
+
+``` {r cluster_on_med_range}
+
+risk_small_range_df <- risk_v_stressor_df %>%
+  filter(range_gp == 'medium') %>%
+  filter(n_spp >= 5)
+
+longh_lookup <- read_csv(file.path(dir_data, 'longhurst_cells.csv'))
+rgn_df <- risk_small_range_df %>%
+  left_join(longh_lookup, by = 'loiczid') %>%
+  select(loiczid, longhurst)
+
+clust_df <- gen_clusters(rgn_df, rgn_wt = 3, 
+                       n_clusts = 100, 
+                       n_starts = 25)
+
+##############################################=
+### Quality check the generated clusters
+##############################################=
+
+cell_count <- clust_df %>%
+  group_by(id_adj) %>%
+  summarize(n_cells = n())
+
+cell_count_summary <- summary(cell_count$n_cells) %>%
+  broom::tidy()
+
+knitr::kable(cell_count_summary, format = 'html',
+             caption = 'Cell counts per adjusted cluster (med range)') %>%
+  kable_styling('striped', full_width = FALSE)
+
+### Plot but with randomized region IDs to vary the colors...
+tmp <- clust_df$id_adj %>% unique()
+rnd_ids <- data.frame(old_id = tmp,
+                      new_id = sample(tmp, length(tmp), replace = FALSE))
+clust_df_plot <- clust_df %>%
+  left_join(rnd_ids, by = c('id_adj' = 'old_id'))
+  
+clust_map <- plot_map(clust_df_plot, 'new_id', 
+                      leg_title = 'Clusters',
+                      plot_title = 'Adjusted clustering (med range)',
+                      pal = 'RdYlBu',
+                      show.legend = FALSE)
+print(clust_map)
+
+##############################################=
+### Calculate the covariance matrix V tilde
+##############################################=
+cluster_df <- risk_small_range_df %>%
+  left_join(clust_df, by = c('loiczid'))
+
+y <- cluster_df$mean_risk
+
+### what if I remove the interaction terms?
+X <- cluster_df %>%
+  mutate(# oa_S  = oa_mean * dummyS,
+         # sst_S = sst_mean * dummyS,
+         # uv_S  = uv_mean * dummyS,
+         # latS  = latAbs * dummyS,
+         const = 1) %>%
+  select(-loiczid, -mean_risk, -range_gp, -id_adj) %>%
+  as.matrix()
+
+clust_vec <- cluster_df$id_adj
+
+### Calculate Beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat <- Xt_X %*% Xt_y
+
+V_tilde_k <- calc_V_tilde(X, y, clust_vec)
+
+se_tilde_k <- diag(V_tilde_k) %>% sqrt()
+
+##############################################=
+### Calculate the covariance matrix V hat
+##############################################=
+
+V_hat_k <- calc_V_hat(X, y, clust_vec)
+
+se_hat_k <- sqrt(diag(V_hat_k))
+
+```
+
+``` {r results_med, eval = TRUE}
+
+beta_se_df <- data.frame(estimate = rownames(beta_hat),
+                         beta_hat,
+                         se_hat_k,
+                         se_tilde_k) %>%
+  mutate(t_hat_k    = round(beta_hat / se_hat_k, 2) %>% abs(),
+         t_tilde_k  = round(beta_hat / se_tilde_k, 2) %>% abs(),
+         se_tilde_k = round(se_tilde_k, 4),
+         se_hat_k   = round(se_hat_k, 4),
+         beta_hat   = round(beta_hat, 2)) %>%
+  arrange(desc(t_tilde_k))
+
+knitr::kable(beta_se_df,  format = 'html',
+             caption = 'Cluster robust std errors (med range)',
+             col.names = c('Estimate', 'B^', 
+                           'se^(cl)',
+                           'se~(cl)',
+                           't^(cl)',
+                           't~(cl)')) %>%
+  kable_styling('striped', full_width = FALSE)
+
+```
+
+### Large range organisms
+
+``` {r cluster_on_lg_range}
+
+risk_small_range_df <- risk_v_stressor_df %>%
+  filter(range_gp == 'large') %>%
+  filter(n_spp >= 5)
+
+longh_lookup <- read_csv(file.path(dir_data, 'longhurst_cells.csv'))
+rgn_df <- risk_small_range_df %>%
+  left_join(longh_lookup, by = 'loiczid') %>%
+  select(loiczid, longhurst)
+
+clust_df <- gen_clusters(rgn_df, rgn_wt = 3, 
+                       n_clusts = 100, 
+                       n_starts = 25)
+
+##############################################=
+### Quality check the generated clusters
+##############################################=
+
+cell_count <- clust_df %>%
+  group_by(id_adj) %>%
+  summarize(n_cells = n())
+
+cell_count_summary <- summary(cell_count$n_cells) %>%
+  broom::tidy()
+
+knitr::kable(cell_count_summary, format = 'html',
+             caption = 'Cell counts per adjusted cluster (large range)') %>%
+  kable_styling('striped', full_width = FALSE)
+
+### Plot but with randomized region IDs to vary the colors...
+tmp <- clust_df$id_adj %>% unique()
+rnd_ids <- data.frame(old_id = tmp,
+                      new_id = sample(tmp, length(tmp), replace = FALSE))
+clust_df_plot <- clust_df %>%
+  left_join(rnd_ids, by = c('id_adj' = 'old_id'))
+  
+clust_map <- plot_map(clust_df_plot, 'new_id', 
+                      leg_title = 'Clusters',
+                      plot_title = 'Adjusted clustering (large range)',
+                      pal = 'RdYlBu',
+                      show.legend = FALSE)
+print(clust_map)
+
+##############################################=
+### Calculate the covariance matrix V tilde
+##############################################=
+cluster_df <- risk_small_range_df %>%
+  left_join(clust_df, by = c('loiczid'))
+
+y <- cluster_df$mean_risk
+
+### what if I remove the interaction terms?
+X <- cluster_df %>%
+  mutate(# oa_S  = oa_mean * dummyS,
+         # sst_S = sst_mean * dummyS,
+         # uv_S  = uv_mean * dummyS,
+         # latS  = latAbs * dummyS,
+         const = 1) %>%
+  select(-loiczid, -mean_risk, -range_gp, -id_adj) %>%
+  as.matrix()
+
+clust_vec <- cluster_df$id_adj
+
+### Calculate Beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat <- Xt_X %*% Xt_y
+
+V_tilde_k <- calc_V_tilde(X, y, clust_vec)
+
+se_tilde_k <- diag(V_tilde_k) %>% sqrt()
+
+##############################################=
+### Calculate the covariance matrix V hat
+##############################################=
+
+V_hat_k <- calc_V_hat(X, y, clust_vec)
+
+se_hat_k <- sqrt(diag(V_hat_k))
+
+```
+
+``` {r results_lg, eval = TRUE}
+
+beta_se_df <- data.frame(estimate = rownames(beta_hat),
+                         beta_hat,
+                         se_hat_k,
+                         se_tilde_k) %>%
+  mutate(t_hat_k    = round(beta_hat / se_hat_k, 2) %>% abs(),
+         t_tilde_k  = round(beta_hat / se_tilde_k, 2) %>% abs(),
+         se_tilde_k = round(se_tilde_k, 4),
+         se_hat_k   = round(se_hat_k, 4),
+         beta_hat   = round(beta_hat, 2)) %>%
+  arrange(desc(t_tilde_k))
+
+knitr::kable(beta_se_df,  format = 'html',
+             caption = 'Cluster robust std errors (large range)',
+             col.names = c('Estimate', 'B^', 
+                           'se^(cl)',
+                           'se~(cl)',
+                           't^(cl)',
+                           't~(cl)')) %>%
+  kable_styling('striped', full_width = FALSE)
+
+```
