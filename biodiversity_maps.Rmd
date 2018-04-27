@@ -84,7 +84,8 @@ We can consider species presence in several ways:
 spp_richness_file <- file.path(dir_data, 'am_all_spp_richness.csv')
 
 if(!file.exists(spp_richness_file)) {
-  am_spp_cells <- fread(file.path(dir_o_anx, 'am_files/am_spp_cells_all.csv'))
+  am_spp_cells <- fread(file.path(dir_o_anx, 'am_files/am_spp_cells_all.csv'),
+                        verbose = FALSE)
   
   spp_richness_0pct_probwt <- am_spp_cells %>%
     group_by(loiczid) %>%
@@ -146,7 +147,8 @@ spp_rarity_file <- file.path(dir_data, 'am_all_spp_rarity.csv')
 
 if(!file.exists(spp_rarity_file)) {
   if(!exists('am_spp_cells')) {
-    am_spp_cells <- fread(file.path(dir_o_anx, 'am_files/am_spp_cells_all.csv'))
+    am_spp_cells <- fread(file.path(dir_o_anx, 'am_files/am_spp_cells_all.csv'),
+                          verbose = FALSE)
   }
   
   am_spp_ranges <- read_csv(file.path(dir_data, 'am_spp_range_summary.csv'))
@@ -233,11 +235,15 @@ plot(rel_rare_rast_probwt, main = 'Rel range rarity, All spp, weighted by prob o
 
 ### Aggregate mean risk and variance by cell
 
-Here we will use a probability threshold of 0.60 to determine species presence.  We filter out any species with NA for iucn_sid or cat_score.
+As in the species richness and rarity calculations, we will calculate mean risk using three different considerations of species presence: all presence (non-zero probability of occurrence), "core habitat" (60% or greater prob of occurrence), and probability-weighted.
+
+This binds rows into a long dataframe, but the saved file is rather large.  By rounding the decimals a bit, we can shave off quite a bit of file size.
 
 ``` {r create_df_of_mean_risk_by_cell}
 
-cell_risk_file <- file.path(dir_data, 'risk_by_cell_all.csv')
+iucn_version <- '2017-3'
+
+cell_risk_file <- file.path(dir_data, sprintf('risk_by_cell_all_%s.csv', iucn_version))
 
 
 iucn_to_am_lookup <- read_csv(file.path(dir_setup, 'int', 
@@ -245,65 +251,92 @@ iucn_to_am_lookup <- read_csv(file.path(dir_setup, 'int',
   select(am_sid = speciesid, iucn_sid = iucn_id) %>%
   distinct()
 
-spp_current_risk <- read_csv(file.path(dir_data, 'iucn_spp_cat_current.csv')) %>%
+spp_current_risk <- read_csv(file.path(dir_data, 
+                                       sprintf('iucn_risk_current_%s.csv', iucn_version))) %>%
   select(iucn_sid, cat, cat_score) %>%
   left_join(iucn_to_am_lookup, by = 'iucn_sid') %>%
   as.data.table()
 
-if(!exists('spp_cells')) {
-  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'))
-}
+spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells_assessed.csv'),
+                   verbose = FALSE)
 # git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
 
 ### using data.table join:
-spp_cells_risk <- spp_current_risk[spp_cells, on = 'am_sid']
+spp_cells_risk <- spp_current_risk[spp_cells, on = 'am_sid'] %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid))
 
-spp_cells_risk_sum <- spp_cells_risk %>%
+spp_cells_risk_sum_0pct <- spp_cells_risk %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
+  # filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp     = n(), 
+            mean_risk = mean(cat_score),
+            var_risk  = var(cat_score),
+            presence  = '0%')
+
+spp_cells_risk_sum_60pct <- spp_cells_risk %>%
   filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
   filter(prob >= 0.60) %>%
   group_by(loiczid) %>%
-  summarize(n_spp = n(), 
+  summarize(n_spp     = n(), 
             mean_risk = mean(cat_score),
-            var_risk  = var(cat_score))
+            var_risk  = var(cat_score),
+            presence  = '60%')
+
+### For the prob weighted calculations, weight the mean and var:
+###     mean = 1/n * sum(y)
+### ==> mean = 1/sum(prob) * sum(y * prob)
+###      var = 1/n * sum[y - E(y)]^2
+### ==>  var = 1/sum(prob) * sum([y - E(y)]^2 * prob)
+spp_cells_risk_sum_probwt <- spp_cells_risk %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
+  # filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp     = sum(prob),
+            mean_risk = 1/n_spp * sum(cat_score * prob),
+            var_risk  = 1/n_spp * sum((cat_score - mean_risk)^2 * prob),
+            presence  = 'prob')
+
+spp_cells_risk_sum <- bind_rows(spp_cells_risk_sum_0pct, 
+                                spp_cells_risk_sum_60pct, 
+                                spp_cells_risk_sum_probwt) %>%
+  mutate(var_risk = ifelse(mean_risk == 0 & is.na(var_risk), 0, var_risk),
+         mean_risk = round(mean_risk, 6),
+         var_risk  = round(var_risk, 6))
+    ### if mean risk == 0, all risks are zero, so zero variance.
 
 write_csv(spp_cells_risk_sum, cell_risk_file)
   
 ```
 
-### Load raster and substitute mean risks
+### Mean risks and variance maps
 
-``` {r mean_risk_raster}
+``` {r mean_risk_raster, results = 'asis'}
 
 loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 
-### gotta force the mean_risk column to be double; there are lots of zero
-### values so will default to thinking that column is integer.
-risk_by_cell <- read_csv(cell_risk_file,
-                         col_types = 'iiddd')
+spp_cells_risk_sum <- read_csv(cell_risk_file,
+                         col_types = 'idddc')
 
-risk_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'mean_risk')
-nspp_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'n_spp')
+cuts <- c('0%', '60%', 'prob')
 
-plot(risk_rast)
-plot(nspp_rast)
+for(cut in cuts) { ### cut <- cuts[3]
+  df_cut <- spp_cells_risk_sum %>%
+    filter(presence == cut)
+  
+  cat(sprintf('#### Mean, variance, and richness based on %s', cut))
+  
+  risk_rast <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'mean_risk')
+  var_rast  <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'var_risk')
+  nspp_rast <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'n_spp')
+  
+  plot(risk_rast, main = sprintf('Mean risk, cut = %s', cut))
+  plot(var_rast,  main = sprintf('Variance of risk, cut = %s', cut))
+  plot(nspp_rast, main = sprintf('Assessed richness, cut = %s', cut))
 
-risk_clipped <- risk_rast
-values(risk_clipped)[values(nspp_rast) < 5] <- NA
+}
 
-plot(risk_clipped)
 
-```
-
-### histogram of mean risk
-
-Looks skewed; does it make sense to look at log risk?  Looks like risk (with zeros excluded) might be distributed closer to log-normal.
-
-``` {r mean_risk_histogram}
-
-mean_risk_hist <- ggplot(risk_by_cell) + 
-  ggtheme_plot() +
-  geom_histogram(aes(x = mean_risk))
-print(mean_risk_hist)
 ```
 
 
@@ -313,7 +346,7 @@ print(mean_risk_hist)
 
 Again we will use a probability threshold of 0.60 to determine species presence.  We filter out any species with NA for iucn_sid or trend_score.
 
-``` {r create_df_of_trend_by_cell}
+``` {r create_df_of_trend_by_cell, eval = FALSE}
 
 cell_trend_file <- file.path(dir_data, 'spp_trend_by_loiczid.csv')
 
@@ -326,7 +359,8 @@ spp_trend <- read_csv(file.path(dir_data, 'trend_by_spp.csv')) %>%
   as.data.table()
 
 if(!exists('spp_cells')) {
-  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'))
+  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'),
+                     verbose = FALSE)
 }
 # git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
 
@@ -345,7 +379,7 @@ write_csv(spp_cells_trend_sum, cell_trend_file)
 
 ### Load raster and substitute mean trends
 
-``` {r mean_trend_raster}
+``` {r mean_trend_raster, eval = FALSE}
 
 loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 
@@ -372,7 +406,7 @@ plot(trend_clipped)
 
 Here we will use a probability threshold of 0.60 to determine species presence.  We filter out any species with NA for iucn_sid or cat_score.
 
-``` {r create_mean_risk_by_range}
+``` {r create_mean_risk_by_range, eval = FALSE}
 
 cell_risk_by_range_file <- c(file.path(dir_data, 'risk_by_cell_by_range.csv'))
 
@@ -404,7 +438,8 @@ spp_current_risk <- read_csv(file.path(dir_data, 'iucn_spp_cat_current.csv')) %>
   as.data.table()
 
 if(!exists('spp_cells')) {
-  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'))
+  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'),
+                     verbose = FALSE)
 }
 # git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
 
@@ -424,7 +459,7 @@ write_csv(spp_cells_risk_sum, cell_risk_by_range_file)
 
 ### Load raster and substitute mean risks
 
-``` {r mean_risk_raster_by_range}
+``` {r mean_risk_raster_by_range, eval = FALSE}
 
 loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 
@@ -457,7 +492,7 @@ for(range_size in c('small', 'medium', 'large')) {
 
 Here we will use a probability threshold of 0.60 to determine species presence.  We filter out any species with NA for iucn_sid or cat_score.
 
-``` {r create_mean_risk_by_taxa}
+``` {r create_mean_risk_by_taxa, eval = FALSE}
 
 cell_risk_by_taxa_file <- c(file.path(dir_data, 'risk_by_cell_by_taxa.csv'))
 
@@ -476,7 +511,8 @@ spp_current_risk <- read_csv(file.path(dir_data, 'iucn_spp_cat_current.csv')) %>
   as.data.table()
 
 if(!exists('spp_cells')) {
-  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'))
+  spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'),
+                     verbose = FALSE)
 }
 # git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
 
@@ -496,7 +532,7 @@ write_csv(spp_cells_risk_sum, cell_risk_by_taxa_file)
 
 ### Load raster and substitute mean risks
 
-``` {r mean_risk_raster_by_taxa}
+``` {r mean_risk_raster_by_taxa, eval = FALSE}
 
 loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
 
