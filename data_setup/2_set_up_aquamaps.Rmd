@@ -50,6 +50,11 @@ Set up AquaMaps distributions for species with IUCN threat assessments.
 * Set up AquaMaps LOICZID raster for mapping and analysis
 * Clean up AquaMaps species-to-cell lookup to include only IUCN-categorized species, and convert CSquareCode values to LOICZID values.
 
+Also sets up data for sub-analyses:
+
+* Species range, calculated at 0% presence threshold, 60% threshold, and probability-weighted area
+* Taxonomic breakdown
+
 # Data Sources
 
 ### AquaMaps
@@ -130,14 +135,18 @@ This chunk takes the full AquaMaps species-cell lookup, cell ID lookup, and AM-t
 
 ``` {r get_loiczid_for_scored_spp}
 
-am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
+am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells_assessed.csv')
+am_spp_cells_all_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells_all.csv')
 
-if(!file.exists(am_spp_cells_file)) {
+### we'll save the entire file as well as a subset with just the assessed species
+am_with_scores <- read_csv(file.path(dir_setup, 'int/am_with_scores.csv'))
+
+
+if(!file.exists(am_spp_cells_file) | !file.exists(am_spp_cells_all_file)) {
   library(data.table)
 
   am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
-                                select = c('CsquareCode', 'LOICZID', 'CenterLat',
-                                           'CenterLong', 'CellArea', 'OceanArea', 'PWater')) %>%
+                                select = c('CsquareCode', 'LOICZID')) %>%
     clean_df_names() %>%
     distinct()
   
@@ -147,22 +156,24 @@ if(!file.exists(am_spp_cells_file)) {
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'), filetype = 'input')
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_species_native.csv'), filetype = 'input')
 
-  am_with_scores <- read_csv(file.path(dir_setup, 'int/am_with_scores.csv'))
-  
-  am_spp_cells_scored <- am_spp_cells %>%
-    filter(speciesid %in% am_with_scores$am_sid) 
-  
   ### using data.table join x[y, on = (key)] as left_join(y, x)...
-  asc_loiczid <- am_cells[am_spp_cells_scored, on = 'csquarecode'] %>%
+  asc_loiczid <- am_cells[am_spp_cells, on = 'csquarecode'] %>%
     select(am_sid = speciesid, loiczid, prob = probability)
   
-  write_csv(asc_loiczid, file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'))
+  ### filtered to assessed spp only
+  am_spp_cells_assessed <- asc_loiczid %>%
+    filter(am_sid %in% am_with_scores$am_sid) 
+
+  write_csv(am_spp_cells_assessed, am_spp_cells_file)
+  write_csv(asc_loiczid, am_spp_cells_all_file)
+  
 } else {
   
   message('AquaMaps cleaned spp-cell lookup file exists: \n  ', am_spp_cells_file)
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'), filetype = 'input')
   git_prov(file.path(dir_am_data, 'csv', 'hcaf_species_native.csv'), filetype = 'input')
   git_prov(am_spp_cells_file, filetype = 'output')
+  git_prov(am_spp_cells_all_file, filetype = 'output')
   
 }
 
@@ -184,35 +195,48 @@ To determine this, we can look at a few options:
 * range counting all cells equally, for 0% threshold and 60% threshold
 * range counting all cells by their probability of occurrence, e.g. a 1% cell with 2000 km^2 area only adds 20 km^2 to the calculation
 
+These will be calculated using the entire AquaMaps dataset, not just the IUCN assessed species.
+
 ``` {r spp_range}
 
-am_spp_cells_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv')
+am_spp_range_summary_file <- file.path(dir_git, 'data', 'am_spp_range_summary.csv')
 
-am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
-                              select = c('LOICZID', 'CellArea', 'OceanArea', 'PWater')) %>%
-  clean_df_names() %>%
-  distinct()
+if(!file.exists(am_spp_range_summary_file)) {
+  
+  am_cells <- data.table::fread(file.path(dir_am_data, 'csv', 'hcaf_v6.csv'),
+                                select = c('LOICZID', 'OceanArea')) %>%
+    clean_df_names() %>%
+    distinct()
+  
+  ### Use the all-cells file modified to include LOICZID instead of CSquareCode
+  am_spp_cells_all_file <- file.path(dir_o_anx, 'am_files', 'am_spp_cells_all.csv')
+  
+  am_spp_cells_areas <- data.table::fread(am_spp_cells_all_file) %>%
+    left_join(am_cells, by = 'loiczid')
+  
+  am_range_0_pct <- am_spp_cells_areas %>%
+    # filter(prob >= 0) %>%
+    group_by(am_sid) %>%
+    summarize(area_km2_0pct = sum(oceanarea))
+  
+  am_range_60_pct <- am_spp_cells_areas %>%
+    filter(prob >= .60) %>%
+    group_by(am_sid) %>%
+    summarize(area_km2_60pct = sum(oceanarea))
+  
+  am_range_probwt <- am_spp_cells_areas %>%
+    group_by(am_sid) %>%
+    summarize(area_km2_probwt = sum(oceanarea * prob))
+  
+  am_range_summary <- am_range_0_pct %>%
+    left_join(am_range_60_pct, by = 'am_sid') %>%
+    left_join(am_range_probwt, by = 'am_sid')
+  
+  write_csv(am_range_summary, am_spp_range_summary_file)
 
-am_spp_cells_areas <- data.table::fread(am_spp_cells_file) %>%
-  left_join(am_cells, by = 'loiczid')
-
-am_range_0_pct <- am_spp_cells_areas %>%
-  filter(prob >= 0) %>%
-  group_by(am_sid) %>%
-  summarize(area_km2_0pct = sum(oceanarea))
-
-am_range_60_pct <- am_spp_cells_areas %>%
-  filter(prob >= .60) %>%
-  group_by(am_sid) %>%
-  summarize(area_km2_60pct = sum(oceanarea))
-
-am_range_probwt <- am_spp_cells_areas %>%
-  group_by(am_sid) %>%
-  summarize(area_km2_probwt = sum(oceanarea * prob))
-
-am_range_summary <- am_range_0_pct %>%
-  left_join(am_range_60_pct, by = 'am_sid') %>%
-  left_join(am_range_probwt, by = 'am_sid')
+} else {
+  am_range_summary <- read_csv(am_spp_range_summary_file)
+}
 
 ggplot(am_range_summary %>%
          gather(calc, area, contains('area_km2'))) +
@@ -222,7 +246,24 @@ ggplot(am_range_summary %>%
 
 am_range_summary %>% summary()
 
-write_csv(am_range_summary, file.path(dir_git, 'data', 'am_spp_range_summary.csv'))
+```
+
+``` {r}
+
+am_range_summary1 <- read_csv(file.path(dir_git, 'data', 'am_spp_range_summary.csv')) %>%
+  gather(pct_cut, area_km2, contains('pct')) %>%
+  mutate(pct_cut = ifelse(pct_cut == 'area_km2_0pct', '0% threshold', '60% threshold'),
+         area_km2 = area_km2 / 1e6,
+         area_km2_probwt = area_km2_probwt / 1e6)
+
+ggplot(am_range_summary1, aes(x = area_km2_probwt, y = area_km2, color = pct_cut)) +
+  ggtheme_plot() +
+  geom_abline(slope = 1, intercept = 0, color = 'blue4') +
+  geom_point(alpha = .3) +
+  labs(x = 'Area weighted by probability (million km^2)',
+       y = 'Area clipped by threshold (million km^2)',
+       color = 'Threshold')
+
 ```
 
 ## Species taxa
