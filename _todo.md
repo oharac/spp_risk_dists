@@ -26,6 +26,8 @@ Update of Selig 2014
     - separate analysis by range sizes (endemism?)
     - analyze by stressor clusters
     
+    
+    
 - To do - spp dists only
     - describe need - is there an overarching need for a global map of risk 
       to biodiversity? what does this provide that others can't just do
@@ -48,7 +50,7 @@ Update of Selig 2014
             - do they have AOO maps? or just EOO?
         - update spatial data from AquaMaps
     - can we publish this as essentially a product?
-        - using half degree cells, do we need to include AquaMaps?
+        - using half degree cells, do we need to include AquaMaps in on the paper?
         - boosting resolution?
             - analyze IUCN at higher resolution, e.g. quarter degree cells
                 - but flakiness of IUCN border seems to reduce value of this
@@ -63,5 +65,25 @@ Update of Selig 2014
               additional information value at that higher res
     - Investigate probability-weighted vs. simple clip areas
     
+
+Preparing ranges
+- Subpopulations
+    - Identify all marine species with separately-assessed subpopulations
+        - not just those with subpops included in the IUCN maps
+        - for IUCN EOO maps not differentiated by subpop, can we match
+          subpops to ocean basins using e.g. FAO Major Fishing Areas or
+          ecoregions or Longhurst provinces?
+        - Can we do this for IUCN assessed but unmapped spp as well, i.e.
+          dividing up AquaMaps into assessed subpopulations?
+- Depth clipping
+    - Identify max depth for all species in IUCN assessments
+        - Differentiate <200 m bottom creatures as a T/F
+        - Can we separate into benthic and demersal vs non-benthic/non-demersal?
+            - by class? order? genus?
+            - habitats from IUCN API?
+                - e.g. many that are benthic-ish, some that are "epipelagic" -
+                  perhaps these can be refined looking at the narratives for
+                  key terms?
+            - narratives from IUCN API?
     
     

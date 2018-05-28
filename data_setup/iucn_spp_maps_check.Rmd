@@ -1,0 +1,219 @@
+---
+title: 'Identify IUCN spp maps included and missing'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+
+```
+
+# Summary
+
+Identify maps available from the IUCN Spatial Data Download page http://www.iucnredlist.org/technical-documents/spatial-data and compare to IUCN marine species from the API.  
+
+Marine species are identified from the IUCN Red List API by pulling habitat data and filtering to those species whose habitat includes marine  habitats (categories 9-12, and marine-associated artificial habitat in category 15).  Note that category 13 is coastal species (e.g. dunes, freshwater or brackish coastal lakes, etc) but this often includes species whose dependence on "marine" habitats is spurious (e.g. hippos).
+
+# Data Sources
+
+### IUCN Red List API
+
+### IUCN Red List spatial data download
+
+# Methods
+
+## Generate map list
+
+Having downloaded all available marine map sets from the Spatial Data Download page, examine information from the .dbf files to identify IUCN species ID and associated data.  No spatial information is needed at this point.
+
+``` {r}
+
+# zip_files <- list.files(file.path(dir_M, 'git-annex/globalprep/_raw_data',
+#                                   'iucn_spp/d2017-3/zips'),
+#                         pattern = '\\.zip$')
+map_files <- list.files(file.path(dir_M, 'git-annex/globalprep/_raw_data',
+                                  'iucn_spp/d2017-3'),
+                        pattern = '\\.dbf$',
+                        full.names = TRUE)
+
+spp_group_names <- map_files %>%
+  basename() %>%
+  str_replace_all('\\.dbf$|_PART_.+', '') %>%
+  unique()
+
+# to_unzip <- zip_files[!str_detect(zip_files, paste0(spp_group_names, collapse = '|'))]
+
+map_info_list <- vector('list', length = length(map_files)) %>%
+  setNames(map_files)
+
+for(map_file in map_files) {
+  # cat('Processing', map_file, '...\n')
+  map_info_list[[map_file]] <- foreign::read.dbf(map_file)
+}
+
+map_info <- bind_rows(map_info_list, .id = 'dbf_file') %>%
+  mutate(dbf_file = basename(dbf_file))
+### Notes on presence, origin, seasonal fields:
+### * presence = 5 is extinct; 4 = probably extinct; others are extant-ish or 
+###   uncertain. We will drop field and include all polygons for now.
+### * origin is native, introduced, etc.  We will drop this field and not
+###   worry about origin.
+### * seasonal is breeding/non-breeding/passage.  We will drop this field
+###   and not worry about seasonality.
+
+# subspp <- map_info %>%
+#   filter(!is.na(subspecies)) %>%
+#   select(id_no, code) %>%
+#   distinct()
+### No subspecies vary by IUCN code; drop field for simplicity
+### and include all at species level
+
+# non_marine <- map_info %>%
+#   filter(marine != 't')
+# terrestrial <- non_marine %>%
+#   filter(terrestial == 't')
+# marine_reptiles <- map_info %>%
+#   filter(marine == 't' & dbf_file == 'REPTILES.dbf')
+### Species with marine = f:
+### * most are terrestrial (from reptiles); a couple from marine mammals
+###   from inland seas/lakes (Caspian and Baikal seals)
+### * Filter out terrestrial reptiles but leave the rest
+
+map_info <- map_info %>%
+  select(dbf_file, iucn_sid = id_no, sciname = binomial,
+         # presence, origin, seasonal, 
+         # compiler, year, citation, source, 
+         # dist_comm, island, subspecies, 
+         subpop, 
+         # legend, 
+         kingdom, phylum, class, order = order_, family, 
+         code, marine, terrestrial = terrestial, freshwater) %>%
+  filter(!(marine == 'f' & dbf_file == 'REPTILES.dbf')) %>%
+  mutate(iucn_sid = as.integer(iucn_sid)) %>%
+  distinct()
+
+write_csv(map_info, file.path(dir_git, 'data/iucn/map_list_from_downloads.csv'))
+
+```
+
+## Compare map list to API info list
+
+Compare the list of species from the downloaded maps to the list of marine species from the API operations.  
+
+* From the species information from API (93,000+ species), filter to those with species IDs in the list of marine species based on habitat.  
+* Then join to the map information dataframe.  
+* Mapped species can be identified by the dbf file information; non-mapped species will be missing a dbf file (NA).
+* Note: Species with subpopulations are noted in the shapefiles by the parent ID number (not the subpopulation ID number) and a text field describing the subpopulation.  
+    * These may show up as non-mapped, since the subpop ID from the API does not find a match in the ID number from the map file.  The parent will match but not the subpopulations.
+
+``` {r}
+
+map_info <- read_csv(file.path(dir_git, 'data/iucn/map_list_from_downloads.csv')) %>%
+  select(dbf_file, iucn_sid, sciname, subpop, marine, terrestrial, freshwater)
+marine_spp_by_hab <- read_csv(file.path(dir_git, 'data/iucn/spp_marine_from_api_2017-3.csv'))
+spp_info_from_api <- read_csv(file.path(dir_o_anx, 'iucn/spp_info_from_api_2017-3.csv'))
+
+marine_spp <- spp_info_from_api %>%
+  filter(iucn_sid %in% marine_spp_by_hab$iucn_sid) %>%
+  full_join(map_info, by = c('iucn_sid', 'sciname'))
+
+```
+
+### Subpopulations
+
+From the joined data frame, identify the subpopulations.
+
+``` {r}
+subpop_lookup <- map_info %>%
+  filter(!is.na(subpop)) %>%
+  select(parent_id = iucn_sid, sciname, subpop, dbf_file)
+
+subpops_info <- spp_info_from_api %>%
+  filter(sciname %in% subpop_lookup$sciname) %>%
+  select(iucn_sid, sciname, population, category)
+
+write_csv(subpops_info, file.path(dir_git, 'data/iucn/map_check/subpops.csv'))
+
+DT::datatable(subpops_info)
+```
+
+### Species unavailable from Spatial Data Download
+
+``` {r}
+maps_missing <- marine_spp %>%
+  filter(is.na(dbf_file)) %>%
+  mutate(subpop_match = sciname %in% subpop_lookup$sciname) %>% ### maps in file but by parent ID
+  select(iucn_sid, sciname, category, subpop_match) %>%
+  mutate(category = as.character(category),
+         category = case_when(category == 'LR/lc' ~ 'LC',
+                              category == 'LR/nt' ~ 'NT',
+                              category == 'LR/cd' ~ 'NT',
+                              TRUE ~ category)) %>%
+  distinct()
+
+write_csv(maps_missing, file.path(dir_git, 'data/iucn/map_check/maps_missing.csv'))
+
+category_table <- maps_missing$category %>% 
+  table() %>%
+  broom::tidy() %>%
+  setNames(c('category', 'n_spp')) %>%
+  mutate(category = factor(category,
+                           levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'DD'))) %>%
+  arrange(category)
+
+knitr::kable(category_table)
+
+```
+
+### Species with maps from Spatial Data Download
+
+``` {r}
+maps_available <- marine_spp %>%
+  filter(!is.na(dbf_file)) %>%
+  mutate(subpop_match = sciname %in% subpop_lookup$sciname) %>% ### maps in file but by parent ID
+  select(iucn_sid, sciname, category, subpop_match, dbf_file) %>%
+  mutate(category = as.character(category),
+         category = case_when(category == 'LR/lc' ~ 'LC',
+                              category == 'LR/nt' ~ 'NT',
+                              category == 'LR/cd' ~ 'NT',
+                              TRUE ~ category)) %>%
+  distinct()
+
+write_csv(maps_available, file.path(dir_git, 'data/iucn/map_check/maps_available.csv'))
+
+category_table <- maps_available$category %>% 
+  table() %>%
+  broom::tidy() %>%
+  setNames(c('category', 'n_spp')) %>%
+  mutate(category = factor(category,
+                           levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'DD'))) %>%
+  arrange(category)
+
+knitr::kable(category_table)
+
+```
+
