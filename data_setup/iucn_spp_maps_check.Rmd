@@ -75,7 +75,7 @@ for(map_file in map_files) {
   map_info_list[[map_file]] <- foreign::read.dbf(map_file)
 }
 
-map_info <- bind_rows(map_info_list, .id = 'dbf_file') %>%
+map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
   mutate(dbf_file = basename(dbf_file))
 ### Notes on presence, origin, seasonal fields:
 ### * presence = 5 is extinct; 4 = probably extinct; others are extant-ish or 
@@ -103,7 +103,9 @@ map_info <- bind_rows(map_info_list, .id = 'dbf_file') %>%
 ###   from inland seas/lakes (Caspian and Baikal seals)
 ### * Filter out terrestrial reptiles but leave the rest
 
-map_info <- map_info %>%
+### Also duplicated coral species in CORALS_PART_2 and CORALS_PART_2_1.
+
+map_info <- map_info_raw %>%
   select(dbf_file, iucn_sid = id_no, sciname = binomial,
          # presence, origin, seasonal, 
          # compiler, year, citation, source, 
@@ -112,11 +114,18 @@ map_info <- map_info %>%
          # legend, 
          kingdom, phylum, class, order = order_, family, 
          code, marine, terrestrial = terrestial, freshwater) %>%
+  distinct() %>%
   filter(!(marine == 'f' & dbf_file == 'REPTILES.dbf')) %>%
-  mutate(iucn_sid = as.integer(iucn_sid)) %>%
-  distinct()
+  filter(dbf_file != 'CORALS_PART_2_1.dbf') %>%
+  mutate(iucn_sid = as.integer(iucn_sid))
 
-write_csv(map_info, file.path(dir_git, 'data/iucn/map_list_from_downloads.csv'))
+check1 <- map_info$dbf_file %>% table() %>% broom::tidy() %>% setNames(c('gp', 'n_clean'))
+check2 <- map_info_raw$dbf_file %>% table() %>% broom::tidy() %>% setNames(c('gp', 'n_raw'))
+check3 <- full_join(check1, check2, by = 'gp')
+### check these for differences due to filtering.  Spot checks showed
+### legit duplication due to multiple compilers, etc.
+
+write_csv(map_info, file.path(dir_git, 'data/iucn/map_check/map_list_from_downloads.csv'))
 
 ```
 
@@ -132,15 +141,42 @@ Compare the list of species from the downloaded maps to the list of marine speci
 
 ``` {r}
 
-map_info <- read_csv(file.path(dir_git, 'data/iucn/map_list_from_downloads.csv')) %>%
-  select(dbf_file, iucn_sid, sciname, subpop, marine, terrestrial, freshwater)
+map_info <- read_csv(file.path(dir_git, 'data/iucn/map_check/map_list_from_downloads.csv')) %>%
+  select(dbf_file, iucn_sid, sciname_map = sciname, subpop, marine, terrestrial, freshwater)
+
 marine_spp_by_hab <- read_csv(file.path(dir_git, 'data/iucn/spp_marine_from_api_2017-3.csv'))
-spp_info_from_api <- read_csv(file.path(dir_o_anx, 'iucn/spp_info_from_api_2017-3.csv'))
 
-marine_spp <- spp_info_from_api %>%
+spp_info_from_api <- read_csv(file.path(dir_o_anx, 'iucn/spp_info_from_api_2017-3.csv')) %>%
+  rename(sciname_api = sciname)
+
+marine_spp_raw <- spp_info_from_api %>%
   filter(iucn_sid %in% marine_spp_by_hab$iucn_sid) %>%
-  full_join(map_info, by = c('iucn_sid', 'sciname'))
+  full_join(map_info, by = c('iucn_sid'))
 
+spp_dupes <- marine_spp_raw %>%
+  select(iucn_sid, sciname_api, subpop, dbf_file) %>%
+  distinct() %>%
+  show_dupes('iucn_sid') %>%
+  group_by(iucn_sid) %>%
+  arrange(dbf_file) %>% 
+  mutate(groups = paste0(unique(dbf_file), collapse = ', '),
+         n_gps  = length(unique(dbf_file))) %>%
+  filter(n_gps > 1) %>%
+  ungroup()
+### duplicates due to inclusion in both "marine fishes" and taxonomic
+### groups; also reptiles vs. seasnakes (and hagfish).
+
+### To drop dupes, exclude species whose iucn_sid is included in x AND
+### whose dbf_file contains one of the super-groups (reptiles, marine fishes).
+### Other duplicates are due to inclusion in both mangroves and seagrasses.  
+### One species is listed as marine fish, hagfish, AND seasnake.
+
+marine_spp <- marine_spp_raw %>%
+  filter(!(iucn_sid %in% spp_dupes$iucn_sid & str_detect(dbf_file, 'REPTILE'))) %>%
+  filter(!(iucn_sid %in% spp_dupes$iucn_sid & str_detect(dbf_file, 'MARINEFISH'))) %>%
+  filter(!(iucn_sid %in% spp_dupes$iucn_sid & str_detect(dbf_file, 'MANGROVE'))) %>%
+  filter(iucn_sid != 196026 | str_detect(dbf_file, 'HAGFISH'))
+  
 ```
 
 ### Subpopulations
@@ -148,13 +184,24 @@ marine_spp <- spp_info_from_api %>%
 From the joined data frame, identify the subpopulations.
 
 ``` {r}
-subpop_lookup <- map_info %>%
-  filter(!is.na(subpop)) %>%
-  select(parent_id = iucn_sid, sciname, subpop, dbf_file)
+subpop_maps <- map_info %>%
+  group_by(iucn_sid) %>%
+  filter(any(!is.na(subpop))) %>%
+  ungroup() %>%
+  select(map_id = iucn_sid, sciname_map, map_pop = subpop, dbf_file)
 
 subpops_info <- spp_info_from_api %>%
-  filter(sciname %in% subpop_lookup$sciname) %>%
-  select(iucn_sid, sciname, population, category)
+  filter(sciname_api %in% subpop_maps$sciname_map) %>%
+  select(iucn_sid, sciname_api, api_pop = population, category)
+
+subpops_joined <- subpop_maps %>%
+  full_join(subpops_info, by = c('sciname_map' = 'sciname_api')) %>%
+  mutate(pop_short = tolower(api_pop) %>% str_replace_all(' subpopulation| ocean', ''),
+         match = str_detect(tolower(map_pop), pop_short)) %>%
+  filter(match | (is.na(map_pop) & is.na(api_pop)) | sciname_map == 'Caretta caretta') %>%
+  select(map_id, sciname_map, dbf_file, iucn_sid, api_pop, category) %>%
+  distinct() %>%
+  mutate(api_pop = ifelse(is.na(api_pop), '(parent listing)', api_pop))
 
 write_csv(subpops_info, file.path(dir_git, 'data/iucn/map_check/subpops.csv'))
 
@@ -166,8 +213,8 @@ DT::datatable(subpops_info)
 ``` {r}
 maps_missing <- marine_spp %>%
   filter(is.na(dbf_file)) %>%
-  mutate(subpop_match = sciname %in% subpop_lookup$sciname) %>% ### maps in file but by parent ID
-  select(iucn_sid, sciname, category, subpop_match) %>%
+  filter(!iucn_sid %in% subpops_joined$iucn_sid) %>%
+  select(iucn_sid, sciname_api, category) %>%
   mutate(category = as.character(category),
          category = case_when(category == 'LR/lc' ~ 'LC',
                               category == 'LR/nt' ~ 'NT',
@@ -182,10 +229,15 @@ category_table <- maps_missing$category %>%
   broom::tidy() %>%
   setNames(c('category', 'n_spp')) %>%
   mutate(category = factor(category,
-                           levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'DD'))) %>%
+                           levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'DD', NA))) %>%
   arrange(category)
 
 knitr::kable(category_table)
+
+# category_table %>% filter(category != 'DD' & !is.na(category)) %>% .$n_spp %>% sum()
+# 5521 with valid assessments, missing maps
+
+# x <- spp_info_from_api %>% filter(iucn_sid %in% maps_missing$iucn_sid)
 
 ```
 
@@ -194,13 +246,13 @@ knitr::kable(category_table)
 ``` {r}
 maps_available <- marine_spp %>%
   filter(!is.na(dbf_file)) %>%
-  mutate(subpop_match = sciname %in% subpop_lookup$sciname) %>% ### maps in file but by parent ID
-  select(iucn_sid, sciname, category, subpop_match, dbf_file) %>%
+  select(iucn_sid, sciname = sciname_api, category, dbf_file) %>%
   mutate(category = as.character(category),
          category = case_when(category == 'LR/lc' ~ 'LC',
                               category == 'LR/nt' ~ 'NT',
                               category == 'LR/cd' ~ 'NT',
                               TRUE ~ category)) %>%
+  bind_rows(subpops_joined %>% rename(sciname = sciname_map)) %>%
   distinct()
 
 write_csv(maps_available, file.path(dir_git, 'data/iucn/map_check/maps_available.csv'))
@@ -215,5 +267,7 @@ category_table <- maps_available$category %>%
 
 knitr::kable(category_table)
 
+# category_table %>% filter(category != 'DD' & !is.na(category)) %>% .$n_spp %>% sum()
+# 4327 available maps, with valid assessments
 ```
 

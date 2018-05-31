@@ -1,4 +1,4 @@
-iucn_sid,sciname,population,category
+iucn_sid,sciname_api,api_pop,category
 2055,Arctocephalus australis,NA,LC
 2467,Balaena mysticetus,NA,LC
 2468,Balaena mysticetus,Bering-Chukchi-Beaufort Sea subpopulation,LR/cd
