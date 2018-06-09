@@ -486,3 +486,88 @@ Based on these tests, it looks like rasterizing with `fasterize()` is FAR faster
 
 Quarter degree cells give a resolution of about 27.5 kilometer square cells at the equator rather than 55 km for half-degree cells.  Tenth-degree cells give a resolution of about 11.1 km square cells.
 
+``` {r} 
+
+rast_files_050 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '050deg.tif$',
+                         full.names = TRUE)
+
+rast_files_025 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '025deg.tif$',
+                         full.names = TRUE)
+
+rast_files_010 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '010deg.tif$',
+                         full.names = TRUE)
+
+system.time({
+  stack_050 <- raster::stack(rast_files_050)
+})
+system.time({
+  stack_025 <- raster::stack(rast_files_025)
+  ### about 17.5 s for 2626 layers
+})
+system.time({
+  stack_010 <- raster::stack(rast_files_010)
+})
+
+# object.size(stack_050)
+# 1210832 bytes
+# object.size(stack_025)
+# 1210832 bytes
+# object.size(stack_010)
+# 1210832 bytes
+system.time({
+  sum_050 <- calc(stack_050, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_050.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #     user  system elapsed 
+  #   36.160   0.248  36.393 
+  ### for 2626 files:
+  #       user   system  elapsed 
+  #   3497.480  192.792 3688.781 
+})
+system.time({
+  sum_025 <- calc(stack_025, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_025.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #     user  system elapsed 
+  #   50.016   0.936  50.987 
+  ### for 2626 files:
+  #       user   system  elapsed 
+  #   3603.252 1596.552 5197.673 
+})
+system.time({
+  sum_010 <- calc(stack_010, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_010.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #      user  system elapsed 
+  #   137.052 103.480 240.440 
+  #      user    system   elapsed 
+  #  4147.164 10089.116 14230.614 
+
+})
+object.size(sum_050)
+object.size(sum_025)
+object.size(sum_010)
+
+### The amount of time required to process these may make it more effective 
+### to chop into subgroups (e.g. taxa) and sum within groups, tracking all 
+### relevant info, then combining groups at the end in the same process.
+```
+
+
+``` {r stack times vector}
+x <- stack_050[[1:5]]
+
+y <- x * c(1:5)
+
+plot(y)
+### you can take a stack and multiply it element-wise with a vector!
+### this will be helpful for multiplying presence by range rarity:
+###   (presence( = 1) (as a raster) * cell_area (as a raster)) * 1/total area (as a vector)
+### and then summing
+```

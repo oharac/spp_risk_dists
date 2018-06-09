@@ -1,5 +1,5 @@
 ---
-title: 'Set up IUCN extinction risk categories over time'
+title: 'Set up IUCN marine species list and risk assessments'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -25,19 +25,21 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 dir_git <- '~/github/spp_health_dists'
-dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
 
 ### goal specific folders and info
 dir_setup   <- file.path(dir_git, 'data_setup')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
-# ### provenance tracking
+
+### provenance tracking
 library(provRmd); prov_setup()
+
+source(file.path(dir_setup, 'api_fxns.R'))
 
 ```
 
 # Summary
 
-Get IUCN current risk assessments and historical assessments over time, for all IUCN marine species
+Get IUCN current risk assessments and historical assessments over time, for all IUCN marine species.  This method is not reliant on any information from AquaMaps.
 
 # Data Sources
 
@@ -45,126 +47,271 @@ Get IUCN current risk assessments and historical assessments over time, for all 
 
 # Methods
 
-## Compare AquaMaps/IUCN crosslisted species to Red List assessments
+## Get IUCN historical assessments for all available IUCN marine spp
 
-### Get IUCN historical assessments for AquaMaps/IUCN crosslisted spp
+### Get info on all species
 
-`get_from_api()` is a function to access the IUCN API, given a url (specific to data sought), parameter, and key (stored in ohi/git-annex), as well as a delay if desired (to ease the load on the IUCN API server). `mc_get_from_api()` runs the `get_from_api()` function across multiple cores for speed...
+Using the `mc_get_from_api()` function, get the entire species list of IUCN Red List assessed species.  This includes terrestrial and marine.
 
-``` {r setup_API_functions}
+``` {r get_spp_info_from_api}
+### Get all pages and bind into total species list.  This is pretty fast.
 
-library(parallel)
-library(jsonlite)
+spp_info_from_api_file <- file.path(dir_o_anx, sprintf('iucn/spp_info_from_api_%s.csv', api_version))
+reload <- FALSE
 
-### api_key stored on git-annex so outside users can use their own key
-api_file <- file.path(dir_M, 'git-annex/globalprep/spp_ico', 
-                      'api_key.csv')
-api_key <- scan(api_file, what = 'character')
+if(!file.exists(spp_info_from_api_file) | reload) {
+  
+  message('Using API to create full species list from scratch')
+  
+  spp_npage_url <- sprintf('http://apiv3.iucnredlist.org/api/v3/speciescount?token=%s', api_key)
+  n_spp <- fromJSON(spp_npage_url) %>%
+    .$count %>% as.integer()
+  n_pages <- ceiling(n_spp/10000)
+  
+  spp_page_url <- 'http://apiv3.iucnredlist.org/api/v3/species/page/%s?token=%s'
+  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key, delay = 1)
 
-get_from_api <- function(url, param, api_key, delay) {
-  
-  i <- 1; tries <- 5; success <- FALSE
-  
-  while(i <= tries & success == FALSE) {
-    message('try #', i)
-       Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
-       api_info <- fromJSON(sprintf(url, param, api_key)) 
-       if (class(api_info) != 'try-error') {
-         success <- TRUE
-       } else {
-         warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
-       }
-    message('... successful? ', success)
-    i <- i + 1
-  }
-    
-  if (class(api_info) == 'try-error') { ### multi tries and still try-error
-    api_return <- data.frame(param_id  = param,
-                             api_error = 'try-error after multiple attempts')
-  } else if (class(api_info$result) != 'data.frame') { ### result isn't data frame for some reason
-    api_return <- data.frame(param_id  = param,
-                             api_error = paste('non data.frame output: ', class(api_info$result), ' length = ', length(api_info$result)))
-  } else if (length(api_info$result) == 0) { ### result is empty
-    api_return <- data.frame(param_id  = param,
-                             api_error = 'zero length data.frame')
-  } else {
-    api_return <- api_info %>%
-      data.frame(stringsAsFactors = FALSE)
-  }
-  
-  return(api_return)
-}
-
-mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
-  
-  if(is.null(cores)) 
-    numcores <- ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
-  else 
-    numcores <- cores
-  
-  out_list <- parallel::mclapply(param_vec, 
-                          function(x) get_from_api(url, x, api_key, delay),
-                          mc.cores   = numcores,
-                          mc.cleanup = TRUE) 
-  
-  if(any(sapply(out_list, class) != 'data.frame')) {
-    error_list <- out_list[sapply(out_list, class) != 'data.frame']
-    message('List items are not data frame: ', paste(sapply(error_list, class), collapse = '; '))
-    message('might be causing the bind_rows() error; returning the raw list instead')
-    return(out_list)
-  }
-  
-  out_df <- out_list %>%
-    bind_rows()
-  out_df <- out_df %>%
+  spp_df_all <- spp_df_all %>%
+    dplyr::select(-infra_rank, -infra_name, -count, -page) %>%
+    rename(iucn_sid = taxonid, sciname = scientific_name) %>%
     setNames(names(.) %>%
-               str_replace('result.', ''))
-  return(out_df)
-}
-
-```
-
-We first read in the AquaMaps species list, and filter down to just those species cross-listed with IUCN codes.  This list is saved locally for reference.
-
-``` {r get_am_iucn_crosslists}
-
-spp_list_file <- file.path(dir_git, 'data', 'am_iucn_crosslisted_spp.csv')
-
-if(!file.exists(spp_list_file)) {
-  am_spp_list <- read_csv(file.path(dir_am_data, 'csv', 'speciesoccursum.csv')) %>%
-    clean_df_names()
+               str_replace('_name', ''))
   
-  am_iucn_crosslist <- am_spp_list %>%
-    filter(!is.na(iucn_id))
-  
-  write_csv(am_iucn_crosslist, spp_list_file)
+  message('Full list length: ', nrow(spp_df_all), '; unique species IDs: ', 
+          length(spp_df_all$iucn_sid %>% unique()))
+  write_csv(spp_df_all, spp_info_from_api_file)
   
 } else {
   
-  git_prov(file.path(dir_am_data, 'csv', 'speciesoccursum.csv'), filetype = 'input')
-  git_prov(spp_list_file, filetype = 'output')
+  message('File of API species list exists: \n  ', spp_info_from_api_file)
+  git_prov(spp_info_from_api_file, filetype = 'output')
   
 }
 
 ```
 
+### Determine marine species using habitat information
+
+#### Get species habitat info for all species from IUCN API
+
+From the full IUCN species list, send each IUCN species ID into the API to get the habitats listed for that species.  Combine all habitat dataframes into a master dataframe of all habitats for all species.  Note that many species do not have habitat information and will be listed as NA for habitat variables.
+
+``` {r determine_spp_habs}
+### For each species ID on the total list, get a dataframe of habitats.
+### This is slow.  Skip if possible.
+
+spp_habs_from_api_file <- file.path(dir_o_anx, sprintf('iucn/spp_habs_from_api_%s.csv', api_version))
+reload <- FALSE
+
+if(!file.exists(spp_habs_from_api_file) | reload) {
+  
+  message('Using API to determine species habitats from full species info list')
+  
+  spp_info_from_api_file <- file.path(dir_goal_anx, 'int/spp_info_from_api.csv')
+  spp_ids_all <- read_csv(spp_info_from_api_file) %>%
+    .$iucn_sid
+  
+  spp_habs_url <- 'http://apiv3.iucnredlist.org/api/v3/habitats/species/id/%s?token=%s'
+  
+  
+  ### Breaking this into chunks...
+  ### 500 spp takes 184 seconds; at that rate, 87851 species should take 
+  ###   about 9 hrs.  Each chunk will save to tmp for later combining.
+  
+  chunk_size <- 2000
+  n_chunks <- ceiling(length(spp_ids_all)/chunk_size)
+  
+  if(!dir.exists(file.path(dir_goal_anx, 'tmp'))) 
+    dir.create(file.path(dir_goal_anx, 'tmp'))
+  
+  for(j in 1:n_chunks) { 
+    ### j <- 2
+    spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
+    chunk_file <- file.path(dir_goal_anx, 'tmp', 
+                    sprintf('spp_habs_chunk_%s_%s.csv', 
+                            min(spp_index), max(spp_index)))
+    
+    if(!file.exists(chunk_file)) {
+      message('Getting habitat info for species ', min(spp_index), ' to ', max(spp_index))
+      
+      spp_ids_chunk <- spp_ids_all[spp_index]
+      spp_habs_chunk <- mc_get_from_api(spp_habs_url, spp_ids_chunk, api_key, cores = 12, delay = .5)
+
+      message('... found ', nrow(spp_habs_chunk), ' habitat rows for these species')
+      
+      write_csv(spp_habs_chunk, chunk_file)
+      
+    } else {
+      
+      message('Chunk file ', chunk_file, ' already exists; skipping these spp')
+      
+    }
+  }
+  
+  ### fields: 
+  ### id | code | habitat | suitability | season | majorimportance
+
+  spp_hab_chunk_files <- list.files(file.path(dir_goal_anx, 'tmp'), 
+                                    pattern = 'spp_habs_chunk', 
+                                    full.names = TRUE)
+  
+  spp_habs_df <- lapply(spp_hab_chunk_files, FUN = function(x) {
+    read.csv(x) %>%
+      mutate(code = as.character(code))}) %>%
+    bind_rows() %>%
+    rename(iucn_sid = id) %>%
+    mutate(iucn_sid = ifelse(is.na(iucn_sid), param_id, iucn_sid)) %>%
+    arrange(iucn_sid)
+  
+  spp_errors <- spp_habs_df %>%
+    filter(!is.na(api_error) & api_error != 'no data.frame') %>%
+    .$iucn_sid
+  ### all these errors are due to returning a zero-length list instead of a data.frame
+
+  write_csv(spp_habs_df, spp_habs_from_api_file)
+  
+} else {
+  
+  message('File of species habitats from API exists: \n  ', spp_habs_from_api_file)
+  git_prov(spp_habs_from_api_file, filetype = 'output')
+  
+}
+
+
+```
+
+
+#### Generate Habitat inclusion list
+
+From the habitats gleaned in the previous chunk, generate an inclusion list based on those that are considered marine.  "Included" habitats are determined from inspection of the habitat list; we are including habitats 9-12, plus 15.11, 15.12, 15.13.  Note category 13 is Marine Coastal/Supratidal, but includes many species whose "marine" dependence is only incidental.  If these species do not show up in category 12 (marine intertidal) then they are assumed to not actually depend on marine habitats.
+
+``` {r generate_hab_inclusion_list, eval = TRUE}
+
+hab_inclusion_file <- file.path(dir_setup, 'int', 'iucn_habitat_categories.csv')
+
+hab_cats <- read_csv(spp_habs_from_api_file, col_types = 'iciccccc') %>%
+  select(habitat, code) %>%
+  distinct() %>%
+  separate(code, c('cat', 'subcat1', 'subcat2'),
+           remove = FALSE, convert = TRUE) %>%
+  arrange(cat, subcat1, subcat2) %>%
+  mutate(include = ifelse(cat %in% c(9:12), TRUE, FALSE),
+         include = ifelse(cat == 15 & subcat1 %in% c(11, 12, 13), TRUE, include)) %>%
+           ### Category 13 (Marine coastal/supratidal excluded here: if a species
+           ###   is ONLY found in supratidal, it may not be all that marine-dependent)
+  filter(!is.na(code))
+
+### Note these "include" values were manually determined by inspecting the habitat categories
+### Notes on categories related to depth clipping 
+### see also: http://www.iucnredlist.org/technical-documents/classification-schemes/habitats-classification-scheme-ver3
+### * category 9 is neritic (shallow) though 9.1 is specifically pelagic (NOT shallow)
+### * category 10 is oceanic at different depths (pelagic: NOT shallow)
+### * category 11 is Marine Deep Ocean Floor (Benthic and Demersal) (NOT shallow)
+### * category 12 is Marine Intertidal (shallow)
+### * category 13 is Marine Coastal/Supratidal (shallow) 
+### * category 15 includes shallow structures
+### So: for depth clipping, cut at 200 m for all but category 9.1, 10, 11
+
+write_csv(hab_cats, hab_inclusion_file)
+
+```
+
+#### Determine marine species and depth constraints
+
+Marine species depth classifications:
+
+* 0-20? m: organisms classified as intertidal (category 12) and shallower
+* 0-200 m: organisms classified as neritic (category 9) and shallower
+* no limit: organisms in marine oceanic (category 10) and deep benthic (category 11)
+
+It appears that coastal species suffer from the extended buffers so clipping these to a 200 m bathymetry line is important.  Intertidal organisms may benefit from further clipping to shallower depths, depending on the quality of bathymetric layers.
+
+``` {r determine_marine_spp_from_api}
+
+spp_habs_from_api <- read_csv(spp_habs_from_api_file,
+                              col_types = '__iccccc')
+### 'code' is character since it is in the form x.xx.xxx
+
+na_spp_habs <- spp_habs_from_api %>%
+  filter(is.na(code))
+# na_spp_habs$habitat %>% unique()
+# [1] "Foreslope (Outer Reef Slope)" "Back Slope"                   "Lagoon"                      
+# [4] "Inter-Reef Rubble Substrate"  "Outer Reef Channel"           "Inter-Reef Soft Substrate"   
+# [7] NA                             "Hard Substrate"               "Soft Substrate"
+### NOTE: these are ALL marine habs... (except NA)
+
+hab_marine <- read_csv(hab_inclusion_file)
+
+### Fix the codes for habitats where code is NA
+spp_habs_coded <- na_spp_habs %>%
+  select(-code) %>%
+  left_join(hab_marine %>%
+              select(code, habitat), 
+            by = 'habitat') %>%
+  bind_rows(spp_habs_from_api %>% 
+              filter(!is.na(code)))
+
+### using inner_join, use marine hab lookup to attach to the full spp habitat
+### list, adding more info and filtering to just marine habitats
+spp_marine_habs <- spp_habs_coded %>%
+  left_join(hab_marine, by = c('habitat', 'code')) %>%
+  filter(include == TRUE) 
+
+### See which species are only "marginal" or of unknown suitability for
+### marine habitats.  Filter out those that are pelagic, subtidal - 
+### those are clearly marine species.  If spp are only found in
+### intertidal as a marginal habitat, inspect them - perhaps they're
+### terrestrial that venture into intertidal occasionally... should they be included?
+marg_suit <- spp_marine_habs %>%
+  group_by(iucn_sid) %>%
+  arrange(suitability) %>%
+  summarize(suit_all = tolower(paste0(unique(suitability), collapse = ', ')),
+         intertidal_only = sum(!cat %in% c(12)) == 0) %>%
+  filter(!str_detect(suit_all, 'suitable')) %>%
+  filter(intertidal_only) %>%
+  left_join(read_csv(spp_info_from_api_file), by = 'iucn_sid') %>%
+  select(iucn_sid, sciname, suit_all, kingdom, phylum, class, order, family)
+
+### 890 spp
+write_csv(marg_suit, file.path(dir_setup, 'int',
+                               sprintf('spp_marine_marginal_%s.csv', api_version)))
+  
+### Trim down to just the species ID, a quick list of habitats, and whether
+### the species should be considered to be OK for deeper waters (200 m +)
+spp_habs_clean <- spp_marine_habs %>%
+  group_by(iucn_sid) %>%
+  summarize(habs = paste0(code, collapse = ', '),
+            max_depth = case_when(any(cat %in% c(10, 11)) ~ '200 m +',
+                                  any(cat %in% c(9, 15))  ~ '< 200 m',
+                                  any(cat %in% c(12))     ~ '< 20 m',
+                                  TRUE                    ~ 'error'))
+
+write_csv(spp_habs_clean, file.path(dir_git, 'data/iucn',
+                                     sprintf('spp_marine_from_api_%s.csv', api_version)))
+
+```
+  
+-----
+
 ``` {r get_iucn_past_assessments}
 
-api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
-  .$version
-
-spp_timeseries_file <- file.path(dir_git, 'data',
+spp_timeseries_file <- file.path(dir_git, 'data/iucn',
                                  sprintf('iucn_risk_timeseries_%s.csv', api_version))
+
+iucn_spp_info <- read_csv(file.path(dir_o_anx, 
+                                    sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
+
+iucn_marine_spp <- read_csv(file.path(dir_git, 'data/iucn',
+                                      sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
+  left_join(iucn_spp_info)
+### Subpopulations are in here too, by ID number
 
 if(!file.exists(spp_timeseries_file)) {
 
-  spp_list_file <- file.path(dir_git, 'data', 'am_iucn_crosslisted_spp.csv')
-  am_iucn_crosslist <- read_csv(spp_list_file)
-
   spp_hist_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
   
-  sid_list <- am_iucn_crosslist %>%
-    .$iucn_id %>%
+  sid_list <- iucn_marine_spp %>%
+    .$iucn_sid %>%
     unique() %>%
     sort()
     
@@ -205,18 +352,21 @@ if(!file.exists(spp_timeseries_file)) {
 
 ``` {r get_iucn_current_assessment}
 
-spp_current_file <- file.path(dir_git, 'data', 
+spp_current_file <- file.path(dir_git, 'data/iucn', 
                               sprintf('iucn_risk_current_%s.csv', api_version))
+iucn_spp_info <- read_csv(file.path(dir_o_anx, 
+                                    sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
+
+iucn_marine_spp <- read_csv(file.path(dir_git, 'data/iucn',
+                                      sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
+  left_join(iucn_spp_info)
 
 if(!file.exists(spp_current_file)) {
 
-  spp_list_file <- file.path(dir_setup, 'int', 'am_iucn_crosslisted_spp.csv')
-  am_iucn_crosslist <- read_csv(spp_list_file)
-
   spp_curr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/id/%s?token=%s'
   
-  sid_list <- am_iucn_crosslist %>%
-    .$iucn_id %>%
+  sid_list <- iucn_marine_spp %>%
+    .$iucn_sid %>%
     unique() %>%
     sort()
   
@@ -225,15 +375,20 @@ if(!file.exists(spp_current_file)) {
   ptm <- proc.time()
   spp_current_df <- mc_get_from_api(spp_curr_url, sid_list, api_key, delay = 1, cores = 16)
   proc.time() - ptm
-  
+    #   user   system  elapsed 
+    # 74.756   23.032 1251.880
   spp_current_df1 <- spp_current_df %>%
     select(iucn_sid = name, sciname = scientific_name,
-           kingdom, phylum, class, order, family, 
            main_common_name, 
            published_year, code = category, 
-           criteria, aoo_km2, eoo_km2, 
-           depth_upper, depth_lower)
-  
+           criteria)
+  ### dropping columns: 
+  # kingdom, phylum, class, order, family, genus, 
+  # authority, marine_system, freshwater_system, terrestrial_system, 
+  # assessor, reviewer, aoo_km2, eoo_km2, elevation_upper, elevation_lower, 
+  # depth_upper, depth_lower, errata_flag, errata_reason, amended_flag, amended_reason
+  ### keeping all listings regardless of NE or DD
+
   ### Clean up the time series: reclassify old codes to current and add scores
   cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv')) %>%
     select(-category)
@@ -242,7 +397,6 @@ if(!file.exists(spp_current_file)) {
     left_join(cat_lookup, by = c('code')) %>%
     rename(old_cat  = code,
            cat      = code_current) %>%
-    filter(!is.na(cat_score)) %>%
     mutate(iucn_sid = as.integer(iucn_sid)) %>%
     arrange(iucn_sid) %>%
     mutate(iucn_version = api_version)

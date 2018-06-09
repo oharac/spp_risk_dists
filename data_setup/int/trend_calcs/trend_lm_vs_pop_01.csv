@@ -1,0 +1,837 @@
+iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
+2055,global,"2008, 2016","LC, LC","0, 0",increasing,0
+2057,global,"2008, 2015","EN, EN","0.6, 0.6",decreasing,0
+2058,global,"2008, 2014, 2016","LC, LC, LC","0, 0, 0",decreasing,0
+2059,global,"2008, 2015","NT, LC","0.2, 0",increasing,-0.02857
+2060,global,"2008, 2015","LC, LC","0, 0",increasing,0
+2061,global,"2008, 2015","NT, LC","0.2, 0",increasing,-0.02857
+2062,global,"2008, 2015","LC, LC","0, 0",stable,0
+2467,global,"2008, 2012","LC, LC","0, 0",increasing,0
+2478,global,"2008, 2013","EN, EN","0.6, 0.6",unknown,0
+3381,global,"2010, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
+3590,global,"2008, 2015","VU, VU","0.4, 0.4",decreasing,0
+3897,global,"2015, 2017","VU, VU","0.4, 0.4",decreasing,0
+4160,global,"2008, 2013, 2017","NT, NT, NT","0.2, 0.2, 0.2",decreasing,-0
+4162,global,"2008, 2013","EN, EN","0.6, 0.6",decreasing,0
+5360,global,"2008, 2011","LC, LC","0, 0",unknown,0
+6204,global,"2008, 2016","VU, VU","0.4, 0.4",unknown,0
+6335,global,"2008, 2012, 2017","NT, NT, LC","0.2, 0.2, 0",unknown,-0.02295
+6909,global,"2006, 2008, 2015","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
+7135,global,"2010, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
+7750,global,"2008, 2011, 2015","EN, EN, EN","0.6, 0.6, 0.6",decreasing,-0
+7861,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+8010,global,"2008, 2016","LC, LC","0, 0",unknown,0
+8153,global,"2008, 2013","LC, LC","0, 0",increasing,0
+8239,global,"2008, 2012, 2016","EN, NT, NT","0.6, 0.2, 0.2",increasing,-0.05
+8951,global,"2008, 2010, 2013, 2015","LC, LC, LC, LC","0, 0, 0, 0",stable,0
+9266,global,"2012, 2017","LC, LC","0, 0",stable,0
+9461,global,"2008, 2012","LC, LC","0, 0",unknown,0
+9660,global,"2008, 2016","LC, LC","0, 0",increasing,0
+10066,global,"2003, 2017","VU, VU","0.4, 0.4",decreasing,0
+10070,global,"2012, 2017","VU, VU","0.4, 0.4",decreasing,0
+10072,global,"2003, 2012, 2017","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
+10075,global,"2003, 2014","VU, VU","0.4, 0.4",decreasing,0
+10083,global,"2010, 2017","LC, LC","0, 0",unknown,0
+10087,global,"2003, 2015","VU, VU","0.4, 0.4",decreasing,0
+10340,global,"2008, 2015","LC, LC","0, 0",unknown,0
+11140,global,"2008, 2012","LC, LC","0, 0",unknown,0
+11142,global,"2008, 2012","LC, LC","0, 0",unknown,0
+11145,global,"2008, 2012","LC, LC","0, 0",unknown,0
+11696,global,"2008, 2015","LC, LC","0, 0",unknown,0
+12125,global,"2008, 2012","LC, LC","0, 0",unknown,0
+12246,global,"2008, 2015","LC, LC","0, 0",unknown,0
+12419,global,"2004, 2008, 2015","NT, NT, NT","0.2, 0.2, 0.2",decreasing,-0
+13232,mediterranean,"2008, 2011","LC, LC","0, 0",unknown,0
+13581,global,"2008, 2015","LC, LC","0, 0",increasing,0
+13583,global,"2008, 2015","LC, LC","0, 0",stable,0
+13653,global,"2008, 2013, 2015","CR, CR, EN","0.8, 0.8, 0.6",increasing,-0.02308
+13654,global,"2008, 2015","CR, EN","0.8, 0.6",decreasing,-0.02857
+13704,global,"2008, 2012, 2017","NT, NT, LC","0.2, 0.2, 0",unknown,-0.02295
+14049,global,"2007, 2008","EN, EN","0.6, 0.6",decreasing,0
+14051,global,"2007, 2008, 2015","VU, VU, VU","0.4, 0.4, 0.4",unknown,-0
+14053,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+14214,global,"2008, 2013","LC, LC","0, 0",stable,0
+14549,global,"2008, 2015","EN, EN","0.6, 0.6",decreasing,0
+15269,global,"2008, 2015","LC, LC","0, 0",unknown,0
+15419,global,"2008, 2017","VU, EN","0.4, 0.6",decreasing,0.02222
+16781,global,"2008, 2013","LC, LC","0, 0",stable,0
+17013,global,"2008, 2016","LC, LC","0, 0",unknown,0
+17026,global,"2008, 2015","VU, EN","0.4, 0.6",decreasing,0.02857
+17028,global,"2007, 2008, 2017","CR, CR, CR","0.8, 0.8, 0.8",decreasing,-0
+17032,global,"2008, 2012","LC, LC","0, 0",unknown,0
+17096,global,"2006, 2017","NT, LC","0.2, 0",decreasing,-0.01818
+17177,global,"2006, 2017","NT, LC","0.2, 0",decreasing,-0.01818
+17978,global,"2008, 2012, 2017","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
+18175,global,"2006, 2013","CR, CR","0.8, 0.8",decreasing,0
+18376,global,"2011, 2014","LC, LC","0, 0",unknown,0
+18878,global,"2008, 2013","LC, LC","0, 0",stable,0
+19488,global,"2005, 2016","VU, EN","0.4, 0.6",decreasing,0.01818
+20425,global,"2008, 2012, 2017","VU, VU, CR","0.4, 0.4, 0.8",decreasing,0.0459
+20729,global,"2008, 2012","LC, LC","0, 0",unknown,0
+20738,global,"2008, 2012","LC, LC","0, 0",unknown,0
+21257,global,"2008, 2016","LC, LC","0, 0",unknown,0
+22103,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+22563,global,"2008, 2012","LC, LC","0, 0",unknown,0
+39327,global,"2003, 2016","LC, LC","0, 0",stable,0
+39328,global,"2005, 2016","NT, NT","0.2, 0.2",decreasing,0
+39334,global,"2005, 2015","LC, LC","0, 0",stable,0
+39351,global,"2003, 2016","LC, LC","0, 0",increasing,0
+39354,global,"2005, 2016","NT, LC","0.2, 0",stable,-0.01818
+39355,global,"2003, 2016","LC, LC","0, 0",stable,0
+39370,global,"2009, 2016, 2017","NT, NT, VU","0.2, 0.2, 0.4",decreasing,0.01579
+39374,global,"2006, 2015","VU, VU","0.4, 0.4",decreasing,0
+39380,global,"2009, 2015","NT, NT","0.2, 0.2",unknown,0
+39387,global,"2005, 2016","LC, LC","0, 0",stable,0
+39389,global,"2006, 2013","CR, EN","0.8, 0.6",decreasing,-0.02857
+39393,global,"2006, 2013","CR, CR","0.8, 0.8",decreasing,0
+39396,global,"2005, 2015","LC, LC","0, 0",unknown,0
+39399,europe,"2015, 2016","NT, NT","0.2, 0.2",stable,0
+39399,global,"2005, 2016","NT, NT","0.2, 0.2",decreasing,0
+39413,global,"2005, 2016","VU, VU","0.4, 0.4",decreasing,0
+39416,global,"2006, 2015","LC, LC","0, 0",unknown,0
+39418,global,"2006, 2015","EN, EN","0.6, 0.6",decreasing,0
+39774,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+40802,global,"2002, 2012, 2017","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
+41007,global,"2012, 2017","VU, VU","0.4, 0.4",decreasing,0
+41008,global,"2002, 2015","VU, VU","0.4, 0.4",decreasing,0
+41010,global,"2012, 2017","VU, VU","0.4, 0.4",decreasing,0
+41064,global,"2007, 2016","CR, CR","0.8, 0.8",decreasing,0
+41366,mediterranean,"2004, 2016","LC, LC","0, 0",unknown,0
+41664,global,"2008, 2015","LC, LC","0, 0",increasing,0
+41665,global,"2008, 2014, 2016","LC, LC, LC","0, 0, 0",stable,0
+41666,global,"2008, 2015","LC, LC","0, 0",increasing,0
+41668,global,"2008, 2015","EN, EN","0.6, 0.6",decreasing,0
+41671,global,"2008, 2015","LC, LC","0, 0",increasing,0
+41672,global,"2008, 2016","LC, LC","0, 0",unknown,0
+41712,global,"2008, 2012","EN, EN","0.6, 0.6",unknown,0
+41718,global,"2003, 2015","NT, LC","0.2, 0",unknown,-0.01667
+41722,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41723,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41724,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41725,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41726,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41727,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41728,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41729,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41732,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41740,global,"2003, 2013","CR, EN","0.8, 0.6",decreasing,-0.02
+41743,global,"2003, 2015","LC, LC","0, 0",stable,0
+41753,global,"2003, 2016","LC, LC","0, 0",stable,0
+41794,global,"2003, 2016","NT, LC","0.2, 0",unknown,-0.01538
+41796,global,"2003, 2016","LC, LC","0, 0",stable,0
+41797,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
+41805,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41806,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41807,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41808,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41810,global,"2003, 2016","NT, EN","0.2, 0.6",decreasing,0.03077
+41811,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41818,global,"2003, 2015","LC, LC","0, 0",stable,0
+41820,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41824,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41828,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41829,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41833,global,"2003, 2006","NT, NT","0.2, 0.2",unknown,0
+41837,global,"2003, 2009, 2015","NT, NT, LC","0.2, 0.2, 0",unknown,-0.01667
+41838,global,"2003, 2009, 2015","NT, NT, LC","0.2, 0.2, 0",unknown,-0.01667
+41839,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41841,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41842,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41844,global,"2003, 2016","LC, LC","0, 0",unknown,0
+41846,global,"2003, 2016","LC, LC","0, 0",stable,0
+41848,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
+41849,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
+41858,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41862,global,"2003, 2016","LC, LC","0, 0",stable,0
+41864,global,"2003, 2015","LC, LC","0, 0",unknown,0
+41872,global,"2003, 2016","NT, NT","0.2, 0.2",decreasing,0
+41873,global,"2003, 2015","NT, LC","0.2, 0",unknown,-0.01667
+41874,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
+41876,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+41878,global,"2003, 2016","VU, EN","0.4, 0.6",decreasing,0.01538
+42704,global,"2016, 2017","LC, LC","0, 0",unknown,0
+42713,global,"2003, 2009, 2016","LC, LC, LC","0, 0, 0",unknown,0
+42716,global,"2003, 2011","LC, LC","0, 0",unknown,0
+42717,global,"2003, 2015","LC, LC","0, 0",unknown,0
+42720,global,"2003, 2015","LC, LC","0, 0",unknown,0
+42721,global,"2003, 2015","LC, LC","0, 0",unknown,0
+42729,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
+44183,global,"2005, 2016","NT, LC","0.2, 0",stable,-0.01818
+44186,global,"2004, 2015","LC, LC","0, 0",unknown,0
+60108,global,"2006, 2015","LC, LC","0, 0",stable,0
+60111,global,"2006, 2015","LC, LC","0, 0",unknown,0
+60112,global,"2006, 2016","LC, LC","0, 0",unknown,0
+60121,global,"2006, 2016","EN, EN","0.6, 0.6",decreasing,0
+60140,global,"2006, 2016","LC, LC","0, 0",stable,0
+60146,global,"2006, 2015","LC, LC","0, 0",unknown,0
+60147,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60148,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60150,global,"2006, 2015","NT, NT","0.2, 0.2",unknown,0
+60153,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60155,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60156,global,"2006, 2011, 2015","NT, LC, LC","0.2, 0, 0",unknown,-0.02295
+60158,global,"2006, 2016","LC, LC","0, 0",unknown,0
+60159,global,"2006, 2016","LC, LC","0, 0",unknown,0
+60160,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60162,global,"2006, 2015","VU, VU","0.4, 0.4",decreasing,0
+60163,global,"2006, 2016","LC, LC","0, 0",unknown,0
+60164,global,"2006, 2016","LC, LC","0, 0",unknown,0
+60166,global,"2006, 2016","VU, VU","0.4, 0.4",decreasing,0
+60168,global,"2006, 2016","NT, NT","0.2, 0.2",unknown,0
+60171,global,"2006, 2016","NT, NT","0.2, 0.2",decreasing,0
+60175,global,"2006, 2016","VU, VU","0.4, 0.4",unknown,0
+60191,global,"2006, 2015","LC, LC","0, 0",increasing,0
+60192,global,"2006, 2016","LC, LC","0, 0",stable,0
+60195,global,"2006, 2016","NT, VU","0.2, 0.4",stable,0.02
+60200,global,"2006, 2016","NT, NT","0.2, 0.2",decreasing,0
+60210,global,"2006, 2015","LC, LC","0, 0",unknown,0
+60212,global,"2006, 2015","LC, LC","0, 0",unknown,0
+60344,global,"2008, 2010, 2014","CR, CR, CR","0.8, 0.8, 0.8",decreasing,-0
+61405,europe,"2006, 2015","CR, CR","0.8, 0.8",decreasing,0
+61417,global,"2006, 2007","EN, CR","0.6, 0.8",decreasing,0.2
+61418,global,"2006, 2007","EN, CR","0.6, 0.8",decreasing,0.2
+63119,global,"2007, 2016","LC, LC","0, 0",unknown,0
+63120,global,"2007, 2015","LC, NT","0, 0.2",decreasing,0.025
+63127,global,"2007, 2015","LC, LC","0, 0",unknown,0
+63132,global,"2007, 2016","EN, EN","0.6, 0.6",decreasing,0
+63152,global,"2007, 2016","LC, LC","0, 0",unknown,0
+63165,global,"2003, 2011","LC, LC","0, 0",stable,0
+64396,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+64400,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+64410,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+64411,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+64412,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
+132730,global,"2008, 2017","LC, LC","0, 0",unknown,0
+132733,global,"2008, 2017","LC, LC","0, 0",stable,0
+132754,global,"2008, 2017","LC, LC","0, 0",unknown,0
+132767,global,"2008, 2017","LC, LC","0, 0",unknown,0
+132783,global,"2008, 2017","LC, LC","0, 0",unknown,0
+132822,global,"2008, 2017","LC, LC","0, 0",stable,0
+132860,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+132869,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132878,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132880,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+132881,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132883,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+132885,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132887,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132888,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132895,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132903,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132904,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+132911,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132916,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132917,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132922,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+132923,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132925,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132936,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+132940,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+132948,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132956,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+132958,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132960,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132969,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+132975,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132976,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132978,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132980,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132983,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132986,global,"2008, 2014","LC, LC","0, 0",unknown,0
+132992,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132997,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+132998,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133001,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133008,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133013,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133016,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133020,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133021,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133023,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133024,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133025,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133028,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133029,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133038,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133041,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133043,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133044,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133045,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133046,global,"2008, 2014","EN, EN","0.6, 0.6",decreasing,0
+133049,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133054,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133055,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133058,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133063,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133066,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133070,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133071,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133076,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133082,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133083,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133084,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133087,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133088,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133090,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133091,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133095,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133097,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133098,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133099,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133105,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133106,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133116,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133117,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133127,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133132,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133136,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133137,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133139,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133140,global,"2008, 2014","LC, LC","0, 0",stable,0
+133148,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133156,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133158,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133166,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133167,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133171,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133172,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133175,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133183,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133186,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133192,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133197,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133198,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133200,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133201,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133203,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133208,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133209,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133215,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133216,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133220,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133222,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133231,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133236,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133239,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133240,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133242,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133244,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133246,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133248,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133250,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133256,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133258,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133262,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133267,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133272,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133277,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133284,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133289,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133290,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133291,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133292,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133293,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133302,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133303,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133304,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133308,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133314,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133315,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133324,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133325,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133326,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133327,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133329,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133330,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133332,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133337,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133343,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133345,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133351,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133353,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133357,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133360,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133365,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133376,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133378,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133380,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133382,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133386,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133387,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133390,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133398,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133403,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133406,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133407,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133410,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133414,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133415,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133418,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133419,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133420,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133423,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133426,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133428,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133438,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133440,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133448,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133451,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133452,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133453,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133456,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133458,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133459,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133463,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133468,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133470,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133473,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133474,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133478,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133482,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133485,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133486,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133493,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133495,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133496,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133502,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133503,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133516,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133523,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133525,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133526,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133531,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133532,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133538,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133539,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133545,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133548,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133551,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133557,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133558,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133559,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133560,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133566,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133569,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133570,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133576,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133581,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133582,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133587,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133588,global,"2008, 2014","VU, VU","0.4, 0.4",stable,0
+133593,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133601,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133607,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133613,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133616,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133633,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133634,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133635,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133636,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133638,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133640,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133641,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133644,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133646,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133648,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133649,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133652,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133660,global,"2008, 2014","VU, VU","0.4, 0.4",decreasing,0
+133662,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133666,global,"2008, 2014","NT, NT","0.2, 0.2",decreasing,0
+133673,global,"2008, 2014","LC, LC","0, 0",unknown,0
+133676,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133685,global,"2008, 2014","NT, NT","0.2, 0.2",unknown,0
+133697,global,"2008, 2014","VU, VU","0.4, 0.4",unknown,0
+133700,global,"2008, 2014","LC, LC","0, 0",decreasing,0
+133702,global,"2008, 2014","LC, LC","0, 0",unknown,0
+135301,global,"2008, 2011","LC, LC","0, 0",stable,0
+135525,global,"2008, 2010","LC, LC","0, 0",unknown,0
+135567,global,"2008, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
+135574,europe,"2010, 2015","LC, LC","0, 0",unknown,0
+135606,europe,"2010, 2015","LC, LC","0, 0",decreasing,0
+135690,europe,"2008, 2015","LC, LC","0, 0",increasing,0
+135690,global,"2008, 2014","LC, LC","0, 0",increasing,0
+135717,global,"2008, 2010","LC, LC","0, 0",decreasing,0
+135719,global,"2008, 2013","LC, LC","0, 0",unknown,0
+136315,global,"2008, 2017","NT, VU","0.2, 0.4",decreasing,0.02222
+154644,global,"2010, 2014","LC, LC","0, 0",unknown,0
+154669,global,"2010, 2015","LC, LC","0, 0",unknown,0
+154676,global,"2010, 2012","LC, LC","0, 0",stable,0
+154677,global,"2010, 2012","LC, LC","0, 0",stable,0
+154706,global,"2010, 2012","LC, LC","0, 0",unknown,0
+154712,global,"2010, 2011","LC, LC","0, 0",stable,0
+154731,global,"2010, 2013","LC, LC","0, 0",stable,0
+154780,global,"2010, 2012","LC, LC","0, 0",unknown,0
+154825,global,"2010, 2011","LC, LC","0, 0",unknown,0
+154853,global,"2010, 2017","LC, LC","0, 0",decreasing,0
+154855,global,"2010, 2012, 2017","LC, LC, LC","0, 0, 0",unknown,0
+154863,global,"2010, 2012","LC, LC","0, 0",unknown,0
+154924,global,"2010, 2017","LC, LC","0, 0",unknown,0
+154938,global,"2010, 2016","LC, LC","0, 0",unknown,0
+154946,global,"2010, 2011","LC, LC","0, 0",unknown,0
+154960,global,"2010, 2012","LC, LC","0, 0",unknown,0
+154971,global,"2010, 2012","LC, LC","0, 0",stable,0
+154976,global,"2010, 2012","LC, LC","0, 0",stable,0
+155018,global,"2010, 2015","NT, VU","0.2, 0.4",decreasing,0.04
+155021,global,"2010, 2015","LC, VU","0, 0.4",unknown,0.08
+155073,global,"2010, 2017","LC, LC","0, 0",unknown,0
+155096,global,"2010, 2011","LC, LC","0, 0",stable,0
+155116,global,"2010, 2017","LC, LC","0, 0",unknown,0
+155120,global,"2010, 2012","LC, LC","0, 0",decreasing,0
+155165,global,"2010, 2016","LC, LC","0, 0",decreasing,0
+155180,global,"2010, 2014","LC, LC","0, 0",unknown,0
+155181,global,"2010, 2017","LC, LC","0, 0",unknown,0
+155201,global,"2010, 2012","LC, LC","0, 0",stable,0
+155212,global,"2010, 2016, 2017","LC, LC, LC","0, 0, 0",decreasing,0
+155226,global,"2010, 2014","LC, LC","0, 0",unknown,0
+155235,global,"2010, 2015","LC, LC","0, 0",unknown,0
+155273,global,"2010, 2012","LC, LC","0, 0",unknown,0
+155276,global,"2010, 2011","LC, LC","0, 0",stable,0
+155282,global,"2010, 2014","LC, LC","0, 0",stable,0
+155285,global,"2012, 2017","VU, LC","0.4, 0",unknown,-0.08
+155290,global,"2010, 2012","LC, LC","0, 0",unknown,0
+161334,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161342,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161346,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161370,global,"2009, 2015","NT, LC","0.2, 0",stable,-0.03333
+161373,global,"2009, 2016","NT, NT","0.2, 0.2",unknown,0
+161375,global,"2009, 2015","LC, LC","0, 0",stable,0
+161381,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161386,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161426,global,"2009, 2017","NT, NT","0.2, 0.2",decreasing,0
+161431,global,"2009, 2016","NT, VU","0.2, 0.4",decreasing,0.02857
+161452,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161464,global,"2009, 2015","VU, EN","0.4, 0.6",decreasing,0.03333
+161486,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161489,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161495,global,"2009, 2016","EN, EN","0.6, 0.6",decreasing,0
+161505,global,"2009, 2012, 2015, 2016","LC, LC, LC, LC","0, 0, 0, 0",unknown,0
+161526,global,"2009, 2016","NT, VU","0.2, 0.4",decreasing,0.02857
+161535,global,"2009, 2016","NT, NT","0.2, 0.2",unknown,0
+161539,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161540,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+161546,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+161547,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+161553,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161566,global,"2009, 2016","VU, VU","0.4, 0.4",unknown,0
+161596,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161598,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+161615,global,"2009, 2016","LC, VU","0, 0.4",decreasing,0.05714
+161621,global,"2009, 2012","VU, VU","0.4, 0.4",decreasing,0
+161628,global,"2009, 2015","LC, LC","0, 0",increasing,0
+161629,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161640,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161648,global,"2009, 2016","LC, LC","0, 0",unknown,0
+161655,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161661,global,"2009, 2015","LC, LC","0, 0",stable,0
+161674,global,"2009, 2015","LC, LC","0, 0",unknown,0
+161692,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
+161705,global,"2009, 2015","LC, LC","0, 0",stable,0
+161743,global,"2009, 2016","NT, NT","0.2, 0.2",unknown,0
+161744,global,"2009, 2016","LC, VU","0, 0.4",decreasing,0.05714
+166077,global,"2010, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
+166533,global,"2012, 2016","LC, LC","0, 0",unknown,0
+166575,global,"2012, 2017","LC, LC","0, 0",unknown,0
+166892,global,"2011, 2017","LC, LC","0, 0",unknown,0
+166894,global,"2010, 2014","LC, NT","0, 0.2",unknown,0.05
+166897,global,"2012, 2017","LC, LC","0, 0",unknown,0
+168000,pan-africa,"2010, 2017","LC, LC","0, 0",decreasing,0
+169587,global,"2009, 2017","LC, LC","0, 0",unknown,0
+169632,global,"2009, 2017","LC, LC","0, 0",stable,0
+169967,global,"2011, 2015","LC, LC","0, 0",stable,0
+170341,global,"2011, 2014","LC, VU","0, 0.4",decreasing,0.13333
+172359,global,"2011, 2012","LC, LC","0, 0",unknown,0
+172363,global,"2012, 2016","LC, LC","0, 0",unknown,0
+172393,global,"2011, 2012","LC, LC","0, 0",unknown,0
+172404,global,"2011, 2012","LC, LC","0, 0",stable,0
+172443,global,"2011, 2017","LC, LC","0, 0",stable,0
+172450,global,"2011, 2012","LC, LC","0, 0",unknown,0
+172468,global,"2011, 2017","LC, LC","0, 0",unknown,0
+172469,global,"2011, 2017","LC, LC","0, 0",unknown,0
+176738,global,"2010, 2017","LC, LC","0, 0",stable,0
+178111,global,"2010, 2017","LC, LC","0, 0",unknown,0
+183158,global,"2012, 2017","LC, LC","0, 0",stable,0
+183217,global,"2010, 2017","LC, LC","0, 0",unknown,0
+183308,global,"2010, 2014","LC, LC","0, 0",stable,0
+183310,global,"2010, 2012","LC, LC","0, 0",stable,0
+183317,global,"2010, 2016","LC, LC","0, 0",unknown,0
+183468,global,"2010, 2012","LC, LC","0, 0",stable,0
+183646,global,"2010, 2012","LC, LC","0, 0",stable,0
+183743,global,"2010, 2016","LC, LC","0, 0",unknown,0
+183757,global,"2010, 2017","LC, LC","0, 0",unknown,0
+183813,global,"2010, 2012","LC, LC","0, 0",unknown,0
+183839,global,"2010, 2012","LC, LC","0, 0",stable,0
+184088,global,"2010, 2013","LC, LC","0, 0",stable,0
+184099,global,"2010, 2013","LC, LC","0, 0",unknown,0
+184918,global,"2012, 2016","LC, LC","0, 0",unknown,0
+187455,global,"2010, 2015","LC, LC","0, 0",unknown,0
+187492,mediterranean,"2010, 2014","LC, LC","0, 0",stable,0
+187573,europe,"2010, 2014","LC, LC","0, 0",stable,0
+187595,global,"2010, 2015","LC, LC","0, 0",unknown,0
+187790,global,"2010, 2015","NT, LC","0.2, 0",unknown,-0.04
+188101,global,"2012, 2017","LC, LC","0, 0",stable,0
+190674,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190675,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190676,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190679,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190680,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190681,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190682,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190683,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190685,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190686,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190687,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190688,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190690,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190691,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190692,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190693,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190694,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190695,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190697,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190698,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190699,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190700,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190702,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190703,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190704,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190705,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190706,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190707,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190708,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190709,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190710,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190711,global,"2010, 2012","NT, NT","0.2, 0.2",unknown,0
+190712,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190713,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190714,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190715,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190717,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190718,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190721,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190722,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190723,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190725,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190726,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190728,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190729,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190731,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190732,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190733,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190734,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190736,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190738,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190739,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190740,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190741,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190742,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190744,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190745,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190747,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190748,global,"2010, 2012","EN, EN","0.6, 0.6",decreasing,0
+190750,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190754,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190755,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190756,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190757,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190758,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190759,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190761,global,"2010, 2012","NT, NT","0.2, 0.2",unknown,0
+190762,global,"2010, 2012","LC, LC","0, 0",stable,0
+190765,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190766,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190767,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190768,global,"2010, 2012","LC, LC","0, 0",unknown,0
+190769,global,"2010, 2012","LC, LC","0, 0",unknown,0
+191108,global,"2014, 2017","EN, EN","0.6, 0.6",decreasing,0
+194815,global,"2011, 2014","LC, LC","0, 0",stable,0
+194818,global,"2011, 2014","LC, LC","0, 0",unknown,0
+194843,mediterranean,"2011, 2014","VU, LC","0.4, 0",stable,-0.13333
+194844,mediterranean,"2011, 2014","LC, LC","0, 0",stable,0
+194854,global,"2011, 2014","LC, LC","0, 0",unknown,0
+194855,mediterranean,"2011, 2014","LC, LC","0, 0",stable,0
+194863,mediterranean,"2011, 2014","LC, LC","0, 0",unknown,0
+194874,mediterranean,"2011, 2014","LC, LC","0, 0",unknown,0
+194885,mediterranean,"2011, 2014","EN, EN","0.6, 0.6",unknown,0
+194887,global,"2011, 2014","LC, LC","0, 0",stable,0
+194891,mediterranean,"2011, 2014","LC, LC","0, 0",stable,0
+195427,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195429,global,"2011, 2015","LC, LC","0, 0",stable,0
+195444,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195448,global,"2012, 2015","LC, LC","0, 0",stable,0
+195455,global,"2011, 2015, 2016","LC, LC, LC","0, 0, 0",unknown,0
+195456,global,"2012, 2016","VU, VU","0.4, 0.4",decreasing,0
+195460,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195462,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195464,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195465,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195468,global,"2011, 2015","LC, LC","0, 0",unknown,0
+195470,global,"2012, 2015","LC, LC","0, 0",unknown,0
+196317,global,"2012, 2017","LC, LC","0, 0",stable,0
+196351,global,"2012, 2017","LC, LC","0, 0",stable,0
+196417,global,"2012, 2017","LC, LC","0, 0",unknown,0
+196421,global,"2012, 2017","LC, LC","0, 0",unknown,0
+197047,global,"2012, 2017","LC, LC","0, 0",unknown,0
+197054,global,"2014, 2017","LC, LC","0, 0",unknown,0
+198764,europe,"2014, 2015","LC, LC","0, 0",unknown,0
+198920,global,"2011, 2012, 2017","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
+199622,global,"2012, 2017","LC, LC","0, 0",stable,0
+202632,global,"2013, 2015","LC, NT","0, 0.2",decreasing,0.1
+22680033,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22680038,global,"2004, 2006, 2008, 2010, 2012, 2016","NT, NT, NT, NT, VU, VU","0.2, 0.2, 0.2, 0.2, 0.4, 0.4",decreasing,0.02
+22680047,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22680052,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22680405,global,"2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, NT, NT","0, 0, 0, 0, 0.2, 0.2",unknown,0.01871
+22680409,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22680412,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22680415,global,"2004, 2005, 2006, 2008, 2010, 2012, 2013, 2016","LC, VU, VU, VU, VU, VU, VU, VU","0, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0.01673
+22680423,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22680427,global,"2004, 2008, 2009, 2011, 2012, 2016, 2017","LC, LC, LC, LC, VU, VU, VU","0, 0, 0, 0, 0.4, 0.4, 0.4",decreasing,0.03871
+22680441,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22680455,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22680462,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22680485,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22693363,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, NT, NT, NT","0, 0, 0, 0, 0.2, 0.2, 0.2",decreasing,0.01929
+22693369,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22693427,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22693490,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22693735,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22693749,global,"2004, 2008, 2009, 2011, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
+22694160,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694210,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694218,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694240,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694245,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694251,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694271,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694279,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694282,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694286,global,"2004, 2006, 2008, 2012, 2013, 2016, 2017","VU, VU, VU, VU, NT, NT, NT","0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2",stable,-0.01804
+22694289,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694296,global,"2004, 2006, 2008, 2010, 2012, 2016, 2017","NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",unknown,0
+22694308,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694317,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694321,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694324,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694329,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694334,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694337,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694340,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694343,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694346,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694362,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694373,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694469,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694473,global,"2004, 2005, 2006, 2008, 2010, 2012, 2016, 2017","LC, NT, NT, NT, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0.00678
+22694476,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694479,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694497,global,"2004, 2008, 2009, 2010, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, VU","0, 0, 0, 0, 0, 0, 0.4",decreasing,0.01968
+22694502,global,"2004, 2006, 2008, 2010, 2012, 2013, 2015, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
+22694524,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
+22694542,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694552,global,"2004, 2006, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",stable,0
+22694561,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694571,global,"2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694591,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694607,global,"2004, 2008, 2009, 2012, 2013, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22694612,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694618,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694623,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694629,global,"2004, 2008, 2009, 2010, 2012, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22694635,global,"2004, 2008, 2009, 2012, 2013, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",unknown,0
+22694641,global,"2004, 2006, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",stable,0
+22694646,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694651,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694656,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694666,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694673,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694699,global,"2004, 2006, 2008, 2010, 2012, 2015, 2016","NT, NT, NT, NT, NT, NT, VU","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.4",decreasing,0.00969
+22694705,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694716,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, LC, LC, VU","0, 0, 0, 0, 0, 0, 0.4",decreasing,0.01577
+22694722,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694730,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694740,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",unknown,0
+22694750,global,"2004, 2007, 2008, 2010, 2012, 2016","EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22694764,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694782,global,"2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694799,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694821,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22694834,global,"2004, 2006, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
+22694837,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22694841,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694847,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22694852,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, NT, NT, NT","0, 0, 0, 0, 0.2, 0.2, 0.2",decreasing,0.01929
+22694861,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22694864,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
+22694867,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694870,global,"2004, 2005, 2008, 2010, 2012, 2016, 2017","EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22694875,global,"2004, 2005, 2008, 2009, 2010, 2012, 2013, 2014, 2016","CR, CR, CR, CR, CR, CR, CR, NT, NT","0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.2, 0.2",decreasing,-0.04482
+22694896,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694899,global,"2004, 2005, 2007, 2008, 2010, 2012, 2016","VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
+22694903,global,"2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, NT, NT","0, 0, 0, 0, 0.2, 0.2",decreasing,0.01871
+22694918,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694924,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22694927,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, VU, VU, VU","0, 0, 0, 0, 0.4, 0.4, 0.4",decreasing,0.03859
+22694931,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22694934,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22696637,global,"2004, 2008, 2009, 2012, 2013, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22696657,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22696668,global,"2004, 2007, 2008, 2012, 2016, 2017, 2017","VU, VU, VU, VU, VU, EN, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.4",decreasing,0.0064
+22696675,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22696683,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22696686,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22696753,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22696756,global,"2004, 2005, 2008, 2010, 2011, 2012, 2013, 2016, 2017","EN, EN, EN, EN, VU, VU, VU, VU, VU","0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4",stable,-0.01958
+22696766,global,"2004, 2006, 2008, 2010, 2012, 2013, 2015, 2016, 2017","EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22696770,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696773,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22696776,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22696779,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696788,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696792,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",increasing,0
+22696799,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696802,global,"2004, 2005, 2006, 2008, 2010, 2012, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
+22696806,global,"2004, 2006, 2008, 2010, 2012, 2013, 2015, 2016, 2017","NT, NT, NT, NT, NT, EN, EN, EN, EN","0.2, 0.2, 0.2, 0.2, 0.2, 0.6, 0.6, 0.6, 0.6",decreasing,0.03893
+22696883,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696887,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22696894,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22696898,global,"2004, 2006, 2007, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
+22696901,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22696907,global,"2004, 2005, 2006, 2008, 2010, 2012, 2016, 2017","VU, EN, EN, EN, EN, EN, EN, EN","0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0.00678
+22697590,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22697599,global,"2004, 2006, 2008, 2012, 2016, 2017","VU, VU, VU, VU, VU, NT","0.4, 0.4, 0.4, 0.4, 0.4, 0.2",decreasing,-0.00906
+22697608,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22697611,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22697619,global,"2004, 2008, 2010, 2012, 2016","LC, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2",increasing,0.015
+22697724,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",increasing,0
+22697733,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22697742,global,"2004, 2005, 2007, 2008, 2009, 2010, 2012, 2013, 2015, 2016, 2017","CR, CR, CR, CR, CR, CR, CR, CR, CR, CR, CR","0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8",decreasing,0
+22697852,global,"2004, 2005, 2007, 2008, 2009, 2012, 2016, 2017","VU, VU, NT, NT, LC, LC, LC, LC","0.4, 0.4, 0.2, 0.2, 0, 0, 0, 0",increasing,-0.03119
+22697866,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",increasing,0
+22697970,global,"2004, 2005, 2007, 2008, 2012, 2016","VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
+22698080,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
+22698172,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, NT, NT, NT","0, 0, 0, 0, 0.2, 0.2, 0.2",decreasing,0.01929
+22698175,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",decreasing,0
+22698226,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
+22698240,global,"2004, 2006, 2007, 2008, 2010, 2012, 2013, 2015, 2016, 2017","EN, EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22698305,global,"2003, 2004, 2005, 2007, 2008, 2010, 2012, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
+22698320,global,"2003, 2004, 2005, 2007, 2008, 2009, 2010, 2012, 2013, 2014, 2015, 2016, 2017","VU, VU, VU, CR, CR, CR, CR, CR, CR, CR, CR, CR, CR","0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8",decreasing,0.0285
+22698375,global,"2002, 2003, 2004, 2005, 2008, 2010, 2012, 2013, 2014, 2016, 2017","VU, EN, EN, EN, EN, EN, EN, NT, NT, NT, LC","0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.2, 0.2, 0.2, 0",increasing,-0.03079
+22698388,global,"2003, 2004, 2005, 2008, 2010, 2012, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",unknown,0
+22698398,global,"2003, 2004, 2005, 2007, 2008, 2010, 2012, 2013, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, EN, EN, EN","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6",decreasing,0.01602
+22698425,global,"2003, 2004, 2005, 2007, 2008, 2010, 2012, 2016, 2017","EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22698448,global,"2003, 2004, 2005, 2008, 2010, 2012, 2016, 2017","NT, NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
+22698511,global,"2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, VU, VU","0, 0, 0, 0, 0.4, 0.4",decreasing,0.03548
+22698562,global,"2004, 2005, 2007, 2008, 2010, 2012, 2013, 2016","EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22724836,global,"2012, 2013, 2015, 2016","EN, EN, VU, VU","0.6, 0.6, 0.4, 0.4",decreasing,-0.06
+22724879,global,"2012, 2013, 2016","LC, LC, LC","0, 0, 0",unknown,0
+22728328,global,"2003, 2004, 2005, 2008, 2010, 2012, 2016, 2017","VU, VU, VU, NT, NT, NT, NT, NT","0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2, 0.2",stable,-0.01614
+22728372,global,"2003, 2004, 2005, 2007, 2008, 2010, 2012, 2016, 2017","EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
+22728950,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22728990,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
+22729000,global,"2004, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
+22729421,global,"2004, 2008, 2010, 2012, 2016, 2017","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
+22729604,global,"2007, 2008, 2010, 2012, 2016","NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2",unknown,0
+22733989,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",increasing,0
+22735929,global,"2010, 2012, 2013, 2014, 2016, 2017","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",increasing,0
+22736173,global,"2010, 2012, 2016","LC, LC, LC","0, 0, 0",decreasing,0

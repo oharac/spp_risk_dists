@@ -1,0 +1,233 @@
+---
+title: 'Process IUCN spp shapes'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+library(sf)
+
+dir_git <- '~/github/spp_health_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+
+source(file.path(dir_git, 'data_setup/api_fxns.R'))
+
+### goal specific folders and info
+
+dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+
+```
+
+# Summary
+
+Using a set of IUCN species range maps, rasterize each species to 0.1° lat long raster using `fasterize`.  Use `presence` field from shapefile.
+
+* Subpopulation polygons must be identified and rasterized separately from the parent polygon; this must be done by sciname and subpop fields since the polygon IDs are based upon the parent ID.
+* Regional assessments need not be determined at this stage - the ID numbers match the global ID numbers (including subpops).
+
+# Data source
+
+IUCN Red List: Spatial Data Download
+IUCN: Gina Ralph direct communication
+
+# Methods
+
+From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend.
+
+Unfortunately we probably need a manual subpop matching csv, because of _Caretta caretta_.
+
+``` {r create_subpop_lookup}
+
+shps_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+
+marine_spp <- read_csv(file.path(dir_git, sprintf('data/iucn/spp_marine_from_api_%s.csv', api_version)))
+### This is all "marine" species by habitat
+api_spp <- read_csv(file.path(dir_o_anx, 'iucn', 
+                              sprintf('spp_info_from_api_%s.csv', api_version))) %>%
+  filter(iucn_sid %in% marine_spp$iucn_sid)
+
+shps_df <- lapply(shps_dbfs, foreign::read.dbf) %>%
+  setNames(basename(dbfs)) %>%
+  bind_rows(.id = 'dbf_file') %>%
+  select(dbf_file, iucn_sid = id_no, sciname = binomial, code, presence, subpop) %>%
+  filter(iucn_sid %in% marine_spp$iucn_sid)
+
+shp_subpops <- shps_df %>%
+  select(shp_iucn_sid = iucn_sid, sciname, shp_subpop = subpop) %>%
+  filter(!is.na(shp_subpop)) %>%
+  distinct() %>%
+  mutate(shp_subpop_clean = str_replace(tolower(shp_subpop), ' subpopulation| ocean', ''),
+         shp_subpop_clean = str_replace_all(shp_subpop_clean, '[^a-z]', ' ') %>% str_trim,
+         shp_subpop_clean = str_replace(shp_subpop_clean, 'noth', 'north')) ### fix typo
+
+api_subpops <- api_spp %>%
+  select(api_iucn_sid = iucn_sid, sciname, api_subpop = population) %>%
+  filter(!is.na(api_subpop)) %>%
+  filter(sciname %in% shp_subpops$sciname) %>%
+  distinct() %>%
+  mutate(api_subpop_clean = str_replace_all(tolower(api_subpop), ' subpopulation| ocean', ''),
+         api_subpop_clean = str_replace_all(api_subpop_clean, '[^a-z]', ' ') %>% str_trim)
+
+subpops_match_raw <- shp_subpops %>%
+  full_join(api_subpops, by = 'sciname') %>%
+  group_by(api_iucn_sid) %>%
+  mutate(subpop_match = str_detect(shp_subpop_clean, api_subpop_clean),
+         n_match = sum(subpop_match)) %>%
+  filter(subpop_match | sum(subpop_match) == 0) %>%
+  ungroup()
+
+caretta_subpops <- subpops_match_raw %>%
+  filter(shp_iucn_sid == 3897) %>%
+  mutate(api_subpop_single = str_split(api_subpop_clean, ' ')) %>%
+  unnest(api_subpop_single) %>%
+  group_by(api_subpop_clean, shp_subpop_clean) %>%
+  mutate(match = str_detect(shp_subpop_clean, api_subpop_single),
+         n_match = sum(match),
+         n_words = n()) %>%
+  filter(sum(match) == n()) %>%
+  ungroup() %>%
+  select(shp_iucn_sid, sciname, shp_subpop, api_iucn_sid, api_subpop) %>%
+  distinct()
+
+subpops_match <- subpops_match_raw %>%
+  filter(shp_iucn_sid != 3897 & subpop_match == TRUE) %>%
+  select(shp_iucn_sid, sciname, shp_subpop, api_iucn_sid, api_subpop) %>%
+  bind_rows(caretta_subpops)
+
+### Check for missed matches:
+
+# api_subpops$api_iucn_sid[!api_subpops$api_iucn_sid %in% subpops_match$api_iucn_sid]
+### API subpop, not matched: 16369383 Tursiops truncatus Mediterranean subpopulation
+### OK - no polygon for this subpopulation.  Make sure it gets picked up by regional assessment!
+
+# shp_subpops$shp_subpop[!shp_subpops$shp_subpop %in% subpops_match$shp_subpop]
+### Shapefile subpop, not matched: 16285718 Chelonia mydas Hawaiian subpopulation
+### OK - the shapefile ID matches the API ID so this will match automatically
+
+write_csv(subpops_match, file.path(dir_git, sprintf('data_setup/int/subpops_match_api_to_shp_%s.csv', api_version)))
+
+```
+
+## Rasterize with `fasterize()`
+
+We will loop over each species in each shapefile and rasterize separately, using `sf` and `fasterize` packages.
+
+``` {r, eval = FALSE}
+
+shp_files_all <- list.files(dir_shp, pattern = '\\.shp$', full.names = TRUE)
+shp_info  <- file.info(shp_files_all) %>%
+  mutate(shp = shp_files_all)
+
+keepers <- c('CHOND', 'MAMM', 'MARINEFISH_PART_1') %>% paste0(collapse = '|')
+
+shp_files <- shp_info %>%
+  filter(size < 200e6 | str_detect(shp, keepers)) %>%
+  .$shp
+
+verbose <- FALSE
+
+dir_rast <- file.path(dir_o_anx, 'rasters')
+
+rast_base <- raster::raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[1]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  shp_sf <- st_read(shp)
+  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
+    spp_shp <- shp_sf %>%
+      filter(id_no == id)
+    
+    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_050deg.tif', id))
+    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
+    
+    spp_rast <- fasterize::fasterize(spp_shp, rast_base, field = 'presence', fun = 'min')
+    
+    
+    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+  }
+  
+  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  tmp_df <- data.frame('group' = basename(shp),
+                       'n_spp' = nrow(shp_sf),
+                       'time'  = (proc.time() - ptm_shp)[3])
+  spp_vs_time_df <- spp_vs_time_df %>%
+    bind_rows(tmp_df)
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_050deg.csv'))
+
+```
+
+
+
+## Rasterize at tenth degree for comparison
+
+``` {r, eval = FALSE}
+
+verbose <- FALSE
+
+rast_base_halfdeg    <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+rast_base_tenthdeg <- raster(resolution = .10, ext = extent(rast_base_halfdeg))
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[1]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  shp_sf <- st_read(shp)
+  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
+    spp_shp <- shp_sf %>%
+      filter(id_no == id)
+    
+    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_010deg.tif', id))
+    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
+    
+    spp_rast <- fasterize::fasterize(spp_shp, rast_base_tenthdeg, field = 'presence', fun = 'min')
+    
+    
+    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+  }
+  
+  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  tmp_df <- data.frame('group' = basename(shp),
+                       'n_spp' = nrow(shp_sf),
+                       'time'  = (proc.time() - ptm_shp)[3])
+  spp_vs_time_df <- spp_vs_time_df %>%
+    bind_rows(tmp_df)
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_010deg.csv'))
+
+```
+
+

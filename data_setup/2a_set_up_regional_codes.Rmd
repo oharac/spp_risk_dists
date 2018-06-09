@@ -1,0 +1,172 @@
+---
+title: 'Set up IUCN marine species ranges by regional assessment'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+source(file.path(dir_setup, 'api_fxns.R'))
+
+```
+
+# Summary
+
+Examine IUCN Red List regional assessments for extinction risk categories.
+
+# Data Sources
+
+### IUCN Red List
+
+# Methods: Geographic scope of regional assessments
+
+For each regional assessment, spatially classify by [Large Marine Ecosystems](https://upload.wikimedia.org/wikipedia/commons/4/4d/Global_map_of_large_marine_ecosystems.jpg) (other potential options: EEZs and/or FAO Major Fishing Areas).  Use the [https://en.wikipedia.org/wiki/United_Nations_geoscheme](UN geoscheme) to roughly identify subregional zones.  Note there may be some overlaps.
+
+## Europe ('europe'):
+
+from European marine fishes: 
+
+> The geographic scope of the European Red List assessment
+encompasses the Mediterranean Sea, the Black Sea, the
+Baltic Sea, the North Sea and/or the European part of
+the Atlantic Ocean (i.e., the territorial waters and the
+Exclusive Economic Zones (EEZs) of all European
+countries in the eastern part of the Atlantic Ocean,
+also including the EEZs of the Macaronesian islands
+belonging to Portugal and Spain), the North Sea and
+the Northeastern Atlantic Ocean, excluding the EEZs of
+Greenland, Morocco and Western Sahara.
+
+Options: 
+
+* LME 20-26 (26 = Mediterranean) and 59 (Iceland)?
+* Alternately: Use EEZs for all countries listed as Europe by UN classification
+
+## Northern Africa 
+
+* LME 33 (Red Sea), 26 (Mediterranean), 27 (West Coast of North Africa)
+
+## Southern Africa 
+
+* LME 29 (Western Southern Africa) and 30 (Madagascar)
+
+## Eastern Africa 
+
+* LME 30 (Madagascar) and 31 (Horn of Africa)
+
+## Western Africa   
+
+* LME 28
+
+## Central Africa  
+
+* LME 28, 29
+
+## Northeastern Africa 
+
+* LME 32, 33
+
+## Pan-Africa 
+
+* LME 26-33
+
+## Gulf of Mexico 
+
+* LME 5
+
+## Mediterranean
+
+* LME 26 and 62 for Mediterranean and Black Seas
+
+## Persian Gulf
+
+* LME 32 (NOTE: this encompasses the entire Arabian Sea)
+
+``` {r code LMEs}
+
+rgn_to_lme <- c('europe'              = '20,21,22,23,24,25,26,59',
+                'northern_africa'     = '26,27,33',
+                'western_africa'      = '28', 
+                'central_africa'      = '28,29',
+                'northeastern_africa' = '32,33',
+                'southern_africa'     = '29,30',
+                'eastern_africa'      = '30,31',
+                'pan-africa'          = '26,27,28,29,30,31,32,33',
+                'gulf_of_mexico'      = '5',
+                'mediterranean'       = '26,62', 
+                'persian_gulf'        = '32')
+
+rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
+                            lme_id = rgn_to_lme) %>%
+  mutate(lme_id = str_split(lme_id, ',')) %>%
+  unnest(lme_id) %>%
+  group_by(iucn_rgn) %>%
+  mutate(lme_id = as.integer(lme_id),
+         priority = n())
+
+rgn_spp_lme <- read_csv(file.path(dir_git, 
+                                   sprintf('data/iucn/iucn_risk_rgn_current_%s.csv', 
+                                           api_version))) %>%
+  left_join(rgn_to_lme_df, by = 'iucn_rgn')
+
+rgn_spp_global <- read_csv(file.path(dir_git, 
+                                   sprintf('data/iucn/iucn_risk_current_%s.csv', 
+                                           api_version))) %>%
+  select(iucn_sid, gl_cat = cat, gl_cat_score = cat_score)
+
+clean_conflicts <- rgn_spp_lme %>%
+  left_join(rgn_spp_global, by = 'iucn_sid') %>% ### to compare vs. global scores
+  group_by(iucn_sid, sciname, lme_id) %>%
+  filter(priority == min(priority)) %>% ### in a conflict, keep the rgn with fewer LMEs
+  filter(priority <= 3 | n() == 1) %>%  ### drop if still a conflict between rgns with many LMEs
+  summarize(cat_score = mean(cat_score, na.rm = TRUE),
+            cat_current = paste(unique(cat_current), collapse = ','),
+            rgns = paste(iucn_rgn, collapse = ','),
+            cat_score_global = first(gl_cat_score)) %>%
+  ungroup() %>%
+  mutate(cat_score = ifelse(is.nan(cat_score), NA, cat_score))
+
+write_csv(clean_conflicts, file.path(dir_git, sprintf('data/iucn/iucn_rgn_to_lme_%s.csv', api_version)))
+
+```
+
+Where an LME is assigned to multiple regions, use a prioritization then averaging method:
+
+* Prioritize by the region comprising the smallest number of LMEs; e.g. Mediterranean has 1 LME, North Africa has 3, Europe has 8; they all overlap in LME 26.  So for the score for LME 26 for a species occurring in all three regions, keep the score for the Mediterranean.
+* If after prioritizing, multiple regions still overlap in an LME, take the average score of the overlapping regional assessments for that LME.
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+
+prov_wrapup(commit_outputs = FALSE)
+
+```
+
