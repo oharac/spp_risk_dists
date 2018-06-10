@@ -51,9 +51,13 @@ IUCN: Gina Ralph direct communication
 
 # Methods
 
-From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend.
+## Generate species map list with subpops
 
-Unfortunately we probably need a manual subpop matching csv, because of _Caretta caretta_.
+
+
+### Create subpopulation lookup to match maps with IUCN SIDs for subpops
+
+From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend.
 
 ``` {r create_subpop_lookup}
 
@@ -66,7 +70,7 @@ api_spp <- read_csv(file.path(dir_o_anx, 'iucn',
   filter(iucn_sid %in% marine_spp$iucn_sid)
 
 shps_df <- lapply(shps_dbfs, foreign::read.dbf) %>%
-  setNames(basename(dbfs)) %>%
+  setNames(basename(shps_dbfs)) %>%
   bind_rows(.id = 'dbf_file') %>%
   select(dbf_file, iucn_sid = id_no, sciname = binomial, code, presence, subpop) %>%
   filter(iucn_sid %in% marine_spp$iucn_sid)
@@ -127,107 +131,258 @@ write_csv(subpops_match, file.path(dir_git, sprintf('data_setup/int/subpops_matc
 
 ```
 
-## Rasterize with `fasterize()`
+### Join map list to subpop corrected list; remove duplicated spp IDs
 
-We will loop over each species in each shapefile and rasterize separately, using `sf` and `fasterize` packages.
+From the species range map shapefiles, pull map info from the .dbf files.  For species listed in multiple files (e.g. sea snakes and reptiles), remove duplicates.  For species with polygons differentiated by subpopulation, adjust the iucn_sid to match the subpop info.
 
-``` {r, eval = FALSE}
+``` {r generate map list from dbfs}
 
-shp_files_all <- list.files(dir_shp, pattern = '\\.shp$', full.names = TRUE)
-shp_info  <- file.info(shp_files_all) %>%
-  mutate(shp = shp_files_all)
+map_files <- list.files(dir_shp,
+                        pattern = '\\.dbf$',
+                        full.names = TRUE)
 
-keepers <- c('CHOND', 'MAMM', 'MARINEFISH_PART_1') %>% paste0(collapse = '|')
+# spp_group_names <- map_files %>%
+#   basename() %>%
+#   str_replace_all('\\.dbf$|_PART_.+', '') %>%
+#   unique()
 
-shp_files <- shp_info %>%
-  filter(size < 200e6 | str_detect(shp, keepers)) %>%
-  .$shp
+map_info_list <- vector('list', length = length(map_files)) %>%
+  setNames(map_files)
 
-verbose <- FALSE
-
-dir_rast <- file.path(dir_o_anx, 'rasters')
-
-rast_base <- raster::raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
-
-spp_vs_time_df <- data.frame()
-
-for(shp in shp_files) { ### shp <- shp_files[1]
-  ptm_shp <- proc.time()
-  if(verbose) cat('Processing', basename(shp), '...\n')
-  shp_sf <- st_read(shp)
-  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
-  
-  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
-    spp_shp <- shp_sf %>%
-      filter(id_no == id)
-    
-    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_050deg.tif', id))
-    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
-    
-    spp_rast <- fasterize::fasterize(spp_shp, rast_base, field = 'presence', fun = 'min')
-    
-    
-    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
-  }
-  
-  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
-  
-  tmp_df <- data.frame('group' = basename(shp),
-                       'n_spp' = nrow(shp_sf),
-                       'time'  = (proc.time() - ptm_shp)[3])
-  spp_vs_time_df <- spp_vs_time_df %>%
-    bind_rows(tmp_df)
-
+for(map_file in map_files) {
+  # cat('Processing', map_file, '...\n')
+  map_info_list[[map_file]] <- foreign::read.dbf(map_file)
 }
 
-write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_050deg.csv'))
+map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
+  mutate(dbf_file = basename(dbf_file)) %>%
+  select(shp_iucn_sid = id_no, 
+         sciname = binomial, 
+         presence, 
+         subpop, 
+         dbf_file)
+### Notes on presence, origin, seasonal fields:
+### * presence = 5 is extinct; 4 = probably extinct; others are extant-ish or 
+###   uncertain. We will drop field and include all polygons for now.
+### * origin is native, introduced, etc.  We will drop this field and not
+###   worry about origin.
+### * seasonal is breeding/non-breeding/passage.  We will drop this field
+###   and not worry about seasonality.
+
+# subspp <- map_info %>%
+#   filter(!is.na(subspecies)) %>%
+#   select(id_no, code) %>%
+#   distinct()
+### No subspecies vary by IUCN code; drop field for simplicity
+### and include all at species level
+
+map_info_sans_dupes <- map_info_raw %>%
+  group_by(shp_iucn_sid) %>%
+  filter((length(unique(dbf_file)) == 1) | (!str_detect(dbf_file, 'MARINEFISH|REPTILE|CORALS_PART_2_1|MANGROVES'))) %>%
+  filter(!(shp_iucn_sid == 196026 & str_detect(dbf_file, 'SEASNAKE'))) %>%
+  ungroup() # %>%
+  # group_by(shp_iucn_sid) %>%
+  # mutate(n_dbfs = length(unique(dbf_file))) %>%
+  # ungroup()
+
+subpops_match <- read_csv(file.path(dir_git, 'data_setup/int',
+                                    sprintf('subpops_match_api_to_shp_%s.csv', 
+                                            api_version)),
+                          col_types = 'dccdc')
+
+map_info_add_subpops <- map_info_sans_dupes %>%
+  full_join(subpops_match, by = c('shp_iucn_sid', 'sciname', 'subpop' = 'shp_subpop')) %>%
+  mutate(iucn_sid = ifelse(is.na(api_iucn_sid), shp_iucn_sid, api_iucn_sid)) %>%
+  select(shp_iucn_sid, iucn_sid, sciname, presence, subpop, dbf_file) %>%
+  distinct()
+
+### filter to marine habitat species (to drop terrestrial reptiles e.g.)
+marine_spp_ids <- read_csv(file.path(dir_git, 'data/iucn',
+                                     sprintf('spp_marine_from_api_%s.csv', 
+                                             api_version)),
+                           col_types = 'dcc') %>%
+  select(iucn_sid, max_depth)
+
+marine_map_info <- map_info_add_subpops %>%
+  inner_join(marine_spp_ids, by = 'iucn_sid')
+
+write_csv(marine_map_info, 
+          file.path(dir_git, 'data/iucn',
+                    sprintf('spp_marine_maps_%s.csv', api_version)))
 
 ```
 
 
+## Read spp shapes, correct subpop IDs, `fasterize()`, depth clip, save to csv
 
-## Rasterize at tenth degree for comparison
+We will loop over each species in each shapefile and rasterize separately, using `sf` and `fasterize` packages.  
 
-``` {r, eval = FALSE}
+* From the full map list, filter to a single shapefile
+* Load shapefile using `st_read`, and correct subpop IDs from `shp_iucn_sid` to `iucn_sid`
+* Loop over each `iucn_sid` in the shapefile, rasterizing (`fasterize()`) to 0.10 degree resolution, using "presence" field. 
+    * clip to neritic (<=200 m) and shallow (<=60 m) depth raster if appropriate
+    * Save as .tif and .csv, and compare average file sizes.  .csv easier to work with, but might be significantly larger than .tifs in the long run.
+        * note: no longer saving as .tif for speed and file size - just use .csv instead!
+    * use `mclapply()` to speed this up.
 
-verbose <- FALSE
+``` {r rasterize clip and save to csv}
 
-rast_base_halfdeg    <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
-rast_base_tenthdeg <- raster(resolution = .10, ext = extent(rast_base_halfdeg))
+reload <- FALSE
 
-spp_vs_time_df <- data.frame()
+maps_to_rasterize <- read_csv(file.path(dir_git, 'data/iucn',
+                                        sprintf('spp_marine_maps_%s.csv', api_version)),
+                              col_types = 'ddciccc') %>%
+  mutate(shp_file = str_replace(dbf_file, 'dbf$', 'shp'))
 
-for(shp in shp_files) { ### shp <- shp_files[1]
-  ptm_shp <- proc.time()
-  if(verbose) cat('Processing', basename(shp), '...\n')
-  shp_sf <- st_read(shp)
-  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+### If some species already processed, remove from the list to process.
+if(reload == FALSE) {
+  maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+                                        pattern = '010deg.csv') %>%
+    str_replace_all('iucn_sid_|_010deg.csv', '') %>%
+    as.integer()
+
+  maps_to_rasterize <- maps_to_rasterize %>%
+    filter(!iucn_sid %in% maps_already_rasterized)
   
-  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
-    spp_shp <- shp_sf %>%
-      filter(id_no == id)
-    
-    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_010deg.tif', id))
-    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
-    
-    spp_rast <- fasterize::fasterize(spp_shp, rast_base_tenthdeg, field = 'presence', fun = 'min')
-    
-    
-    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
-  }
-  
-  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
-  
-  tmp_df <- data.frame('group' = basename(shp),
-                       'n_spp' = nrow(shp_sf),
-                       'time'  = (proc.time() - ptm_shp)[3])
-  spp_vs_time_df <- spp_vs_time_df %>%
-    bind_rows(tmp_df)
-
 }
 
-write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_010deg.csv'))
+if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
+  
+  message('reload == ', reload, '... No maps to process...')
+  
+} else {
+  
+  message('reload == ', reload, '... Maps to process: ', nrow(maps_to_rasterize))
+
+  ### rast_base for cell IDs
+  rast_base <- raster(resolution = .10, ext = extent(-180, 180, -90, 90)) %>%
+    setValues(1:length(.))
+  
+  ### rast_bathy for depth clipping: create neritic mask and shallow mask from blank.
+  ### Do this only if there are any species with limited max depths...
+  if(any(maps_to_rasterize$max_depth != '200 m +')) { 
+    rast_bathy <- raster(file.path(dir_git, 'spatial',
+                                   'bathy_rast_010_wgs84.tif'))
+    rast_neritic <- rast_shallow <- raster(resolution = .10, ext = extent(-180, 180, -90, 90))
+    values(rast_neritic)[values(rast_bathy) <= 200] <- 1
+    values(rast_shallow)[values(rast_bathy) <=  60] <- 1
+  }
+  
+  
+  ################################################################.
+  ### Loop over each distinct shapefile with species range maps
+  ################################################################.
+  shps <- maps_to_rasterize$shp_file %>% unique()
+  for(i in seq_along(shps)) {
+    ### i <- 1
+    
+    shp <- shps[i]
+    
+    maps_in_shp <- maps_to_rasterize %>%
+      filter(shp_file == shp)
+    
+    id_fix <- maps_in_shp %>%
+      select(shp_iucn_sid, iucn_sid, subpop, max_depth) %>%
+      distinct()
+    
+    polys <- read_sf(file.path(dir_shp, shp)) %>%
+      select(shp_iucn_sid = id_no, sciname = binomial, subpop, presence, geometry) %>%
+      inner_join(id_fix, by = c('shp_iucn_sid', 'subpop')) 
+    
+    spp_ids <- maps_in_shp$iucn_sid %>% 
+      sort() %>% 
+      unique()
+    
+  
+    ####################################################################.
+    ### In each shapefile, loop over each species ID using mclapply().
+    ####################################################################.
+    
+    message(i, ' of ', length(shps), ': Processing ', shp, ' with ', length(spp_ids), ' species...')
+    
+    # system.time({
+      tmp <- parallel::mclapply(seq_along(spp_ids),
+                                mc.cores = 24, 
+                                FUN = function(x) {
+        ### x <- 1
+        spp <- spp_ids[x]
+        # cat(j, 'of', length(spp_ids), ': Processing', spp, 'in', shp,
+        #     '( group', i, 'of', length(shps), ')...\n')
+        
+        spp_shp <- polys %>%
+          filter(iucn_sid == spp)
+        ### plot(spp_shp %>% select(presence))
+        
+        spp_rast <- fasterize::fasterize(spp_shp, rast_base, field = 'presence', fun = 'min')
+        
+        ### depth clip if necessary
+        if(spp_shp$max_depth == '< 20 m') {
+          spp_rast <- mask(spp_rast, rast_shallow)
+        }
+        if(spp_shp$max_depth == '< 200 m') {
+          spp_rast <- mask(spp_rast, rast_neritic)
+        }
+        ### write out as a raster:
+        # rast_file <- file.path(dir_o_anx, sprintf('spp_rasters/iucn_sid_%s_010deg.tif', spp))
+        # raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+        ### See note below about file size; rasters are larger than csvs in general
+        
+        ### convert to dataframe and write out as a csv:
+        spp_present <- data.frame(cell_id  = 1:length(rast_base),
+                                  presence = values(spp_rast)) %>%
+          filter(!is.na(presence))
+        write_csv(spp_present, file.path(dir_o_anx, sprintf('spp_rasters/iucn_sid_%s_010deg.csv', spp)))
+        return(NA)
+      }) ### end of mclapply FUN definition
+    # }) ### end of system.time call
+  } ### end of for loop over each species group
+} ### end of "if" check to make sure there are any maps to rasterize
 
 ```
+
+``` {r file size testing}
+
+maps <- read_csv(file.path(dir_git, 'data/iucn',
+                           sprintf('spp_marine_maps_%s.csv', api_version)),
+                 col_types = 'ddciccc') %>%
+  select(spp_group = dbf_file, iucn_sid, sciname, subpop) %>%
+  mutate(spp_group = str_replace(spp_group, '.dbf', '')) %>%
+  distinct()
+
+csvs <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+                   pattern = '010deg.csv') %>%
+  str_replace_all('iucn_sid_|_010deg.csv', '')
+
+x <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+                pattern = '010deg', full.names = TRUE)
+x <- x[str_detect(x, paste0(csvs, collapse = '|'))]
+
+y <- file.info(x) %>%
+  mutate(f = basename(rownames(.)),
+         type = ifelse(str_detect(f, 'csv$'), 'csv', 'tif'),
+         iucn_sid = str_replace_all(f, 'iucn_sid_|_010deg.(csv|tif)', ''),
+         iucn_sid = as.integer(iucn_sid)) %>%
+  left_join(maps, by = 'iucn_sid')
+  
+
+z <- y %>%
+  group_by(type, spp_group) %>%
+  summarize(mean_size = mean(size), n_spp = n()) %>%
+  spread(type, mean_size) %>%
+  # mutate(ratio = tif / csv) %>%
+  ungroup()
+
+# sum(z$tif * z$n_spp) ### 8,146,818,040:  8.1 GB for 5369 spp (pre depth clip) (some dupes, oops)
+# sum(z$csv * z$n_spp) ### 3,179,096,927:  3.2 GB for 5369 spp (pre depth clip) (some dupes, oops)
+# sum(z$csv * z$n_spp) ### 2,218,041,470:  2.2 GB for 5332 spp (post depth clip) (dupes removed!)
+
+zz <- data.frame(spp_group = 'TOTAL: all available spp maps',
+                n_spp = sum(z$n_spp),
+                csv   = sum(z$csv * z$n_spp)) %>%
+  bind_rows(z)
+knitr::kable(zz, caption = 'Mean file size by group and type')
+```
+
+For most species groups, the .csv file is much smaller than the .tif file.  Exceptions are species groups whose members are more often globally-ranging such as marine mammals and tunas/billfishes.  Overall CSVs are far smaller than TIFs as well as easier to work with for more complex manipulations of variables.
 
 
