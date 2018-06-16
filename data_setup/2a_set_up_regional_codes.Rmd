@@ -132,12 +132,12 @@ rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
          priority = n())
 
 rgn_spp_lme <- read_csv(file.path(dir_git, 
-                                   sprintf('data/iucn/iucn_risk_rgn_current_%s.csv', 
+                                   sprintf('data/iucn_risk_rgn_current_%s.csv', 
                                            api_version))) %>%
   left_join(rgn_to_lme_df, by = 'iucn_rgn')
 
 rgn_spp_global <- read_csv(file.path(dir_git, 
-                                   sprintf('data/iucn/iucn_risk_current_%s.csv', 
+                                   sprintf('data/iucn_risk_current_%s.csv', 
                                            api_version))) %>%
   select(iucn_sid, gl_cat = cat, gl_cat_score = cat_score)
 
@@ -153,7 +153,7 @@ clean_conflicts <- rgn_spp_lme %>%
   ungroup() %>%
   mutate(cat_score = ifelse(is.nan(cat_score), NA, cat_score))
 
-write_csv(clean_conflicts, file.path(dir_git, sprintf('data/iucn/iucn_rgn_to_lme_%s.csv', api_version)))
+write_csv(clean_conflicts, file.path(dir_git, sprintf('data/iucn_rgn_to_lme_%s.csv', api_version)))
 
 ```
 

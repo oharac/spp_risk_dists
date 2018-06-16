@@ -1,0 +1,450 @@
+---
+title: 'Mapping biodiversity conservation priorities'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2017')
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, 'data_setup')
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R')
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+Map out species-related conservation priorities (i.e. not impact-related priorities) based on several criteria.
+
+* From Selig et al 2014:
+    * high species richness
+        * clearly Coral Triangle area will dominate; how to ensure some spatial diversity?
+    * high range rarity (endemism metric 1)
+    * high relative range rarity (endemism 2)
+    * Each of these, top 5% separately for EEZs and high seas
+        * is range rarity calculated using just the range within the zone of interest (EEZ/high seas)?
+* New metrics:
+    * high mean species risk
+    * high number of threatened species
+        * this correlates to richness directly; as there, how to ensure some spatial diversity?
+    * again high seas and EEZs separately
+        
+Here the idea would be to generate maps of each criterion based on cell inclusion in the top fraction (e.g. 10 %) of the global oceans.  
+
+* The Selig paper performed the analysis using equal-area cells; here we can perform the analysis using the half-degree cells, and after arranging by criterion value, identify the highest-scoring cells that capture the top 10% of total area.
+    * e.g:
+```
+    arrange(desc(bd_metric)) %>% 
+    mutate(cum_area = cumsum(area_km2)) %>% 
+    mutate(priority = (cum_area <= .1 * max(cum_area)))
+```
+* When comparing stressors/impacts, we may use a smaller raster resolution e.g. 934 m cells native to CHI.  
+    * At that point, it may be instructive to create spatial clusters to identify larger areas to prioritize for conservation
+    * But for species info, having processed species presence and risk at the half-degree-cell resolution, this doesn't buy us anything at this stage.
+
+# Methods
+
+## Species richness
+
+Using species richness maps from `1_biodiversity_maps.Rmd`.
+
+``` {r species richness priorities}
+
+cell_area <- read_csv(file.path(dir_data, 'ocean_area_lookup.csv'))
+spp_richness <- read_csv(file.path(dir_data, 'am_all_spp_richness.csv'), col_types = 'dddd') %>%
+  left_join(cell_area, by = 'loiczid')
+### Careful!  Since the 60pct col has a bunch of NAs, read_csv might read in
+### as character (or factor), arghhh.  So use col_types = 'dddd'
+
+richness_cols <- c('n_spp_0pct', 'n_spp_probwt', 'n_spp_60pct')
+
+spp_rich_priorities <- data.frame(stringsAsFactors = FALSE)
+
+for(rich_col in richness_cols) { ### rich_col <- richness_cols[3]
+  
+  spp_rich_tmp <- spp_richness %>%
+    select_('loiczid', 'tmp' = rich_col, 'ocean_area_km2') %>%
+    arrange(desc(tmp)) %>%
+    filter(!is.na(ocean_area_km2)) %>%
+    mutate(cum_area = cumsum(ocean_area_km2)) %>%
+    mutate(priority = cum_area <= .05 * max(cum_area),
+           cut = str_replace(rich_col, 'n_spp_', '')) %>%
+    select(loiczid, priority, cut)
+  
+  spp_rich_priorities <- bind_rows(spp_rich_priorities, spp_rich_tmp)
+}
+
+write_csv(spp_rich_priorities, file.path(dir_data, 'am_all_spp_rich_priorities.csv'))
+
+```
+
+``` {r plot_spp_richness_priorities}
+
+spp_rich_prio <- read_csv(file.path(dir_data, 'am_all_spp_rich_priorities.csv'), col_types = 'dlc')
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+rich_rast_0pct   <- subs(loiczid_rast, 
+                         spp_rich_prio %>%
+                           filter(cut == '0pct'),
+                         by = 'loiczid', which = 'priority')
+rich_rast_60pct  <- subs(loiczid_rast, 
+                         spp_rich_prio %>%
+                           filter(cut == '60pct'),
+                         by = 'loiczid', which = 'priority')
+rich_rast_probwt <- subs(loiczid_rast, 
+                         spp_rich_prio %>%
+                           filter(cut == 'probwt'),
+                         by = 'loiczid', which = 'priority')
+
+plot(rich_rast_0pct, main = 'Richness priority, All species, any presence')
+plot(rich_rast_60pct, main = 'Richness priority, All species, prob of occur >= 60%')
+plot(rich_rast_probwt, main = 'Richness priority, All species, weighted by prob of occur')
+
+```
+
+## Species range rarity
+
+``` {r species range_rarity priorities}
+
+cell_area <- read_csv(file.path(dir_data, 'ocean_area_lookup.csv'))
+spp_rarity <- read_csv(file.path(dir_data, 'am_all_spp_rarity.csv'), col_types = 'dddd') %>%
+  left_join(cell_area, by = 'loiczid')
+### Careful!  Since the 60pct col has a bunch of NAs, read_csv might read in
+### as character (or factor), arghhh.  So use col_types = 'dddd'
+
+rarity_cols <- c('rarity_0pct', 'rarity_probwt', 'rarity_60pct')
+
+spp_rare_priorities <- data.frame(stringsAsFactors = FALSE)
+
+for(rare_col in rarity_cols) { ### rare_col <- rarity_cols[3]
+  
+  spp_rare_tmp <- spp_rarity %>%
+    select_('loiczid', 'tmp' = rare_col, 'ocean_area_km2') %>%
+    arrange(desc(tmp)) %>%
+    filter(!is.na(ocean_area_km2)) %>%
+    mutate(cum_area = cumsum(ocean_area_km2)) %>%
+    mutate(priority = cum_area <= .05 * max(cum_area),
+           cut = str_replace(rare_col, 'rarity_', '')) %>%
+    select(loiczid, priority, cut)
+  
+  spp_rare_priorities <- bind_rows(spp_rare_priorities, spp_rare_tmp)
+}
+
+write_csv(spp_rare_priorities, file.path(dir_data, 'am_all_spp_rare_priorities.csv'))
+
+```
+
+``` {r plot_spp_rarity_priorities}
+
+spp_rare_prio <- read_csv(file.path(dir_data, 'am_all_spp_rare_priorities.csv'), col_types = 'dlc')
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+rare_rast_0pct   <- subs(loiczid_rast, 
+                         spp_rare_prio %>%
+                           filter(cut == '0pct'),
+                         by = 'loiczid', which = 'priority')
+rare_rast_60pct  <- subs(loiczid_rast, 
+                         spp_rare_prio %>%
+                           filter(cut == '60pct'),
+                         by = 'loiczid', which = 'priority')
+rare_rast_probwt <- subs(loiczid_rast, 
+                         spp_rare_prio %>%
+                           filter(cut == 'probwt'),
+                         by = 'loiczid', which = 'priority')
+
+plot(rare_rast_0pct,   main = 'Range rarity priority, All species, any presence')
+plot(rare_rast_60pct,  main = 'Range rarity priority, All species, prob of occur >= 60%')
+plot(rare_rast_probwt, main = 'Range rarity priority, All species, weighted by prob of occur')
+
+```
+
+
+## Species relative range rarity
+
+``` {r species rel range rarity priorities}
+
+cell_area <- read_csv(file.path(dir_data, 'ocean_area_lookup.csv'))
+spp_rel_rarity <- read_csv(file.path(dir_data, 'am_all_spp_rel_rarity.csv'), col_types = 'dddd') %>%
+  left_join(cell_area, by = 'loiczid')
+### Careful!  Since the 60pct col has a bunch of NAs, read_csv might read in
+### as character (or factor), arghhh.  So use col_types = 'dddd'
+
+rel_rarity_cols <- c('rel_rare_0pct', 'rel_rare_probwt', 'rel_rare_60pct')
+
+spp_rel_rare_priorities <- data.frame(stringsAsFactors = FALSE)
+
+for(rel_rare_col in rel_rarity_cols) { ### rel_rare_col <- rel_rarity_cols[3]
+  
+  spp_rel_rare_tmp <- spp_rel_rarity %>%
+    select_('loiczid', 'tmp' = rel_rare_col, 'ocean_area_km2') %>%
+    arrange(desc(tmp)) %>%
+    filter(!is.na(ocean_area_km2)) %>%
+    mutate(cum_area = cumsum(ocean_area_km2)) %>%
+    mutate(priority = cum_area <= .05 * max(cum_area),
+           cut = str_replace(rel_rare_col, 'rel_rare_', '')) %>%
+    select(loiczid, priority, cut)
+  
+  spp_rel_rare_priorities <- bind_rows(spp_rel_rare_priorities, spp_rel_rare_tmp)
+}
+
+write_csv(spp_rel_rare_priorities, file.path(dir_data, 'am_all_spp_rel_rare_priorities.csv'))
+
+```
+
+``` {r plot_spp_rel_rarity_priorities}
+
+spp_rel_rare_prio <- read_csv(file.path(dir_data, 'am_all_spp_rel_rare_priorities.csv'), col_types = 'dlc')
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+rel_rare_rast_0pct   <- subs(loiczid_rast, 
+                         spp_rel_rare_prio %>%
+                           filter(cut == '0pct'),
+                         by = 'loiczid', which = 'priority')
+rel_rare_rast_60pct  <- subs(loiczid_rast, 
+                         spp_rel_rare_prio %>%
+                           filter(cut == '60pct'),
+                         by = 'loiczid', which = 'priority')
+rel_rare_rast_probwt <- subs(loiczid_rast, 
+                         spp_rel_rare_prio %>%
+                           filter(cut == 'probwt'),
+                         by = 'loiczid', which = 'priority')
+
+plot(rel_rare_rast_0pct,   main = 'Range rel rarity priority, All species, any presence')
+plot(rel_rare_rast_60pct,  main = 'Range rel rarity priority, All species, prob of occur >= 60%')
+plot(rel_rare_rast_probwt, main = 'Range rel rarity priority, All species, weighted by prob of occur')
+
+```
+
+
+## Spatial distribution of current extinction risk
+
+### Aggregate mean risk and variance by cell
+
+As in the species richness and rarity calculations, we will calculate mean risk using three different considerations of species presence: all presence (non-zero probability of occurrence), "core habitat" (60% or greater prob of occurrence), and probability-weighted.
+
+This binds rows into a long dataframe, but the saved file is rather large.  By rounding the decimals a bit, we can shave off quite a bit of file size.
+
+``` {r create_df_of_mean_risk_by_cell}
+
+iucn_version <- '2017-3'
+
+cell_risk_file <- file.path(dir_data, sprintf('risk_by_cell_all_%s.csv', iucn_version))
+
+
+iucn_to_am_lookup <- read_csv(file.path(dir_setup, 'int', 
+                                        'am_iucn_crosslisted_spp.csv')) %>%
+  select(am_sid = speciesid, iucn_sid = iucn_id) %>%
+  distinct()
+
+spp_current_risk <- read_csv(file.path(dir_data, 
+                                       sprintf('iucn_risk_current_%s.csv', iucn_version)),
+                           col_types = cols_only(iucn_sid = 'i', cat = 'c', cat_score = 'd')) %>%
+  select(iucn_sid, cat, cat_score) %>%
+  left_join(iucn_to_am_lookup, by = 'iucn_sid') %>%
+  as.data.table()
+
+spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells_assessed.csv'),
+                   verbose = FALSE)
+# git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
+
+### using data.table join:
+spp_cells_risk <- spp_current_risk[spp_cells, on = 'am_sid'] %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid))
+
+spp_cells_risk_sum_0pct <- spp_cells_risk %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
+  # filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp     = n(), 
+            mean_risk = mean(cat_score),
+            var_risk  = var(cat_score),
+            presence  = '0%')
+
+spp_cells_risk_sum_60pct <- spp_cells_risk %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
+  filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp     = n(), 
+            mean_risk = mean(cat_score),
+            var_risk  = var(cat_score),
+            presence  = '60%')
+
+### For the prob weighted calculations, weight the mean and var:
+###     mean = 1/n * sum(y)
+### ==> mean = 1/sum(prob) * sum(y * prob)
+###      var = 1/n * sum[y - E(y)]^2
+### ==>  var = 1/sum(prob) * sum([y - E(y)]^2 * prob)
+spp_cells_risk_sum_probwt <- spp_cells_risk %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid)) %>%
+  # filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp     = sum(prob),
+            mean_risk = 1/n_spp * sum(cat_score * prob),
+            var_risk  = 1/n_spp * sum((cat_score - mean_risk)^2 * prob),
+            presence  = 'prob')
+
+spp_cells_risk_sum <- bind_rows(spp_cells_risk_sum_0pct, 
+                                spp_cells_risk_sum_60pct, 
+                                spp_cells_risk_sum_probwt) %>%
+  mutate(var_risk = ifelse(mean_risk == 0 & is.na(var_risk), 0, var_risk),
+         mean_risk = round(mean_risk, 6),
+         var_risk  = round(var_risk, 6))
+    ### if mean risk == 0, all risks are zero, so zero variance.
+
+write_csv(spp_cells_risk_sum, cell_risk_file)
+  
+```
+
+### Mean risks and variance maps
+
+``` {r mean_risk_raster, results = 'asis'}
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+spp_cells_risk_sum <- read_csv(cell_risk_file,
+                         col_types = 'idddc')
+
+cuts <- c('0%', '60%', 'prob')
+
+for(cut in cuts) { ### cut <- cuts[3]
+  df_cut <- spp_cells_risk_sum %>%
+    filter(presence == cut)
+  
+  cat(sprintf('#### Mean, variance, and richness based on %s', cut))
+  
+  risk_rast <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'mean_risk')
+  var_rast  <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'var_risk')
+  nspp_rast <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'n_spp')
+  
+  plot(risk_rast, main = sprintf('Mean risk, cut = %s', cut))
+  plot(var_rast,  main = sprintf('Variance of risk, cut = %s', cut))
+  plot(nspp_rast, main = sprintf('N spp (risk assessed), cut = %s', cut))
+
+}
+
+
+```
+
+
+
+
+## Spatial distribution of threatened species
+
+### Calc threatened species by cell
+
+Threatened species are those listed by the IUCN as Vulnerable, Endangered, or Critically Endangered.  We can count threatened species the same way we determined species richness, filtering on the category (or the category score) to exclude LC, NT, and EX.
+
+``` {r create_df_of_threatened_spp_by_cell}
+
+iucn_version <- '2017-3'
+
+cell_threatened_file <- file.path(dir_data, 
+                                  sprintf('threatened_spp_by_cell_all_%s.csv', iucn_version))
+
+
+iucn_to_am_lookup <- read_csv(file.path(dir_setup, 'int', 
+                                        'am_iucn_crosslisted_spp.csv')) %>%
+  select(am_sid = speciesid, iucn_sid = iucn_id) %>%
+  distinct()
+
+spp_threatened <- read_csv(file.path(dir_data, 
+                                       sprintf('iucn_risk_current_%s.csv', iucn_version)),
+                           col_types = cols_only(iucn_sid = 'i', cat = 'c', cat_score = 'd')) %>%
+  filter(cat %in% c('VU', 'EN', 'CR')) %>%
+  left_join(iucn_to_am_lookup, by = 'iucn_sid') %>%
+  as.data.table()
+
+spp_cells <- fread(file.path(dir_o_anx, 'am_files', 'am_spp_cells_assessed.csv'),
+                   verbose = FALSE)
+# git_prov(file.path(dir_o_anx, 'am_files', 'am_spp_cells.csv'), filetype = 'input')
+
+### using data.table join:
+spp_cells_threatened <- spp_threatened[spp_cells, on = 'am_sid'] %>%
+  filter(!is.na(cat_score) & !is.na(iucn_sid))
+
+spp_cells_threat_sum_0pct <- spp_cells_threatened %>%
+  group_by(loiczid) %>%
+  summarize(n_threatened = n(), 
+            presence     = '0%')
+
+spp_cells_threat_sum_60pct <- spp_cells_threatened %>%
+  filter(prob >= 0.60) %>%
+  group_by(loiczid) %>%
+  summarize(n_threatened = n(), 
+            presence     = '60%')
+
+spp_cells_threat_sum_probwt <- spp_cells_threatened %>%
+  group_by(loiczid) %>%
+  summarize(n_threatened = sum(prob),
+            presence     = 'prob')
+
+spp_cells_threat_sum <- bind_rows(spp_cells_threat_sum_0pct, 
+                                  spp_cells_threat_sum_60pct, 
+                                  spp_cells_threat_sum_probwt)
+
+write_csv(spp_cells_threat_sum, cell_threatened_file)
+  
+```
+
+### Map of threatened spp counts
+
+``` {r threatened_spp_raster, results = 'asis'}
+
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+spp_cells_threat_sum <- read_csv(cell_threatened_file,
+                               col_types = 'idc')
+
+cuts <- c('0%', '60%', 'prob')
+
+for(cut in cuts) { ### cut <- cuts[3]
+  df_cut <- spp_cells_threat_sum %>%
+    filter(presence == cut)
+  
+  cat(sprintf('#### Number of threatened species based on %s', cut))
+  
+  threatened_rast <- subs(loiczid_rast, df_cut, by = 'loiczid', which = 'n_threatened')
+  
+  plot(threatened_rast, main = sprintf('N of threatened spp, cut = %s', cut))
+
+}
+
+
+```
+

@@ -286,7 +286,7 @@ spp_habs_clean <- spp_marine_habs %>%
                                   any(cat %in% c(12))     ~ '< 20 m',
                                   TRUE                    ~ 'error'))
 
-write_csv(spp_habs_clean, file.path(dir_git, 'data/iucn',
+write_csv(spp_habs_clean, file.path(dir_git, 'data',
                                      sprintf('spp_marine_from_api_%s.csv', api_version)))
 
 ```
@@ -295,13 +295,13 @@ write_csv(spp_habs_clean, file.path(dir_git, 'data/iucn',
 
 ``` {r get_iucn_past_assessments}
 
-spp_timeseries_file <- file.path(dir_git, 'data/iucn',
+spp_timeseries_file <- file.path(dir_git, 'data',
                                  sprintf('iucn_risk_timeseries_%s.csv', api_version))
 
 iucn_spp_info <- read_csv(file.path(dir_o_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data/iucn',
+iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 ### Subpopulations are in here too, by ID number
@@ -352,12 +352,12 @@ if(!file.exists(spp_timeseries_file)) {
 
 ``` {r get_iucn_current_assessment}
 
-spp_current_file <- file.path(dir_git, 'data/iucn', 
+spp_current_file <- file.path(dir_git, 'data', 
                               sprintf('iucn_risk_current_%s.csv', api_version))
 iucn_spp_info <- read_csv(file.path(dir_o_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data/iucn',
+iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 

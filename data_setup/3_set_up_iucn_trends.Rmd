@@ -49,7 +49,7 @@ Determine IUCN extinction risk trends for marine species by regressing time seri
 
 ## Get IUCN historical assessments for IUCN marine species
 
-This process is accomplished in `1_set_up_iucn_risk.Rmd` and `2_set_up_iucn_risk_regional.Rmd`.  Resulting timeseries of historical assessments are available in `data/iucn/iucn_risk_timeseries_2017-3.csv` and `data/iucn/iucn_risk_ts_rgn_2017-3.csv` (or with updated version numbers as applicable).
+This process is accomplished in `1_set_up_iucn_risk.Rmd` and `2_set_up_iucn_risk_regional.Rmd`.  Resulting timeseries of historical assessments are available in `data/iucn_risk_timeseries_2017-3.csv` and `data/iucn_risk_ts_rgn_2017-3.csv` (or with updated version numbers as applicable).
 
 ## Get all population trends for assessed marine species
 
@@ -62,7 +62,7 @@ trends_file <- file.path(dir_setup, 'int/trend_calcs',
 
 if(!file.exists(trends_file)) {
   
-  spp_risk_file <- file.path(dir_data, 'iucn',
+  spp_risk_file <- file.path(dir_data,
                              sprintf('iucn_risk_current_%s.csv', api_version))
 
   ### Filter to just the valid species and get narratives.  The cols_only bit
@@ -100,7 +100,7 @@ if(!file.exists(trends_file)) {
   
   ### Repeat for regional
   
-  spp_risk_file <- file.path(dir_data, 'iucn',
+  spp_risk_file <- file.path(dir_data,
                              sprintf('iucn_risk_rgn_current_%s.csv', api_version))
 
   ### Filter to just the valid species and get narratives.  The cols_only bit
@@ -154,9 +154,9 @@ For this analysis we will focus only on assessments performed since 1991, the ye
 
 ``` {r gather_data_clip_from_1991}
 
-spp_risk_ts_file <- file.path(dir_data, 'iucn',
+spp_risk_ts_file <- file.path(dir_data,
                               sprintf('iucn_risk_timeseries_%s.csv', api_version))
-spp_risk_rgn_ts_file <- file.path(dir_data, 'iucn',
+spp_risk_rgn_ts_file <- file.path(dir_data,
                               sprintf('iucn_risk_ts_rgn_%s.csv', api_version))
 
 spp_risk_ts <- read_csv(spp_risk_ts_file) %>%
@@ -360,7 +360,7 @@ trend_df <- read_csv(trends_file) %>%
   select(iucn_sid, iucn_rgn, pop_trend, trend_score, trend_source) %>%
   distinct()
 
-write_csv(trend_df, file.path(dir_git, 'data/trend_by_spp.csv'))
+write_csv(trend_df, file.path(dir_git, sprintf('data/iucn_trend_by_spp_%s.csv', api_version))
 
 DT::datatable(trend_df)
 ```

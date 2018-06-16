@@ -1,0 +1,322 @@
+---
+title: 'Set up CHI mean stressor rasters to loiczid'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('~/github/src/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+### bring in ocean raster (all 1 or NA values)
+ocean_base <- raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+
+```
+
+# Summary
+
+Using the LOICZID raster and rasters of CHI stressors layers, create mean and var stressors for each LOICZID cell
+
+# Data Sources
+
+# Methods
+
+## Identify stressors layers
+
+``` {r}
+
+dir_prs <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
+                     'global_impact_model_2013', 
+                     'normalized_by_one_time_period', 
+                     'averaged_by_num_ecosystems')
+### cumulative impacts data (all 2013 pressures combined)
+ci <- raster(file.path(dir_prs, 'all_layers/global_cumul_impact_2013_all_layers.tif'))
+# ci
+# plot(ci)
+
+### individual pressures (2013)
+### stressor data combined with the pressure X habitat vulnerability matrix and habitat raster layers 
+pressure_example <- raster(file.path(dir_prs, 'by_threat/shipping_combo.tif'))
+# pressure_example
+# plot(pressure_example)
+
+prs_layers <- list.files(file.path(dir_prs, 'by_threat'), pattern = '.tif$')
+#  [1] "artisanal_fishing_combo.tif"             "demersal_destructive_fishing_combo.tif" 
+#  [3] "demersal_nondest_high_bycatch_combo.tif" "demersal_nondest_low_bycatch_combo.tif" 
+#  [5] "inorganic_combo.tif"                     "invasives_combo.tif"                    
+#  [7] "night_lights_combo.tif"                  "ocean_acidification_combo.tif"          
+#  [9] "ocean_pollution_combo.tif"               "oil_rigs_combo.tif"                     
+# [11] "pelagic_high_bycatch_combo.tif"          "pelagic_low_bycatch_combo.tif"          
+# [13] "plumes_fert_combo.tif"                   "plumes_pest_combo.tif"                  
+# [15] "population_combo.tif"                    "shipping_combo.tif"                     
+# [17] "slr_combo.tif"                           "sst_combo.tif"                          
+# [19] "uv_combo.tif" 
+
+### stressors (data rescaled from 0-1 using max value)
+dir_stressor_orig <- file.path(dir_M, 'marine_threats/impact_layers_2013_redo',
+                        'impact_layers/final_impact_layers/threats_2013_final',
+                        'normalized_by_one_time_period')
+
+# stressor_layers_orig <- list.files(dir_stressor_orig, pattern = '.tif$')
+#  [1] "artisanal_fishing.tif"             "demersal_destructive_fishing.tif" 
+#  [3] "demersal_nondest_high_bycatch.tif" "demersal_nondest_low_bycatch.tif" 
+#  [5] "inorganic.tif"                     "invasives.tif"                    
+#  [7] "night_lights.tif"                  "ocean_acidification.tif"          
+#  [9] "ocean_pollution.tif"               "oil_rigs.tif"                     
+# [11] "pelagic_high_bycatch.tif"          "pelagic_low_bycatch.tif"          
+# [13] "plumes_fert.tif"                   "plumes_pest.tif"                  
+# [15] "population.tif"                    "shipping.tif"                     
+# [17] "slr.tif"                           "sst.tif"                          
+# [19] "uv.tif"
+# stressor <- raster(file.path(dir_stressor_orig, 'shipping.tif'))
+
+```
+
+## Choose layers and inspect distributions
+
+For the purposes of this investigation, we will use the stressors which include stress but exclude habitat vulnerability.
+
+To aggregate the 934 m cells to half-degree cells, we will use zonal stats to match LOICZID to cells, and take a mean.  
+
+* Since many (most? all?) of the layers are probably heavily right-skewed, should we use a log-normal mean to get a better sense of the central tendency?
+  * Note that values within each cell may not be log-normally distributed...
+  * Note that we'll have to remove zeros.  We can (maybe?) add zeros back in, doing an area-weighted simple average of the log-normal mean (for non-zero areas) and zero (for zero areas).
+* For simplicity, in order to get to the spatial analysis, I will begin with a simple mean of values within each LOICZID zone.
+
+First inspect each layer to get an idea of distributions:
+
+* mask to ocean base raster to exclude land cells and mollweide corners
+* take a random sample of values to simplify the distribution plotting
+* some layers should be clipped to coastal areas (e.g. sea level rise) but we'll gloss over this for now...
+    * for such stressors, should zero values be OK?  i.e. will a zero for that layer in the open ocean create the same effect as an NA for that layer?
+    
+``` {r extend_stressor_layers, eval = TRUE}
+### this chunk is necessary to ensure extents and resolution of stressor
+### layers match each other and the ocean_base raster.
+
+# stressor_layers_orig <- list.files(dir_stressor_orig, 
+#                          pattern = '.tif$', 
+#                          full.names = TRUE)
+
+dir_stressor_new <- file.path(dir_M, 'git-annex/impact_acceleration/stressors/')
+strs_new <- list.files(dir_stressor_new, recursive = TRUE, full.names = TRUE)
+strs_new <- strs_new[str_detect(strs_new, 'final') & str_detect(strs_new, 'sst_2012|_2016')]
+
+
+dir_stressor_anx <- file.path(dir_o_anx, 'stressors_fullext')
+
+for(lyr in strs_new) { ### lyr <- strs_new[1]
+# for(lyr in stressor_layers_orig) { ### lyr <- stressor_layers_orig[10]
+
+  rast_full_ext_file <- file.path(dir_stressor_anx, basename(lyr) %>% 
+                                    str_replace('_rescaled_mol', ''))
+  if(!file.exists(rast_full_ext_file)) {
+    lyr_rast <- raster(lyr)
+    if(!isTRUE(all.equal(extent(ocean_base), extent(lyr_rast)))) {
+      message('Extending ', lyr, ' and saving to:\n  ', rast_full_ext_file)
+      # lyr_rast <- lyr_rast %>%
+      #   extend(ocean_base,
+      #          progress = 'text',
+      #          filename = rast_full_ext_file)
+      lyr_rast1 <- lyr_rast %>% ### for ocean_pollution and invasives, since extend didn't work...
+        projectRaster(ocean_base, method = 'ngb',
+               progress = 'text',
+               filename = rast_full_ext_file, overwrite = TRUE)
+    } else {
+      message('Copying ', lyr, ' to:\n  ', rast_full_ext_file)
+      file.copy(lyr, rast_full_ext_file)
+    }
+  } else {
+    message('Full-extent stressor raster file exists: \n  ', rast_full_ext_file)
+  }
+
+}
+
+```
+    
+``` {r inspect_stressor_layers, eval = TRUE}
+
+stressor_layers <- list.files(dir_stressor_anx, 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in stressor_layers) { ### layer <- stressor_layers[1]
+
+  lyr_rast_raw <- raster(layer)
+  
+  lyr_distr_file <- sprintf('stressor_distr_plots/%s_distr.png', names(lyr_rast_raw))
+  
+  if(!file.exists(lyr_distr_file)) {
+    message('generating distr plot for: ', lyr_distr_file)
+    lyr_rast <- mask(lyr_rast_raw, ocean_base)
+    lyr_sample <- base::sample(values(lyr_rast), 10000000)
+    lyr_sample_narm <- lyr_sample[!is.na(lyr_sample)]
+    lyr_zeros_removed <- lyr_sample_narm[lyr_sample_narm > 0]
+    lyr_sample_df <- data.frame(val = lyr_zeros_removed)
+    
+    plot_name <- sprintf('%s (%.4fpct of vals = 0, removed)',
+                         names(lyr_rast), 100 * (length(lyr_sample_narm) - 
+                                                   length(lyr_zeros_removed)) / length(lyr_sample_narm))
+    lyr_dist <- ggplot(lyr_sample_df, aes(x = val)) +
+      ggtheme_plot() +
+      geom_density() +
+      labs(title = plot_name,
+           x = 'rescaled stressor')
+    
+    ggsave(lyr_distr_file, plot = lyr_dist)
+    
+  } else {
+    message('layer distr plot already exists: ', lyr_distr_file)
+  }
+}
+
+```
+
+### Fishing layers
+
+![](stressor_distr_plots/artisanal_fishing_distr.png)            
+![](stressor_distr_plots/demersal_destructive_fishing_distr.png)  
+![](stressor_distr_plots/demersal_nondest_high_bycatch_distr.png)  
+![](stressor_distr_plots/demersal_nondest_low_bycatch_distr.png)  
+![](stressor_distr_plots/pelagic_high_bycatch_distr.png)      
+![](stressor_distr_plots/pelagic_low_bycatch_distr.png)  
+
+### Climate layers
+
+![](stressor_distr_plots/ocean_acidification_distr.png)    
+![](stressor_distr_plots/oa_2016_distr.png)    
+![](stressor_distr_plots/slr_distr.png)
+![](stressor_distr_plots/slr_2016_distr.png)    
+![](stressor_distr_plots/sst_distr.png)  
+![](stressor_distr_plots/sst_2012_distr.png)                          
+![](stressor_distr_plots/uv_distr.png)
+![](stressor_distr_plots/uv_2016_distr.png)    
+
+### Pollution layers
+![](stressor_distr_plots/inorganic_distr.png)
+![](stressor_distr_plots/ocean_pollution_distr.png)
+![](stressor_distr_plots/plumes_fert_distr.png)             
+![](stressor_distr_plots/plumes_pest_distr.png)          
+
+### Other human impacts
+
+![](stressor_distr_plots/direct_human_2016_distr.png)   
+![](stressor_distr_plots/invasives_distr.png)                
+![](stressor_distr_plots/night_lights_distr.png)                 
+![](stressor_distr_plots/oil_rigs_distr.png)   
+![](stressor_distr_plots/benthic_str_2016_distr.png)
+![](stressor_distr_plots/population_distr.png)                 
+
+![](stressor_distr_plots/shipping_2016_distr.png)                 
+
+## Create simple aggregated stressors layers
+
+For each stressor layer at Mollweide 934m projection:
+
+* create a dataframe of LOICZID values and stressor values
+* summarize mean, variance, and number of cells to LOICZID cells after clipping out NA values.
+
+``` {r check_stressor_minmax, eval = FALSE}
+
+stressor_layers <- list.files(dir_stressor_anx, 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in stressor_layers[c(8, 18, 19)]) { ### layer <- stressor_layers[15]
+  lyr_rast_raw <- raster(layer)
+  
+  print(summary(lyr_rast_raw))
+  
+}
+
+```
+
+``` {r stressor_aggregate_simple, eval = TRUE}
+
+stressor_layers <- list.files(dir_stressor_anx, 
+                         pattern = '.tif$', 
+                         full.names = TRUE)
+
+for (layer in stressor_layers) { ### layer <- stressor_layers[15]
+  lyr_rast_raw <- raster(layer)
+  
+  lyr_name <- names(lyr_rast_raw)
+  
+  lyr_simple_file <- file.path(dir_git, sprintf('stressor_to_loiczid/%s_simple.csv', lyr_name))
+  
+  if(!file.exists(lyr_simple_file)) {
+    
+    if(!exists('vals_loiczid_moll')) {
+      message('Initializing vals_loiczid_moll vector...')
+      loiczid_moll_rast <- raster(file.path(dir_o_anx, 'spatial', 'loiczid_moll_934m.tif'))
+      vals_loiczid_moll <- values(loiczid_moll_rast)
+    }
+
+    message('generating simple stressor summary to LOICZID for: ', lyr_name)
+    message('... masking raw stressor layer to ocean base')
+    lyr_rast <- mask(lyr_rast_raw, ocean_base, progress = 'text')
+
+    message('... converting values to dataframe')
+    lyr_df <- data.frame(loiczid = vals_loiczid_moll,
+                         stressor_val = values(lyr_rast))
+    
+    message('... summarizing data frame')
+    lyr_summary_df <- lyr_df %>%
+      filter(!is.na(loiczid)) %>%
+      group_by(loiczid) %>%
+      summarize(stressor_mean = mean(stressor_val, na.rm = TRUE),
+                stressor_var  = var (stressor_val, na.rm = TRUE),
+                n_zero   = sum(stressor_val == 0, na.rm = TRUE),
+                n_na     = sum(is.na(stressor_val))) %>%
+      mutate(loiczid = as.double(loiczid))
+    
+    write_csv(lyr_summary_df, lyr_simple_file)
+    
+  } else {
+    message('simple stressor summary already exists for: ', 
+            lyr_name, '\n  ', lyr_simple_file)
+  }
+}
+
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+# prov_wrapup(commit_outputs = FALSE)
+```
+

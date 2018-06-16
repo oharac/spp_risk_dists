@@ -1,0 +1,55 @@
+iucn_sid,sciname_api,api_pop,category
+2055,Arctocephalus australis,NA,LC
+2467,Balaena mysticetus,NA,LC
+2468,Balaena mysticetus,Bering-Chukchi-Beaufort Sea subpopulation,LR/cd
+2469,Balaena mysticetus,Okhotsk Sea subpopulation,EN
+2472,Balaena mysticetus,Svalbard-Barents Sea (Spitsbergen) subpopulation,CR
+2476,Balaenoptera edeni,NA,DD
+3897,Caretta caretta,NA,VU
+6335,Delphinapterus leucas,NA,LC
+6336,Delphinus delphis,NA,LC
+6494,Dermochelys coriacea,NA,VU
+8097,Eschrichtius robustus,NA,LC
+8099,Eschrichtius robustus,western subpopulation,CR
+9660,Halichoerus grypus,NA,LC
+17027,Phocoena phocoena,NA,LC
+17031,Phocoena phocoena,Baltic Sea subpopulation,CR
+18175,Pristis pectinata,NA,CR
+22563,Tursiops truncatus,NA,LC
+41762,Delphinus delphis,Mediterranean subpopulation,EN
+41878,Stegostoma fasciatum,NA,EN
+42838,Centrophorus moluccensis,NA,DD
+61442,Delphinapterus leucas,Cook Inlet subpopulation,CR
+194300,Tursiops truncatus,Fiordland subpopulation,CR
+16369383,Tursiops truncatus,Mediterranean subpopulation,VU
+16727327,Centrophorus moluccensis,Eastern Australian subpopulation,NT
+16727330,Centrophorus moluccensis,Western Australian subpopulation,LC
+18584848,Pristis pristis,NA,CR
+43398244,Pristis pectinata,Eastern Atlantic subpopulation,CR
+43398250,Pristis pectinata,Western Atlantic subpopulation,CR
+43508842,Pristis pristis,Eastern Atlantic subpopulation,CR
+43508845,Pristis pristis,Western Atlantic subpopulation,CR
+43508905,Pristis pristis,Indo-West Pacific subpopulation,CR
+43508949,Pristis pristis,Eastern Pacific subpopulation,CR
+46967807,Dermochelys coriacea,East Pacific Ocean subpopulation,CR
+46967817,Dermochelys coriacea,West Pacific Ocean subpopulation,CR
+46967827,Dermochelys coriacea,Northwest Atlantic Ocean subpopulation,LC
+46967838,Dermochelys coriacea,Southwest Atlantic Ocean subpopulation,CR
+46967848,Dermochelys coriacea,Southeast Atlantic Ocean subpopulation,DD
+46967863,Dermochelys coriacea,Southwest Indian Ocean subpopulation,CR
+46967873,Dermochelys coriacea,Northeast Indian Ocean subpopulation,DD
+71711344,Stegostoma fasciatum,Eastern Indonesian-Oceania subpopulation,NT
+71711476,Stegostoma fasciatum,Indian Ocean-Southeast Asian subpopulation,EN
+72050476,Arctocephalus australis,Peruvian/Northern Chilean subpopulation,VU
+74491261,Halichoerus grypus,Baltic Sea subpopulation,LC
+83644804,Caretta caretta,Mediterranean subpopulation,LC
+83652278,Caretta caretta,North Pacific subpopulation,LC
+83776383,Caretta caretta,North East Atlantic subpopulation,EN
+84126444,Caretta caretta,North East Indian Ocean subpopulation,CR
+84127873,Caretta caretta,North West Indian Ocean subpopulation,CR
+84131194,Caretta caretta,North West Atlantic subpopulation,LC
+84156809,Caretta caretta,South Pacific subpopulation,CR
+84189617,Caretta caretta,South East Indian Ocean subpopulation,NT
+84191235,Caretta caretta,South West Atlantic subpopulation,LC
+84199475,Caretta caretta,South West Indian Ocean subpopulation,NT
+117636167,Balaenoptera edeni,Gulf of Mexico subpopulation,CR

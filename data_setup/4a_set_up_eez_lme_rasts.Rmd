@@ -46,7 +46,7 @@ Set up analysis rasters for EEZs, LMEs, and bathymetry at a 0.1° lat-long resol
 * EEZs will include all EEZs as well as FAO regions and CCAMLR regions, based on the global OHI EEZ map.
 * LMEs will include all LMEs, though only some are appropriate for IUCN regional assessments (see `2a_set_up_regional_codes.Rmd`).
 * Bathymetry will include regions for 200m+, 20-200m, and <20m.  
-* All will be clipped to the same ocean presence using the EEZ raster.
+* All will be clipped to the same ocean presence using the area raster.
 
 # Methods
 
@@ -54,10 +54,14 @@ Set up analysis rasters for EEZs, LMEs, and bathymetry at a 0.1° lat-long resol
 
 Using the OHI global EEZ shapefile, we will include all EEZs by OHI region code, as well as FAO regions and Antarctica, using unique identifiers.  This will allow for separation by high seas vs. EEZ, or different takes on IUCN regional assessments using FAO or EEZ identifiers.
 
+EEZ is rasterized for both land and sea, and then clipped to cells with non-NA values in the ocean_area raster.  This ensures presence of more coastal cells with fractional ocean area coverage.
+
 ``` {r set up EEZ raster}
 
 eez_rast_file <- file.path(dir_git, 'spatial', 'eez_rast_010_wgs84.tif')
 eez_shp_file  <- file.path(dir_M, 'git-annex/globalprep/spatial/v2017/regions_2017_update.shp')
+
+area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast_010_wgs84.tif'))
 
 if(!file.exists(eez_rast_file)) {
   eez_shp <- st_read(eez_shp_file)
@@ -72,10 +76,12 @@ if(!file.exists(eez_rast_file)) {
   ### need to chunk out Antarctica at this point so just use rgn_id.
   ### Filter out all land polygons and project back to WGS84 (4326) since
   ### this shapefile is in Mollweide.
+  ### EDIT: don't filter out land; leave it in, then later mask using the 
+  ### area raster.  This should ensure more partial-ocean coastal cells are included.
   
   eez_shp_reclass <- eez_shp %>%
     # mutate(rgn_id_reclass = ifelse(str_detect(rgn_type, '^land'), 0, rgn_id)) %>%
-    filter(!str_detect(rgn_type, '^land')) %>%
+    # filter(!str_detect(rgn_type, '^land')) %>%
     select(rgn_id, geometry) %>%
     st_transform(4326)
   
@@ -87,9 +93,12 @@ if(!file.exists(eez_rast_file)) {
   eez_rast <- fasterize::fasterize(eez_shp_reclass, rast_base_tenthdeg, 
                                    field = 'rgn_id', fun = 'min')
   
-  plot(eez_rast, main = 'EEZ raster 0.10 deg lat-long')
+  eez_rast_ocean <- eez_rast %>%
+    mask(area_rast)
+  
+  plot(eez_rast_ocean, main = 'EEZ raster 0.10 deg lat-long')
     
-  writeRaster(eez_rast, eez_rast_file, overwrite = TRUE)
+  writeRaster(eez_rast_ocean, eez_rast_file, overwrite = TRUE)
 } else {
   # git_prov(eez_shp_file, 'input')
   # git_prov(eez_rast_file, 'output')
@@ -99,7 +108,7 @@ if(!file.exists(eez_rast_file)) {
 
 ## LME raster
 
-Using the LME shapefile, we will include all MLEs and then mask out land using the EEZ raster (for consistency).
+Using the LME shapefile, we will include all MLEs and then mask out land using the area raster (for consistency).
 
 ``` {r set up LME raster}
 
@@ -122,7 +131,8 @@ if(!file.exists(lme_rast_file)) {
   lme_rast <- fasterize::fasterize(lme_shp_reclass, rast_base_tenthdeg, 
                                    field = 'LME_NUMBER', fun = 'min')
   
-  lme_rast[is.na(eez_rast)] <- NA
+  lme_rast <- lme_rast %>%
+    mask(area_rast)
   plot(lme_rast, main = 'LME raster 0.10 deg lat-long')
     
   ### check whether there are shoreline gaps between LME maps and EEZ maps
@@ -137,6 +147,7 @@ if(!file.exists(lme_rast_file)) {
   # git_prov(lme_rast_file, 'output')
   plot(raster::raster(lme_rast_file), main = 'LME raster 0.10 deg lat-long')
 }
+
 ```
 
 
@@ -145,6 +156,8 @@ if(!file.exists(lme_rast_file)) {
 Using [General Bathymetric Chart of the Oceans (GEBCO) bathymetry raster](https://www.bodc.ac.uk/data/hosted_data_systems/gebco_gridded_bathymetry_data/), identify min depth of ocean cells.  For neritic and coastal cells, leaving as min depth allows for changing depth thresholds if desired.  We will not clip based on anything below 200 m, so can classify these more coarsely.
 
 NOTE: 1 arcmin and 30 arcsec are available; 30 arcsec is more recent but one arcmin should be sufficient for our purposes.  Resample to 6 arc-minute (0.10°) using min depth in each cell.
+
+Bathymetry is masked to the ocean area raster.
 
 ### Create and view minimum depth raster
 
@@ -161,7 +174,7 @@ if(!file.exists(bathy_rast_file)) {
   bathy_rast_min <- gebco_rast_raw %>%
     raster::aggregate(fact = 6, fun = max)
   
-  bathy_rast_min <- -1 * bathy_rast_min
+  bathy_rast_min <- -1 * bathy_rast_min ### depth is positive
     
   rast_base_tenthdeg <- raster::raster(resolution = .10, 
                                        ext = extent(c(-180, 180, -90, 90)))
@@ -184,10 +197,13 @@ if(!file.exists(bathy_rast_file)) {
   values(bathy_rast)[values(bathy_rast_raw) > 5000] <- 6000
   values(bathy_rast)[values(bathy_rast_raw) > 6000] <- 7000
   values(bathy_rast)[values(bathy_rast_raw) > 7000] <- 8000
+  
+  bathy_rast <- bathy_rast %>%
+    mask(area_rast)
   plot(bathy_rast, main = 'Bathymetry (minimum depth) raster 0.10 deg lat-long')
     
   ### check whether there are shoreline gaps between LME maps and EEZ maps
-  # x <- eez_rast
+  # x <- eez_rast_ocean
   # x[!is.na(values(lme_rast))] <- NA
   # plot(x)
   ### small artifacts around the edges... not enough to worry about?
@@ -213,15 +229,42 @@ values(bathy_rast_cats)[values(bathy_rast) > 200] <- 3
 
 plot(bathy_rast_cats, main = 'bathymetry categories: <=60m = 1, <=200 m = 2, >200m = 3')
 
+land <- read_sf(eez_shp_file) %>%
+  filter(str_detect(rgn_name, 'United States|Mexico') & str_detect(rgn_type, 'land')) %>%
+  st_transform(4326) %>%
+  fasterize::fasterize(raster(extent(c(-122, -116, 32, 34.5)), res = 0.02)) %>%
+  rasterToPoints() %>% as.data.frame()
+
 y <- bathy_rast %>%
-  crop(extent(c(-122, -116, 31, 35)))
-values(y)[values(y) <= 0] <- NA
-plot(y, main = 'bathymetry, SB Channel Islands')
+  crop(extent(c(-122, -116, 32, 34.5))) %>%
+  rasterToPoints() %>%
+  as.data.frame() %>%
+  setNames(c('x', 'y', 'depth'))
 
 x <- bathy_rast_cats %>%
-  crop(extent(c(-122, -116, 31, 35)))
-values(x)[is.na(values(y))] <- NA
-plot(x, main = 'bathymetry categories: <=60m = 1, <=200 m = 2, >200m = 3')
+  crop(extent(c(-122, -116, 32, 34.5))) %>%
+  rasterToPoints() %>%
+  as.data.frame() %>%
+  setNames(c('x', 'y', 'depth'))
+
+
+ggplot(y, aes(x, y)) +
+  ggtheme_plot() +
+  theme(axis.text = element_blank(), axis.title = element_blank()) +
+  geom_raster(aes(fill = depth)) +
+  geom_raster(data = land, fill = 'grey20') +
+  coord_cartesian(xlim = c(-122, -116), ylim = c(32, 34.5)) +
+  scale_fill_distiller(palette = 'Blues', direction = 1) +
+  labs(title = 'bathymetry, SB Channel Islands')
+
+ggplot(x, aes(x, y)) +
+  ggtheme_plot() +
+  theme(axis.text = element_blank(), axis.title = element_blank()) +
+  geom_raster(aes(fill = depth)) +
+  geom_raster(data = land, fill = 'grey20') +
+  coord_cartesian(xlim = c(-122, -116), ylim = c(32, 34.5)) +
+  scale_fill_distiller(palette = 'Blues', direction = 1) +
+  labs(title = 'bathymetry categories: <=60m = 1, <=200 m = 2, >200m = 3')
 
 ```
 

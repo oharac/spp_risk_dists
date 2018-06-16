@@ -92,7 +92,7 @@ For each assessment, read the pages of species info.  Pages are 10k spp long, so
 
 rgn_assess <- read_csv(rgn_assess_from_api_file)
 
-rgn_spp_info_file <- file.path(dir_git, sprintf('data/iucn/iucn_risk_rgn_current_%s.csv', api_version))
+rgn_spp_info_file <- file.path(dir_git, sprintf('data/iucn_risk_rgn_current_%s.csv', api_version))
 
 if(!file.exists(rgn_spp_info_file)) {
   
@@ -117,7 +117,7 @@ if(!file.exists(rgn_spp_info_file)) {
   spp_df_rgn_all <- bind_rows(spp_df_rgn_list)
   
   ### filter to just marine species, and select relevant columns
-  spp_rgn_marine <- read_csv(file.path(dir_git, 'data/iucn',
+  spp_rgn_marine <- read_csv(file.path(dir_git, 'data',
                                    sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
     inner_join(spp_df_rgn_all, by = c('iucn_sid' = 'taxonid')) %>%
     select(iucn_sid, sciname,
@@ -149,7 +149,7 @@ Once regional assessments are gleaned from the API, check them against the globa
 
 ``` {r}
 
-global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn/iucn_risk_current_%s.csv', api_version)))
+global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn_risk_current_%s.csv', api_version)))
 
 rgn_marine_spp <- read_csv(rgn_spp_info_file)
 
@@ -168,10 +168,10 @@ rgn_spp_list <- global_marine_spp_risk %>%
 
 ``` {r get_iucn_past_assessments}
 
-spp_timeseries_file <- file.path(dir_git, 'data/iucn',
+spp_timeseries_file <- file.path(dir_git, 'data',
                                  sprintf('iucn_risk_ts_rgn_%s.csv', api_version))
 
-global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn/iucn_risk_current_%s.csv', api_version)))
+global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn_risk_current_%s.csv', api_version)))
 
 rgn_marine_spp <- read_csv(rgn_spp_info_file)
 

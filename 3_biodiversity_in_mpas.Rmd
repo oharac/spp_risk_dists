@@ -1,0 +1,154 @@
+---
+title: 'MPAs and biodiversity intactness'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, 'data_setup')
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+
+source(file.path(dir_git, 'data_setup/api_fxns.R'))
+
+```
+
+# Summary
+
+Compare MPAs to biodiversity intactness: 
+
+# Methods
+
+## Examine variance against mean
+
+Examine correlation between risk and variance?  A cell with medium risk and high variance indicates balance of low-risk species with some at risk species.  A cell with medium risk and low variance indicates a more systemically at-risk cell.
+
+``` {r var vs mean}
+
+mean_rast   <- raster(file.path(dir_git, 'output', 'mean_risk_raster_010deg.tif'))
+var_rast    <- raster(file.path(dir_git, 'output', 'var_risk_raster_010deg.tif'))
+n_spp_rast  <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_010deg.tif'))
+
+
+mean_var_df <- data.frame(mean_risk = values(mean_rast),
+                          var_risk  = values(var_rast),
+                          n_spp     = values(n_spp_rast)) %>%
+  filter(!is.na(mean_risk)) %>%
+  filter(n_spp >= 5)
+
+mean_var_sample <- sample_n(mean_var_df, 100000)
+
+ggplot(mean_var_sample, aes(x = mean_risk, y = var_risk)) +
+  ggtheme_plot() +
+  geom_point(aes(color = n_spp), alpha = .1) +
+  scale_color_gradientn(colors = c('grey90', 'lightblue', 'blue1', 'blue3', 'blue4', 'purple4'),
+                        values = c(0, .01, .05, .1, .25, 1))
+
+coef_var_sample <- mean_var_df %>%
+  filter(mean_risk != 0) %>%
+  sample_n(100000) %>%
+  mutate(coef_var = sqrt(var_risk) / mean_risk)
+
+ggplot(coef_var_sample, aes(x = mean_risk, y = coef_var)) +
+  ggtheme_plot() +
+  geom_point(aes(color = n_spp), alpha = .1) +
+  scale_color_gradientn(colors = c('grey90', 'lightblue', 'blue1', 'blue3', 'blue4', 'purple4'),
+                        values = c(0, .01, .05, .1, .25, 1))
+
+```
+
+## Compare MPA coverage to various metrics
+
+MPA coverage will be compared to non-MPA areas within EEZs.
+
+``` {r set up mpa and values dataframe}
+
+mean_rast     <- raster(file.path(dir_git, 'output', 'mean_risk_raster_010deg.tif'))
+var_rast      <- raster(file.path(dir_git, 'output', 'var_risk_raster_010deg.tif'))
+n_spp_rast    <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_010deg.tif'))
+n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_010deg.tif'))
+trend_rast    <- raster(file.path(dir_git, 'output', 'trend_raster_010deg.tif'))
+eez_rast      <- raster(file.path(dir_git, 'spatial', 'eez_rast_010_wgs84.tif'))
+mpa_df        <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area_010_wgs84.csv'))
+
+# tmp_rast <- calc(eez_rast, fun = function(x) x %in% c(1:212, 214:255))
+### excludes high seas and antarctica
+
+risk_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
+                      eez       = values(eez_rast),
+                      mean_risk = values(mean_rast),
+                      var_risk  = values(var_rast),
+                      n_spp     = values(n_spp_rast),
+                      n_threat  = values(n_threat_rast),
+                      trend     = values(trend_rast)) %>%
+  filter(!is.na(mean_risk)) %>%
+  filter(eez %in% c(1:212, 214:255))
+
+risk_mpa_df <- risk_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  mutate(mpa_pct = ifelse(is.na(mpa_pct), 0, mpa_pct),
+         wdpa_category = ifelse(is.na(wdpa_category), 0, wdpa_category))
+
+```
+
+``` {r examine mpas vs non-mpas}
+
+no_take_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category %in% c(1, 2) & mpa_pct > .5,
+         protection = 'Ia, Ib, II')
+
+conserv_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category %in% c(1:4) & mpa_pct > .5,
+         protection = 'I-IV')
+
+protect_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category != 0 & mpa_pct > .5,
+         protection = 'Any')
+
+ggplot(no_take_df %>% sample_n(100000) %>% arrange(mpa), 
+       aes(x = n_spp, y = mean_risk, color = mpa)) +
+  ggtheme_plot() +
+  geom_point(alpha = .2) +
+  scale_x_log10(breaks = c(1, 10, 100, 1000))
+
+mpa_categories_df <- bind_rows(no_take_df, conserv_df, protect_df) %>%
+  arrange(desc(protection)) %>%
+  mutate(protection = factor(protection, levels = c('Ia, Ib, II', 'I-IV', 'Any')))
+
+ggplot(mpa_categories_df, aes(x = mpa, y = mean_risk)) +
+  ggtheme_plot() +
+  geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
+  facet_wrap( ~ protection)
+
+ggplot(mpa_categories_df, aes(x = mpa, y = trend)) +
+  ggtheme_plot() +
+  geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
+  facet_wrap( ~ protection)
+
+```
