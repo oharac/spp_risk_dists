@@ -307,7 +307,7 @@ if(!file.exists(wdpa_cell_area_file)) {
 Proportional protection can be multiplied by ocean area raster to get area of protection.  Collect by category (to avoid duplicate "by" values):
 
 * No Take (categories 1 & 2 and specifically designated "no take")
-* Conservation (categories 1-4)
+* Conservation (categories 1-4 plus no take)
 * All protection (non-NA)
 
 Note: these are not saved as rasters at this point... they are easily created from the dataframe of cell ID to protected proportion.
