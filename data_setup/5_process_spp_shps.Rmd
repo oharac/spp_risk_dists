@@ -26,8 +26,8 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 library(sf)
 
-dir_git <- '~/github/spp_health_dists'
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+dir_git <- '~/github/spp_risk_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 source(file.path(dir_git, 'data_setup/api_fxns.R'))
 

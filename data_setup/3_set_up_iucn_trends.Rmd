@@ -24,7 +24,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
-dir_git <- '~/github/spp_health_dists'
+dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
 dir_data  <- file.path(dir_git, 'data')
