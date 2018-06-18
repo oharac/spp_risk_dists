@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Jun 12 21:25:40 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Jun 17 17:13:46 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -274,7 +274,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Tue Jun 12 21:25:40 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Jun 17 17:13:46 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -288,8 +288,8 @@ div.tocify {
 <span class="kw">library</span>(sf)
 <span class="kw">library</span>(data.table)
 
-dir_git &lt;-<span class="st"> '~/github/spp_health_dists'</span>
-dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_health_dists'</span>)
+dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
+dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
 <span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/api_fxns.R'</span>))
 
@@ -351,12 +351,12 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
 ### Looping over taxonomic groups -----
 ##########################################################.
 <span class="cf">for</span>(taxon <span class="cf">in</span> taxa) {
-  ### taxon &lt;- taxa[1]
+  ### taxon &lt;- 'bli_marine_v2017'
   
   taxon_risk_sum_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>,
                                    <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_%s.csv'</span>, <span class="kw">tolower</span>(taxon), api_version))
   
-  reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+  reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_risk_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
     
     taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
@@ -372,7 +372,7 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
     taxon_ids &lt;-<span class="st"> </span>taxon_risk_trend<span class="op">$</span>iucn_sid <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">unique</span>()
     
-    <span class="kw">message</span>(<span class="st">'Processing '</span>, <span class="kw">length</span>(taxon_ids), <span class="st">' species maps in '</span>, taxon, <span class="st">'...'</span>)
+    <span class="kw">cat</span>(<span class="st">'Processing '</span>, <span class="kw">length</span>(taxon_ids), <span class="st">' species maps in '</span>, taxon, <span class="st">'...'</span>)
 
     ##########################################################.
     ### Looping over species within group -----
@@ -393,201 +393,6 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
         ### Identify regional assessments if any
         non_global_rgns &lt;-<span class="st"> </span>lme_to_rgn <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">filter</span>(rgn_name <span class="op">%in%</span><span class="st"> </span>spp_risk_map<span class="op">$</span>iucn_rgn)
-  
-        <span class="cf">if</span>(<span class="kw">nrow</span>(non_global_rgns) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
-          ### If any regional assessments, clip the LME cells down to the appropriate region...
-          lme_cells &lt;-<span class="st"> </span>lme_cells_all <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">inner_join</span>(non_global_rgns, <span class="dt">by =</span> <span class="st">'lme_id'</span>)
-          ### ... then filter out non-matching overlapped cells
-          spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">left_join</span>(lme_cells, <span class="dt">by =</span> <span class="st">'cell_id'</span>) <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">filter</span>((iucn_rgn <span class="op">==</span><span class="st"> 'global'</span> <span class="op">&amp;</span><span class="st"> </span><span class="kw">is.na</span>(rgn_name)) <span class="op">|</span><span class="st"> </span>### match global cells
-<span class="st">                   </span>(iucn_rgn <span class="op">==</span><span class="st"> </span>rgn_name))                    ### match region cells
-        }
-        
-        ### select down to main columns; also, if presence == 5 (extinct), adjust category and trend scores.
-        spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">select</span>(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">cat_score   =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="dv">1</span>, cat_score),
-                 <span class="dt">trend_score =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="ot">NA</span>, trend_score))
-        
-        <span class="kw">return</span>(spp_risk_map)
-      }) ### end of mclapply over all species in taxonomic group
-  
-    ##########################################################.
-    ### Processing cell calculations for group -----
-    ##########################################################.
-  
-    ### Set up for keyed data.table merging: key for iucn_sid, cell_id
-    <span class="kw">message</span>(<span class="st">'...binding rows to data.frame...'</span>)
-    taxon_risk_map &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(taxon_cells_list) ### this is pretty fast!
-    
-    <span class="kw">message</span>(<span class="st">'...summarizing...'</span>)
-    taxon_risk_summary &lt;-<span class="st"> </span>taxon_risk_map <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">group_by</span>(cell_id) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">summarize</span>(<span class="dt">mean_risk   =</span> <span class="kw">mean</span>(cat_score), ### NA categories already filtered out
-                <span class="dt">var_risk    =</span> <span class="kw">var</span>(cat_score),
-                <span class="dt">n_spp_threatened =</span> <span class="kw">sum</span>(cat_score <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.4</span> <span class="op">&amp;</span><span class="st"> </span>cat_score <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>),  
-                <span class="dt">n_spp_risk  =</span> <span class="kw">n</span>(),
-                <span class="dt">mean_trend  =</span> <span class="kw">mean</span>(trend_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), ### not every species has a trend; na.rm = TRUE
-                <span class="dt">mean_trend  =</span> <span class="kw">ifelse</span>(<span class="kw">is.nan</span>(mean_trend), <span class="ot">NA</span>, mean_trend),
-                <span class="dt">n_spp_trend =</span> <span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(trend_score)))
-    
-    <span class="kw">message</span>(<span class="st">'...writing file'</span>, taxon_risk_sum_file, <span class="st">'...'</span>)
-    <span class="kw">write_csv</span>(taxon_risk_summary, taxon_risk_sum_file)
-
-  } <span class="cf">else</span> { ### end of if statement checking whether file exists for this taxon
-    <span class="kw">message</span>(<span class="st">'Found file '</span>, taxon_risk_sum_file, <span class="st">'... skipping process...'</span>)
-  }
-  
-} ### end of taxonomic group loop</code></pre></div>
-</div>
-<div id="generate-species-group-maps---range-rarity-weighted-by-cell" class="section level2">
-<h2><span class="header-section-number">2.2</span> Generate species group maps - range-rarity-weighted by cell</h2>
-<p>Same as above, except using range rarity as an indicator of endemism - species scores within a cell are weighted by the proportion of each species’ range included within the cell.</p>
-<ul>
-<li>Determine species ranges using ocean-area data.frame and cell location data.frame. Create an overall data.frame and save as .csv.
-<ul>
-<li>Compare to API values for EOO as a sanity check.<br />
-</li>
-<li>Range map areas may not correspond well with EOO values - check this with Gina.</li>
-</ul></li>
-<li>Collect all taxon species into a single data.frame.</li>
-<li>Join species extinction risk and trend data.frame to species-cell data.frame, including regional assessments.</li>
-<li>By cell, calculate range-rarity-weighted mean extinction risk, variance of extinction risk, trend, threatened species count, rr_richness, rr_trend_richness (where rr_richness is range-rarity weighted species richness)
-<ul>
-<li>When aggregating further, use rr_richness to weight values.</li>
-</ul></li>
-</ul>
-<p><strong>NOTE:</strong> as above, because the summary files are likely to be very large for globe-spanning taxa, save these outputs outside of GitHub.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_range_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
-                            <span class="kw">sprintf</span>(<span class="st">'iucn_spp_range_area_%s.csv'</span>, api_version))
-
-<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(spp_range_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
-  ### load area raster, convert to data frame
-  area_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/ocean_area_rast_010_wgs84.tif'</span>))
-  area_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(area_rast),
-                        <span class="dt">area_km2 =</span> <span class="kw">values</span>(area_rast))
-  
-  ### load csvs of marine species range maps
-  spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)))
-  spp_ids &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>iucn_sid <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">sort</span>()
-  
-  <span class="co"># system.time({</span>
-  spp_range_list &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(spp_ids, <span class="dt">mc.cores =</span> <span class="dv">32</span>,
-                                       <span class="dt">FUN =</span> <span class="cf">function</span>(x) {  
-    <span class="co"># x &lt;- spp_ids[2]</span>
-    <span class="co"># x &lt;- 4363</span>
-    spp_map &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">'spp_rasters'</span>,
-                                  <span class="kw">sprintf</span>(<span class="st">'iucn_sid_%s_010deg.csv'</span>, x)),
-                        <span class="dt">col_types =</span> <span class="st">'di'</span>)
-    
-    spp_map_area &lt;-<span class="st"> </span>spp_map <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(presence <span class="op">!=</span><span class="st"> </span><span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>### exclude extinct areas
-<span class="st">      </span><span class="kw">inner_join</span>(area_df, <span class="dt">by =</span> <span class="st">'cell_id'</span>)
-    
-    spp_range &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">iucn_sid  =</span> x,
-                            <span class="dt">range_km2 =</span> <span class="kw">sum</span>(spp_map_area<span class="op">$</span>area_km2, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
-    <span class="kw">return</span>(spp_range)
-  })
-  <span class="co"># })</span>
-  
-  spp_range_df &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(spp_range_list) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">left_join</span>(spp_maps <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">                </span><span class="kw">select</span>(iucn_sid, sciname, dbf_file) <span class="op">%&gt;%</span>
-<span class="st">                </span><span class="kw">distinct</span>(),
-              <span class="dt">by =</span> <span class="st">'iucn_sid'</span>)
-  
-  <span class="kw">write_csv</span>(spp_range_df, spp_range_file)
-}</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Read in lots of data
-spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)))
-
-spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)))
-spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)))
-
-spp_trend &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_trend_by_spp_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(iucn_sid, trend_score, iucn_rgn)
-
-### read in spp ranges and cell ocean areas for range rarity calcs
-spp_ranges &lt;-<span class="st"> </span><span class="kw">read_csv</span>(spp_range_file)
-
-area_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/ocean_area_rast_010_wgs84.tif'</span>))
-area_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(area_rast),
-                      <span class="dt">area_km2 =</span> <span class="kw">values</span>(area_rast))
-
-### make a dataframe of species risk, trend, and regional risk
-spp_risk_trend &lt;-<span class="st"> </span>spp_risk <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">iucn_rgn =</span> <span class="st">'global'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">bind_rows</span>(spp_risk_rgn) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(iucn_sid, iucn_rgn, cat_score) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(spp_trend, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'iucn_sid'</span>, <span class="st">'iucn_rgn'</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(spp_ranges, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>)
-
-### Make a dataframe of cell ID to LME for regional assessments... also 
-### make a lookup of LME to region
-lme_rgns_rast &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'lme_rast_010_wgs84.tif'</span>))
-lme_cells_all &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lme_rgns_rast),
-                            <span class="dt">lme_id =</span> <span class="kw">values</span>(lme_rgns_rast)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(lme_id))
-lme_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'data/iucn_rgn_to_lme_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(lme_id, <span class="dt">rgn_name =</span> rgns) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">distinct</span>()
-
-### Make a list of taxonomic groups to loop over:
-taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">....$'</span>, <span class="st">''</span>)
-
-
-##########################################################.
-### Looping over taxonomic groups -----
-##########################################################.
-<span class="cf">for</span>(taxon <span class="cf">in</span> taxa) {
-  ### taxon &lt;- taxa[15]
-  
-  taxon_risk_sum_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>,
-                                   <span class="kw">sprintf</span>(<span class="st">'%s_rarity_cell_sum_%s.csv'</span>, <span class="kw">tolower</span>(taxon), api_version))
-  
-  <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_risk_sum_file)) {
-    
-    taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(dbf_file, taxon))
-    
-    taxon_risk_trend &lt;-<span class="st"> </span>spp_risk_trend <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(iucn_sid <span class="op">%in%</span><span class="st"> </span>taxon_maps<span class="op">$</span>iucn_sid) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(cat_score)) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">arrange</span>(iucn_sid)
-    
-    ### Using the iucn_sid field, generate a vector of all species range files for
-    ### this taxon.
-    taxon_ids &lt;-<span class="st"> </span>taxon_risk_trend<span class="op">$</span>iucn_sid <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">unique</span>()
-    
-    <span class="kw">message</span>(<span class="st">'Processing '</span>, <span class="kw">length</span>(taxon_ids), <span class="st">' species maps in '</span>, taxon, <span class="st">'...'</span>)
-
-    ##########################################################.
-    ### Looping over species within group -----
-    ##########################################################.
-    ### Collect all species ranges for this taxon into a single data.frame.
-    ### Use mclapply since we're reading many large-ish files.  For MARINE_MAMMALS (85 assessed spp)
-    ### this takes about 30-40 seconds
-    taxon_cells_list &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(taxon_ids, <span class="dt">mc.cores =</span> <span class="dv">24</span>,
-                                        <span class="dt">FUN =</span> <span class="cf">function</span>(x) {
-        ### x &lt;- taxon_ids[1]
-        ### x &lt;- 6336                            
-        csv_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'spp_rasters'</span>, 
-                              <span class="kw">sprintf</span>(<span class="st">'iucn_sid_%s_010deg.csv'</span>, x))
-        spp_risk_map &lt;-<span class="st"> </span><span class="kw">read_csv</span>(csv_file, <span class="dt">col_types =</span> <span class="st">'di'</span>) <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">iucn_sid =</span> x) <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">left_join</span>(taxon_risk_trend, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) 
-        
-        ### Identify regional assessments if any
-        non_global_rgns &lt;-<span class="st"> </span>lme_to_rgn <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">filter</span>(rgn_name <span class="op">%in%</span><span class="st"> </span>y<span class="op">$</span>iucn_rgn)
   
         <span class="cf">if</span>(<span class="kw">nrow</span>(non_global_rgns) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
           ### If any regional assessments, clip the LME cells down to the appropriate region...

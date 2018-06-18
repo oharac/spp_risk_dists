@@ -28,12 +28,12 @@ library(data.table)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
   ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 
-dir_git <- '~/github/spp_health_dists'
+dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
 dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 source(file.path(dir_git, 'data_setup/api_fxns.R'))
 

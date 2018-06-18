@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Jun 12 20:47:48 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Jun 17 10:58:14 2018 by ohara" />
 
 
 <title>Process IUCN spp shapes</title>
@@ -274,7 +274,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Process IUCN spp shapes</h1>
-<h4 class="author"><em><em>Compiled on Tue Jun 12 20:47:48 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Jun 17 10:58:14 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -287,14 +287,15 @@ div.tocify {
 
 <span class="kw">library</span>(sf)
 
-dir_git &lt;-<span class="st"> '~/github/spp_health_dists'</span>
-dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_health_dists'</span>)
+dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
+dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
 <span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/api_fxns.R'</span>))
 
 ### goal specific folders and info
 
-dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="kw">sprintf</span>(<span class="st">'git-annex/globalprep/_raw_data/iucn_spp/d%s'</span>, api_version))</code></pre></div>
+dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="kw">sprintf</span>(<span class="st">'git-annex/globalprep/_raw_data/iucn_spp/d%s'</span>, api_version))
+dir_bli &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">'git-annex/globalprep/_raw_data/birdlife_intl/d2018'</span>)</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Using a set of IUCN species range maps, rasterize each species to 0.1° lat long raster using <code>fasterize</code>. Use <code>presence</code> field from shapefile.</p>
@@ -314,13 +315,52 @@ dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <
 <div id="create-subpopulation-lookup-to-match-maps-with-iucn-sids-for-subpops" class="section level3">
 <h3><span class="header-section-number">3.1.1</span> Create subpopulation lookup to match maps with IUCN SIDs for subpops</h3>
 <p>From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">shps_dbfs &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_shp, <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### convert BirdLife Int'l .gdb to shapefile, after filtering to species in the &quot;marine&quot; list.
+### Here we also standardize the column names to match the IUCN column names.
+
+
+bli_marine_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_bli, <span class="st">'bli_marine_v2017.shp'</span>)
+
+<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(bli_marine_shp)) {
+  
+  bli_sf &lt;-<span class="st"> </span><span class="kw">st_read</span>(<span class="kw">file.path</span>(dir_bli, <span class="st">'BOTW.gdb'</span>))
+  
+  marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'data/spp_marine_from_api_%s.csv'</span>, api_version)))
+  
+  bli_marine_sf &lt;-<span class="st"> </span>bli_sf <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">clean_df_names</span>() <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">filter</span>(sisid <span class="op">%in%</span><span class="st"> </span>marine_spp<span class="op">$</span>iucn_sid)
+  
+  <span class="kw">st_write</span>(bli_marine_sf, bli_marine_shp)
+  
+  ### clean column names
+  bli_marine_dbf &lt;-<span class="st"> </span><span class="kw">str_replace</span>(bli_marine_shp, <span class="st">'</span><span class="ch">\\</span><span class="st">.shp$'</span>, <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf'</span>)
+  
+  att_table &lt;-<span class="st"> </span>foreign<span class="op">::</span><span class="kw">read.dbf</span>(bli_marine_dbf) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">setNames</span>(<span class="kw">names</span>(bli_marine_sf)[<span class="dv">1</span><span class="op">:</span>(<span class="kw">ncol</span>(bli_marine_sf) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)]) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">rename</span>(<span class="dt">id_no =</span> sisid, <span class="dt">binomial =</span> sciname, <span class="dt">year =</span> date, <span class="dt">tax_comm =</span> tax_com) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(<span class="kw">as.character</span>(year)))
+    <span class="co">#  [1] &quot;sisid&quot;        &quot;sciname&quot;      &quot;date&quot;         &quot;source&quot;       &quot;presence&quot;     &quot;origin&quot;       &quot;seasonal&quot;    </span>
+    <span class="co">#  [8] &quot;data_sens&quot;    &quot;sens_comm&quot;    &quot;compiler&quot;     &quot;tax_com&quot;      &quot;dist_com&quot;     &quot;reviewers&quot;    &quot;citation&quot;    </span>
+    <span class="co"># [15] &quot;version&quot;      &quot;shape_length&quot; &quot;shape_area&quot;  </span>
+  ### from IUCN shapefiles:
+    <span class="co">#  [1] &quot;id_no&quot;      &quot;binomial&quot;   &quot;presence&quot;   &quot;origin&quot;     &quot;seasonal&quot;   &quot;compiler&quot;   &quot;year&quot;       &quot;citation&quot;  </span>
+    <span class="co">#  [9] &quot;source&quot;     &quot;dist_comm&quot;  &quot;island&quot;     &quot;subspecies&quot; &quot;subpop&quot;     &quot;legend&quot;     &quot;tax_comm&quot;   &quot;kingdom&quot;   </span>
+    <span class="co"># [17] &quot;phylum&quot;     &quot;class&quot;      &quot;order_&quot;     &quot;family&quot;     &quot;genus&quot;      &quot;code&quot;       &quot;marine&quot;     &quot;terrestial&quot;</span>
+    <span class="co"># [25] &quot;freshwater&quot; &quot;shape_Leng&quot; &quot;shape_Area&quot;</span>
+  foreign<span class="op">::</span><span class="kw">write.dbf</span>(att_table, bli_marine_dbf)
+}</code></pre></div>
+<p>Note that there appear to be no subpopulation polygons within the BirdLife International map set; there is no “subpop” column in that attribute table.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iucn_dbfs &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_shp, <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+bli_dbfs  &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_bli, <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+shps_dbfs &lt;-<span class="st"> </span><span class="kw">c</span>(iucn_dbfs, bli_dbfs)
 
 marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'data/spp_marine_from_api_%s.csv'</span>, api_version)))
 ### This is all &quot;marine&quot; species by habitat
 api_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">'iucn'</span>, 
                               <span class="kw">sprintf</span>(<span class="st">'spp_info_from_api_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(iucn_sid <span class="op">%in%</span><span class="st"> </span>marine_spp<span class="op">$</span>iucn_sid)
+
 
 shps_df &lt;-<span class="st"> </span><span class="kw">lapply</span>(shps_dbfs, foreign<span class="op">::</span>read.dbf) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">setNames</span>(<span class="kw">basename</span>(shps_dbfs)) <span class="op">%&gt;%</span>
@@ -385,9 +425,11 @@ subpops_match &lt;-<span class="st"> </span>subpops_match_raw <span class="op">%
 <div id="join-map-list-to-subpop-corrected-list-remove-duplicated-spp-ids" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> Join map list to subpop corrected list; remove duplicated spp IDs</h3>
 <p>From the species range map shapefiles, pull map info from the .dbf files. For species listed in multiple files (e.g. sea snakes and reptiles), remove duplicates. For species with polygons differentiated by subpopulation, adjust the iucn_sid to match the subpop info.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_shp,
-                        <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>,
-                        <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iucn_dbfs &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_shp, <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+bli_dbfs  &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_bli, <span class="dt">pattern =</span> <span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+
+map_files &lt;-<span class="st"> </span><span class="kw">c</span>(iucn_dbfs, bli_dbfs)
+
 
 <span class="co"># spp_group_names &lt;- map_files %&gt;%</span>
 <span class="co">#   basename() %&gt;%</span>
@@ -395,11 +437,13 @@ subpops_match &lt;-<span class="st"> </span>subpops_match_raw <span class="op">%
 <span class="co">#   unique()</span>
 
 map_info_list &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'list'</span>, <span class="dt">length =</span> <span class="kw">length</span>(map_files)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">setNames</span>(map_files)
+<span class="st">  </span><span class="kw">setNames</span>(<span class="kw">basename</span>(map_files))
 
 <span class="cf">for</span>(map_file <span class="cf">in</span> map_files) {
   <span class="co"># cat('Processing', map_file, '...\n')</span>
-  map_info_list[[map_file]] &lt;-<span class="st"> </span>foreign<span class="op">::</span><span class="kw">read.dbf</span>(map_file)
+  tmp_df &lt;-<span class="st"> </span>foreign<span class="op">::</span><span class="kw">read.dbf</span>(map_file)
+
+  map_info_list[[map_file]] &lt;-<span class="st"> </span>tmp_df
 }
 
 map_info_raw &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(map_info_list, <span class="dt">.id =</span> <span class="st">'dbf_file'</span>) <span class="op">%&gt;%</span>
@@ -428,7 +472,8 @@ map_info_sans_dupes &lt;-<span class="st"> </span>map_info_raw <span class="op">
 <span class="st">  </span><span class="kw">group_by</span>(shp_iucn_sid) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>((<span class="kw">length</span>(<span class="kw">unique</span>(dbf_file)) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">|</span><span class="st"> </span>(<span class="op">!</span><span class="kw">str_detect</span>(dbf_file, <span class="st">'MARINEFISH|REPTILE|CORALS_PART_2_1|MANGROVES'</span>))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>(shp_iucn_sid <span class="op">==</span><span class="st"> </span><span class="dv">196026</span> <span class="op">&amp;</span><span class="st"> </span><span class="kw">str_detect</span>(dbf_file, <span class="st">'SEASNAKE'</span>))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ungroup</span>() <span class="co"># %&gt;%</span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>() <span class="co"># %&gt;%</span>
   <span class="co"># group_by(shp_iucn_sid) %&gt;%</span>
   <span class="co"># mutate(n_dbfs = length(unique(dbf_file))) %&gt;%</span>
   <span class="co"># ungroup()</span>
@@ -475,7 +520,7 @@ marine_map_info &lt;-<span class="st"> </span>map_info_add_subpops <span class="
 <li>use <code>mclapply()</code> to speed this up.</li>
 </ul></li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 maps_to_rasterize &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
                                         <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
@@ -511,6 +556,7 @@ maps_to_rasterize &lt;-<span class="st"> </span><span class="kw">read_csv</span>
   rast_bathy &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>,
                                  <span class="st">'bathy_rast_010_wgs84.tif'</span>))
   <span class="cf">if</span>(<span class="kw">any</span>(maps_to_rasterize<span class="op">$</span>max_depth <span class="op">!=</span><span class="st"> '200 m +'</span>)) { 
+    <span class="kw">message</span>(<span class="st">'generating neritic and shallow rasters'</span>)
     rast_neritic &lt;-<span class="st"> </span>rast_shallow &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="dt">resolution =</span> .<span class="dv">10</span>, <span class="dt">ext =</span> <span class="kw">extent</span>(<span class="op">-</span><span class="dv">180</span>, <span class="dv">180</span>, <span class="op">-</span><span class="dv">90</span>, <span class="dv">90</span>))
     <span class="kw">values</span>(rast_neritic)[<span class="kw">values</span>(rast_bathy) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">200</span>] &lt;-<span class="st"> </span><span class="dv">1</span>
     <span class="kw">values</span>(rast_shallow)[<span class="kw">values</span>(rast_bathy) <span class="op">&lt;=</span><span class="st">  </span><span class="dv">60</span>] &lt;-<span class="st"> </span><span class="dv">1</span>
@@ -533,7 +579,13 @@ maps_to_rasterize &lt;-<span class="st"> </span><span class="kw">read_csv</span>
 <span class="st">      </span><span class="kw">select</span>(shp_iucn_sid, iucn_sid, subpop, max_depth) <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">distinct</span>()
     
-    polys &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_shp, shp)) <span class="op">%&gt;%</span>
+    shp_full &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">str_detect</span>(shp, <span class="st">'bli'</span>), <span class="kw">file.path</span>(dir_bli, shp), <span class="kw">file.path</span>(dir_shp, shp))
+    
+    <span class="kw">message</span>(i, <span class="st">' of '</span>, <span class="kw">length</span>(shps), <span class="st">': reading '</span>, shp, <span class="st">' from: </span><span class="ch">\n</span><span class="st">  '</span>, shp_full)
+
+    polys &lt;-<span class="st"> </span><span class="kw">read_sf</span>(shp_full) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">mutate</span>(<span class="dt">subpop =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="st">'subpop'</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(.), <span class="ot">NA_character_</span>, subpop)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">        </span>### BOTW doesn't have subpop column
 <span class="st">      </span><span class="kw">select</span>(<span class="dt">shp_iucn_sid =</span> id_no, <span class="dt">sciname =</span> binomial, subpop, presence, geometry) <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">inner_join</span>(id_fix, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'shp_iucn_sid'</span>, <span class="st">'subpop'</span>)) 
     
@@ -640,8 +692,8 @@ knitr<span class="op">::</span><span class="kw">kable</span>(zz, <span class="dt
 <tbody>
 <tr class="odd">
 <td align="left">TOTAL: all available spp maps</td>
-<td align="right">5332</td>
-<td align="right">2.208793e+09</td>
+<td align="right">6133</td>
+<td align="right">3.139040e+09</td>
 </tr>
 <tr class="even">
 <td align="left">ANGELFISH</td>
@@ -649,116 +701,121 @@ knitr<span class="op">::</span><span class="kw">kable</span>(zz, <span class="dt
 <td align="right">1.088041e+05</td>
 </tr>
 <tr class="odd">
+<td align="left">bli_marine_v2017</td>
+<td align="right">801</td>
+<td align="right">1.161357e+06</td>
+</tr>
+<tr class="even">
 <td align="left">BONEFISH_TARPONS</td>
 <td align="right">18</td>
 <td align="right">2.574631e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">BUTTERFLYFISH</td>
 <td align="right">126</td>
 <td align="right">1.443728e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">CHONDRICHTHYES</td>
 <td align="right">837</td>
 <td align="right">4.711195e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">COMBTOOTHBLENNIES</td>
 <td align="right">807</td>
 <td align="right">4.201812e+04</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">CONUS</td>
 <td align="right">580</td>
 <td align="right">1.160055e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">CORALS_PART_1</td>
 <td align="right">284</td>
 <td align="right">3.000949e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">CORALS_PART_2</td>
 <td align="right">469</td>
 <td align="right">3.012447e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">CORALS_PART_3</td>
 <td align="right">13</td>
 <td align="right">3.069832e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">DAMSELFISH</td>
 <td align="right">121</td>
 <td align="right">9.805915e+04</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">GROUPERS</td>
 <td align="right">155</td>
 <td align="right">1.861873e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">HAGFISH</td>
 <td align="right">75</td>
 <td align="right">2.565175e+04</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">LOBSTERS</td>
 <td align="right">156</td>
 <td align="right">1.870347e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">MANGROVES</td>
 <td align="right">67</td>
 <td align="right">1.347191e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">MARINE_MAMMALS</td>
 <td align="right">127</td>
 <td align="right">6.623352e+06</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">PUFFERFISH</td>
 <td align="right">144</td>
 <td align="right">2.206217e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">REPTILES</td>
 <td align="right">129</td>
 <td align="right">7.455364e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SEABREAMS_PORGIES</td>
 <td align="right">130</td>
 <td align="right">7.667979e+04</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">SEACUCUMBERS</td>
 <td align="right">196</td>
 <td align="right">2.528096e+05</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SEAGRASSES</td>
 <td align="right">70</td>
 <td align="right">1.238582e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">SEASNAKES</td>
 <td align="right">55</td>
 <td align="right">8.458027e+04</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SURGEONFISH_TANGS_UNICORNFISH</td>
 <td align="right">81</td>
 <td align="right">1.907319e+05</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">TUNAS_BILLFISHES</td>
 <td align="right">60</td>
 <td align="right">4.361742e+06</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">WRASSE</td>
 <td align="right">547</td>
 <td align="right">9.276627e+04</td>

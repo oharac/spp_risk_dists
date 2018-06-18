@@ -209,6 +209,13 @@ if(!file.exists(bathy_rast_file)) {
   ### small artifacts around the edges... not enough to worry about?
   
   writeRaster(bathy_rast, bathy_rast_file, overwrite = TRUE)
+
+  rast_neritic <- rast_shallow <- raster(resolution = .10, ext = extent(-180, 180, -90, 90))
+  values(rast_neritic)[values(bathy_rast_raw) <= 200] <- 1
+  values(rast_shallow)[values(bathy_rast_raw) <=  60] <- 1
+  
+  writeRaster(rast_neritic, file.path(dir_git, 'spatial', 'bathy_rast_neritic_010_wgs84.tif'))
+  writeRaster(rast_shallow, file.path(dir_git, 'spatial', 'bathy_rast_shallow_010_wgs84.tif'))
   
 } else {
   # git_prov(bathy_rast_file, 'output')

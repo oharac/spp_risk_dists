@@ -24,16 +24,16 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(raster)
 library(data.table)
 
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
-
-dir_git <- '~/github/spp_health_dists'
+dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
 dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 source(file.path(dir_git, 'data_setup/api_fxns.R'))
 
@@ -85,7 +85,7 @@ ggplot(coef_var_sample, aes(x = mean_risk, y = coef_var)) +
 
 ## Compare MPA coverage to various metrics
 
-MPA coverage will be compared to non-MPA areas within EEZs.
+MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs as their numeric IUCN category (i.e. Ia = Ib = 1, II = 2, ..., VI = 6); areas that are specifically designated as no-take (that are not already in categories Ia, Ib, and II) are coded as 7; areas that are designated in the WDPA database but do not fall into one of these categories are coded as -1.
 
 ``` {r set up mpa and values dataframe}
 
@@ -120,11 +120,11 @@ risk_mpa_df <- risk_df %>%
 ``` {r examine mpas vs non-mpas}
 
 no_take_df <- risk_mpa_df %>%
-  mutate(mpa = wdpa_category %in% c(1, 2) & mpa_pct > .5,
+  mutate(mpa = wdpa_category %in% c(1, 2, 7) & mpa_pct > .5,
          protection = 'Ia, Ib, II')
 
 conserv_df <- risk_mpa_df %>%
-  mutate(mpa = wdpa_category %in% c(1:4) & mpa_pct > .5,
+  mutate(mpa = wdpa_category %in% c(1:4, 7) & mpa_pct > .5,
          protection = 'I-IV')
 
 protect_df <- risk_mpa_df %>%
