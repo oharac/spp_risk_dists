@@ -77,7 +77,7 @@ Because of file sizes, the intermediate files will be stored outside of GitHub.
 
 dir_taxa_summaries <- file.path(dir_o_anx, 'taxa_summaries')
 sum_files <- list.files(dir_taxa_summaries,
-                        pattern = sprintf('%s.csv', api_version),
+                        pattern = sprintf('cell_sum_%s.csv', api_version),
                         full.names = TRUE)
 
 message('going into the first mclapply...')

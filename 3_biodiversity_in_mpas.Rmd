@@ -152,3 +152,74 @@ ggplot(mpa_categories_df, aes(x = mpa, y = trend)) +
   facet_wrap( ~ protection)
 
 ```
+
+
+## Compare MPA coverage to various metrics, range-rarity-weighted
+
+Repeat the above analysis but with range-rarity-weighted maps.
+
+``` {r set up mpa and values dataframe}
+
+mean_rast     <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif'))
+# var_rast      <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.tif'))
+n_spp_rast    <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_010deg.tif'))
+n_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_010deg.tif'))
+trend_rast    <- raster(file.path(dir_git, 'output', 'trend_rr_raster_010deg.tif'))
+eez_rast      <- raster(file.path(dir_git, 'spatial', 'eez_rast_010_wgs84.tif'))
+mpa_df        <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area_010_wgs84.csv'))
+
+# tmp_rast <- calc(eez_rast, fun = function(x) x %in% c(1:212, 214:255))
+### excludes high seas and antarctica
+
+risk_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
+                      eez       = values(eez_rast),
+                      mean_risk = values(mean_rast),
+                      # var_risk  = values(var_rast),
+                      n_spp     = values(n_spp_rast),
+                      n_threat  = values(n_threat_rast),
+                      trend     = values(trend_rast)) %>%
+  filter(!is.na(mean_risk)) %>%
+  filter(eez %in% c(1:212, 214:255))
+
+risk_mpa_df <- risk_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  mutate(mpa_pct = ifelse(is.na(mpa_pct), 0, mpa_pct),
+         wdpa_category = ifelse(is.na(wdpa_category), 0, wdpa_category))
+
+```
+
+``` {r examine mpas vs non-mpas}
+
+no_take_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category %in% c(1, 2, 7) & mpa_pct > .5,
+         protection = 'Ia, Ib, II')
+
+conserv_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category %in% c(1:4, 7) & mpa_pct > .5,
+         protection = 'I-IV')
+
+protect_df <- risk_mpa_df %>%
+  mutate(mpa = wdpa_category != 0 & mpa_pct > .5,
+         protection = 'Any')
+
+ggplot(no_take_df %>% sample_n(100000) %>% arrange(mpa), 
+       aes(x = n_spp, y = mean_risk, color = mpa)) +
+  ggtheme_plot() +
+  geom_point(alpha = .2) +
+  scale_x_log10(breaks = c(1, 10, 100, 1000))
+
+mpa_categories_df <- bind_rows(no_take_df, conserv_df, protect_df) %>%
+  arrange(desc(protection)) %>%
+  mutate(protection = factor(protection, levels = c('Ia, Ib, II', 'I-IV', 'Any')))
+
+ggplot(mpa_categories_df, aes(x = mpa, y = mean_risk)) +
+  ggtheme_plot() +
+  geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
+  facet_wrap( ~ protection)
+
+ggplot(mpa_categories_df, aes(x = mpa, y = trend)) +
+  ggtheme_plot() +
+  geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
+  facet_wrap( ~ protection)
+
+```
