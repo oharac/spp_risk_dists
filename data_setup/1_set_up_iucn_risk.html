@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sat Jun 2 19:10:19 2018 by ohara" />
+<meta name="author" content="Compiled on Thu Jun 21 11:20:15 2018 by ohara" />
 
 
 <title>Set up IUCN marine species list and risk assessments</title>
@@ -279,7 +279,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Set up IUCN marine species list and risk assessments</h1>
-<h4 class="author"><em><em>Compiled on Sat Jun 2 19:10:19 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Jun 21 11:20:15 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -290,13 +290,16 @@ div.tocify {
 
 <span class="kw">source</span>(<span class="st">'https://raw.githubusercontent.com/oharac/src/master/R/common.R'</span>)
 
-dir_git &lt;-<span class="st"> '~/github/spp_health_dists'</span>
+dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
 
 ### goal specific folders and info
 dir_setup   &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_setup'</span>)
-dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_health_dists'</span>)
-<span class="co"># </span><span class="al">###</span><span class="co"> provenance tracking</span>
-<span class="kw">library</span>(provRmd); <span class="kw">prov_setup</span>()</code></pre></div>
+dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
+
+### provenance tracking
+<span class="kw">library</span>(provRmd); <span class="kw">prov_setup</span>()
+
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'api_fxns.R'</span>))</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Get IUCN current risk assessments and historical assessments over time, for all IUCN marine species. This method is not reliant on any information from AquaMaps.</p>
@@ -311,84 +314,8 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 <h1><span class="header-section-number">3</span> Methods</h1>
 <div id="get-iucn-historical-assessments-for-all-available-iucn-marine-spp" class="section level2">
 <h2><span class="header-section-number">3.1</span> Get IUCN historical assessments for all available IUCN marine spp</h2>
-<div id="set-up-api-access-functions" class="section level3">
-<h3><span class="header-section-number">3.1.1</span> Set up API access functions</h3>
-<p><code>get_from_api()</code> is a function to access the IUCN API, given a url (specific to data sought), parameter, and key (stored in ohi/git-annex), as well as a delay if desired (to ease the load on the IUCN API server). <code>mc_get_from_api()</code> runs the <code>get_from_api()</code> function across multiple cores for speed…</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(parallel)
-<span class="kw">library</span>(jsonlite)
-
-### api_key stored on git-annex so outside users can use their own key
-api_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">'git-annex/globalprep/spp_ico'</span>, 
-                      <span class="st">'api_key.csv'</span>)
-api_key &lt;-<span class="st"> </span><span class="kw">scan</span>(api_file, <span class="dt">what =</span> <span class="st">'character'</span>)
-
-api_version &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(<span class="st">'http://apiv3.iucnredlist.org/api/v3/version'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span>.<span class="op">$</span>version
-
-
-get_from_api &lt;-<span class="st"> </span><span class="cf">function</span>(url, param, api_key, delay) {
-  
-  i &lt;-<span class="st"> </span><span class="dv">1</span>; tries &lt;-<span class="st"> </span><span class="dv">5</span>; success &lt;-<span class="st"> </span><span class="ot">FALSE</span>
-  
-  <span class="cf">while</span>(i <span class="op">&lt;=</span><span class="st"> </span>tries <span class="op">&amp;</span><span class="st"> </span>success <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>) {
-    <span class="kw">message</span>(<span class="st">'try #'</span>, i)
-       <span class="kw">Sys.sleep</span>(delay <span class="op">*</span><span class="st"> </span>i) ### be nice to the API server? later attempts wait longer
-       api_info &lt;-<span class="st"> </span><span class="kw">fromJSON</span>(<span class="kw">sprintf</span>(url, param, api_key)) 
-       <span class="cf">if</span> (<span class="kw">class</span>(api_info) <span class="op">!=</span><span class="st"> 'try-error'</span>) {
-         success &lt;-<span class="st"> </span><span class="ot">TRUE</span>
-       } <span class="cf">else</span> {
-         <span class="kw">warning</span>(<span class="kw">sprintf</span>(<span class="st">'try #%s: class(api_info) = %s</span><span class="ch">\n</span><span class="st">'</span>, i, <span class="kw">class</span>(api_info)))
-       }
-    <span class="kw">message</span>(<span class="st">'... successful? '</span>, success)
-    i &lt;-<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span>
-  }
-    
-  <span class="cf">if</span> (<span class="kw">class</span>(api_info) <span class="op">==</span><span class="st"> 'try-error'</span>) { ### multi tries and still try-error
-    api_return &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">param_id  =</span> param,
-                             <span class="dt">api_error =</span> <span class="st">'try-error after multiple attempts'</span>)
-  } <span class="cf">else</span> <span class="cf">if</span> (<span class="kw">class</span>(api_info<span class="op">$</span>result) <span class="op">!=</span><span class="st"> 'data.frame'</span>) { ### result isn't data frame for some reason
-    api_return &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">param_id  =</span> param,
-                             <span class="dt">api_error =</span> <span class="kw">paste</span>(<span class="st">'non data.frame output: '</span>, <span class="kw">class</span>(api_info<span class="op">$</span>result), <span class="st">' length = '</span>, <span class="kw">length</span>(api_info<span class="op">$</span>result)))
-  } <span class="cf">else</span> <span class="cf">if</span> (<span class="kw">length</span>(api_info<span class="op">$</span>result) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) { ### result is empty
-    api_return &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">param_id  =</span> param,
-                             <span class="dt">api_error =</span> <span class="st">'zero length data.frame'</span>)
-  } <span class="cf">else</span> {
-    api_return &lt;-<span class="st"> </span>api_info <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">data.frame</span>(<span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
-  }
-  
-  <span class="kw">return</span>(api_return)
-}
-
-mc_get_from_api &lt;-<span class="st"> </span><span class="cf">function</span>(url, param_vec, api_key, <span class="dt">cores =</span> <span class="ot">NULL</span>, <span class="dt">delay =</span> <span class="fl">0.5</span>) {
-  
-  <span class="cf">if</span>(<span class="kw">is.null</span>(cores)) 
-    numcores &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">Sys.info</span>()[[<span class="st">'nodename'</span>]] <span class="op">==</span><span class="st"> 'mazu'</span>, <span class="dv">12</span>, <span class="dv">1</span>)
-  <span class="cf">else</span> 
-    numcores &lt;-<span class="st"> </span>cores
-  
-  out_list &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(param_vec, 
-                          <span class="cf">function</span>(x) <span class="kw">get_from_api</span>(url, x, api_key, delay),
-                          <span class="dt">mc.cores   =</span> numcores,
-                          <span class="dt">mc.cleanup =</span> <span class="ot">TRUE</span>) 
-  
-  <span class="cf">if</span>(<span class="kw">any</span>(<span class="kw">sapply</span>(out_list, class) <span class="op">!=</span><span class="st"> 'data.frame'</span>)) {
-    error_list &lt;-<span class="st"> </span>out_list[<span class="kw">sapply</span>(out_list, class) <span class="op">!=</span><span class="st"> 'data.frame'</span>]
-    <span class="kw">message</span>(<span class="st">'List items are not data frame: '</span>, <span class="kw">paste</span>(<span class="kw">sapply</span>(error_list, class), <span class="dt">collapse =</span> <span class="st">'; '</span>))
-    <span class="kw">message</span>(<span class="st">'might be causing the bind_rows() error; returning the raw list instead'</span>)
-    <span class="kw">return</span>(out_list)
-  }
-  
-  out_df &lt;-<span class="st"> </span>out_list <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">bind_rows</span>()
-  out_df &lt;-<span class="st"> </span>out_df <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">setNames</span>(<span class="kw">names</span>(.) <span class="op">%&gt;%</span>
-<span class="st">               </span><span class="kw">str_replace</span>(<span class="st">'result.'</span>, <span class="st">''</span>))
-  <span class="kw">return</span>(out_df)
-}</code></pre></div>
-</div>
 <div id="get-info-on-all-species" class="section level3">
-<h3><span class="header-section-number">3.1.2</span> Get info on all species</h3>
+<h3><span class="header-section-number">3.1.1</span> Get info on all species</h3>
 <p>Using the <code>mc_get_from_api()</code> function, get the entire species list of IUCN Red List assessed species. This includes terrestrial and marine.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Get all pages and bind into total species list.  This is pretty fast.
 
@@ -425,9 +352,9 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 }</code></pre></div>
 </div>
 <div id="determine-marine-species-using-habitat-information" class="section level3">
-<h3><span class="header-section-number">3.1.3</span> Determine marine species using habitat information</h3>
+<h3><span class="header-section-number">3.1.2</span> Determine marine species using habitat information</h3>
 <div id="get-species-habitat-info-for-all-species-from-iucn-api" class="section level4">
-<h4><span class="header-section-number">3.1.3.1</span> Get species habitat info for all species from IUCN API</h4>
+<h4><span class="header-section-number">3.1.2.1</span> Get species habitat info for all species from IUCN API</h4>
 <p>From the full IUCN species list, send each IUCN species ID into the API to get the habitats listed for that species. Combine all habitat dataframes into a master dataframe of all habitats for all species. Note that many species do not have habitat information and will be listed as NA for habitat variables.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### For each species ID on the total list, get a dataframe of habitats.
 ### This is slow.  Skip if possible.
@@ -500,7 +427,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <span class="st">    </span>.<span class="op">$</span>iucn_sid
   ### all these errors are due to returning a zero-length list instead of a data.frame
 
-  <span class="kw">write_csv</span>(spp_habs_df, <span class="kw">file.path</span>(dir_goal_anx, <span class="st">'int'</span>, <span class="st">'spp_habs_from_api.csv'</span>))
+  <span class="kw">write_csv</span>(spp_habs_df, spp_habs_from_api_file)
   
 } <span class="cf">else</span> {
   
@@ -510,7 +437,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 }</code></pre></div>
 </div>
 <div id="generate-habitat-inclusion-list" class="section level4">
-<h4><span class="header-section-number">3.1.3.2</span> Generate Habitat inclusion list</h4>
+<h4><span class="header-section-number">3.1.2.2</span> Generate Habitat inclusion list</h4>
 <p>From the habitats gleaned in the previous chunk, generate an inclusion list based on those that are considered marine. “Included” habitats are determined from inspection of the habitat list; we are including habitats 9-12, plus 15.11, 15.12, 15.13. Note category 13 is Marine Coastal/Supratidal, but includes many species whose “marine” dependence is only incidental. If these species do not show up in category 12 (marine intertidal) then they are assumed to not actually depend on marine habitats.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hab_inclusion_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_setup, <span class="st">'int'</span>, <span class="st">'iucn_habitat_categories.csv'</span>)
 
@@ -540,7 +467,7 @@ hab_cats &lt;-<span class="st"> </span><span class="kw">read_csv</span>(spp_habs
 <span class="kw">write_csv</span>(hab_cats, hab_inclusion_file)</code></pre></div>
 </div>
 <div id="determine-marine-species-and-depth-constraints" class="section level4">
-<h4><span class="header-section-number">3.1.3.3</span> Determine marine species and depth constraints</h4>
+<h4><span class="header-section-number">3.1.2.3</span> Determine marine species and depth constraints</h4>
 <p>Marine species depth classifications:</p>
 <ul>
 <li>0-20? m: organisms classified as intertidal (category 12) and shallower</li>
@@ -606,16 +533,16 @@ spp_habs_clean &lt;-<span class="st"> </span>spp_marine_habs <span class="op">%&
                                   <span class="kw">any</span>(cat <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">12</span>))     <span class="op">~</span><span class="st"> '&lt; 20 m'</span>,
                                   <span class="ot">TRUE</span>                    <span class="op">~</span><span class="st"> 'error'</span>))
 
-<span class="kw">write_csv</span>(spp_habs_clean, <span class="kw">file.path</span>(dir_git, <span class="st">'data/iucn'</span>,
+<span class="kw">write_csv</span>(spp_habs_clean, <span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
                                      <span class="kw">sprintf</span>(<span class="st">'spp_marine_from_api_%s.csv'</span>, api_version)))</code></pre></div>
 <hr />
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_timeseries_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data/iucn'</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_timeseries_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
                                  <span class="kw">sprintf</span>(<span class="st">'iucn_risk_timeseries_%s.csv'</span>, api_version))
 
 iucn_spp_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_o_anx, 
                                     <span class="kw">sprintf</span>(<span class="st">'iucn/spp_info_from_api_%s.csv'</span>, api_version)))
 
-iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data/iucn'</span>,
+iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
                                       <span class="kw">sprintf</span>(<span class="st">'spp_marine_from_api_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(iucn_spp_info)
 ### Subpopulations are in here too, by ID number
@@ -661,12 +588,12 @@ iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<
   <span class="kw">git_prov</span>(spp_timeseries_file, <span class="dt">filetype =</span> <span class="st">'output'</span>)
   
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_current_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data/iucn'</span>, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_current_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>, 
                               <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version))
 iucn_spp_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_o_anx, 
                                     <span class="kw">sprintf</span>(<span class="st">'iucn/spp_info_from_api_%s.csv'</span>, api_version)))
 
-iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data/iucn'</span>,
+iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>,
                                       <span class="kw">sprintf</span>(<span class="st">'spp_marine_from_api_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(iucn_spp_info)
 
@@ -684,14 +611,20 @@ iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<
   ptm &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
   spp_current_df &lt;-<span class="st"> </span><span class="kw">mc_get_from_api</span>(spp_curr_url, sid_list, api_key, <span class="dt">delay =</span> <span class="dv">1</span>, <span class="dt">cores =</span> <span class="dv">16</span>)
   <span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>ptm
-  
+    <span class="co">#   user   system  elapsed </span>
+    <span class="co"># 74.756   23.032 1251.880</span>
   spp_current_df1 &lt;-<span class="st"> </span>spp_current_df <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">select</span>(<span class="dt">iucn_sid =</span> name, <span class="dt">sciname =</span> scientific_name,
            main_common_name, 
            published_year, <span class="dt">code =</span> category, 
-           criteria, aoo_km2, eoo_km2, 
-           depth_upper, depth_lower)
-  
+           criteria)
+  ### dropping columns: 
+  <span class="co"># kingdom, phylum, class, order, family, genus, </span>
+  <span class="co"># authority, marine_system, freshwater_system, terrestrial_system, </span>
+  <span class="co"># assessor, reviewer, aoo_km2, eoo_km2, elevation_upper, elevation_lower, </span>
+  <span class="co"># depth_upper, depth_lower, errata_flag, errata_reason, amended_flag, amended_reason</span>
+  ### keeping all listings regardless of NE or DD
+
   ### Clean up the time series: reclassify old codes to current and add scores
   cat_lookup &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'raw'</span>, <span class="st">'risk_code_lookup.csv'</span>)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>category)
@@ -700,7 +633,6 @@ iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<
 <span class="st">    </span><span class="kw">left_join</span>(cat_lookup, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'code'</span>)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">rename</span>(<span class="dt">old_cat  =</span> code,
            <span class="dt">cat      =</span> code_current) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(cat_score)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">iucn_sid =</span> <span class="kw">as.integer</span>(iucn_sid)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">arrange</span>(iucn_sid) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">iucn_version =</span> api_version)
@@ -712,17 +644,50 @@ iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<
   <span class="kw">git_prov</span>(spp_current_file, <span class="dt">filetype =</span> <span class="st">'output'</span>)
   
 }</code></pre></div>
-<hr />
+</div>
+</div>
+</div>
+<div id="plot-assessments-over-time" class="section level2">
+<h2><span class="header-section-number">3.2</span> Plot assessments over time</h2>
+<p>This should be grouped according to the same taxonomic breakdown as the maps in the supplemental. For now, let’s just break down by phylum…</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># spp_timeseries_file &lt;- file.path(dir_git, 'data', sprintf('iucn_risk_timeseries_%s.csv', api_version))</span>
+<span class="co"># spp_info_from_api_file &lt;- file.path(dir_o_anx, sprintf('iucn/spp_info_from_api_%s.csv', api_version))</span>
+
+spp_ts &lt;-<span class="st"> </span><span class="kw">read_csv</span>(spp_timeseries_file, <span class="dt">col_types =</span> <span class="st">'ddcdc'</span>)
+
+spp_class &lt;-<span class="st"> </span><span class="kw">read_csv</span>(spp_info_from_api_file, <span class="dt">col_types =</span> <span class="st">'dccccccccc'</span>)
+
+spp_assessed_yr_class &lt;-<span class="st"> </span>spp_ts <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(cat_ts_score)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(year, iucn_sid) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">complete</span>(<span class="dt">year =</span> <span class="kw">min</span>(year)<span class="op">:</span><span class="dv">2018</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(spp_class, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(year, iucn_sid, kingdom, phylum, class) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>()
+
+spp_assessed &lt;-<span class="st"> </span>spp_assessed_yr_class <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">taxa_gp =</span> phylum) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(year, taxa_gp) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n_in_gp =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ungroup</span>()
+
+<span class="kw">ggplot</span>(spp_assessed, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> n_in_gp, <span class="dt">fill =</span> taxa_gp)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtheme_plot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_area</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">1982</span>, <span class="dv">2018</span>))</code></pre></div>
+</div>
+<div id="section" class="section level2">
+<h2><span class="header-section-number">3.3</span> <img src="data:image/png;base64,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" width="576" /></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">prov_wrapup</span>(<span class="dt">commit_outputs =</span> <span class="ot">FALSE</span>)</code></pre></div>
-</div>
-</div>
 </div>
 </div>
 <div id="provenance" class="section level1">
 <h1><span class="header-section-number">4</span> Provenance</h1>
 <ul>
-<li><em>Run ID: 1 (3eadb76); run tag: “standard run”</em></li>
-<li><em>Run elapsed time: 13.349 seconds; run memory usage: 2889.9 MB</em></li>
+<li><em>Run ID: 1 (1e8ebe4); run tag: “standard run”</em></li>
+<li><em>Run elapsed time: 131.051 seconds; run memory usage: 50492.7 MB</em></li>
 <li><em>System info: </em>
 <ul>
 <li><em>System: Linux, Release: 4.4.0-112-generic. Machine: x86_64. User: ohara.</em></li>
@@ -736,163 +701,195 @@ iucn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<
 <!-- Generated by graphviz version 2.38.0 (20140413.2041)
  -->
 <!-- Title: %3 Pages: 1 -->
-<svg width="635pt" height="678pt" viewBox="0.00 0.00 634.53 677.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 673.6)">
+<svg width="762pt" height="786pt" viewBox="0.00 0.00 761.86 785.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 781.6)">
 <title>
 %3
 </title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-673.6 630.53,-673.6 630.53,4 -4,4"></polygon> <!-- 9 --> <g id="node1" class="node">
-<title>
-9
-</title>
-<g id="a_node1"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="148.685" cy="-493.2" rx="54.1351" ry="18"></ellipse> <text text-anchor="middle" x="148.685" y="-491.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_info_from_api_2017-3.csv</text> </a> </g> </g> <!-- 2 --> <g id="node12" class="node">
-<title>
-2
-</title>
-<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="361.549,-273.6 187.821,-273.6 187.821,-237.6 361.549,-237.6 361.549,-273.6"></polygon> <text text-anchor="middle" x="274.685" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#determine_marine_spp_from_api</text> </a> </g> </g> <!-- 9&#45;&gt;2 --> <g id="edge7" class="edge">
-<title>
-9-&gt;2
-</title>
-<g id="a_edge7"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M158.149,-475.417C161.123,-469.741 164.261,-463.295 166.685,-457.2 195.006,-385.996 167.556,-352.023 214.685,-291.6 219.205,-285.806 224.972,-280.786 231.138,-276.502"></path> <polygon fill="#334766" stroke="#334766" points="232.248,-277.866 235.459,-273.653 230.322,-274.944 232.248,-277.866"></polygon> </a> </g> <text text-anchor="middle" x="190.188" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 6 --> <g id="node13" class="node">
-<title>
-6
-</title>
-<g id="a_node13"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="344.225,-115.2 183.145,-115.2 183.145,-79.2 344.225,-79.2 344.225,-115.2"></polygon> <text text-anchor="middle" x="263.685" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_iucn_past_assessments</text> </a> </g> </g> <!-- 9&#45;&gt;6 --> <g id="edge10" class="edge">
-<title>
-9-&gt;6
-</title>
-<g id="a_edge10"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M150.084,-475.042C151.237,-459.407 152.685,-435.668 152.685,-415 152.685,-415 152.685,-415 152.685,-175.4 152.685,-147.888 175.952,-129.386 201.181,-117.41"></path> <polygon fill="#334766" stroke="#334766" points="202.089,-118.919 205.909,-115.249 200.634,-115.736 202.089,-118.919"></polygon> </a> </g> <text text-anchor="middle" x="159.188" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 5 --> <g id="node14" class="node">
-<title>
-5
-</title>
-<g id="a_node14"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="165.555,-115.2 -0.185415,-115.2 -0.185415,-79.2 165.555,-79.2 165.555,-115.2"></polygon> <text text-anchor="middle" x="82.685" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_iucn_current_assessment</text> </a> </g> </g> <!-- 9&#45;&gt;5 --> <g id="edge13" class="edge">
-<title>
-9-&gt;5
-</title>
-<g id="a_edge13"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M127.784,-476.588C111.516,-462.496 91.685,-440.157 91.685,-415 91.685,-415 91.685,-415 91.685,-175.4 91.685,-156.73 89.0561,-135.691 86.6399,-120.297"></path> <polygon fill="#334766" stroke="#334766" points="88.3584,-119.961 85.8328,-115.304 84.9032,-120.519 88.3584,-119.961"></polygon> </a> </g> <text text-anchor="middle" x="98.1881" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10 --> <g id="node2" class="node">
-<title>
-10
-</title>
-<g id="a_node2"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="383.685" cy="-493.2" rx="55.816" ry="18"></ellipse> <text text-anchor="middle" x="383.685" y="-491.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_habs_from_api_2017-3.csv</text> </a> </g> </g> <!-- 4 --> <g id="node11" class="node">
-<title>
-4
-</title>
-<g id="a_node11"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="416.389,-432 256.981,-432 256.981,-396 416.389,-396 416.389,-432"></polygon> <text text-anchor="middle" x="336.685" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#generate_hab_inclusion_list</text> </a> </g> </g> <!-- 10&#45;&gt;4 --> <g id="edge3" class="edge">
-<title>
-10-&gt;4
-</title>
-<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M373.487,-475.449C366.562,-464.074 357.339,-448.925 349.858,-436.638"></path> <polygon fill="#334766" stroke="#334766" points="351.284,-435.614 347.189,-432.253 348.294,-437.434 351.284,-435.614"></polygon> </a> </g> <text text-anchor="middle" x="368.188" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10&#45;&gt;2 --> <g id="edge5" class="edge">
-<title>
-10-&gt;2
-</title>
-<g id="a_edge5"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M399.293,-475.817C408.959,-464.49 420.487,-448.534 425.685,-432 430.483,-416.736 430.268,-411.33 425.685,-396 413.624,-355.655 403.972,-346.055 373.685,-316.8 356.879,-300.567 334.943,-286.671 315.991,-276.333"></path> <polygon fill="#334766" stroke="#334766" points="316.475,-274.607 311.242,-273.783 314.819,-277.69 316.475,-274.607"></polygon> </a> </g> <text text-anchor="middle" x="426.188" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11 --> <g id="node3" class="node">
+<polygon fill="white" stroke="none" points="-4,4 -4,-781.6 757.856,-781.6 757.856,4 -4,4"></polygon> <!-- 11 --> <g id="node1" class="node">
 <title>
 11
 </title>
-<g id="a_node3"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/4420de079611b71683fd8379a15699b2738b7765"> <ellipse fill="#9ce68a" stroke="yellow" stroke-width="3" cx="314.685" cy="-334.8" rx="49.8079" ry="18"></ellipse> <text text-anchor="middle" x="314.685" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_habitat_categories.csv</text> </a> </g> </g> <!-- 11&#45;&gt;2 --> <g id="edge6" class="edge">
-<title>
-11-&gt;2
-</title>
-<g id="a_edge6"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M306.006,-317.049C300.164,-305.774 292.4,-290.79 286.064,-278.562"></path> <polygon fill="#334766" stroke="#334766" points="287.479,-277.487 283.624,-273.853 284.371,-279.098 287.479,-277.487"></polygon> </a> </g> <text text-anchor="middle" x="303.188" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12 --> <g id="node4" class="node">
+<g id="a_node1"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/00378aad59f93d3afefcdac3543d0777f9717816"> <polygon fill="#fffacc" stroke="#b38f59" stroke-width="2" points="77.0111,-590.4 23.0111,-590.4 23.0111,-554.4 77.0111,-554.4 77.0111,-590.4"></polygon> <text text-anchor="middle" x="50.0111" y="-570.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">api_fxns.R</text> </a> </g> </g> <!-- 12 --> <g id="node2" class="node">
 <title>
 12
 </title>
-<g id="a_node4"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="385.685" cy="-176.4" rx="58.8212" ry="18"></ellipse> <text text-anchor="middle" x="385.685" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_marine_marginal_2017-3.csv</text> </a> </g> </g> <!-- 13 --> <g id="node5" class="node">
+<g id="a_node2"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="219.011" cy="-414" rx="54.1351" ry="18"></ellipse> <text text-anchor="middle" x="219.011" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_info_from_api_2017-3.csv</text> </a> </g> </g> <!-- 2 --> <g id="node14" class="node">
+<title>
+2
+</title>
+<g id="a_node14"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="450.875,-352.8 277.147,-352.8 277.147,-316.8 450.875,-316.8 450.875,-352.8"></polygon> <text text-anchor="middle" x="364.011" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#determine_marine_spp_from_api</text> </a> </g> </g> <!-- 12&#45;&gt;2 --> <g id="edge8" class="edge">
+<title>
+12-&gt;2
+</title>
+<g id="a_edge8"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M237.561,-396.996C248.066,-388.467 261.727,-378.231 275.005,-370.8 285.528,-364.911 297.243,-359.546 308.628,-354.882"></path> <polygon fill="#334766" stroke="#334766" points="309.499,-356.418 313.483,-352.927 308.191,-353.172 309.499,-356.418"></polygon> </a> </g> <text text-anchor="middle" x="281.514" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 6 --> <g id="node15" class="node">
+<title>
+6
+</title>
+<g id="a_node15"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="355.551,-194.4 194.471,-194.4 194.471,-158.4 355.551,-158.4 355.551,-194.4"></polygon> <text text-anchor="middle" x="275.011" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_iucn_past_assessments</text> </a> </g> </g> <!-- 12&#45;&gt;6 --> <g id="edge11" class="edge">
+<title>
+12-&gt;6
+</title>
+<g id="a_edge11"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M214.815,-395.672C209.668,-372.082 202.186,-328.563 207.005,-291.6 211.712,-255.488 207.599,-242.559 228.011,-212.4 231.646,-207.029 236.386,-202.162 241.454,-197.882"></path> <polygon fill="#334766" stroke="#334766" points="242.58,-199.222 245.381,-194.725 240.387,-196.494 242.58,-199.222"></polygon> </a> </g> <text text-anchor="middle" x="213.514" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 5 --> <g id="node16" class="node">
+<title>
+5
+</title>
+<g id="a_node16"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="547.882,-194.4 382.141,-194.4 382.141,-158.4 547.882,-158.4 547.882,-194.4"></polygon> <text text-anchor="middle" x="465.011" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_iucn_current_assessment</text> </a> </g> </g> <!-- 12&#45;&gt;5 --> <g id="edge14" class="edge">
+<title>
+12-&gt;5
+</title>
+<g id="a_edge14"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M222.088,-395.97C229.775,-354.198 249.989,-249.21 261.011,-237.6 277.477,-220.256 329.507,-205.051 376.896,-194.261"></path> <polygon fill="#334766" stroke="#334766" points="377.563,-195.905 382.056,-193.1 376.794,-192.491 377.563,-195.905"></polygon> </a> </g> <text text-anchor="middle" x="250.514" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10 --> <g id="node17" class="node">
+<title>
+10
+</title>
+<g id="a_node17"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="341.706,-36 208.316,-36 208.316,-0 341.706,-0 341.706,-36"></polygon> <text text-anchor="middle" x="275.011" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#unnamed-chunk-1</text> </a> </g> </g> <!-- 12&#45;&gt;10 --> <g id="edge18" class="edge">
+<title>
+12-&gt;10
+</title>
+<g id="a_edge18"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M199.577,-397.081C184.451,-382.797 166.011,-360.349 166.011,-335.8 166.011,-335.8 166.011,-335.8 166.011,-96.2 166.011,-68.8028 189.227,-50.2508 214.23,-38.2151"></path> <polygon fill="#334766" stroke="#334766" points="215.115,-39.7341 218.915,-36.043 213.642,-36.5588 215.115,-39.7341"></polygon> </a> </g> <text text-anchor="middle" x="172.514" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13 --> <g id="node3" class="node">
 <title>
 13
 </title>
-<g id="a_node5"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/4420de079611b71683fd8379a15699b2738b7765"> <ellipse fill="#9ce68a" stroke="yellow" stroke-width="3" cx="249.685" cy="-176.4" rx="58.6919" ry="18"></ellipse> <text text-anchor="middle" x="249.685" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_marine_from_api_2017-3.csv</text> </a> </g> </g> <!-- 13&#45;&gt;6 --> <g id="edge11" class="edge">
+<g id="a_node3"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="335.011" cy="-572.4" rx="55.816" ry="18"></ellipse> <text text-anchor="middle" x="335.011" y="-570.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_habs_from_api_2017-3.csv</text> </a> </g> </g> <!-- 4 --> <g id="node13" class="node">
 <title>
-13-&gt;6
+4
 </title>
-<g id="a_edge11"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M252.792,-158.267C254.822,-147.073 257.493,-132.347 259.681,-120.277"></path> <polygon fill="#334766" stroke="#334766" points="261.416,-120.517 260.587,-115.285 257.972,-119.893 261.416,-120.517"></polygon> </a> </g> <text text-anchor="middle" x="264.188" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13&#45;&gt;5 --> <g id="edge14" class="edge">
+<g id="a_node13"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="467.716,-511.2 308.307,-511.2 308.307,-475.2 467.716,-475.2 467.716,-511.2"></polygon> <text text-anchor="middle" x="388.011" y="-491.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#generate_hab_inclusion_list</text> </a> </g> </g> <!-- 13&#45;&gt;4 --> <g id="edge4" class="edge">
 <title>
-13-&gt;5
+13-&gt;4
 </title>
-<g id="a_edge14"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M218.665,-161.06C192.073,-148.767 153.538,-130.954 124.275,-117.426"></path> <polygon fill="#334766" stroke="#334766" points="124.934,-115.803 119.661,-115.293 123.465,-118.98 124.934,-115.803"></polygon> </a> </g> <text text-anchor="middle" x="178.188" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 14 --> <g id="node6" class="node">
+<g id="a_edge4"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M346.511,-554.649C354.32,-543.274 364.721,-528.125 373.156,-515.838"></path> <polygon fill="#334766" stroke="#334766" points="374.779,-516.566 376.166,-511.453 371.894,-514.585 374.779,-516.566"></polygon> </a> </g> <text text-anchor="middle" x="370.514" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13&#45;&gt;2 --> <g id="edge6" class="edge">
+<title>
+13-&gt;2
+</title>
+<g id="a_edge6"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M321.603,-554.641C313.305,-543.156 303.42,-527.164 299.011,-511.2 294.751,-495.777 296.666,-491.027 299.011,-475.2 304.403,-438.817 307.143,-429.182 323.011,-396 329.561,-382.304 338.985,-368.213 347.147,-357.11"></path> <polygon fill="#334766" stroke="#334766" points="348.735,-357.909 350.321,-352.855 345.929,-355.817 348.735,-357.909"></polygon> </a> </g> <text text-anchor="middle" x="310.514" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 14 --> <g id="node4" class="node">
 <title>
 14
 </title>
-<g id="a_node6"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/4420de079611b71683fd8379a15699b2738b7765"> <ellipse fill="#9ce68a" stroke="yellow" stroke-width="3" cx="263.685" cy="-18" rx="56.6366" ry="18"></ellipse> <text text-anchor="middle" x="263.685" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_timeseries_2017-3.csv</text> </a> </g> </g> <!-- 15 --> <g id="node7" class="node">
+<g id="a_node4"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/00378aad59f93d3afefcdac3543d0777f9717816"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="382.011" cy="-414" rx="49.8079" ry="18"></ellipse> <text text-anchor="middle" x="382.011" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_habitat_categories.csv</text> </a> </g> </g> <!-- 14&#45;&gt;2 --> <g id="edge7" class="edge">
+<title>
+14-&gt;2
+</title>
+<g id="a_edge7"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M378.016,-395.867C375.406,-384.673 371.973,-369.947 369.159,-357.877"></path> <polygon fill="#334766" stroke="#334766" points="370.834,-357.357 367.995,-352.885 367.426,-358.152 370.834,-357.357"></polygon> </a> </g> <text text-anchor="middle" x="380.514" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 15 --> <g id="node5" class="node">
 <title>
 15
 </title>
-<g id="a_node7"><a xlink:title="Previous commit: https://github.com/oharac/spp_health_dists/commit/4420de079611b71683fd8379a15699b2738b7765"> <ellipse fill="#9ce68a" stroke="yellow" stroke-width="3" cx="82.685" cy="-18" rx="52.0797" ry="18"></ellipse> <text text-anchor="middle" x="82.685" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_current_2017-3.csv</text> </a> </g> </g> <!-- 1 --> <g id="node8" class="node">
+<g id="a_node5"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/00378aad59f93d3afefcdac3543d0777f9717816"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="329.011" cy="-255.6" rx="58.8212" ry="18"></ellipse> <text text-anchor="middle" x="329.011" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_marine_marginal_2017-3.csv</text> </a> </g> </g> <!-- 16 --> <g id="node6" class="node">
+<title>
+16
+</title>
+<g id="a_node6"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/63686544771977c7dc4d8da819950c0b8029d04f"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="465.011" cy="-255.6" rx="58.6919" ry="18"></ellipse> <text text-anchor="middle" x="465.011" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_marine_from_api_2017-3.csv</text> </a> </g> </g> <!-- 16&#45;&gt;6 --> <g id="edge12" class="edge">
+<title>
+16-&gt;6
+</title>
+<g id="a_edge12"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M431.043,-240.798C400.624,-228.438 355.727,-210.196 321.893,-196.449"></path> <polygon fill="#334766" stroke="#334766" points="322.276,-194.716 316.985,-194.455 320.958,-197.958 322.276,-194.716"></polygon> </a> </g> <text text-anchor="middle" x="382.514" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 16&#45;&gt;5 --> <g id="edge15" class="edge">
+<title>
+16-&gt;5
+</title>
+<g id="a_edge15"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M465.011,-237.467C465.011,-226.373 465.011,-211.809 465.011,-199.801"></path> <polygon fill="#334766" stroke="#334766" points="466.761,-199.485 465.011,-194.485 463.261,-199.485 466.761,-199.485"></polygon> </a> </g> <text text-anchor="middle" x="471.514" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 17 --> <g id="node7" class="node">
+<title>
+17
+</title>
+<g id="a_node7"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/63686544771977c7dc4d8da819950c0b8029d04f"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="275.011" cy="-97.2" rx="56.6366" ry="18"></ellipse> <text text-anchor="middle" x="275.011" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_timeseries_2017-3.csv</text> </a> </g> </g> <!-- 17&#45;&gt;10 --> <g id="edge17" class="edge">
+<title>
+17-&gt;10
+</title>
+<g id="a_edge17"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M275.011,-79.0668C275.011,-67.9726 275.011,-53.4093 275.011,-41.4011"></path> <polygon fill="#334766" stroke="#334766" points="276.761,-41.0853 275.011,-36.0853 273.261,-41.0853 276.761,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="281.514" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 18 --> <g id="node8" class="node">
+<title>
+18
+</title>
+<g id="a_node8"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/63686544771977c7dc4d8da819950c0b8029d04f"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="465.011" cy="-97.2" rx="52.0797" ry="18"></ellipse> <text text-anchor="middle" x="465.011" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_current_2017-3.csv</text> </a> </g> </g> <!-- 1 --> <g id="node9" class="node">
 <title>
 1
 </title>
-<g id="a_node8"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="325.698,-669.6 243.672,-669.6 243.672,-633.6 325.698,-633.6 325.698,-669.6"></polygon> <text text-anchor="middle" x="284.685" y="-649.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd</text> </a> </g> </g> <!-- 7 --> <g id="node9" class="node">
+<g id="a_node9"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="475.024,-777.6 392.998,-777.6 392.998,-741.6 475.024,-741.6 475.024,-777.6"></polygon> <text text-anchor="middle" x="434.011" y="-757.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd</text> </a> </g> </g> <!-- 9 --> <g id="node10" class="node">
+<title>
+9
+</title>
+<g id="a_node10"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="100.033,-698.4 -0.0111025,-698.4 -0.0111025,-662.4 100.033,-662.4 100.033,-698.4"></polygon> <text text-anchor="middle" x="50.0111" y="-678.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#setup</text> </a> </g> </g> <!-- 1&#45;&gt;9 --> <g id="edge19" class="edge">
+<title>
+1-&gt;9
+</title>
+<g id="a_edge19"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M392.953,-756.855C303.601,-752.743 97.4117,-741.426 71.3325,-723.6 64.2615,-718.767 59.4125,-710.863 56.1489,-703.194"></path> <polygon fill="#665233" stroke="#665233" points="57.7589,-702.506 54.316,-698.479 54.4967,-703.774 57.7589,-702.506"></polygon> </a> </g> <text text-anchor="middle" x="93.3504" y="-718.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 7 --> <g id="node11" class="node">
 <title>
 7
 </title>
-<g id="a_node9"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="208.054,-590.4 61.3159,-590.4 61.3159,-554.4 208.054,-554.4 208.054,-590.4"></polygon> <text text-anchor="middle" x="134.685" y="-570.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_spp_info_from_api</text> </a> </g> </g> <!-- 1&#45;&gt;7 --> <g id="edge16" class="edge">
+<g id="a_node11"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="294.38,-644.4 147.642,-644.4 147.642,-608.4 294.38,-608.4 294.38,-644.4"></polygon> <text text-anchor="middle" x="221.011" y="-624.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#get_spp_info_from_api</text> </a> </g> </g> <!-- 1&#45;&gt;7 --> <g id="edge20" class="edge">
 <title>
 1-&gt;7
 </title>
-<g id="a_edge16"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M243.482,-641.493C223.154,-635.897 198.812,-627.481 179.006,-615.6 169.454,-609.869 160.292,-601.755 152.803,-594.17"></path> <polygon fill="#665233" stroke="#665233" points="153.997,-592.886 149.266,-590.501 151.477,-595.316 153.997,-592.886"></polygon> </a> </g> <text text-anchor="middle" x="201.024" y="-610.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3 --> <g id="node10" class="node">
+<g id="a_edge20"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M392.952,-754.381C353.204,-748.295 293.467,-733.597 255.011,-698.4 240.791,-685.384 231.919,-665.157 226.819,-649.616"></path> <polygon fill="#665233" stroke="#665233" points="228.394,-648.792 225.231,-644.542 225.054,-649.837 228.394,-648.792"></polygon> </a> </g> <text text-anchor="middle" x="312.35" y="-718.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3 --> <g id="node12" class="node">
 <title>
 3
 </title>
-<g id="a_node10"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="454.552,-590.4 312.818,-590.4 312.818,-554.4 454.552,-554.4 454.552,-590.4"></polygon> <text text-anchor="middle" x="383.685" y="-570.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#determine_spp_habs</text> </a> </g> </g> <!-- 1&#45;&gt;3 --> <g id="edge17" class="edge">
+<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="405.879,-698.4 264.144,-698.4 264.144,-662.4 405.879,-662.4 405.879,-698.4"></polygon> <text text-anchor="middle" x="335.011" y="-678.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#determine_spp_habs</text> </a> </g> </g> <!-- 1&#45;&gt;3 --> <g id="edge21" class="edge">
 <title>
 1-&gt;3
 </title>
-<g id="a_edge17"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M306.656,-633.467C321.781,-621.673 341.932,-605.959 357.83,-593.561"></path> <polygon fill="#665233" stroke="#665233" points="358.908,-594.94 361.775,-590.485 356.756,-592.18 358.908,-594.94"></polygon> </a> </g> <text text-anchor="middle" x="359.024" y="-610.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge18" class="edge">
+<g id="a_edge21"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M403.432,-741.495C394.721,-736.155 385.409,-729.98 377.332,-723.6 369.363,-717.305 361.302,-709.655 354.383,-702.606"></path> <polygon fill="#665233" stroke="#665233" points="355.4,-701.14 350.665,-698.764 352.885,-703.574 355.4,-701.14"></polygon> </a> </g> <text text-anchor="middle" x="399.35" y="-718.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge22" class="edge">
 <title>
 1-&gt;4
 </title>
-<g id="a_edge18"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M287.413,-633.546C292.578,-602.053 304.545,-532.733 318.685,-475.2 321.823,-462.431 325.997,-448.34 329.535,-437.003"></path> <polygon fill="#665233" stroke="#665233" points="331.277,-437.297 331.11,-432.002 327.939,-436.246 331.277,-437.297"></polygon> </a> </g> <text text-anchor="middle" x="328.024" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge19" class="edge">
+<g id="a_edge22"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M431.33,-741.357C425.814,-706.156 412.65,-623.515 400.011,-554.4 397.7,-541.764 394.905,-527.68 392.594,-516.314"></path> <polygon fill="#665233" stroke="#665233" points="394.285,-515.847 391.57,-511.298 390.856,-516.548 394.285,-515.847"></polygon> </a> </g> <text text-anchor="middle" x="437.35" y="-624.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge23" class="edge">
 <title>
 1-&gt;2
 </title>
-<g id="a_edge19"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M279.728,-633.375C266.173,-583.711 231.093,-436.158 255.685,-316.8 258.332,-303.954 262.656,-289.963 266.511,-278.705"></path> <polygon fill="#665233" stroke="#665233" points="268.249,-279.036 268.241,-273.738 264.944,-277.884 268.249,-279.036"></polygon> </a> </g> <text text-anchor="middle" x="271.024" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;6 --> <g id="edge20" class="edge">
+<g id="a_edge23"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M440.898,-741.535C457.844,-697.251 498.661,-575.148 477.011,-475.2 468.826,-437.411 464.929,-426.381 441.011,-396 428.634,-380.279 411.323,-366.268 396.249,-355.728"></path> <polygon fill="#665233" stroke="#665233" points="397.174,-354.24 392.063,-352.849 395.191,-357.124 397.174,-354.24"></polygon> </a> </g> <text text-anchor="middle" x="505.35" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;6 --> <g id="edge24" class="edge">
 <title>
 1-&gt;6
 </title>
-<g id="a_edge20"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M325.711,-643.202C383.706,-631.556 482.685,-606.79 482.685,-573.4 482.685,-573.4 482.685,-573.4 482.685,-175.4 482.685,-145.844 410.84,-124.819 349.45,-112.249"></path> <polygon fill="#665233" stroke="#665233" points="349.547,-110.483 344.3,-111.209 348.854,-113.914 349.547,-110.483"></polygon> </a> </g> <text text-anchor="middle" x="504.024" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;5 --> <g id="edge21" class="edge">
+<g id="a_edge24"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M392.743,-756.788C309.218,-751.992 128.011,-735.368 128.011,-681.4 128.011,-681.4 128.011,-681.4 128.011,-254.6 128.011,-234.542 129.128,-225.847 144.011,-212.4 156.675,-200.958 172.673,-193.19 189.1,-187.933"></path> <polygon fill="#665233" stroke="#665233" points="189.934,-189.508 194.209,-186.38 188.916,-186.159 189.934,-189.508"></polygon> </a> </g> <text text-anchor="middle" x="149.35" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;5 --> <g id="edge25" class="edge">
 <title>
 1-&gt;5
 </title>
-<g id="a_edge21"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M243.519,-646.521C172.31,-638.314 33.685,-616.768 33.685,-573.4 33.685,-573.4 33.685,-573.4 33.685,-175.4 33.685,-153.925 47.3683,-133.588 60.2733,-119.184"></path> <polygon fill="#665233" stroke="#665233" points="61.771,-120.142 63.8805,-115.282 59.2011,-117.766 61.771,-120.142"></polygon> </a> </g> <text text-anchor="middle" x="55.0243" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 8 --> <g id="node15" class="node">
+<g id="a_edge25"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M475.282,-749.554C509.31,-739.38 552.011,-719.101 552.011,-681.4 552.011,-681.4 552.011,-681.4 552.011,-254.6 552.011,-229.055 530.767,-209.905 509.275,-197.068"></path> <polygon fill="#665233" stroke="#665233" points="509.898,-195.407 504.692,-194.424 508.149,-198.439 509.898,-195.407"></polygon> </a> </g> <text text-anchor="middle" x="573.35" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;10 --> <g id="edge26" class="edge">
+<title>
+1-&gt;10
+</title>
+<g id="a_edge26"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M475.275,-757.871C527.296,-754.509 610.011,-739.957 610.011,-681.4 610.011,-681.4 610.011,-681.4 610.011,-96.2 610.011,-42.6956 445.693,-26.269 347.219,-21.2287"></path> <polygon fill="#665233" stroke="#665233" points="347.079,-19.4696 341.998,-20.9689 346.905,-22.9653 347.079,-19.4696"></polygon> </a> </g> <text text-anchor="middle" x="631.35" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 8 --> <g id="node18" class="node">
 <title>
 8
 </title>
-<g id="a_node15"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/2c745948abd5010a0a71ed0112e5a1cfced9ab1c"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="626.376,-590.4 510.994,-590.4 510.994,-554.4 626.376,-554.4 626.376,-590.4"></polygon> <text text-anchor="middle" x="568.685" y="-570.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;8 --> <g id="edge22" class="edge">
+<g id="a_node18"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/fa4c4ef911d38ac3d139d95fe3d1503c447b8f5f"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="753.702,-698.4 638.32,-698.4 638.32,-662.4 753.702,-662.4 753.702,-698.4"></polygon> <text text-anchor="middle" x="696.011" y="-678.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">1_set_up_iucn_risk.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;8 --> <g id="edge27" class="edge">
 <title>
 1-&gt;8
 </title>
-<g id="a_edge22"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M326.053,-648.251C369.622,-644.756 439.677,-636.208 496.685,-615.6 511.987,-610.068 527.72,-601.269 540.561,-593.133"></path> <polygon fill="#665233" stroke="#665233" points="541.542,-594.582 544.8,-590.405 539.648,-591.639 541.542,-594.582"></polygon> </a> </g> <text text-anchor="middle" x="535.024" y="-610.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 7&#45;&gt;9 --> <g id="edge1" class="edge">
+<g id="a_edge27"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M475.135,-755.183C514.377,-750.965 574.656,-741.961 624.011,-723.6 639.14,-717.972 654.736,-709.25 667.529,-701.194"></path> <polygon fill="#665233" stroke="#665233" points="668.484,-702.66 671.755,-698.492 666.599,-699.711 668.484,-702.66"></polygon> </a> </g> <text text-anchor="middle" x="662.35" y="-718.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 9&#45;&gt;11 --> <g id="edge1" class="edge">
 <title>
-7-&gt;9
+9-&gt;11
 </title>
-<g id="a_edge1"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M137.792,-554.267C139.822,-543.073 142.493,-528.347 144.681,-516.277"></path> <polygon fill="#3d6633" stroke="#3d6633" points="146.416,-516.517 145.587,-511.285 142.972,-515.893 146.416,-516.517"></polygon> </a> </g> <text text-anchor="middle" x="165.691" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 3&#45;&gt;10 --> <g id="edge2" class="edge">
+<g id="a_edge1"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M50.0111,-662.369C50.0111,-644.319 50.0111,-615.728 50.0111,-595.848"></path> <polygon fill="#665233" stroke="#665233" points="51.7612,-595.741 50.0111,-590.741 48.2612,-595.741 51.7612,-595.741"></polygon> </a> </g> <text text-anchor="middle" x="71.3504" y="-624.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 7&#45;&gt;12 --> <g id="edge2" class="edge">
 <title>
-3-&gt;10
+7-&gt;12
 </title>
-<g id="a_edge2"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M383.685,-554.267C383.685,-543.173 383.685,-528.609 383.685,-516.601"></path> <polygon fill="#3d6633" stroke="#3d6633" points="385.435,-516.285 383.685,-511.285 381.935,-516.285 385.435,-516.285"></polygon> </a> </g> <text text-anchor="middle" x="406.691" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 4&#45;&gt;11 --> <g id="edge4" class="edge">
+<g id="a_edge2"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M220.8,-608.338C220.583,-590.423 220.243,-561.432 219.998,-536.4 219.662,-501.914 219.352,-461.917 219.173,-437.543"></path> <polygon fill="#3d6633" stroke="#3d6633" points="220.921,-437.276 219.134,-432.289 217.421,-437.302 220.921,-437.276"></polygon> </a> </g> <text text-anchor="middle" x="243.017" y="-531" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 3&#45;&gt;13 --> <g id="edge3" class="edge">
 <title>
-4-&gt;11
+3-&gt;13
 </title>
-<g id="a_edge4"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M331.802,-395.867C328.612,-384.673 324.416,-369.947 320.976,-357.877"></path> <polygon fill="#3d6633" stroke="#3d6633" points="322.607,-357.214 319.554,-352.885 319.241,-358.173 322.607,-357.214"></polygon> </a> </g> <text text-anchor="middle" x="349.691" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;12 --> <g id="edge8" class="edge">
+<g id="a_edge3"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M335.011,-662.369C335.011,-644.319 335.011,-615.728 335.011,-595.848"></path> <polygon fill="#3d6633" stroke="#3d6633" points="336.761,-595.741 335.011,-590.741 333.261,-595.741 336.761,-595.741"></polygon> </a> </g> <text text-anchor="middle" x="358.017" y="-624.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 4&#45;&gt;14 --> <g id="edge5" class="edge">
 <title>
-2-&gt;12
+4-&gt;14
 </title>
-<g id="a_edge8"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M299.319,-237.467C316.866,-225.263 340.447,-208.863 358.536,-196.282"></path> <polygon fill="#3d6633" stroke="#3d6633" points="359.904,-197.463 363.009,-193.171 357.905,-194.589 359.904,-197.463"></polygon> </a> </g> <text text-anchor="middle" x="356.691" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;13 --> <g id="edge9" class="edge">
+<g id="a_edge5"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M386.68,-475.067C385.809,-463.873 384.665,-449.147 383.727,-437.077"></path> <polygon fill="#3d6633" stroke="#3d6633" points="385.471,-436.935 383.339,-432.085 381.982,-437.206 385.471,-436.935"></polygon> </a> </g> <text text-anchor="middle" x="409.017" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;15 --> <g id="edge9" class="edge">
 <title>
-2-&gt;13
+2-&gt;15
 </title>
-<g id="a_edge9"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M269.137,-237.467C265.512,-226.273 260.743,-211.547 256.834,-199.477"></path> <polygon fill="#3d6633" stroke="#3d6633" points="258.423,-198.703 255.218,-194.485 255.093,-199.781 258.423,-198.703"></polygon> </a> </g> <text text-anchor="middle" x="286.691" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 6&#45;&gt;14 --> <g id="edge12" class="edge">
+<g id="a_edge9"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M356.243,-316.667C351.123,-305.373 344.373,-290.483 338.874,-278.355"></path> <polygon fill="#3d6633" stroke="#3d6633" points="340.415,-277.517 336.757,-273.685 337.228,-278.962 340.415,-277.517"></polygon> </a> </g> <text text-anchor="middle" x="371.017" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;16 --> <g id="edge10" class="edge">
 <title>
-6-&gt;14
+2-&gt;16
 </title>
-<g id="a_edge12"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M263.685,-79.0668C263.685,-67.9726 263.685,-53.4093 263.685,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="265.435,-41.0853 263.685,-36.0853 261.935,-41.0853 265.435,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="286.691" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 5&#45;&gt;15 --> <g id="edge15" class="edge">
+<g id="a_edge10"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M386.426,-316.667C402.285,-304.545 423.561,-288.283 439.976,-275.736"></path> <polygon fill="#3d6633" stroke="#3d6633" points="441.128,-277.058 444.038,-272.631 439.003,-274.277 441.128,-277.058"></polygon> </a> </g> <text text-anchor="middle" x="441.017" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 6&#45;&gt;17 --> <g id="edge13" class="edge">
 <title>
-5-&gt;15
+6-&gt;17
 </title>
-<g id="a_edge15"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M82.685,-79.0668C82.685,-67.9726 82.685,-53.4093 82.685,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="84.4351,-41.0853 82.685,-36.0853 80.9351,-41.0853 84.4351,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="105.691" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
+<g id="a_edge13"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M275.011,-158.267C275.011,-147.173 275.011,-132.609 275.011,-120.601"></path> <polygon fill="#3d6633" stroke="#3d6633" points="276.761,-120.285 275.011,-115.285 273.261,-120.285 276.761,-120.285"></polygon> </a> </g> <text text-anchor="middle" x="298.017" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 5&#45;&gt;18 --> <g id="edge16" class="edge">
+<title>
+5-&gt;18
+</title>
+<g id="a_edge16"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M465.011,-158.267C465.011,-147.173 465.011,-132.609 465.011,-120.601"></path> <polygon fill="#3d6633" stroke="#3d6633" points="466.761,-120.285 465.011,-115.285 463.261,-120.285 466.761,-120.285"></polygon> </a> </g> <text text-anchor="middle" x="488.017" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
 </svg>
-<div id="htmlwidget-dc3c2e123cf4a8993205" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-dc3c2e123cf4a8993205">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 1 (3eadb76): standard run (Sat Jun  2 19:10:34 2018)<\/caption>","data":[[0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],["1_set_up_iucn_risk.Rmd","1_set_up_iucn_risk.Rmd#determine_marine_spp_from_api","1_set_up_iucn_risk.Rmd#determine_spp_habs","1_set_up_iucn_risk.Rmd#generate_hab_inclusion_list","1_set_up_iucn_risk.Rmd#get_iucn_current_assessment","1_set_up_iucn_risk.Rmd#get_iucn_past_assessments","1_set_up_iucn_risk.Rmd#get_spp_info_from_api","1_set_up_iucn_risk.Rmd#prov_footer","spp_info_from_api_2017-3.csv","spp_habs_from_api_2017-3.csv","spp_habs_from_api_2017-3.csv","iucn_habitat_categories.csv","spp_habs_from_api_2017-3.csv","iucn_habitat_categories.csv","spp_info_from_api_2017-3.csv","spp_marine_marginal_2017-3.csv","spp_marine_from_api_2017-3.csv","spp_info_from_api_2017-3.csv","spp_marine_from_api_2017-3.csv","iucn_risk_timeseries_2017-3.csv","spp_info_from_api_2017-3.csv","spp_marine_from_api_2017-3.csv","iucn_risk_current_2017-3.csv"],["prov_footer","determine_marine_spp_from_api","determine_spp_habs","generate_hab_inclusion_list","get_iucn_current_assessment","get_iucn_past_assessments","get_spp_info_from_api","prov_footer","get_spp_info_from_api","determine_spp_habs","generate_hab_inclusion_list","generate_hab_inclusion_list","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_current_assessment","get_iucn_current_assessment","get_iucn_current_assessment"],["~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/git-annex/spp_health_dists/iucn","~/git-annex/spp_health_dists/iucn","~/git-annex/spp_health_dists/iucn","~/github/spp_health_dists/data_setup/int","~/git-annex/spp_health_dists/iucn","~/github/spp_health_dists/data_setup/int","~/git-annex/spp_health_dists/iucn","~/github/spp_health_dists/data_setup/int","~/github/spp_health_dists/data/iucn","~/git-annex/spp_health_dists/iucn","~/github/spp_health_dists/data/iucn","~/github/spp_health_dists/data/iucn","~/git-annex/spp_health_dists/iucn","~/github/spp_health_dists/data/iucn","~/github/spp_health_dists/data/iucn"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","output","output","input","output","input","input","input","output","output","input","input","output","input","input","output"],[true,true,true,true,true,true,true,true,null,null,null,true,null,true,null,null,true,null,true,true,null,true,true],["2c74594","2c74594","2c74594","2c74594","2c74594","2c74594","2c74594","2c74594",null,null,null,"4420de0",null,"4420de0",null,null,"4420de0",null,"4420de0","4420de0",null,"4420de0","4420de0"]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e52be41d07512eecaa1c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e52be41d07512eecaa1c">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 1 (1e8ebe4): standard run (Thu Jun 21 11:22:28 2018)<\/caption>","data":[[0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],["1_set_up_iucn_risk.Rmd","1_set_up_iucn_risk.Rmd#determine_marine_spp_from_api","1_set_up_iucn_risk.Rmd#determine_spp_habs","1_set_up_iucn_risk.Rmd#generate_hab_inclusion_list","1_set_up_iucn_risk.Rmd#get_iucn_current_assessment","1_set_up_iucn_risk.Rmd#get_iucn_past_assessments","1_set_up_iucn_risk.Rmd#get_spp_info_from_api","1_set_up_iucn_risk.Rmd#prov_footer","1_set_up_iucn_risk.Rmd#setup","1_set_up_iucn_risk.Rmd#unnamed-chunk-1","api_fxns.R","spp_info_from_api_2017-3.csv","spp_habs_from_api_2017-3.csv","spp_habs_from_api_2017-3.csv","iucn_habitat_categories.csv","spp_habs_from_api_2017-3.csv","iucn_habitat_categories.csv","spp_info_from_api_2017-3.csv","spp_marine_marginal_2017-3.csv","spp_marine_from_api_2017-3.csv","spp_info_from_api_2017-3.csv","spp_marine_from_api_2017-3.csv","iucn_risk_timeseries_2017-3.csv","spp_info_from_api_2017-3.csv","spp_marine_from_api_2017-3.csv","iucn_risk_current_2017-3.csv","iucn_risk_timeseries_2017-3.csv","spp_info_from_api_2017-3.csv"],["prov_footer","determine_marine_spp_from_api","determine_spp_habs","generate_hab_inclusion_list","get_iucn_current_assessment","get_iucn_past_assessments","get_spp_info_from_api","prov_footer","setup","unnamed-chunk-1","setup","get_spp_info_from_api","determine_spp_habs","generate_hab_inclusion_list","generate_hab_inclusion_list","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","determine_marine_spp_from_api","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_current_assessment","get_iucn_current_assessment","get_iucn_current_assessment","unnamed-chunk-1","unnamed-chunk-1"],["~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/git-annex/spp_risk_dists/iucn","~/git-annex/spp_risk_dists/iucn","~/git-annex/spp_risk_dists/iucn","~/github/spp_risk_dists/data_setup/int","~/git-annex/spp_risk_dists/iucn","~/github/spp_risk_dists/data_setup/int","~/git-annex/spp_risk_dists/iucn","~/github/spp_risk_dists/data_setup/int","~/github/spp_risk_dists/data","~/git-annex/spp_risk_dists/iucn","~/github/spp_risk_dists/data","~/github/spp_risk_dists/data","~/git-annex/spp_risk_dists/iucn","~/github/spp_risk_dists/data","~/github/spp_risk_dists/data","~/github/spp_risk_dists/data","~/git-annex/spp_risk_dists/iucn"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","sourced_script","output","output","input","output","input","input","input","output","output","input","input","output","input","input","output","input","input"],[true,true,true,true,true,true,true,true,true,true,false,null,null,null,false,null,false,null,false,false,null,false,false,null,false,false,false,null],["fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","fa4c4ef","00378aa",null,null,null,"00378aa",null,"00378aa",null,"00378aa","6368654",null,"6368654","6368654",null,"6368654","6368654","6368654",null]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 
