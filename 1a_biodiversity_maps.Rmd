@@ -114,10 +114,17 @@ cell_summary_list <- parallel::mclapply(cell_vals_list, mc.cores = 32,
                                    FUN = function(x) {
   ### x <- cell_vals_list[1:2][[1]]
   y <- x %>%
+    mutate(var_risk_g = ifelse(var_risk < 0 | is.na(var_risk) | is.infinite(var_risk), 
+                                 0, var_risk)) %>%
+      ### any non-valid variances probably due to only one observation, which
+      ### results in corrected var of infinity... set to zero and proceed!
     group_by(cell_id) %>%
     summarize(mean_risk   = sum(mean_risk * n_spp_risk) / sum(n_spp_risk),
-              var_risk    = sum(var_risk * (n_spp_risk - 1), na.rm = TRUE) / sum(n_spp_risk - 1),
+              var_risk    = sum(var_risk_g * (n_spp_risk - 1), na.rm = TRUE) / sum(n_spp_risk - 1),
                 ### https://en.wikipedia.org/wiki/Pooled_variance
+              var_risk = ifelse(var_risk < 0 | is.na(var_risk) | is.infinite(var_risk), 
+                                 0, var_risk),
+                ### get rid of negative (tiny) variances and infinite variances
               n_spp_risk  = sum(n_spp_risk),
               n_spp_threatened = sum(n_spp_threatened, na.rm = TRUE),
               pct_threatened   = n_spp_threatened / n_spp_risk,
@@ -158,6 +165,7 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
                        values = c(0, .25, .5, 1)) +
   coord_fixed() +
   labs(title = 'Mean risk',
@@ -171,6 +179,7 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
                        values = c(0, .25, .5, 1)) +
   xlim(c(-180, -110)) + ylim(c(30, 63)) +
   coord_fixed() +
@@ -183,6 +192,7 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
                        values = c(0, .25, .5, 1)) +
   xlim(c(-20, 45)) + ylim(c(28, 48)) +
   coord_fixed() +
@@ -195,6 +205,7 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
                        values = c(0, .25, .5, 1)) +
   xlim(c(-100, 15)) + ylim(c(-10, 33)) +
   coord_fixed() +
@@ -207,6 +218,7 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
                        values = c(0, .25, .5, 1)) +
   xlim(c(75, 150)) + ylim(c(-30, 30)) +
   coord_fixed() +
@@ -248,18 +260,19 @@ writeRaster(n_spp_rast, file.path(dir_git, 'output', 'n_spp_risk_raster_010deg.t
 n_spp_df <- n_spp_rast %>% 
   rasterToPoints() %>% 
   as.data.frame() %>%
-  setNames(c('long', 'lat', 'value'))
+  setNames(c('long', 'lat', 'value')) %>%
+  mutate(log_value = log(value))
 
-ggplot(n_spp_df, aes(long, lat, fill = value)) +
+ggplot(n_spp_df, aes(long, lat, fill = log_value)) +
   geom_raster() +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('grey90', 'lightblue', 'blue1', 'blue3', 'blue4', 'purple4'),
-                       values = c(0, .1, .25, .5, .75, 1)) +
+                       values = c(0, .5, .7, .8, .9, 1)) +
   coord_fixed() +
-  labs(title = 'Number of assessed species',
-       fill = 'N')
+  labs(title = 'Number of assessed species (ln transformed)',
+       fill = 'ln N')
 ```
 
 ``` {r n_spp_threatened}
@@ -271,19 +284,20 @@ writeRaster(n_threat_rast, file.path(dir_git, 'output', 'n_threat_raster_010deg.
 n_threat_df <- n_threat_rast %>% 
   rasterToPoints() %>% 
   as.data.frame() %>%
-  setNames(c('long', 'lat', 'value'))
+  setNames(c('long', 'lat', 'value')) %>%
+  mutate(log_value = log(value))
 
 
-ggplot(n_threat_df, aes(long, lat, fill = value)) +
+ggplot(n_threat_df, aes(long, lat, fill = log_value)) +
   geom_raster() +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('grey90', 'coral', 'red1', 'red3', 'red4', 'purple4'),
-                       values = c(0, .1, .25, .5, .75, 1)) +
+                       values = c(0, .5, .7, .8, .9, 1)) +
   coord_fixed() +
-  labs(title = 'Number of threatened species (VU, EN, CR)',
-       fill  = 'N')
+  labs(title = 'Number of threatened species (VU, EN, CR) (ln transformed)',
+       fill  = 'ln N')
 
 pct_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'pct_threatened')
 writeRaster(n_threat_rast, file.path(dir_git, 'output', 'pct_threat_raster_010deg.tif'),
@@ -301,7 +315,8 @@ ggplot(pct_threat_df, aes(long, lat, fill = value)) +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('grey90', 'coral', 'red2', 'red4', 'purple4'),
-                       values = c(0, .4, .5, .6, 1)) +
+                       limits = c(0, 1),
+                       values = c(0, .25, .5, .6, 1)) +
   coord_fixed() +
   labs(title = 'Proportion of threatened species (VU, EN, CR)',
        fill  = 'proportion')
@@ -344,16 +359,17 @@ writeRaster(n_trend_rast, file.path(dir_git, 'output', 'n_trend_raster_010deg.ti
 n_trend_df <- n_trend_rast %>% 
   rasterToPoints() %>% 
   as.data.frame() %>%
-  setNames(c('long', 'lat', 'value'))
+  setNames(c('long', 'lat', 'value')) %>%
+  mutate(log_value = log(value))
 
-ggplot(n_trend_df, aes(long, lat, fill = value)) +
+ggplot(n_trend_df, aes(long, lat, fill = log_value)) +
   geom_raster() +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('grey90', 'lightblue', 'blue1', 'blue3', 'blue4', 'purple4'),
-                       values = c(0, .1, .25, .5, .75, 1)) +
+                       values = c(0, .5, .7, .8, .9, 1)) +
   coord_fixed() +
-  labs(title = 'Number of trend-assessed species',
-       fill  = 'N')
+  labs(title = 'Number of trend-assessed species (ln transformed)',
+       fill  = 'ln N')
 ```

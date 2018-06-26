@@ -77,7 +77,7 @@ coef_var_sample <- mean_var_df %>%
   mutate(coef_var = sqrt(var_risk) / mean_risk,
          inv_cv   = 1 / coef_var)
  
-ggplot(coef_var_sample, aes(x = mean_risk, y = inv_cv)) +
+ggplot(coef_var_sample, aes(x = mean_risk, y = n_spp)) +
   ggtheme_plot() +
   geom_point(aes(color = n_spp), alpha = .1) +
   scale_color_gradientn(colors = c('grey90', 'lightblue', 'blue1', 'blue3', 'blue4', 'purple4'),
@@ -223,7 +223,7 @@ Repeat the above analysis but with range-rarity-weighted maps.
 ``` {r}
 
 mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif'))
-# var_rr_rast     <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.tif'))
+var_rr_rast       <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.tif'))
 sr_rr_rast        <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_010deg.tif'))
 sr_rr_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_010deg.tif'))
 trend_rr_rast     <- raster(file.path(dir_git, 'output', 'trend_rr_raster_010deg.tif'))
@@ -236,7 +236,7 @@ mpa_df            <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area_010_w
 risk_rr_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
                          eez       = values(eez_rast),
                          mean_rr_risk  = values(mean_rr_rast),
-                         # var_risk    = values(var_rr_rast),
+                         var_risk      = values(var_rr_rast),
                          sr_rr_risk    = values(sr_rr_rast),
                          sr_rr_threat  = values(sr_rr_threat_rast),
                          mean_rr_trend = values(trend_rr_rast)) %>%
