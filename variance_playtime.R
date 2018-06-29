@@ -75,3 +75,27 @@ library(tidyverse)
 # #      
 # l <- bind_rows(l) %>%
 #   mutate(diff = w_var1 - w_var_pooled)
+
+  x <- cell_values_all %>%
+    filter(cell_id == first(cell_id)) %>%
+    select(cell_id, mean_risk, var_risk, n_spp_risk)
+  
+
+  
+  z <- x %>%
+    mutate(mean_risk_g = mean_risk,   ### protect it
+           n_spp_risk_g = n_spp_risk, ### protect it
+           var_risk_g  = ifelse(var_risk < 0 | is.na(var_risk) | is.infinite(var_risk), 
+                                0, var_risk)) %>%
+    ### any non-valid variances probably due to only one observation, which
+    ### results in corrected var of infinity... set to zero and proceed!
+    group_by(cell_id) %>%
+    summarize(mean_risk_t = sum(mean_risk_g * n_spp_risk_g) / sum(n_spp_risk_g),
+              n_spp_risk_t  = sum(n_spp_risk_g), ### n_total
+              var_risk    = 1 / (n_spp_risk_t - 1) *
+                (sum(var_risk_g * (n_spp_risk_g - 1) + n_spp_risk_g * mean_risk_g^2) -
+                     n_spp_risk_t * mean_risk_t^2),
+              var_risk = ifelse(var_risk < 0, 0, var_risk),
+              var_risk = ifelse(is.nan(var_risk) | is.infinite(var_risk), NA, var_risk))
+  ### get rid of negative (tiny) variances and infinite variances
+  

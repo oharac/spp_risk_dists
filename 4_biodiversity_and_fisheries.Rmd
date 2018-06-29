@@ -119,7 +119,8 @@ risk_f_df <- data.frame(cell_id     = 1:length(values(mean_rast)),
 f_vs_risk_df <- risk_f_df %>%
   select(mean_risk, f_effort, ln_f_effort, n_spp, var_risk, r1_label) %>%
   distinct() %>%
-  sample_n(10000)
+  sample_n(100000) %>%
+  arrange(mean_risk)
 
 # ggplot(f_vs_risk_df, aes(x = f_effort, y = mean_risk)) +
 #   ggtheme_plot() +
@@ -134,7 +135,10 @@ ggplot(f_vs_risk_df, aes(x = ln_f_effort, y = mean_risk)) +
 
 ggplot(f_vs_risk_df, aes(x = ln_f_effort, y = var_risk)) +
   ggtheme_plot() +
-  geom_point(alpha = .2) +
+  geom_point(alpha = .2, aes(color = mean_risk)) +
+  scale_color_gradientn(colors = c('green3', 'lightyellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
+                       values = c(0, .25, .5, 1)) +
   facet_wrap( ~ r1_label) +
   labs(title = 'variance of risk vs. log fishing effort')
 
@@ -146,7 +150,7 @@ ggplot(f_vs_risk_df, aes(x = ln_f_effort, y = var_risk)) +
 ``` {r set up f and rr-values dataframe}
 
 mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif'))
-# var_rr_rast     <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.tif'))
+var_rr_rast       <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.tif'))
 sr_rr_rast        <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_010deg.tif'))
 sr_rr_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_010deg.tif'))
 trend_rr_rast     <- raster(file.path(dir_git, 'output', 'trend_rr_raster_010deg.tif'))
@@ -159,7 +163,7 @@ mpa_df            <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area_010_w
 rr_risk_f_df <- data.frame(cell_id       = 1:length(values(mean_rast)),
                            rgn_id        = values(eez_rast),
                            mean_rr_risk  = values(mean_rr_rast),
-                           # var_risk    = values(var_rr_rast),
+                           var_rr_risk   = values(var_rr_rast),
                            sr_rr_risk    = values(sr_rr_rast),
                            sr_rr_threat  = values(sr_rr_threat_rast),
                            mean_rr_trend = values(trend_rr_rast),
@@ -171,12 +175,13 @@ rr_risk_f_df <- data.frame(cell_id       = 1:length(values(mean_rast)),
 ```
 
 
-``` {r examine f vs risk}
+``` {r examine f vs rr risk}
 
 f_vs_rr_risk_df <- rr_risk_f_df %>%
-  select(mean_rr_risk, f_effort, ln_f_effort, sr_rr_risk, r1_label) %>%
+  select(mean_rr_risk, var_rr_risk, f_effort, ln_f_effort, sr_rr_risk, r1_label) %>%
   distinct() %>%
-  sample_n(10000)
+  sample_n(100000) %>%
+  arrange(mean_rr_risk)
 
 # ggplot(f_vs_risk_df, aes(x = f_effort, y = mean_risk)) +
 #   ggtheme_plot() +
@@ -184,18 +189,19 @@ f_vs_rr_risk_df <- rr_risk_f_df %>%
 
 ggplot(f_vs_rr_risk_df, aes(x = ln_f_effort, y = mean_rr_risk)) +
   ggtheme_plot() +
-  geom_point(alpha = .2) +
+  geom_point(alpha = .2, aes(color = var_rr_risk)) +
+  scale_color_distiller(palette = 'YlGnBu') +
   facet_wrap( ~ r1_label) +
   labs(title = 'range-rarity-weighted mean risk vs. log fishing effort')
 
-# ggplot(f_vs_risk_df, aes(x = ln_f_effort, y = var_risk)) +
-#   ggtheme_plot() +
-#   geom_point(alpha = .2) +
-#   facet_wrap( ~ r1_label) +
-#   labs(title = 'variance of risk vs. log fishing effort')
+ggplot(f_vs_rr_risk_df, aes(x = ln_f_effort, y = var_rr_risk)) +
+  ggtheme_plot() +
+  geom_point(alpha = .2, aes(color = mean_rr_risk)) +
+  scale_color_gradientn(colors = c('green3', 'lightyellow', 'red3', 'purple4'),
+                       limits = c(0, 1),
+                       values = c(0, .25, .5, 1)) +
+  facet_wrap( ~ r1_label) +
+  labs(title = 'range-rarity-weighted variance of risk vs. log fishing effort')
 
 ```
 
-``` {r examine f vs rr-risk}
-
-```
