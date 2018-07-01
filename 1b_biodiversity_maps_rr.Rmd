@@ -242,6 +242,7 @@ writeRaster(mean_rast, file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.
 ### mean_rast <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif'))
 
 mean_df <- mean_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value'))
@@ -253,23 +254,25 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green4', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
                        limits = c(0, 1),
-                       values = c(0, .25, .5, 1)) +
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   coord_fixed() +
   labs(title = 'Mean risk, range-rarity weighted',
        fill  = 'mean(risk)')
 
-message('now ggplotting the regional maps...')
+# message('now ggplotting the regional maps...')
 
 ggplot(mean_df, aes(long, lat, fill = value)) +
   geom_raster() +
   ggtheme_plot() +
-  theme(axis.text = element_blank(), 
+  theme(axis.text = element_blank(),
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
                        limits = c(0, 1),
-                       values = c(0, .25, .5, 1)) +
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   xlim(c(-180, -110)) + ylim(c(30, 63)) +
   coord_fixed() +
   labs(title = 'Mean risk (NE Pacific), range-rarity weighted',
@@ -278,24 +281,26 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
 ggplot(mean_df, aes(long, lat, fill = value)) +
   geom_raster() +
   ggtheme_plot() +
-  theme(axis.text = element_blank(), 
+  theme(axis.text = element_blank(),
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
                        limits = c(0, 1),
-                       values = c(0, .25, .5, 1)) +
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   xlim(c(-20, 45)) + ylim(c(28, 48)) +
   coord_fixed() +
   labs(title = 'Mean risk (Mediterranean), range-rarity weighted',
        fill  = 'mean(risk)')
-  
+
 ggplot(mean_df, aes(long, lat, fill = value)) +
   geom_raster() +
   ggtheme_plot() +
-  theme(axis.text = element_blank(), 
+  theme(axis.text = element_blank(),
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
                        limits = c(0, 1),
-                       values = c(0, .25, .5, 1)) +
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   xlim(c(-100, 15)) + ylim(c(-10, 33)) +
   coord_fixed() +
   labs(title = 'Mean risk (mid-Atlantic), range-rarity weighted',
@@ -304,11 +309,12 @@ ggplot(mean_df, aes(long, lat, fill = value)) +
 ggplot(mean_df, aes(long, lat, fill = value)) +
   geom_raster() +
   ggtheme_plot() +
-  theme(axis.text  = element_blank(), 
+  theme(axis.text  = element_blank(),
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
                        limits = c(0, 1),
-                       values = c(0, .25, .5, 1)) +
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   xlim(c(75, 150)) + ylim(c(-30, 30)) +
   coord_fixed() +
   labs(title = 'Mean risk (Coral Triangle), range-rarity weighted',
@@ -323,6 +329,7 @@ writeRaster(var_rast, file.path(dir_git, 'output', 'var_rr_risk_raster_010deg.ti
             overwrite = TRUE)
 
 var_df <- var_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value'))
@@ -332,7 +339,7 @@ ggplot(var_df, aes(long, lat, fill = value)) +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
-  scale_fill_gradientn(colors = c('green3', 'yellow', 'red3', 'purple4'),
+  scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red3', 'purple4'),
                        values = c(0, .25, .5, 1)) +
   coord_fixed() +
   labs(title = 'Variance of risk, range-rarity weighted',
@@ -347,6 +354,7 @@ writeRaster(n_spp_rast, file.path(dir_git, 'output', 'sr_rr_risk_raster_010deg.t
             overwrite = TRUE)
 
 n_spp_df <- n_spp_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value')) %>%
@@ -371,6 +379,7 @@ writeRaster(n_threat_rast, file.path(dir_git, 'output', 'sr_rr_threat_raster_010
             overwrite = TRUE)
 ### n_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_010deg.tif'))
 n_threat_df <- n_threat_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value')) %>%
@@ -389,10 +398,11 @@ ggplot(n_threat_df, aes(long, lat, fill = log_value)) +
        fill  = 'ln N_w')
 
 pct_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'pct_rr_threatened')
-writeRaster(n_threat_rast, file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_010deg.tif'),
+writeRaster(pct_threat_rast, file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_010deg.tif'),
             overwrite = TRUE)
 ### n_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_010deg.tif'))
 pct_threat_df <- pct_threat_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value'))
@@ -409,6 +419,17 @@ ggplot(pct_threat_df, aes(long, lat, fill = value)) +
   labs(title = 'Proportion of threatened species (VU, EN, CR), range-rarity weighted',
        fill  = 'proportion')
 
+ggplot(pct_threat_df, aes(x = value)) +
+  ggtheme_plot() +
+  geom_density(alpha = .3, size = .25, color = 'red') +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
+  
+  labs(title = 'RR-weighted dist of % species in VU, EN, CR')
+
+quantile(pct_threat_df$value, c(0.01, 0.05, seq(0.10, 1.00, 0.10)))
+
+
 ```
 
 ``` {r trend}
@@ -418,20 +439,23 @@ writeRaster(trend_rast, file.path(dir_git, 'output', 'trend_rr_raster_010deg.tif
             overwrite = TRUE)
 
 trend_df <- trend_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value'))
 
 trend_range <-range(trend_df$value)
 trend_0 <- -trend_range[1] / (trend_range[2] - trend_range[1])
-
+val_vec <- c(0, trend_0/2, trend_0, 1 - (1 - trend_0)/2, 1)
+lab_vec <- c(trend_range[1] / 0.2, 0.5 * trend_range[1] / 0.2, 0, 0.5 * trend_range[2] / 0.2, trend_range[2] / 0.2)
+  
 ggplot(trend_df, aes(long, lat, fill = value)) +
   geom_raster() +
   ggtheme_plot() +
   theme(axis.text = element_blank(), 
         axis.title = element_blank()) +
   scale_fill_gradientn(colors = c('green4', 'green3', 'grey90', 'red3', 'purple4'),
-                       values = c(0, trend_0/2, trend_0, 1 - (1 - trend_0)/2, 1)) +
+                       values = val_vec, labels = lab_vec) +
   coord_fixed() +
   labs(title = 'Trend in risk, range-rarity weighted',
        fill  = 'trend')
@@ -445,6 +469,7 @@ writeRaster(n_trend_rast, file.path(dir_git, 'output', 'sr_rr_trend_raster_010de
             overwrite = TRUE)
 
 n_trend_df <- n_trend_rast %>% 
+  aggregate(fact = 4) %>%
   rasterToPoints() %>% 
   as.data.frame() %>%
   setNames(c('long', 'lat', 'value')) %>%

@@ -114,7 +114,7 @@ risk_f_df <- data.frame(cell_id     = 1:length(values(mean_rast)),
 
 ### Fishing effort (log) vs. mean risk and variance
 
-``` {r examine f vs risk}
+``` {r examine log f vs risk}
 
 f_vs_risk_df <- risk_f_df %>%
   select(mean_risk, f_effort, ln_f_effort, n_spp, var_risk, r1_label) %>%
@@ -169,16 +169,17 @@ rr_risk_f_df <- data.frame(cell_id       = 1:length(values(mean_rast)),
                            mean_rr_trend = values(trend_rr_rast),
                            f_effort      = values(f_rast),
                            ln_f_effort   = values(ln_f_rast)) %>%
+  mutate(f_effort_all = ifelse(is.na(f_effort), 0, f_effort)) %>%
   filter(!is.na(mean_rr_risk)) %>%
   left_join(read_csv(file.path(dir_git, 'spatial/rgn_names.csv')), by = c('rgn_id'))
 
 ```
 
 
-``` {r examine f vs rr risk}
+``` {r examine log f vs rr risk}
 
 f_vs_rr_risk_df <- rr_risk_f_df %>%
-  select(mean_rr_risk, var_rr_risk, f_effort, ln_f_effort, sr_rr_risk, r1_label) %>%
+  select(mean_rr_risk, var_rr_risk, f_effort, f_effort_all,ln_f_effort, sr_rr_risk, r1_label) %>%
   distinct() %>%
   sample_n(100000) %>%
   arrange(mean_rr_risk)
@@ -202,6 +203,39 @@ ggplot(f_vs_rr_risk_df, aes(x = ln_f_effort, y = var_rr_risk)) +
                        values = c(0, .25, .5, 1)) +
   facet_wrap( ~ r1_label) +
   labs(title = 'range-rarity-weighted variance of risk vs. log fishing effort')
+
+```
+
+### Fishing effort (NOT log) vs. range-rarity-weighted mean risk and variance
+
+Add quantiles for fishing effort and biodiversity risk
+
+``` {r examine f vs rr risk}
+
+f_quantiles <- rr_risk_f_df$f_effort %>%
+  quantile(c(0.05, 0.10, 0.20, 0.25, 0.50, 1.00), na.rm = TRUE)
+ln_f_quantiles <- log(f_quantiles)
+  
+r_quantiles <- rr_risk_f_df$mean_rr_risk %>%
+  quantile(c(0.50, 0.75, 0.80, 0.90, 0.95, 0.99, 1.00), na.rm = TRUE)
+  
+ggplot(f_vs_rr_risk_df, aes(x = ln_f_effort, y = mean_rr_risk)) +
+  ggtheme_plot() +
+  geom_vline(xintercept = ln_f_quantiles['10%']) +
+  geom_hline(yintercept = r_quantiles['99%']) +
+  geom_point(alpha = .2, aes(color = var_rr_risk)) +
+  scale_color_distiller(palette = 'YlGnBu') +
+  facet_wrap( ~ r1_label) +
+  labs(title = 'range-rarity-weighted mean risk vs. log fishing effort')
+
+# ggplot(f_vs_rr_risk_df, aes(x = f_effort, y = var_rr_risk)) +
+#   ggtheme_plot() +
+#   geom_point(alpha = .2, aes(color = mean_rr_risk)) +
+#   scale_color_gradientn(colors = c('green3', 'lightyellow', 'red3', 'purple4'),
+#                        limits = c(0, 1),
+#                        values = c(0, .25, .5, 1)) +
+#   facet_wrap( ~ r1_label) +
+#   labs(title = 'range-rarity-weighted variance of risk vs. log fishing effort')
 
 ```
 

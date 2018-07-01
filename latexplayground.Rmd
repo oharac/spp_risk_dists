@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Derivation for formula for reconstructing total variance from subgroup variances, not using rarity-weighting.
+
 \begin{align*}
   s_T^2 &= \frac{1}{n_T - 1} \sum_{i=1}^{n_T}(x_i - \bar x_T)^2\\
     &= \frac{1}{n_T - 1} \left( \sum_{i=1}^{n_T} x_i^2 -  
@@ -29,6 +31,8 @@ knitr::opts_chunk$set(echo = TRUE)
 \end{align*}
 
 -----
+
+Derivation for reconstructing the range-rarity-weighted total variance from the subgroup variances:
 
 \begin{align*}
   s_{w,T}^2 &= \frac{V_{1,T}}{V_{1,T}^2 - V_{2,T}} \sum_{i=1}^{n_T} w_i (x_i - \bar x_{w,T})^2\\

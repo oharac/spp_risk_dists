@@ -123,7 +123,7 @@ risk_mpa_df <- risk_df %>%
 
 ```
 
-``` {r examine mpas vs non-mpas}
+``` {r examine mpas vs non-mpas, eval = TRUE}
 
 no_take_df <- risk_mpa_df %>%
   mutate(mpa = wdpa_category %in% c(1, 2, 7) & mpa_pct > .5,
@@ -137,22 +137,22 @@ protect_df <- risk_mpa_df %>%
   mutate(mpa = wdpa_category != 0 & mpa_pct > .5,
          protection = 'Any')
 
-ggplot(no_take_df %>% sample_n(10000) %>% arrange(mpa), 
-       aes(x = n_spp, y = mean_risk, color = mpa)) +
-  ggtheme_plot() +
-  geom_point(alpha = .2) +
-  scale_x_log10(breaks = c(1, 10, 100, 1000))
-
-ggplot(no_take_df %>% sample_n(10000) %>% arrange(mpa), 
-       aes(x = n_spp, y = mean_risk, color = r1_label)) +
-  ggtheme_plot() +
-  geom_point(alpha = .2) +
-  scale_x_log10(breaks = c(1, 10, 100, 1000))
+# ggplot(no_take_df %>% sample_n(10000) %>% arrange(mpa), 
+#        aes(x = n_spp, y = mean_risk, color = mpa)) +
+#   ggtheme_plot() +
+#   geom_point(alpha = .2) +
+#   scale_x_log10(breaks = c(1, 10, 100, 1000))
+# 
+# ggplot(no_take_df %>% sample_n(10000) %>% arrange(mpa), 
+#        aes(x = n_spp, y = mean_risk, color = r1_label)) +
+#   ggtheme_plot() +
+#   geom_point(alpha = .2) +
+#   scale_x_log10(breaks = c(1, 10, 100, 1000))
 ```
 
-### Mean risk vs. MPA presence for georegions
+<!-- ### Mean risk vs. MPA presence for georegions -->
 
-``` {r}
+``` {r, eval = FALSE}
 
 ggplot(no_take_df, aes(x = mpa, y = mean_risk)) +
   ggtheme_plot() +
@@ -178,9 +178,9 @@ ggplot(protect_df, aes(x = mpa, y = mean_risk)) +
   labs(title = 'Mean risk vs mpa: any protected area')
 ```
 
-### Mean trend vs. MPA presence for georegions
+<!-- ### Mean trend vs. MPA presence for georegions -->
 
-``` {r}
+``` {r, eval = FALSE}
 ggplot(no_take_df, aes(x = mpa, y = mean_trend)) +
   ggtheme_plot() +
   geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
@@ -216,9 +216,9 @@ t.test(protect_df$mean_risk[protect_df$mpa],
        alternative = 'greater')
 ```
 
-## Compare MPA coverage to various metrics, range-rarity-weighted
+<!-- ## Compare MPA coverage to various metrics, range-rarity-weighted -->
 
-Repeat the above analysis but with range-rarity-weighted maps.
+<!-- Repeat the above analysis but with range-rarity-weighted maps. -->
 
 ``` {r}
 
@@ -251,7 +251,7 @@ risk_mpa_rr_df <- risk_rr_df %>%
 
 ```
 
-``` {r}
+``` {r, eval = TRUE}
 
 no_take_rr_df <- risk_mpa_rr_df %>%
   mutate(mpa = wdpa_category %in% c(1, 2, 7) & mpa_pct > .5,
@@ -265,18 +265,18 @@ protect_rr_df <- risk_mpa_rr_df %>%
   mutate(mpa = wdpa_category != 0 & mpa_pct > .5,
          protection = 'Any')
 
-ggplot(no_take_rr_df %>% sample_n(100000) %>% arrange(mpa), 
-       aes(x = sr_rr_risk, y = mean_rr_risk, color = mpa)) +
-  ggtheme_plot() +
-  geom_point(alpha = .2) +
-  scale_x_log10(breaks = c(1, 10, 100, 1000))
+# ggplot(no_take_rr_df %>% sample_n(100000) %>% arrange(mpa), 
+#        aes(x = sr_rr_risk, y = mean_rr_risk, color = mpa)) +
+#   ggtheme_plot() +
+#   geom_point(alpha = .2) +
+#   scale_x_log10(breaks = c(1, 10, 100, 1000))
 
 ```
 
 
-### Mean risk vs. MPA presence for georegions (RR weighted)
+<!-- ### Mean risk vs. MPA presence for georegions (RR weighted) -->
 
-``` {r}
+``` {r, eval = FALSE}
 ggplot(no_take_rr_df, aes(x = mpa, y = mean_rr_risk)) +
   ggtheme_plot() +
   geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
@@ -294,9 +294,9 @@ ggplot(protect_rr_df, aes(x = mpa, y = mean_rr_risk)) +
   labs(title = 'Mean risk vs mpa: any protected area')
 ```
 
-### Mean trend vs. MPA presence for georegions (RR weighted)
+<!-- ### Mean trend vs. MPA presence for georegions (RR weighted) -->
 
-``` {r}
+``` {r, eval = FALSE}
 ggplot(no_take_rr_df, aes(x = mpa, y = mean_rr_trend)) +
   ggtheme_plot() +
   geom_boxplot(outlier.alpha = .1, outlier.color = 'grey60') +
@@ -325,24 +325,32 @@ There seem to be two philosophies of MPA priority: place MPAs in impacted areas 
 ggplot(no_take_df, aes(x = mean_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of mean_risk inside and outside MPAs - no take')
 
 ggplot(no_take_df, aes(x = icv, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of ICV inside and outside MPAs - no take')
 
 ggplot(conserv_df, aes(x = mean_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of mean_risk inside and outside MPAs - I-IV')
 
 ggplot(protect_df, aes(x = mean_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of mean_risk inside and outside MPAs - any MPA')
 
@@ -355,18 +363,24 @@ ggplot(protect_df, aes(x = mean_risk, fill = mpa, color = mpa)) +
 ggplot(no_take_rr_df, aes(x = mean_rr_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of rr-weighted mean_risk inside and outside MPAs - no take')
 
 ggplot(conserv_rr_df, aes(x = mean_rr_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of rr-weighted mean_risk inside and outside MPAs - I-IV')
 
 ggplot(protect_rr_df, aes(x = mean_rr_risk, fill = mpa, color = mpa)) +
   ggtheme_plot() +
   geom_density(alpha = .3, size = .25) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
   facet_wrap( ~ r1_label, scales = 'free_y') +
   labs(title = 'dist of rr-weighted mean_risk inside and outside MPAs - any MPA')
 

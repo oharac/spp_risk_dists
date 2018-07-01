@@ -123,6 +123,7 @@ $(document).ready(function () {
 </div>
 
 
+<p>Derivation for formula for reconstructing total variance from subgroup variances, not using rarity-weighting.</p>
 <span class="math display">\[\begin{align*}
   s_T^2 &amp;= \frac{1}{n_T - 1} \sum_{i=1}^{n_T}(x_i - \bar x_T)^2\\
     &amp;= \frac{1}{n_T - 1} \left( \sum_{i=1}^{n_T} x_i^2 -  
@@ -142,6 +143,7 @@ $(document).ready(function () {
                n_{gp} \bar x_{gp}^2 \right] - \frac{ n_T}{n_T - 1} \bar x_T^2 
 \end{align*}\]</span>
 <hr />
+<p>Derivation for reconstructing the range-rarity-weighted total variance from the subgroup variances:</p>
 <span class="math display">\[\begin{align*}
   s_{w,T}^2 &amp;= \frac{V_{1,T}}{V_{1,T}^2 - V_{2,T}} \sum_{i=1}^{n_T} w_i (x_i - \bar x_{w,T})^2\\
     &amp;\text{where } V_{1,T} = \sum_{i=1}^{n_T}w_i \text{ and } V_{2,T} = \sum_{i=1}^{n_T}w_i^2\\ 
