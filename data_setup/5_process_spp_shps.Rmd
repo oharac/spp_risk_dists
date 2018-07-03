@@ -34,6 +34,7 @@ source(file.path(dir_git, 'data_setup/api_fxns.R'))
 ### goal specific folders and info
 
 dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
 
 ```
 
@@ -55,17 +56,61 @@ IUCN: Gina Ralph direct communication
 
 ### Create subpopulation lookup to match maps with IUCN SIDs for subpops
 
-From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend.
+From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend. 
+``` {r convert BLI to shp-dbf-etc}
+
+### convert BirdLife Int'l .gdb to shapefile, after filtering to species in the "marine" list.
+### Here we also standardize the column names to match the IUCN column names.
+
+
+bli_marine_shp <- file.path(dir_bli, 'bli_marine_v2017.shp')
+
+if(!file.exists(bli_marine_shp)) {
+  
+  bli_sf <- st_read(file.path(dir_bli, 'BOTW.gdb'))
+  
+  marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)))
+  
+  bli_marine_sf <- bli_sf %>%
+    clean_df_names() %>%
+    filter(sisid %in% marine_spp$iucn_sid)
+  
+  st_write(bli_marine_sf, bli_marine_shp)
+  
+  ### clean column names
+  bli_marine_dbf <- str_replace(bli_marine_shp, '\\.shp$', '\\.dbf')
+  
+  att_table <- foreign::read.dbf(bli_marine_dbf) %>%
+    setNames(names(bli_marine_sf)[1:(ncol(bli_marine_sf) - 1)]) %>%
+    rename(id_no = sisid, binomial = sciname, year = date, tax_comm = tax_com) %>%
+    mutate(year = as.integer(as.character(year)))
+    #  [1] "sisid"        "sciname"      "date"         "source"       "presence"     "origin"       "seasonal"    
+    #  [8] "data_sens"    "sens_comm"    "compiler"     "tax_com"      "dist_com"     "reviewers"    "citation"    
+    # [15] "version"      "shape_length" "shape_area"  
+  ### from IUCN shapefiles:
+    #  [1] "id_no"      "binomial"   "presence"   "origin"     "seasonal"   "compiler"   "year"       "citation"  
+    #  [9] "source"     "dist_comm"  "island"     "subspecies" "subpop"     "legend"     "tax_comm"   "kingdom"   
+    # [17] "phylum"     "class"      "order_"     "family"     "genus"      "code"       "marine"     "terrestial"
+    # [25] "freshwater" "shape_Leng" "shape_Area"
+  foreign::write.dbf(att_table, bli_marine_dbf)
+}
+
+```
+
+Note that there appear to be no subpopulation polygons within the BirdLife International map set; there is no "subpop" column in that attribute table.
 
 ``` {r create_subpop_lookup}
 
-shps_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+iucn_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
+shps_dbfs <- c(iucn_dbfs, bli_dbfs)
 
 marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)))
 ### This is all "marine" species by habitat
 api_spp <- read_csv(file.path(dir_o_anx, 'iucn', 
                               sprintf('spp_info_from_api_%s.csv', api_version))) %>%
   filter(iucn_sid %in% marine_spp$iucn_sid)
+
 
 shps_df <- lapply(shps_dbfs, foreign::read.dbf) %>%
   setNames(basename(shps_dbfs)) %>%
@@ -135,9 +180,11 @@ From the species range map shapefiles, pull map info from the .dbf files.  For s
 
 ``` {r generate map list from dbfs}
 
-map_files <- list.files(dir_shp,
-                        pattern = '\\.dbf$',
-                        full.names = TRUE)
+iucn_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
+
+map_files <- c(iucn_dbfs, bli_dbfs)
+
 
 # spp_group_names <- map_files %>%
 #   basename() %>%
@@ -145,11 +192,13 @@ map_files <- list.files(dir_shp,
 #   unique()
 
 map_info_list <- vector('list', length = length(map_files)) %>%
-  setNames(map_files)
+  setNames(basename(map_files))
 
 for(map_file in map_files) {
   # cat('Processing', map_file, '...\n')
-  map_info_list[[map_file]] <- foreign::read.dbf(map_file)
+  tmp_df <- foreign::read.dbf(map_file)
+
+  map_info_list[[map_file]] <- tmp_df
 }
 
 map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
@@ -178,7 +227,8 @@ map_info_sans_dupes <- map_info_raw %>%
   group_by(shp_iucn_sid) %>%
   filter((length(unique(dbf_file)) == 1) | (!str_detect(dbf_file, 'MARINEFISH|REPTILE|CORALS_PART_2_1|MANGROVES'))) %>%
   filter(!(shp_iucn_sid == 196026 & str_detect(dbf_file, 'SEASNAKE'))) %>%
-  ungroup() # %>%
+  ungroup() %>%
+  distinct() # %>%
   # group_by(shp_iucn_sid) %>%
   # mutate(n_dbfs = length(unique(dbf_file))) %>%
   # ungroup()
@@ -226,7 +276,7 @@ We will loop over each species in each shapefile and rasterize separately, using
 
 ``` {r rasterize clip and save to csv}
 
-reload <- TRUE
+reload <- FALSE
 
 maps_to_rasterize <- read_csv(file.path(dir_git, 'data',
                                         sprintf('spp_marine_maps_%s.csv', api_version)),
@@ -262,6 +312,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
   rast_bathy <- raster(file.path(dir_git, 'spatial',
                                  'bathy_rast_010_wgs84.tif'))
   if(any(maps_to_rasterize$max_depth != '200 m +')) { 
+    message('generating neritic and shallow rasters')
     rast_neritic <- rast_shallow <- raster(resolution = .10, ext = extent(-180, 180, -90, 90))
     values(rast_neritic)[values(rast_bathy) <= 200] <- 1
     values(rast_shallow)[values(rast_bathy) <=  60] <- 1
@@ -284,7 +335,13 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
       select(shp_iucn_sid, iucn_sid, subpop, max_depth) %>%
       distinct()
     
-    polys <- read_sf(file.path(dir_shp, shp)) %>%
+    shp_full <- ifelse(str_detect(shp, 'bli'), file.path(dir_bli, shp), file.path(dir_shp, shp))
+    
+    message(i, ' of ', length(shps), ': reading ', shp, ' from: \n  ', shp_full)
+
+    polys <- read_sf(shp_full) %>%
+      mutate(subpop = ifelse(!'subpop' %in% names(.), NA_character_, subpop)) %>% 
+        ### BOTW doesn't have subpop column
       select(shp_iucn_sid = id_no, sciname = binomial, subpop, presence, geometry) %>%
       inner_join(id_fix, by = c('shp_iucn_sid', 'subpop')) 
     
@@ -373,7 +430,8 @@ z <- y %>%
   summarize(mean_size = mean(size), n_spp = n()) %>%
   spread(type, mean_size) %>%
   # mutate(ratio = tif / csv) %>%
-  ungroup()
+  ungroup() %>%
+  arrange(desc(csv))
 
 # sum(z$tif * z$n_spp) ### 8,146,818,040:  8.1 GB for 5369 spp (pre depth clip) (some dupes, oops)
 # sum(z$csv * z$n_spp) ### 3,179,096,927:  3.2 GB for 5369 spp (pre depth clip) (some dupes, oops)
