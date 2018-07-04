@@ -1,0 +1,222 @@
+---
+title: 'Explore hotspots'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, 'data_setup')
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, 'data_setup/api_fxns.R'))
+
+```
+
+# Summary
+
+Having selected some cells from regions of interest, explore these by mapping and comparing values.  Identify species found within each cell.
+
+## Identify species groups
+
+Using the summary files, identify the species *groups* present in each cell of interest.
+
+Then get the processed rasters to get values for n_spp, risk, variance, and rr-weighted risk/var.  Also get eez values and depths.
+
+``` {r define cell_to_longlat function}
+### this can be used to help define a bounding box for a cluster of regional cells
+
+cell_to_longlat <- function(cell_id) {
+  ### based off a .10 deg grid
+  rast_base <- raster::raster(res = .10, ext = raster::extent(c(-180, 180, -90, 90)))
+  lat <- 90 - (floor(cell_id / 3600) + .05)
+  long <- 180 - (cell_id %% 3600 / 10 + .05)
+  
+  return('long' = long, 'lat' = lat)
+}
+
+```
+
+``` {r compare_sum_files_to_interest_cells}
+
+cells_of_interest <- readxl::read_excel(file.path(dir_git, 'data_explore', 'cells_to_explore.xlsx'))
+
+cell_summary_file <- file.path(dir_git, 'data_explore', 'cell_sums_of_interest.csv')
+
+reload <- FALSE
+
+if(!file.exists(cell_summary_file) | reload == TRUE) {
+  dir_taxa_summaries <- file.path(dir_o_anx, 'taxa_summaries')
+  sum_files <- list.files(dir_taxa_summaries,
+                          pattern = sprintf('cell_sum_%s.csv', api_version),
+                          full.names = TRUE)
+  message('reading summary files')
+  ptm <- system.time({
+    cell_values_all <- parallel::mclapply(sum_files, mc.cores = 32,
+                                          FUN = function(x) { ### x <- sum_files[1]
+                                            read_csv(x, col_types = 'dddiidi') %>%
+                                              mutate(spp_gp = basename(x) %>% 
+                                                       str_replace('_cell_sum.+', ''))
+                                            }) %>%
+      bind_rows()
+  }) ### end of system.time
+  message('... processing time ', ptm[3], ' sec')
+  
+  cells_of_interest_sum <- cell_values_all %>%
+    filter(cell_id %in% cells_of_interest$cell_id) %>%
+    select(cell_id, n_spp_gp = n_spp_risk, spp_gp) %>%
+    left_join(cells_of_interest, by = 'cell_id') %>%
+    arrange(group_name, cell_id)
+  
+  cell_df <- data.frame(cell_id = values(raster(file.path(dir_git, 'output', 
+                                                          'cell_id_raster.tif'))),
+                        n_spp   = values(raster(file.path(dir_git, 'output',
+                                                          'n_spp_risk_raster_010deg.tif'))),
+                        risk    = values(raster(file.path(dir_git, 'output',
+                                                          'mean_risk_raster_010deg.tif'))),
+                        rr_risk = values(raster(file.path(dir_git, 'output', 
+                                                          'mean_rr_risk_raster_010deg.tif'))),
+                        rr_var  = values(raster(file.path(dir_git, 'output', 
+                                                          'var_rr_risk_raster_010deg.tif'))),
+                        eez_id  = values(raster(file.path(dir_git, 'spatial', 
+                                                          'eez_rast_010_wgs84.tif'))),
+                        lme_id  = values(raster(file.path(dir_git, 'spatial', 
+                                                          'lme_rast_010_wgs84.tif'))),
+                        depth   = values(raster(file.path(dir_git, 'spatial', 
+                                                          'bathy_rast_010_wgs84.tif')))) %>%
+    filter(cell_id %in% cells_of_interest$cell_id)
+  
+  cells_info <- cells_of_interest_sum %>%
+    full_join(cell_df, by = 'cell_id')
+  
+  write_csv(cells_info, cell_summary_file)
+}
+  
+```
+
+## Get all the species in each cell using the original raster extracts
+
+``` {r get_spp_in_cells_of_interest}
+
+cells_info <- read_csv(cell_summary_file)
+
+# spp_gps_all <- cells_info$spp_gp %>% unique()
+  ### all are represented here...
+
+### Read in lots of data
+spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)))
+
+taxa_cells_file <- file.path(dir_git, 'data_explore', 'taxa_spp_cells.csv')
+
+reload <- TRUE
+
+if(!file.exists(taxa_cells_file) | reload == TRUE) {
+  ### Make a list of taxonomic groups to loop over:
+  taxa <- spp_maps$dbf_file %>%
+    unique() %>%
+    str_replace('\\....$', '')
+  
+  taxa_cells_list <- vector('list', length = length(taxa))
+  
+  for(i in seq_along(taxa)) { ### i <- 5
+    taxon <- taxa[i]
+    
+    spp_ids_in_taxon <- spp_maps %>%
+      filter(str_detect(dbf_file, taxon)) %>%
+      .$iucn_sid
+    message('processing ', length(spp_ids_in_taxon), ' spp in ', taxon)
+    
+    spp_cells <- parallel::mclapply(spp_ids_in_taxon, mc.cores = 32,
+      FUN = function(x) { ### x <- spp_ids_in_taxon[1]
+        f <- file.path(dir_o_anx, 'spp_rasters',
+                       sprintf('iucn_sid_%s_010deg.csv', x))
+        if(file.exists(f)) {
+          y <- read_csv(f, col_types = 'di') %>%
+            mutate(iucn_sid = x) %>%
+            select(-presence)  %>%
+            filter(cell_id %in% cells_info$cell_id)
+        } else {
+          y <- data.frame(cell_id = NA,
+                          iucn_sid = x, 
+                          f = f, error = 'file not found')
+        }
+        return(y)
+      }) %>%
+      bind_rows() %>%
+      mutate(spp_gp = taxon)
+    
+    taxa_cells_list[[i]] <- spp_cells
+  }
+  
+  taxa_cells_df <- taxa_cells_list %>%
+    bind_rows()  %>%
+    filter(!is.na(cell_id)) %>%
+    select(cell_id, iucn_sid, spp_gp) %>%
+    distinct()
+  
+  write_csv(taxa_cells_df, taxa_cells_file)
+}
+
+```
+
+``` {r}
+
+spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)))
+spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)))
+spp_ranges <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv', api_version)))
+
+### make a dataframe of species risk and regional risk
+spp_risk_all <- spp_risk %>%
+  mutate(iucn_rgn = 'global') %>%
+  bind_rows(spp_risk_rgn) %>%
+  select(iucn_sid, iucn_rgn, cat_score) %>%
+  left_join(spp_ranges, by = 'iucn_sid')
+
+cells_info <- read_csv(cell_summary_file)
+
+lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv')) %>%
+  rename(rgn_name = iucn_rgn) %>%
+  distinct()
+
+taxa_cells_info <- read_csv(taxa_cells_file) %>%
+  left_join(spp_risk_all, by = 'iucn_sid') %>%
+  mutate(spp_gp = tolower(spp_gp)) %>%
+  left_join(cells_info, by = c('cell_id', 'spp_gp')) %>%
+    ### add info from rasters, including lme_id
+  left_join(lme_to_rgn, by = c('lme_id')) %>%
+    ### add region names to filter out regional assessments
+  mutate(rgn_name = ifelse(is.na(lme_id), 'global', rgn_name),
+         priority = ifelse(rgn_name == 'global', 100, priority)) %>%
+    ### LME cells already tagged 'global'; fix non-LME cells  and set low-ranking priority
+  filter(iucn_rgn == rgn_name) %>%
+  group_by(cell_id) %>%
+  filter(priority == min(priority)) %>%
+  ungroup()
+
+```

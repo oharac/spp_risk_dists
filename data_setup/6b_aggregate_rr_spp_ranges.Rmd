@@ -213,9 +213,9 @@ spp_range <- read_csv(file.path(dir_git, 'data',
                                 sprintf('iucn_spp_range_area_%s.csv', api_version)),
                       col_types = 'dd__')
 
-ocean_area_rast <- raster(file.path(dir_git, 'spatial/ocean_area_rast_010_wgs84.tif'))
-cell_area_df <- data.frame(cell_ocean_area = values(ocean_area_rast),
-                           cell_id = 1:length(ocean_area_rast))
+# ocean_area_rast <- raster(file.path(dir_git, 'spatial/ocean_area_rast_010_wgs84.tif'))
+# cell_area_df <- data.frame(cell_ocean_area = values(ocean_area_rast),
+#                            cell_id = 1:length(ocean_area_rast))
 
 ### make a dataframe of species risk, trend, regional risk, and species range
 spp_risk_trend <- spp_risk %>%
@@ -231,10 +231,7 @@ lme_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'lme_rast_010_wgs8
 lme_cells_all <- data.frame(cell_id = 1:length(lme_rgns_rast),
                             lme_id = values(lme_rgns_rast)) %>%
   filter(!is.na(lme_id))
-lme_to_rgn <- read_csv(file.path(dir_git, sprintf('data/iucn_rgn_to_lme_%s.csv', api_version)),
-                       col_types = 'dcidccd') %>%
-  select(lme_id, rgn_name = rgns) %>%
-  distinct()
+lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv'))
 
 
 ### Make a list of taxonomic groups to loop over:
@@ -247,7 +244,7 @@ taxa <- spp_maps$dbf_file %>%
 ### Looping over taxonomic groups -----
 ##########################################################.
 for(taxon in taxa) {
-  ### taxon <- 'LOBSTERS'
+  ### taxon <- 'SEAGRASSES'
   ### taxon <- taxa[1]
   
   taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
@@ -279,39 +276,62 @@ for(taxon in taxa) {
     ### this takes about 30-40 seconds
     taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
                                         FUN = function(x) {
-        ### x <- taxon_ids[2]
+        ### x <- taxon_ids[5]
         ### x <- 6336                            
         csv_file <- file.path(dir_o_anx, 'spp_rasters', 
                               sprintf('iucn_sid_%s_010deg.csv', x))
+        
         spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
           mutate(iucn_sid = x) %>%
           left_join(taxon_risk_trend, by = 'iucn_sid') 
         
         ### Identify regional assessments if any
-        non_global_rgns <- lme_to_rgn %>%
-            filter(rgn_name %in% spp_risk_map$iucn_rgn)
-  
+        lme_rgns <- lme_to_rgn %>%
+          filter(iucn_rgn %in% spp_risk_map$iucn_rgn)
+        
+        non_global_rgns <- lme_rgns %>%
+          filter(iucn_rgn != 'global')
+        
         if(nrow(non_global_rgns) > 0) {
           ### If any regional assessments, clip the LME cells down to the appropriate region...
           lme_cells <- lme_cells_all %>%
-            inner_join(non_global_rgns, by = 'lme_id')
+            inner_join(lme_rgns, by = 'lme_id') %>%
+            rename(rgn_name = iucn_rgn)
           ### ... then filter out non-matching overlapped cells
           spp_risk_map <- spp_risk_map %>%
             left_join(lme_cells, by = 'cell_id') %>%
-            filter((iucn_rgn == 'global' & is.na(rgn_name)) | ### match global cells
-                   (iucn_rgn == rgn_name))                    ### match region cells
+            mutate(rgn_name = ifelse(is.na(lme_id), 'global', rgn_name),
+                   priority = ifelse(rgn_name == 'global', 100, priority)) %>%
+            filter(iucn_rgn == rgn_name) %>%
+            group_by(cell_id) %>%
+            filter(priority == min(priority)) %>%
+            ungroup()
+          ### NOTE: at this point, still possible to have multiple regional
+          ### assessments, if priorities are the same (e.g. Europe and Pan Africa,
+          ### or overlaps around Africa).  Those values will be averaged in
+          ### the group_by() below.
         }
         
-        ### select down to main columns; also, if presence == 5 (extinct), adjust category and trend scores.
+        ### calc range rarity and select down to main columns; also, 
+        ### if presence == 5 (extinct), adjust category and trend scores.
         spp_risk_map <- spp_risk_map %>%
-          left_join(cell_area_df, by = 'cell_id') %>%
-          select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score, 
-                 range_km2, cell_ocean_area) %>%
+          # left_join(cell_area_df, by = 'cell_id') %>%
+          select(cell_id, presence, iucn_sid, iucn_rgn, 
+                 cat_score, trend_score, range_km2) %>% # , cell_ocean_area) %>%
           distinct() %>%
-          mutate(range_rarity = ifelse(range_km2 > 0, cell_ocean_area / range_km2, 0),
+          mutate(range_rarity = ifelse(range_km2 > 0, 1 / range_km2, 0),
                  cat_score   = ifelse(presence == 5, 1, cat_score),
                  trend_score = ifelse(presence == 5, NA, trend_score)) %>%
-          select(-range_km2, cell_ocean_area)
+          select(-range_km2) %>% # , cell_ocean_area) %>%
+            ### drop variables no longer needed
+          group_by(cell_id, iucn_sid) %>%
+          summarize(cat_score   = mean(cat_score, na.rm = TRUE),
+                    trend_score = mean(trend_score, na.rm = TRUE),
+                    iucn_rgn = paste0(iucn_rgn, collapse = ','),
+                    presence = paste0(presence, collapse = ','),
+                    range_rarity = first(range_rarity)) %>%
+          ungroup() %>%
+          mutate(trend_score = ifelse(is.nan(trend_score), NA, trend_score))
         
         return(spp_risk_map)
       }) ### end of mclapply over all species in taxonomic group
@@ -334,11 +354,11 @@ for(taxon in taxa) {
                 alpha     = v1 - (v2 / v1), 
                 var_risk  = sum(range_rarity * (cat_score - mean_risk)^2) / alpha,
                   ### see https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
-                # var_risk  = ifelse(is.nan(var_risk), 0, var_risk),
-                #   ### if n == 1, then Bessel corrected sample variance is infinite; change to 0
+                var_risk  = ifelse(is.nan(var_risk), NA, var_risk),
+                  ### for cells with only one spp in the cell, returns NaN, reset to NA
                 sr_rr_threatened = sum((cat_score >= 0.4 & cat_score < 1) * range_rarity),  
-                mean_trend  = sum(trend_score * range_rarity, na.rm = TRUE) /   ### not every species has a trend; na.rm = TRUE
-                  sum(range_rarity[!is.na(trend_score)]),        ### indicator fn to exclude NA trend scores
+                mean_trend  = sum(trend_score * range_rarity, na.rm = TRUE) /
+                  sum(range_rarity[!is.na(trend_score)]),
                 mean_trend  = ifelse(is.nan(mean_trend), NA, mean_trend),
                 sr_rr_trend = sum(range_rarity[!is.na(trend_score)]),
                 n_spp = n()) %>%

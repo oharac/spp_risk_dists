@@ -121,7 +121,8 @@ rgn_to_lme <- c('europe'              = '20,21,22,23,24,25,26,59',
                 'pan-africa'          = '26,27,28,29,30,31,32,33',
                 'gulf_of_mexico'      = '5',
                 'mediterranean'       = '26,62', 
-                'persian_gulf'        = '32')
+                'persian_gulf'        = '32',
+                'global'              = paste0(1:66, collapse = ','))
 
 rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
                             lme_id = rgn_to_lme) %>%
@@ -129,37 +130,16 @@ rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
   unnest(lme_id) %>%
   group_by(iucn_rgn) %>%
   mutate(lme_id = as.integer(lme_id),
-         priority = n())
+         priority = n()) %>%
+  arrange(priority)
 
-rgn_spp_lme <- read_csv(file.path(dir_git, 
-                                   sprintf('data/iucn_risk_rgn_current_%s.csv', 
-                                           api_version))) %>%
-  left_join(rgn_to_lme_df, by = 'iucn_rgn')
-
-rgn_spp_global <- read_csv(file.path(dir_git, 
-                                   sprintf('data/iucn_risk_current_%s.csv', 
-                                           api_version))) %>%
-  select(iucn_sid, gl_cat = cat, gl_cat_score = cat_score)
-
-clean_conflicts <- rgn_spp_lme %>%
-  left_join(rgn_spp_global, by = 'iucn_sid') %>% ### to compare vs. global scores
-  group_by(iucn_sid, sciname, lme_id) %>%
-  filter(priority == min(priority)) %>% ### in a conflict, keep the rgn with fewer LMEs
-  filter(priority <= 3 | n() == 1) %>%  ### drop if still a conflict between rgns with many LMEs
-  summarize(cat_score = mean(cat_score, na.rm = TRUE),
-            cat_current = paste(unique(cat_current), collapse = ','),
-            rgns = paste(iucn_rgn, collapse = ','),
-            cat_score_global = first(gl_cat_score)) %>%
-  ungroup() %>%
-  mutate(cat_score = ifelse(is.nan(cat_score), NA, cat_score))
-
-write_csv(clean_conflicts, file.path(dir_git, sprintf('data/iucn_rgn_to_lme_%s.csv', api_version)))
+write_csv(rgn_to_lme_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_lme.csv')))
 
 ```
 
 Where an LME is assigned to multiple regions, use a prioritization then averaging method:
 
-* Prioritize by the region comprising the smallest number of LMEs; e.g. Mediterranean has 1 LME, North Africa has 3, Europe has 8; they all overlap in LME 26.  So for the score for LME 26 for a species occurring in all three regions, keep the score for the Mediterranean.
+* Prioritize by the region comprising the smallest number of LMEs; e.g. Mediterranean has 1 LME, North Africa has 3, Europe has 8; they all overlap in LME 26.  So for the score for LME 26 for a species assessed in all three regions, keep the score for the Mediterranean.
 * If after prioritizing, multiple regions still overlap in an LME, take the average score of the overlapping regional assessments for that LME.
 
 -----
