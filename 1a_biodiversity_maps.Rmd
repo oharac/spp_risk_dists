@@ -257,7 +257,8 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     labs(title = 'Mean risk (NE Pacific)',
          fill  = 'Mean risk')
 
-  ggsave(filename = str_replace(map_plot_file, '.png', '_ne_pac.png'),
+  ggsave(filename = str_replace(map_plot_file, '.png', '_ne_pac.png') %>% 
+           str_replace('fig1', 'fig_SI'),
          width = 6, height = 4, units = 'in', dpi = 300)
  
   x <- ggplot(mean_df) +
@@ -274,7 +275,8 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     labs(title = 'Mean risk (Mediterranean)',
          fill  = 'Mean risk')
   
-  ggsave(filename = str_replace(map_plot_file, '.png', '_med.png'),
+  ggsave(filename = str_replace(map_plot_file, '.png', '_med.png') %>% 
+           str_replace('fig1', 'fig_SI'),
          width = 6, height = 4, units = 'in', dpi = 300)
     
   x <- ggplot(mean_df) +
@@ -291,7 +293,8 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     labs(title = 'Mean risk (mid-Atlantic)',
          fill  = 'Mean risk')
   
-  ggsave(filename = str_replace(map_plot_file, '.png', '_mid_atl.png'),
+  ggsave(filename = str_replace(map_plot_file, '.png', '_mid_atl.png') %>% 
+           str_replace('fig1', 'fig_SI'),
          width = 6, height = 4, units = 'in', dpi = 300)
 
   
@@ -308,7 +311,8 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     scale_y_continuous(expand = c(0, 0)) +
     labs(title = 'Mean risk (Coral Triangle)',
          fill  = 'Mean risk')
-  ggsave(filename = str_replace(map_plot_file, '.png', '_se_asia.png'),
+  ggsave(filename = str_replace(map_plot_file, '.png', '_se_asia.png') %>% 
+           str_replace('fig1', 'fig_SI'),
          width = 6, height = 4, units = 'in', dpi = 300)
 
   
@@ -319,14 +323,14 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 ```
 
 ![](figs/fig1_map_mean_risk.png)
-![](figs/fig1_map_mean_risk_ne_pac.png)
-![](figs/fig1_map_mean_risk_med.png)
-![](figs/fig1_map_mean_risk_mid_atl.png)
-![](figs/fig1_map_mean_risk_se_asia.png)
+![](figs/fig_SI_map_mean_risk_ne_pac.png)
+![](figs/fig_SI_map_mean_risk_med.png)
+![](figs/fig_SI_map_mean_risk_mid_atl.png)
+![](figs/fig_SI_map_mean_risk_se_asia.png)
 
 ``` {r var_risk_raster}
 
-map_plot_file <- file.path(dir_git, 'figs/fig1_map_var_risk.png')
+map_plot_file <- file.path(dir_git, 'figs/fig_SI_map_var_risk.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
 
@@ -360,7 +364,7 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 
 ```
 
-![](figs/fig1_map_var_risk.png)
+![](figs/fig_SI_map_var_risk.png)
 
 ``` {r n_spp_risk}
 
@@ -377,18 +381,20 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     rasterToPoints() %>% 
     as.data.frame() %>%
     setNames(c('long', 'lat', 'value')) %>%
-    mutate(log_value = log(value))
+    mutate(log_value = log10(value))
   
   x <- ggplot(n_spp_df) +
     geom_raster(aes(long, lat, fill = log_value)) +
     geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
     scale_fill_gradientn(colors = c('lightblue', 'blue1', 'blue3', 'purple4'),
-                         values = c(0, .7, .8, .9, 1)) +
+                         values = c(0, .7, .8, .9, 1),
+                         breaks = c(0,  1,   2,    3),
+                         labels = c(1, 10, 100, 1000)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Number of assessed species (ln transformed)',
-         fill = 'ln N')
+    labs(title = 'Number of assessed species',
+         fill = 'N')
 
   ggsave(filename = map_plot_file,
          width = 6, height = 4, units = 'in', dpi = 300)
@@ -491,19 +497,19 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     as.data.frame() %>%
     setNames(c('long', 'lat', 'value'))
   
-  trend_range <-range(trend_df$value)
-  trend_0 <- -trend_range[1] / (trend_range[2] - trend_range[1])
+  trend_max <- abs(range(trend_df$value)) %>% max()
   
   x <- ggplot(trend_df) +
     geom_raster(aes(long, lat, fill = value)) +
     geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
     scale_fill_gradientn(colors = c('green4', 'green3', 'grey90', 'red3', 'purple4'),
-                         values = c(0, trend_0/2, trend_0, 1 - (1 - trend_0)/2, 1)) +
+                         values = c(0, .25, .5, .75, 1),
+                         limits = c(-trend_max, trend_max)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Trend in risk',
-         fill  = 'trend')
+    labs(title = 'Annual change in risk (trend)',
+         fill  = 'change in risk/yr')
 
   ggsave(filename = map_plot_file,
          width = 6, height = 4, units = 'in', dpi = 300)
@@ -531,18 +537,20 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     rasterToPoints() %>% 
     as.data.frame() %>%
     setNames(c('long', 'lat', 'value')) %>%
-    mutate(log_value = log(value))
+    mutate(log_value = log10(value))
   
   x <- ggplot(n_trend_df) +
     geom_raster(aes(long, lat, fill = log_value)) +
     geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
     scale_fill_gradientn(colors = c('lightblue', 'blue1', 'blue3', 'purple4'),
-                         values = c(0, .7, .8, .9, 1)) +
+                         values = c(0, .7, .8, .9, 1),
+                         breaks = c(0, 1, 2, 3),
+                         labels = c(1, 10, 100, 1000)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Number of trend-assessed species (ln transformed)',
-         fill  = 'ln N')
+    labs(title = 'Number of trend-assessed species',
+         fill  = 'N')
   
   ggsave(filename = map_plot_file,
          width = 6, height = 4, units = 'in', dpi = 300)
