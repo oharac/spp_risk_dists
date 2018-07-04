@@ -49,19 +49,6 @@ Using the summary files, identify the species *groups* present in each cell of i
 
 Then get the processed rasters to get values for n_spp, risk, variance, and rr-weighted risk/var.  Also get eez values and depths.
 
-``` {r define cell_to_longlat function}
-### this can be used to help define a bounding box for a cluster of regional cells
-
-cell_to_longlat <- function(cell_id) {
-  ### based off a .10 deg grid
-  rast_base <- raster::raster(res = .10, ext = raster::extent(c(-180, 180, -90, 90)))
-  lat <- 90 - (floor(cell_id / 3600) + .05)
-  long <- 180 - (cell_id %% 3600 / 10 + .05)
-  
-  return('long' = long, 'lat' = lat)
-}
-
-```
 
 ``` {r compare_sum_files_to_interest_cells}
 
@@ -92,7 +79,7 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
     filter(cell_id %in% cells_of_interest$cell_id) %>%
     select(cell_id, n_spp_gp = n_spp_risk, spp_gp) %>%
     left_join(cells_of_interest, by = 'cell_id') %>%
-    arrange(group_name, cell_id)
+    arrange(cell_group, cell_id)
   
   cell_df <- data.frame(cell_id = values(raster(file.path(dir_git, 'output', 
                                                           'cell_id_raster.tif'))),
@@ -130,7 +117,8 @@ cells_info <- read_csv(cell_summary_file)
   ### all are represented here...
 
 ### Read in lots of data
-spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)))
+spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
+                     col_types = 'ddciccc')
 
 taxa_cells_file <- file.path(dir_git, 'data_explore', 'taxa_spp_cells.csv')
 
@@ -150,7 +138,7 @@ if(!file.exists(taxa_cells_file) | reload == TRUE) {
     spp_ids_in_taxon <- spp_maps %>%
       filter(str_detect(dbf_file, taxon)) %>%
       .$iucn_sid
-    message('processing ', length(spp_ids_in_taxon), ' spp in ', taxon)
+    cat(sprintf('processing %s spp in %s...\n', length(spp_ids_in_taxon), taxon))
     
     spp_cells <- parallel::mclapply(spp_ids_in_taxon, mc.cores = 32,
       FUN = function(x) { ### x <- spp_ids_in_taxon[1]
@@ -185,20 +173,28 @@ if(!file.exists(taxa_cells_file) | reload == TRUE) {
 
 ```
 
-``` {r}
+``` {r attach_spp_cell_info}
 
-spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)))
-spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)))
-spp_ranges <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv', api_version)))
+spp_risk     <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)),
+                         col_types = 'dc_____d_') %>%
+  distinct()
+spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
+                         col_types = 'dc_cd_') %>%
+  distinct()
+spp_ranges   <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv', api_version)),
+                         col_types = 'ddc_') %>%
+  distinct()
 
 ### make a dataframe of species risk and regional risk
 spp_risk_all <- spp_risk %>%
   mutate(iucn_rgn = 'global') %>%
   bind_rows(spp_risk_rgn) %>%
-  select(iucn_sid, iucn_rgn, cat_score) %>%
-  left_join(spp_ranges, by = 'iucn_sid')
+  left_join(spp_ranges, by = c('iucn_sid', 'sciname')) %>%
+  select(iucn_sid, iucn_rgn, cat_score, range_km2)
 
-cells_info <- read_csv(cell_summary_file)
+cells_info <- read_csv(cell_summary_file) %>%
+  select(cell_id, cell_group, n_spp, lme_id, depth) %>%
+  distinct()
 
 lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv')) %>%
   rename(rgn_name = iucn_rgn) %>%
@@ -207,7 +203,7 @@ lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv')) %>%
 taxa_cells_info <- read_csv(taxa_cells_file) %>%
   left_join(spp_risk_all, by = 'iucn_sid') %>%
   mutate(spp_gp = tolower(spp_gp)) %>%
-  left_join(cells_info, by = c('cell_id', 'spp_gp')) %>%
+  left_join(cells_info, by = c('cell_id')) %>%
     ### add info from rasters, including lme_id
   left_join(lme_to_rgn, by = c('lme_id')) %>%
     ### add region names to filter out regional assessments
@@ -215,8 +211,106 @@ taxa_cells_info <- read_csv(taxa_cells_file) %>%
          priority = ifelse(rgn_name == 'global', 100, priority)) %>%
     ### LME cells already tagged 'global'; fix non-LME cells  and set low-ranking priority
   filter(iucn_rgn == rgn_name) %>%
-  group_by(cell_id) %>%
+  group_by(cell_id, iucn_sid) %>%
   filter(priority == min(priority)) %>%
+    ### for each spp in each cell, choose the obs with highest-ranking priority
   ungroup()
 
+spp_cells_info <- taxa_cells_info %>%
+  select(cell_id, iucn_sid, spp_gp, iucn_rgn, 
+         cat_score, range_km2, cell_group, depth)
+
+write_csv(spp_cells_info, file.path(dir_git, 'data_explore', 'spp_cells_scores.csv'))
+
+```
+
+## Display points on a map and show the species list
+
+For each cell group, plot a map of range-rarity-weighted risk; display the cells for that region on the map; 
+``` {r define cell_to_longlat function}
+### this can be used to help define a bounding box for a cluster of regional cells
+
+cell_to_longlat <- function(cell_id) {
+  ### based off a .10 deg grid
+  rast_base <- raster::raster(res = .10, ext = raster::extent(c(-180, 180, -90, 90)))
+  lat <- 90 - (floor(cell_id / 3600) + .05)
+  long <- 180 - (cell_id %% 3600 / 10 + .05)
+  
+  return('long' = long, 'lat' = lat)
+}
+
+```
+
+``` {r create_map_w_points}
+
+spp_cells_info <- read_csv(file.path(dir_git, 'data_explore', 'spp_cells_scores.csv'),
+                           col_types = 'ddccddcd') %>%
+  arrange(cell_group)
+
+rr_risk_df <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif')) %>%
+  rasterToPoints() %>%
+  as.data.frame() %>%
+  setNames(c('x', 'y', 'rr_risk'))
+
+land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp'))
+
+
+cell_id_file <- file.path(dir_git, 'data_explore/cell_id_latlong.csv')
+if(!file.exists(cell_id_file)) {
+  cell_id_df     <- raster(file.path(dir_git, 'output', 'cell_id_raster.tif')) %>%
+    rasterToPoints() %>%
+    as.data.frame() %>%
+    setNames(c('x', 'y', 'cell_id')) %>%
+    filter(cell_id %in% spp_cells_info$cell_id) %>%
+    write_csv(cell_id_file)
+} else {
+  cell_id_df <- read_csv(cell_id_file)
+}
+
+for(cell_gp in unique(spp_cells_info$cell_group)) {
+  cat(sprintf('Mapping cells for area of interest: %s', cell_gp))
+
+  ### Attach lat/long values to cell IDs
+  cells_latlong <- spp_cells_info %>% 
+    filter(cell_group == cell_gp) %>%
+    select(cell_id) %>% 
+    distinct() %>%
+    left_join(cell_id_df, by = 'cell_id') %>%
+    mutate(cell_name = toupper(letters[1:n()]))
+  
+  spp_cell_gp <- spp_cells_info %>%
+    filter(cell_group == cell_gp) %>%
+    left_join(cells_latlong, by = 'cell_id') %>%
+    select(-x, -y, -cell_group)
+    
+  
+  ### define bounding box with some margin around it
+  
+  bbox <- c(xmin = max(min(cells_latlong$x) - 4, -179.95),
+            xmax = min(max(cells_latlong$x) + 4,  179.95),
+            ymin = max(min(cells_latlong$y) - 2,  -89.95),
+            ymax = min(max(cells_latlong$y) + 2,   89.95))
+  
+  x <- ggplot(rr_risk_df) +
+    ggtheme_map() +
+    geom_raster(aes(x, y, fill = rr_risk)) +
+    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
+    geom_point(data = cells_latlong, aes(x, y), 
+               shape = 21, color = 'black', fill = 'white', size = 2) +
+    geom_text(data = cells_latlong, aes(x, y, label = cell_name),
+              nudge_x = .15, nudge_y = .15) +
+    scale_fill_gradientn(colors = c('green4', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
+                         limits = c(0, 1),
+                         labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                         breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
+    coord_sf(xlim = c(bbox[1], bbox[2]),  ylim = c(bbox[3], bbox[4])) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(title = cell_gp,
+         fill  = 'mean risk')
+  
+  print(x)
+    
+  DT::datatable(spp_cell_gp, caption = cell_gp)
+}
 ```

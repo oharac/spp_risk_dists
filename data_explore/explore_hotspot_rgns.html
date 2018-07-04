@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Jul 3 13:52:03 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Jul 4 08:26:46 2018 by ohara" />
 
 
 <title>Explore hotspots</title>
@@ -261,7 +261,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Explore hotspots</h1>
-<h4 class="author"><em><em>Compiled on Tue Jul 3 13:52:03 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Jul 4 08:26:46 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -291,7 +291,9 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 <h2><span class="header-section-number">1.1</span> Identify species groups</h2>
 <p>Using the summary files, identify the species <em>groups</em> present in each cell of interest.</p>
 <p>Then get the processed rasters to get values for n_spp, risk, variance, and rr-weighted risk/var. Also get eez values and depths.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cell_to_longlat &lt;-<span class="st"> </span><span class="cf">function</span>(cell_id) {
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### this can be used to help define a bounding box for a cluster of regional cells
+
+cell_to_longlat &lt;-<span class="st"> </span><span class="cf">function</span>(cell_id) {
   ### based off a .10 deg grid
   rast_base &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="dt">res =</span> .<span class="dv">10</span>, <span class="dt">ext =</span> raster<span class="op">::</span><span class="kw">extent</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">180</span>, <span class="dv">180</span>, <span class="op">-</span><span class="dv">90</span>, <span class="dv">90</span>)))
   lat &lt;-<span class="st"> </span><span class="dv">90</span> <span class="op">-</span><span class="st"> </span>(<span class="kw">floor</span>(cell_id <span class="op">/</span><span class="st"> </span><span class="dv">3600</span>) <span class="op">+</span><span class="st"> </span>.<span class="dv">05</span>)
@@ -303,7 +305,9 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 
 cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_explore'</span>, <span class="st">'cell_sums_of_interest.csv'</span>)
 
-<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file)) {
+reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+
+<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   dir_taxa_summaries &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>)
   sum_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_taxa_summaries,
                           <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_%s.csv'</span>, api_version),
@@ -324,7 +328,7 @@ cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span
 <span class="st">    </span><span class="kw">filter</span>(cell_id <span class="op">%in%</span><span class="st"> </span>cells_of_interest<span class="op">$</span>cell_id) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">select</span>(cell_id, <span class="dt">n_spp_gp =</span> n_spp_risk, spp_gp) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">left_join</span>(cells_of_interest, <span class="dt">by =</span> <span class="st">'cell_id'</span>) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">arrange</span>(group_name, cell_id)
+<span class="st">    </span><span class="kw">arrange</span>(cell_group, cell_id)
   
   cell_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, 
                                                           <span class="st">'cell_id_raster.tif'</span>))),
@@ -334,17 +338,11 @@ cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span
                                                           <span class="st">'mean_risk_raster_010deg.tif'</span>))),
                         <span class="dt">rr_risk =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, 
                                                           <span class="st">'mean_rr_risk_raster_010deg.tif'</span>))),
-                        <span class="dt">var     =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>,
-                                                          <span class="st">'var_risk_raster_010deg.tif'</span>))),
                         <span class="dt">rr_var  =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, 
                                                           <span class="st">'var_rr_risk_raster_010deg.tif'</span>))),
-                        <span class="dt">pct_threat =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>,
-                                                          <span class="st">'pct_threat_raster_010deg.tif'</span>))),
-                        <span class="dt">pct_rr_threat =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, 
-                                                          <span class="st">'sr_rr_pct_threat_raster_010deg.tif'</span>))),
-                        <span class="dt">eez     =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
+                        <span class="dt">eez_id  =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
                                                           <span class="st">'eez_rast_010_wgs84.tif'</span>))),
-                        <span class="dt">lme     =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
+                        <span class="dt">lme_id  =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
                                                           <span class="st">'lme_rast_010_wgs84.tif'</span>))),
                         <span class="dt">depth   =</span> <span class="kw">values</span>(<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
                                                           <span class="st">'bathy_rast_010_wgs84.tif'</span>)))) <span class="op">%&gt;%</span>
@@ -368,7 +366,9 @@ spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span cl
 
 taxa_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_explore'</span>, <span class="st">'taxa_spp_cells.csv'</span>)
 
-<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxa_cells_file)) {
+reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+
+<span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxa_cells_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   ### Make a list of taxonomic groups to loop over:
   taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
@@ -382,7 +382,7 @@ taxa_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(
     spp_ids_in_taxon &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(dbf_file, taxon)) <span class="op">%&gt;%</span>
 <span class="st">      </span>.<span class="op">$</span>iucn_sid
-    <span class="kw">message</span>(<span class="st">'processing '</span>, <span class="kw">length</span>(spp_ids_in_taxon), <span class="st">' spp in '</span>, taxon)
+    <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">'processing %s spp in %s...</span><span class="ch">\n</span><span class="st">'</span>, <span class="kw">length</span>(spp_ids_in_taxon), taxon))
     
     spp_cells &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(spp_ids_in_taxon, <span class="dt">mc.cores =</span> <span class="dv">32</span>,
       <span class="dt">FUN =</span> <span class="cf">function</span>(x) { ### x &lt;- spp_ids_in_taxon[1]
@@ -394,7 +394,9 @@ taxa_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(
 <span class="st">            </span><span class="kw">select</span>(<span class="op">-</span>presence)  <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">filter</span>(cell_id <span class="op">%in%</span><span class="st"> </span>cells_info<span class="op">$</span>cell_id)
         } <span class="cf">else</span> {
-          y &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">'iucn_sid'</span> =<span class="st"> </span>x, <span class="st">'f'</span> =<span class="st"> </span>f, <span class="dt">error =</span> <span class="st">'file not found'</span>)
+          y &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="ot">NA</span>,
+                          <span class="dt">iucn_sid =</span> x, 
+                          <span class="dt">f =</span> f, <span class="dt">error =</span> <span class="st">'file not found'</span>)
         }
         <span class="kw">return</span>(y)
       }) <span class="op">%&gt;%</span>
@@ -405,22 +407,84 @@ taxa_cells_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(
   }
   
   taxa_cells_df &lt;-<span class="st"> </span>taxa_cells_list <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">bind_rows</span>()
+<span class="st">    </span><span class="kw">bind_rows</span>()  <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(cell_id)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">select</span>(cell_id, iucn_sid, spp_gp) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">distinct</span>()
   
   <span class="kw">write_csv</span>(taxa_cells_df, taxa_cells_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)))
-spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)))
+<pre><code>## processing 85 spp in ANGELFISH...
+## processing 19 spp in BONEFISH_TARPONS...
+## processing 126 spp in BUTTERFLYFISH...
+## processing 855 spp in CHONDRICHTHYES...
+## processing 808 spp in COMBTOOTHBLENNIES...
+## processing 580 spp in CONUS...
+## processing 284 spp in CORALS_PART_1...
+## processing 470 spp in CORALS_PART_2...
+## processing 13 spp in CORALS_PART_3...
+## processing 121 spp in DAMSELFISH...
+## processing 155 spp in GROUPERS...
+## processing 75 spp in HAGFISH...
+## processing 160 spp in LOBSTERS...
+## processing 67 spp in MANGROVES...
+## processing 130 spp in MARINE_MAMMALS...
+## processing 145 spp in PUFFERFISH...
+## processing 136 spp in REPTILES...
+## processing 130 spp in SEABREAMS_PORGIES...
+## processing 196 spp in SEACUCUMBERS...
+## processing 70 spp in SEAGRASSES...
+## processing 55 spp in SEASNAKES...
+## processing 81 spp in SURGEONFISH_TANGS_UNICORNFISH...
+## processing 61 spp in TUNAS_BILLFISHES...
+## processing 547 spp in WRASSE...
+## processing 883 spp in bli_marine_v2017...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_risk     &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, cat_score) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">distinct</span>()
+spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, cat_score, iucn_rgn) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">distinct</span>()
+spp_ranges   &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_spp_range_area_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, range_km2) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>()
 
 ### make a dataframe of species risk and regional risk
 spp_risk_all &lt;-<span class="st"> </span>spp_risk <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">iucn_rgn =</span> <span class="st">'global'</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">bind_rows</span>(spp_risk_rgn) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(iucn_sid, iucn_rgn, cat_score)
+<span class="st">  </span><span class="kw">left_join</span>(spp_ranges, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'iucn_sid'</span>, <span class="st">'sciname'</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(iucn_sid, iucn_rgn, cat_score, range_km2)
 
-lme_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'data/iucn_rgn_to_lme_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(lme_id, <span class="dt">rgn_name =</span> rgns) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">distinct</span>()</code></pre></div>
+cells_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(cell_summary_file) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(cell_id, cell_group, n_spp, lme_id, depth) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>()
+
+lme_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/iucn_rgn_to_lme.csv'</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">rgn_name =</span> iucn_rgn) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">distinct</span>()
+
+taxa_cells_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(taxa_cells_file) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(spp_risk_all, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">spp_gp =</span> <span class="kw">tolower</span>(spp_gp)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(cells_info, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'cell_id'</span>)) <span class="op">%&gt;%</span>
+<span class="st">    </span>### add info from rasters, including lme_id
+<span class="st">  </span><span class="kw">left_join</span>(lme_to_rgn, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'lme_id'</span>)) <span class="op">%&gt;%</span>
+<span class="st">    </span>### add region names to filter out regional assessments
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rgn_name =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(lme_id), <span class="st">'global'</span>, rgn_name),
+         <span class="dt">priority =</span> <span class="kw">ifelse</span>(rgn_name <span class="op">==</span><span class="st"> 'global'</span>, <span class="dv">100</span>, priority)) <span class="op">%&gt;%</span>
+<span class="st">    </span>### LME cells already tagged 'global'; fix non-LME cells  and set low-ranking priority
+<span class="st">  </span><span class="kw">filter</span>(iucn_rgn <span class="op">==</span><span class="st"> </span>rgn_name) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(cell_id, iucn_sid) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(priority <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(priority)) <span class="op">%&gt;%</span>
+<span class="st">    </span>### for each spp in each cell, choose the obs with highest-ranking priority
+<span class="st">  </span><span class="kw">ungroup</span>()
+
+spp_cells_info &lt;-<span class="st"> </span>taxa_cells_info <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(cell_id, iucn_sid, spp_gp, iucn_rgn, 
+         cat_score, range_km2, cell_group, depth)
+
+<span class="kw">write_csv</span>(spp_cells_info, <span class="kw">file.path</span>(dir_git, <span class="st">'data_explore'</span>, <span class="st">'spp_cells_scores.csv'</span>))</code></pre></div>
 </div>
 </div>
 
