@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Jul 3 18:50:22 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Jul 4 09:47:45 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -274,7 +274,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Tue Jul 3 18:50:22 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Jul 4 09:47:45 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -315,12 +315,17 @@ dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git
 </ul>
 <p><strong>NOTE:</strong> Because the summary files are likely to be very large for globe-spanning taxa (e.g. MARINE_MAMMALS is 275 MB), save these outputs outside of GitHub.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Read in lots of data
-spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)))
+spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
+                     <span class="dt">col_types =</span> <span class="st">'ddciccc'</span>)
 
-spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)))
-spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)))
+spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)),
+                     <span class="dt">col_types =</span> <span class="st">'dccicccdc'</span>)
 
-spp_trend &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_trend_by_spp_%s.csv'</span>, api_version))) <span class="op">%&gt;%</span>
+spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)),
+                         <span class="dt">col_types =</span> <span class="st">'dcccdc'</span>)
+
+spp_trend &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_trend_by_spp_%s.csv'</span>, api_version)),
+                      <span class="dt">col_types =</span> <span class="st">'dccdc'</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(iucn_sid, trend_score, iucn_rgn)
 
 ### make a dataframe of species risk, trend, and regional risk
@@ -389,13 +394,16 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
 <span class="st">          </span><span class="kw">left_join</span>(taxon_risk_trend, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) 
         
         ### Identify regional assessments if any
-        non_global_rgns &lt;-<span class="st"> </span>lme_to_rgn <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">filter</span>(iucn_rgn <span class="op">%in%</span><span class="st"> </span>spp_risk_map<span class="op">$</span>iucn_rgn)
+        lme_rgns &lt;-<span class="st"> </span>lme_to_rgn <span class="op">%&gt;%</span>
+<span class="st">          </span><span class="kw">filter</span>(iucn_rgn <span class="op">%in%</span><span class="st"> </span>spp_risk_map<span class="op">$</span>iucn_rgn)
+        
+        non_global_rgns &lt;-<span class="st"> </span>lme_rgns <span class="op">%&gt;%</span>
+<span class="st">          </span><span class="kw">filter</span>(iucn_rgn <span class="op">!=</span><span class="st"> 'global'</span>)
   
         <span class="cf">if</span>(<span class="kw">nrow</span>(non_global_rgns) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
           ### If any regional assessments, clip the LME cells down to the appropriate region...
           lme_cells &lt;-<span class="st"> </span>lme_cells_all <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">inner_join</span>(non_global_rgns, <span class="dt">by =</span> <span class="st">'lme_id'</span>) <span class="op">%&gt;%</span>
+<span class="st">            </span><span class="kw">inner_join</span>(lme_rgns, <span class="dt">by =</span> <span class="st">'lme_id'</span>) <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">rename</span>(<span class="dt">rgn_name =</span> iucn_rgn)
           ### ... then filter out non-matching overlapped cells
           spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
@@ -456,7 +464,7 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
   }
   
 } ### end of taxonomic group loop</code></pre></div>
-<pre><code>## Processing  83  species maps in  ANGELFISH ...Processing  7  species maps in  BONEFISH_TARPONS ...Processing  118  species maps in  BUTTERFLYFISH ...Processing  549  species maps in  CHONDRICHTHYES ...Processing  750  species maps in  COMBTOOTHBLENNIES ...Processing  515  species maps in  CONUS ...Processing  242  species maps in  CORALS_PART_1 ...Processing  438  species maps in  CORALS_PART_2 ...Processing  13  species maps in  CORALS_PART_3 ...Processing  117  species maps in  DAMSELFISH ...Processing  113  species maps in  GROUPERS ...Processing  46  species maps in  HAGFISH ...Processing  105  species maps in  LOBSTERS ...Processing  64  species maps in  MANGROVES ...Processing  86  species maps in  MARINE_MAMMALS ...Processing  131  species maps in  PUFFERFISH ...Processing  121  species maps in  REPTILES ...Processing  119  species maps in  SEABREAMS_PORGIES ...Processing  102  species maps in  SEACUCUMBERS ...Processing  61  species maps in  SEAGRASSES ...Processing  39  species maps in  SEASNAKES ...Processing  73  species maps in  SURGEONFISH_TANGS_UNICORNFISH ...Processing  52  species maps in  TUNAS_BILLFISHES ...Processing  477  species maps in  WRASSE ...Processing  795  species maps in  bli_marine_v2017 ...</code></pre>
+<pre><code>## Processing  83  species maps in  ANGELFISH ...Processing  7  species maps in  BONEFISH_TARPONS ...Processing  118  species maps in  BUTTERFLYFISH ...Processing  549  species maps in  CHONDRICHTHYES ...Processing  751  species maps in  COMBTOOTHBLENNIES ...Processing  515  species maps in  CONUS ...Processing  242  species maps in  CORALS_PART_1 ...Processing  438  species maps in  CORALS_PART_2 ...Processing  13  species maps in  CORALS_PART_3 ...Processing  117  species maps in  DAMSELFISH ...Processing  113  species maps in  GROUPERS ...Processing  46  species maps in  HAGFISH ...Processing  106  species maps in  LOBSTERS ...Processing  64  species maps in  MANGROVES ...Processing  86  species maps in  MARINE_MAMMALS ...Processing  131  species maps in  PUFFERFISH ...Processing  121  species maps in  REPTILES ...Processing  119  species maps in  SEABREAMS_PORGIES ...Processing  102  species maps in  SEACUCUMBERS ...Processing  61  species maps in  SEAGRASSES ...Processing  39  species maps in  SEASNAKES ...Processing  74  species maps in  SURGEONFISH_TANGS_UNICORNFISH ...Processing  52  species maps in  TUNAS_BILLFISHES ...Processing  477  species maps in  WRASSE ...Processing  796  species maps in  bli_marine_v2017 ...</code></pre>
 </div>
 </div>
 

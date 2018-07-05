@@ -58,12 +58,17 @@ __NOTE:__ Because the summary files are likely to be very large for globe-spanni
 ``` {r aggregate species maps to taxa}
 
 ### Read in lots of data
-spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)))
+spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
+                     col_types = 'ddciccc')
 
-spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)))
-spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)))
+spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)),
+                     col_types = 'dccicccdc')
 
-spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version))) %>%
+spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
+                         col_types = 'dcccdc')
+
+spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)),
+                      col_types = 'dccdc') %>%
   select(iucn_sid, trend_score, iucn_rgn)
 
 ### make a dataframe of species risk, trend, and regional risk
