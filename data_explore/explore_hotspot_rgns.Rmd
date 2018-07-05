@@ -165,7 +165,8 @@ if(!file.exists(taxa_cells_file) | reload == TRUE) {
     bind_rows()  %>%
     filter(!is.na(cell_id)) %>%
     select(cell_id, iucn_sid, spp_gp) %>%
-    distinct()
+    left_join(spp_maps %>% select(iucn_sid, max_depth), by = 'iucn_sid') %>%
+    distinct() 
   
   write_csv(taxa_cells_df, taxa_cells_file)
 }
@@ -183,25 +184,25 @@ spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.c
   distinct()
 
 spp_ranges   <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv', api_version)),
-                         col_types = 'ddc_') %>%
+                         col_types = 'dd__') %>%
   distinct()
 
 ### make a dataframe of species risk and regional risk
 spp_risk_all <- spp_risk %>%
   mutate(iucn_rgn = 'global') %>%
   bind_rows(spp_risk_rgn) %>%
-  left_join(spp_ranges, by = c('iucn_sid', 'sciname')) %>%
-  select(iucn_sid, iucn_rgn, cat_score, range_km2)
+  left_join(spp_ranges, by = c('iucn_sid')) %>%
+  select(iucn_sid, sciname, iucn_rgn, cat_score, range_km2) %>%
+  mutate(range_km2 = round(range_km2))
 
-cells_info <- read_csv(cell_summary_file) %>%
-  select(cell_id, cell_group, n_spp, lme_id, depth) %>%
+cells_info <- read_csv(cell_summary_file, col_types = 'd__cd____id') %>%
   distinct()
 
 lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv')) %>%
   rename(rgn_name = iucn_rgn) %>%
   distinct()
 
-taxa_cells_info <- read_csv(taxa_cells_file, col_types = 'ddc') %>%
+taxa_cells_info <- read_csv(taxa_cells_file, col_types = 'ddcc') %>%
   left_join(spp_risk_all, by = 'iucn_sid') %>%
   mutate(spp_gp = tolower(spp_gp)) %>%
   left_join(cells_info, by = c('cell_id')) %>%
@@ -218,8 +219,8 @@ taxa_cells_info <- read_csv(taxa_cells_file, col_types = 'ddc') %>%
   ungroup()
 
 spp_cells_info <- taxa_cells_info %>%
-  select(cell_id, iucn_sid, spp_gp, iucn_rgn, 
-         cat_score, range_km2, cell_group, depth)
+  select(cell_id, iucn_sid, sciname, spp_gp, iucn_rgn, 
+         cat_score, range_km2, cell_group, depth, spp_max_depth = max_depth)
 
 write_csv(spp_cells_info, file.path(dir_git, 'data_explore', 'spp_cells_scores.csv'))
 
@@ -231,7 +232,7 @@ For each cell group, plot a map of range-rarity-weighted risk; display the cells
 ``` {r create_global_map_w_points}
 
 spp_cells_info <- read_csv(file.path(dir_git, 'data_explore', 'spp_cells_scores.csv'),
-                           col_types = 'ddccddcd') %>%
+                           col_types = 'ddcccddcdc') %>%
   arrange(cell_group)
 
 land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp'))
@@ -299,11 +300,17 @@ knitr::include_graphics(path.expand(fig_file))
 
 ### Region maps with spp data
 
-``` {r create_rgn_maps_w_points, results = 'asis'}
+``` {r create_rgn_maps_w_points}
 
+cell_gps <- unique(spp_cells_info$cell_group)
 
-for(cell_gp in unique(spp_cells_info$cell_group)) {
-  ### cell_gp <- spp_cells_info$cell_group[1]
+spp_cell_gps <- vector('list', length = length(cell_gps)) %>%
+  setNames(cell_gps)
+fig_files <- vector('list', length = length(cell_gps)) %>%
+  setNames(cell_gps)
+
+for(cell_gp in cell_gps) {
+  ### cell_gp <- cell_gps[1]
   
   fig_file <- file.path(dir_git, 'data_explore/figs',
                       sprintf('rgn_map_%s.png', 
@@ -314,18 +321,19 @@ for(cell_gp in unique(spp_cells_info$cell_group)) {
   ### Attach lat/long values to cell IDs
   cells_latlong <- spp_cells_info %>% 
     filter(cell_group == cell_gp) %>%
-    select(cell_id) %>% 
+    select(cell_id, depth) %>% 
     distinct() %>%
     left_join(cell_id_df, by = 'cell_id') %>%
     arrange(cell_id) %>%
     mutate(cell_name = toupper(letters[1:n()]))
   
-  spp_cell_gp <- spp_cells_info %>%
+  spp_cell_gps[[cell_gp]] <- spp_cells_info %>%
     filter(cell_group == cell_gp) %>%
-    left_join(cells_latlong, by = 'cell_id') %>%
-    select(-x, -y, -cell_group)
-      
-    
+    left_join(cells_latlong, by = c('cell_id', 'depth')) %>%
+    select(-x, -y, -cell_group, -cell_id, -depth) %>%
+    mutate(present = TRUE) %>%
+    spread(cell_name, present, fill = FALSE)
+
   if(!file.exists(fig_file)) {
     ### create the image and save it
     
@@ -342,6 +350,11 @@ for(cell_gp in unique(spp_cells_info$cell_group)) {
               ymin = max(min(cells_latlong$y) - 2,  -89.95),
               ymax = min(max(cells_latlong$y) + 2,   89.95))
     
+    depth_label <- sprintf('Depths: %s', 
+                           paste0(cells_latlong$cell_name, ': ', 
+                                  cells_latlong$depth, ' m', 
+                                  collapse = '; '))
+      
     x <- ggplot(rr_risk_df) +
       ggtheme_map() +
       geom_raster(aes(x, y, fill = rr_risk)) +
@@ -354,6 +367,8 @@ for(cell_gp in unique(spp_cells_info$cell_group)) {
                            limits = c(0, 1),
                            labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                            breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
+      annotate('text', x = bbox[1] + .05, y = bbox[3] + .05,
+               label = depth_label, hjust = 0, vjust = 0) +
       coord_sf(xlim = c(bbox[1], bbox[2]),  ylim = c(bbox[3], bbox[4])) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
@@ -364,8 +379,207 @@ for(cell_gp in unique(spp_cells_info$cell_group)) {
            width = 6, height = 4, units = 'in', dpi = 300)
   }
   
-  cat(sprintf('![](%s)\n', path.expand(fig_file)))
-  
-  DT::datatable(spp_cell_gp, caption = cell_gp) %>% print()
+  fig_files[[cell_gp]] <- fig_file
+
 }
 ```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[1]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[2]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[3]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[4]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[5]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[6]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[7]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[8]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[9]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[10]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[11]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[12]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[13]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[14]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[15]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[16]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[17]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+-----
+
+``` {r}
+
+cell_gp <- cell_gps[18]
+
+knitr::include_graphics(path.expand(fig_files[[cell_gp]]))
+
+DT::datatable(spp_cell_gps[[cell_gp]], caption = cell_gp)
+```
+
+
