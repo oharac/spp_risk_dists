@@ -1,0 +1,343 @@
+---
+title: 'Set up ocean area raster and MPA pct rasters'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, 'data_setup')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
+# ### provenance tracking
+library(provRmd); prov_setup()
+
+### support scripts
+source('~/github/src/R/rast_tools.R') 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+To define spatial areas more accurately, create rasters of WDPA and ocean area at Gall-Peters resolution of 1 km^2.  These can then be aggregated back to Gall Peters 10 km^2 working rasters, summing the total ocean area and total protected area within each working cell.
+
+* Ocean area - use Natural Earth 10 m land polygons; mask over cell ID raster to exclude land.
+
+# Data Sources
+
+### WDPA
+
+# Methods
+
+## Ocean area raster
+
+* Project Natural Earth 10M oceabn polygons into Gall-Peters equal area projection
+* rasterize at 1 km resolution
+* aggregate up to 10 km resolution, 
+
+
+
+### Create a 10 km^2 Gall Peters projection cell ID raster
+
+``` {r rasterize NE ocean polygons to Gall-Peters}
+
+gp_ocean_area_file <- file.path(dir_spatial, 'ocean_area_rast_gp.tif')
+gp_cell_id_file    <- file.path(dir_spatial, 'cell_id_rast_gp.tif')
+gp_ocean_1km_file  <- file.path(dir_o_anx, 'spatial', 'gp_ocean_1km.tif')
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+if(!file.exists(gp_ocean_area_file)) {
+  
+  ocean_sf <- read_sf(file.path(dir_spatial, 'ne_10m_ocean', 'ne_10m_ocean.shp'))
+  
+  ocean_sf_gp <- ocean_sf %>%
+    st_transform(gp_proj4)
+  
+  ext_gp <- st_bbox(ocean_sf_gp)
+  ext_r  <- extent(ext_gp$xmin, ext_gp$xmax, ext_gp$ymin, ext_gp$ymax)
+  rast_base_1km <- raster(ext_r, crs = crs(gp_proj4), res = 1000)
+  rast_base_10km <- raster(ext_r, crs = crs(gp_proj4), res = 10000)
+  
+  if(!file.exists(gp_ocean_1km_file)) {
+    gp_ocean_1km <- fasterize(ocean_sf_gp, rast_base_1km, 
+                              field = NULL,   ### all polygons given value of 1
+                              background = 0) ### all non-polygons given value of 0
+    writeRaster(gp_ocean_1km, 
+                gp_ocean_1km_file,
+                progress = 'text')
+  } else {
+    gp_ocean_1km <- raster(gp_ocean_1km_file)
+  }
+  
+  gp_ocean_10km <- raster::aggregate(gp_ocean_1km, 
+                                     fact = 10,   ### factor of 10 aggregation
+                                     fun = mean,  ### mean of 1s (ocean) and 0s (land)
+                                     progress = 'text')
+  
+  gp_ocean_area <- gp_ocean_10km * 100 ### multiply by 100 km^2 per cell
+  values(gp_ocean_area)[values(gp_ocean_area) == 0] <- NA
+  
+  writeRaster(gp_ocean_area, gp_ocean_area_file, overwrite = TRUE)
+}
+
+if(!file.exists(gp_cell_id_file)) {
+  gp_cell_id <- raster(gp_ocean_area_file) %>%
+    setValues(1:ncell(.))
+  
+  writeRaster(gp_cell_id, gp_cell_id_file)
+}
+
+```
+
+## Create WDPA MPA percent protection data frame
+
+Marine regions are any protected area with MARINE flag of 1 or 2, or non-zero GIS_M_AREA.  Classify by IUCN category (I-VI -> 1-6; non-classified get 7).  Include only designated, adopted, and established parks.  Omit non-MPA management plans from U.S.  Rasterize to CHI resolution, calculate protected cells vs total cells to get percent of protection for each IUCN protection category.
+
+Because we are rasterizing the protected areas down to the CHI raster resolution, we risk dropping any MPAs smaller than about 1 km^2.  We assume these are not likely to have a significant impact on biodiversity protection.
+
+### Create WDPA map at GP 1 km^2 resolution
+
+``` {r rasterize_wdpa_to_gall-peters}
+
+gp_cell_id    <- raster(gp_cell_id_file)
+gp_ocean_1km  <- raster(gp_ocean_1km_file)
+
+wdpa_marine_file <- file.path(dir_o_anx, 'wdpa/wdpa_mar_by_cat_jun2018_gp.tif')
+wdpa_poly_file   <- file.path(dir_o_anx, 'wdpa/wdpa_jun2018/WDPA_June2018-shapefile-polygons.shp')
+
+if(!file.exists(wdpa_marine_file)) {
+  
+  wdpa_poly <- sf::read_sf(wdpa_poly_file)
+
+  # wdpa_poly$IUCN_CAT %>% unique()
+  iucn_cats <- c('Ia'  = 1,
+                 'Ib'  = 1,
+                 'II'  = 2,
+                 'III' = 3,
+                 'IV'  = 4,
+                 'V'   = 5,
+                 'VI'  = 6)
+  # wdpa_poly$STATUS %>% table()
+       # Adopted   Designated  Established    Inscribed Not Reported     Proposed 
+       #      34       215853            2          241          128         1537 
+  # wdpa_poly$NO_TAKE %>% unique()
+  # x <- wdpa_poly %>% filter(NO_TAKE %in% c('All', 'Part'))
+  
+  wdpa_marine <- wdpa_poly %>%
+    filter(MARINE > 0 | GIS_M_AREA > 0) %>%
+    filter(STATUS %in% c('Designated', 'Adopted', 'Established')) %>%
+      ### no paper parks!
+    filter(!str_detect(tolower(MANG_PLAN), 'non-mpa')) %>%
+      ### omit non-MPA fisheries or species management plans!
+    mutate(no_take = (NO_TAKE == 'All') | (NO_TAKE == 'Part' & NO_TK_AREA > 0.75 * GIS_M_AREA),
+             ### if NO_TK_AREA is 75% or more of GIS area, count it...
+           cat = iucn_cats[IUCN_CAT],
+           cat = ifelse(no_take & !cat %in% 1:2, -1, cat), ### use -1 as a "no take" flag
+           cat = ifelse(is.na(cat), 8, cat)) %>%           ### use 8 as an "other protected" flag
+    arrange(cat) %>%
+    st_transform(crs = gp_proj4)
+  
+  ### rasterize all protected areas to 1 km global raster;
+  ### use min value: will prioritize no-take and higher levels of protection
+  wdpa_all_rast_1km <- fasterize::fasterize(sf = wdpa_marine, 
+                                        raster = gp_ocean_1km,
+                                        field  = 'cat', 
+                                        fun    = 'min')
+  
+  values(gp_ocean_1km)[values(gp_ocean_1km) < .005] <- NA
+  wdpa_marine_rast_1km <- mask(wdpa_all_rast_1km, gp_ocean_1km)
+
+  ### clip to only ocean cells: gp_ocean_1km is all 1s and 0s, so
+  ### just multiply?
+  # wdpa_marine_rast_1km <- wdpa_all_rast_1km * gp_ocean_1km
+  # 
+  # plot(gp_ocean_1km); plot(wdpa_all_rast_1km, col = 'blue', add = TRUE)
+  # plot(gp_ocean_1km); plot(wdpa_marine_rast_1km, col = 'blue', add = TRUE)
+  # 
+  # qwer <- wdpa_all_rast_1km
+  # values(qwer)[values(gp_ocean_1km) < 0.005] <- NA
+  #   ### use a small but positive value as the cutoff, in case floating
+  #   ### point problems are getting in the way
+  # 
+  # plot(wdpa_all_rast_1km, col = 'blue'); plot(qwer, col = 'red', add = TRUE)
+  
+  
+  writeRaster(wdpa_marine_rast_1km, wdpa_marine_file, 
+              progress = 'text',
+              overwrite = TRUE)
+  
+}
+  
+git_prov(wdpa_poly_file, 'input')
+git_prov(wdpa_marine_file, 'output') ### even in "if", mask() won't prov-register it.
+
+```
+
+### Crosstab WDPA map to cell IDs
+
+Be cautious when using `raster::crosstab()` as it returns factors that need to be coerced into integers... This code results in a file of cell IDs, IUCN protected area categories (1 = Ia and Ib, 2-6 = II - VI, 7 = no take, -1 = other), and proportion of cell protected by that category.
+
+We can't simply aggregate upwards here, since we need to keep track of different protection levels.
+
+``` {r crosstab mpa areas}
+
+wdpa_marine_rast_1km <- raster(wdpa_marine_file)
+gp_cell_id    <- raster(gp_cell_id_file)    ### cell IDs at 10 km^2
+gp_ocean_1km  <- raster(gp_ocean_1km_file)  ### ocean presence at 1 km^2
+gp_ocean_area <- raster(gp_ocean_area_file) ### ocean proportional area at 10 km^2
+
+gp_cell_id_1km_file <- file.path(dir_o_anx, 'spatial/gp_cell_id_1km.tif')
+
+### Need a 1 km raster of cell IDs for crosstabbing...
+if(!file.exists(gp_cell_id_1km_file)) {
+  gp_cell_id_1km <- resample(gp_cell_id, gp_ocean_1km,
+                             progress = 'text',
+                             filename = gp_cell_id_1km_file,
+                             method = 'ngb',
+                             overwrite = TRUE)
+} else {
+  gp_cell_id_1km <- raster(gp_cell_id_1km_file)
+}
+  
+wdpa_cell_area_file <- file.path(dir_spatial, 'wdpa_mpa_area_gp.csv')
+
+### now break into chunks and mclapply across them to crosstab WDPA categories to cell IDs
+if(!file.exists(wdpa_cell_area_file)) {
+  ### Break into smaller chunks for faster processing and eventual parallelizing
+  n_chunks <- 30
+  
+  crosstab_chunk <- function(rast1, rast2, chunk, n_chunks) {
+    ### chunk <- 30
+    chunk_size <- ceiling(ncol(rast1) / n_chunks)
+    left_bound <- (chunk - 1) * chunk_size + 1
+    right_bound <- min(left_bound + chunk_size, ncol(rast1))
+    
+    chunk_ext <- extent(rast1, 1, nrow(rast1), left_bound, right_bound)
+    message('Processing ', chunk, ': ', paste0(as.character(round(chunk_ext)), collapse = ', '))
+    wdpa_chunk    <- crop(rast1, chunk_ext)
+    cell_id_chunk <- crop(rast2, chunk_ext)
+    
+    wdpa_cells <- crosstab(wdpa_chunk, cell_id_chunk, 
+                                    progress = 'text',
+                                    long = TRUE) %>%
+      setNames(c('wdpa_category', 'cell_id', 'n_prot')) %>%
+      mutate(wdpa_category = as.integer(as.character(wdpa_category)),
+             cell_id       = as.integer(as.character(cell_id)))
+        ### wdpa_category and cell_id are crosstabbed as factors - first
+        ### convert to character (to unfactorize it) then to integer.  Otherwise
+        ### you end up with factor index, not actual cell ID or category.
+    
+    return(wdpa_cells)
+  }
+
+  ### Use the function in an mclapply call
+  system.time({
+    wdpa_cells_list <- parallel::mclapply(1:n_chunks, mc.cores = 16,
+      FUN = function(x) crosstab_chunk(wdpa_marine_rast_1km, 
+                                       gp_cell_id_1km, 
+                                       chunk = x, n_chunks))
+  #     user   system  elapsed 
+  # 1184.324  814.096  208.082 
+  })
+  
+  wdpa_cells_df <- bind_rows(wdpa_cells_list)
+  
+  gp_area_df <- data.frame(cell_id  = values(gp_cell_id),
+                           area_km2 = values(gp_ocean_area))
+  
+  wdpa_area_df <- wdpa_cells_df %>%
+    full_join(gp_area_df, by = 'cell_id') %>%
+    filter(!is.na(wdpa_category)) %>%
+    mutate(prot_area_km2 = n_prot, ### count of cells in 1 km^2 raster
+           mpa_pct = prot_area_km2 / area_km2) %>%
+    select(wdpa_category, cell_id, mpa_pct, prot_area_km2)
+      ### mpa pct is relative to *ocean* area - not *total cell* area
+  
+  write_csv(wdpa_area_df, wdpa_cell_area_file)
+  
+} else {
+  git_prov(wdpa_cell_area_file, 'output')
+}
+
+```
+
+### View WDPA protected area proportions as raster
+
+Proportional protection can be multiplied by ocean area raster to get area of protection.  Collect by category (to avoid duplicate "by" values):
+
+* No Take (categories 1 & 2 and specifically designated "no take")
+    * classified as 1, 2, and -1 respectively
+* Conservation (categories 1-4 plus no take)
+    * classified as 1, 2, 3, 4, and -1 (no take)
+* All protection (non-NA)
+    * classified as 1-6, -1 (no take), and 8 (other protection)
+
+Note: these are not saved as separate rasters at this point... they are easily created from the dataframe of cell ID to protected proportion.
+
+``` {r}
+
+wdpa_area_df <- read_csv(wdpa_cell_area_file)
+
+# gp_ids_rast <- raster::raster(resolution = 0.10, ext = extent(c(-180, 180, -90, 90)))
+# ### default to WGS84
+# values(gp_ids_rast) <- 1:length(gp_rast)
+
+notake_df <- wdpa_area_df %>%
+  filter(wdpa_category <= 2) %>%
+  group_by(cell_id) %>%
+  summarize(mpa_pct = sum(mpa_pct))
+
+conservation_df <- wdpa_area_df %>%
+  filter(wdpa_category <= 4) %>%
+  group_by(cell_id) %>%
+  summarize(mpa_pct = sum(mpa_pct))
+
+all_prot_df <- wdpa_area_df %>%
+  group_by(cell_id) %>%
+  summarize(mpa_pct = sum(mpa_pct))
+
+notake_raster <- subs(gp_cell_id, notake_df, by = 'cell_id', which = 'mpa_pct')
+plot(notake_raster, main = 'No take protection (Ia, Ib, II + no take)')
+
+conservation_raster <- subs(gp_cell_id, conservation_df, by = 'cell_id', which = 'mpa_pct')
+plot(conservation_raster, main = 'Conservation protection (Ia - IV + no take)')
+
+all_prot_raster <- subs(gp_cell_id, all_prot_df, by = 'cell_id', which = 'mpa_pct')
+plot(all_prot_raster, main = 'All protection (any category)')
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```
+

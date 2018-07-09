@@ -240,7 +240,7 @@ values(rast_base) <- 1:length(rast_base)
 
 land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp'))
 
-map_plot_file <- file.path(dir_git, 'figs/fig1_map_mean_risk_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig1_map_mean_risk_rr.png')
 
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
@@ -347,15 +347,15 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 
 ```
 
-![](figs/fig1_map_mean_risk_rr.png)
-![](figs/fig_SI_map_mean_risk_ne_pac_rr.png)
-![](figs/fig_SI_map_mean_risk_med_rr.png)
-![](figs/fig_SI_map_mean_risk_mid_atl_rr.png)
-![](figs/fig_SI_map_mean_risk_se_asia_rr.png)
+![](ms_figures/fig1_map_mean_risk_rr.png)
+![](ms_figures/fig_SI_map_mean_risk_ne_pac_rr.png)
+![](ms_figures/fig_SI_map_mean_risk_med_rr.png)
+![](ms_figures/fig_SI_map_mean_risk_mid_atl_rr.png)
+![](ms_figures/fig_SI_map_mean_risk_se_asia_rr.png)
 
 ``` {r var_risk_raster, eval = TRUE}
 
-map_plot_file <- file.path(dir_git, 'figs/fig_SI_map_var_risk_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig_SI_map_var_risk_rr.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
   
@@ -388,11 +388,11 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 
 ```
 
-![](figs/fig_SI_map_var_risk_rr.png)
+![](ms_figures/fig_SI_map_var_risk_rr.png)
 
 ``` {r n_spp_risk}
 
-map_plot_file <- file.path(dir_git, 'figs/fig_SI_map_sr_risk_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig_SI_map_sr_risk_rr.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
   
@@ -427,11 +427,11 @@ ggsave(filename = map_plot_file,
 
 ```
 
-![](figs/fig_SI_map_sr_risk_rr.png)
+![](ms_figures/fig_SI_map_sr_risk_rr.png)
 
 ``` {r n_spp_threatened}
 
-map_plot_file <- file.path(dir_git, 'figs/fig2_map_pct_threatened_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig2_map_pct_threatened_rr.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
   
@@ -495,11 +495,11 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 
 ```
 
-![](figs/fig2_map_pct_threatened_rr.png)
+![](ms_figures/fig2_map_pct_threatened_rr.png)
 
 ``` {r trend}
 
-map_plot_file <- file.path(dir_git, 'figs/fig_SI_map_mean_trend_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig_SI_map_mean_trend_rr.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
   
@@ -533,11 +533,11 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 }
 ```
 
-![](figs/fig_SI_map_mean_trend_rr.png)
+![](ms_figures/fig_SI_map_mean_trend_rr.png)
 
 ``` {r n_trend}
 
-map_plot_file <- file.path(dir_git, 'figs/fig_SI_map_sr_trend_rr.png')
+map_plot_file <- file.path(dir_git, 'ms_figures/fig_SI_map_sr_trend_rr.png')
 
 if(!file.exists(map_plot_file) | reload == TRUE) {
   
@@ -570,5 +570,5 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
 }
 ```
 
-![](figs/fig_SI_map_sr_trend_rr.png)
+![](ms_figures/fig_SI_map_sr_trend_rr.png)
 
