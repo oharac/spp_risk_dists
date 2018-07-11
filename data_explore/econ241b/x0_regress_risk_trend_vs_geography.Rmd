@@ -1,0 +1,297 @@
+---
+title: 'Regress risk and trend vs. geographic info'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+At the LOICZID raster scale (0.5° cells), compare ecosystem risk and trends to geographic features.
+
+# Data Sources
+
+# Methods {.tabset}
+
+## Risk/trend by cell
+
+``` {r check_dists}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd') %>% 
+  filter(n_spp > 0) %>%
+  mutate(log_n_spp = log(n_spp))
+
+x <- risk_df %>% filter(mean_risk == 0)
+
+ggplot(x, aes(x = n_spp)) +
+  ggtheme_plot() +
+  geom_histogram() +
+  labs(title = 'n_spp for (mean_risk == 0)')
+
+ggplot(risk_df, aes(x = mean_risk)) +
+  ggtheme_plot() +
+  geom_histogram() +
+  labs(title = 'mean_risk across all cells')
+
+ggplot(risk_df, aes(x = log_mean_risk)) +
+  ggtheme_plot() +
+  geom_histogram() +
+  labs(title = 'log(mean_risk) across all non-NA cells')
+
+# ggplot(risk_df %>% filter(n_spp > 0), aes(x = n_spp)) +
+#   ggtheme_plot() +
+#   geom_histogram() +
+#   labs(title = 'number of species by cell')
+# 
+# ggplot(risk_df, aes(x = log_n_spp)) +
+#   ggtheme_plot() +
+#   geom_histogram()
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd')
+
+ggplot(trend_df, aes(x = mean_trend)) +
+  ggtheme_plot() +
+  geom_histogram()
+
+```
+
+Note: For cells with at least 5 species identified, un-logged-risk metric provides `r nrow(risk_df %>% filter(n_spp >= 5))` observations (cells), `r nrow(risk_df %>% filter(n_spp >= 5 & mean_risk == 0))` of which are zeros.  The logged-risk metric provides `r nrow(risk_df %>% filter(n_spp >= 5 & !is.na(log_mean_risk)))` observations (after dropping zeros).
+
+### Mean risk:
+
+``` {r}
+x <- qqnorm(risk_df$mean_risk, main = 'Normal Q-Q, mean risk', ylab = 'mean risk')
+```
+
+### Log (mean risk):
+
+``` {r}
+x <- qqnorm(risk_df$mean_risk, main = 'Normal Q-Q, log(mean risk)', ylab = 'log (mean risk)')
+```
+
+### Mean trend:
+
+``` {r}
+x <- qqnorm(risk_df$mean_risk, main = 'Normal Q-Q, mean trend', ylab = 'mean trend')
+```
+
+
+## Geographic vars
+
+``` {r scatter_plots}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd') %>%
+  rename(n_trend_spp = n_spp)
+
+lat_df <- read_csv(file.path(dir_data, 'latitude_lookup.csv'), col_types = 'dd')
+
+ocean_area_df <- read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')
+
+area_by_lat <- lat_df %>% 
+  full_join(ocean_area_df) %>%
+  group_by(lat) %>%
+  summarize(lat_area = sum(ocean_area_km2, na.rm = TRUE)) %>%
+  ungroup()
+
+risk_trend_df <- risk_df %>%
+  full_join(trend_df, by = 'loiczid') %>%
+  filter(n_spp >= 5) %>%
+  full_join(lat_df,   by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat))
+
+ggplot(risk_trend_df, aes(x = mean_risk, y = mean_trend)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Mean risk vs mean trend')
+
+ggplot(risk_trend_df, aes(x = log_mean_risk, y = mean_trend)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Log(mean risk) vs mean trend')
+
+ggplot(risk_trend_df, aes(x = lat, y = mean_risk)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Mean risk vs latitude')
+
+ggplot(risk_trend_df, aes(x = lat, y = log_mean_risk)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Log(mean risk) vs latitude')
+
+ggplot(risk_trend_df, aes(x = lat, y = mean_trend)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Mean trend vs latitude')
+
+ggplot(risk_trend_df, aes(x = lat_abs, y = mean_risk)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Log(mean risk) vs abs(latitude)')
+
+ggplot(risk_trend_df, aes(x = lat_abs, y = log_mean_risk)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Log(mean risk) vs abs(latitude)')
+
+ggplot(risk_trend_df, aes(x = lat_abs, y = mean_trend)) +
+  ggtheme_plot() +
+  geom_point(alpha = .01) +
+  stat_smooth(method = 'lm') +
+  labs(title = 'Log(mean risk) vs abs(latitude)')
+
+ggplot(area_by_lat, aes(x = lat, y = lat_area)) +
+  ggtheme_plot() +
+  geom_area(fill = 'blue4', alpha = .3)
+
+
+```
+
+## Regressions
+
+``` {r regressions}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'),
+                    col_types = 'ddd') %>%
+  rename(n_trend_spp = n_spp)
+
+lat_df <- read_csv(file.path(dir_data, 'latitude_lookup.csv'), col_types = 'dd')
+
+ocean_area_df <- read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')
+
+risk_trend_df <- risk_df %>%
+  full_join(trend_df, by = 'loiczid') %>%
+  filter(n_spp >= 5) %>%
+  full_join(lat_df,   by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat))
+
+risk_trend_mdl1 <- lm(mean_risk ~ mean_trend,
+                data = risk_trend_df)
+summary(risk_trend_mdl1)
+
+risk_trend_mdl2 <- lm(log_mean_risk ~ mean_trend,
+                data = risk_trend_df)
+summary(risk_trend_mdl2)
+
+risk_geog_mdl1 <- lm(mean_risk ~ lat,
+                     data = risk_trend_df)
+summary(risk_geog_mdl1)
+
+risk_geog_mdl2 <- lm(log_mean_risk ~ lat,
+                     data = risk_trend_df)
+summary(risk_geog_mdl2)
+
+risk_geog_mdl3 <- lm(mean_risk ~ lat_abs,
+                     data = risk_trend_df)
+summary(risk_geog_mdl3)
+
+risk_geog_mdl4 <- lm(log_mean_risk ~ lat_abs,
+                     data = risk_trend_df)
+summary(risk_geog_mdl4)
+
+trend_geog_mdl1 <- lm(mean_trend ~ lat,
+                     data = risk_trend_df)
+summary(trend_geog_mdl1)
+
+trend_geog_mdl2 <- lm(mean_trend ~ lat_abs,
+                     data = risk_trend_df)
+summary(trend_geog_mdl2)
+
+```
+
+## Plot maps
+
+``` {r maps}
+
+mean_risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'), col_types = 'ddddd') %>%
+  filter(n_spp >= 5)
+
+mean_trend_df <- read_csv(file.path(dir_data, 'spp_trend_by_loiczid.csv'), col_types = 'ddd')
+
+loiczid_rast <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+
+risk_rast <- subs(loiczid_rast, mean_risk_df, by = 'loiczid', which = 'log_mean_risk')
+
+trend_rast <- subs(loiczid_rast, mean_trend_df, by = 'loiczid', which = 'mean_trend')
+
+n_spp_rast <- subs(loiczid_rast, mean_risk_df, by = 'loiczid', which = 'n_spp')
+
+```
+
+### Mean spp risk (n_spp > 5)
+
+``` {r}
+plot(risk_rast)
+```
+
+### Mean spp trend (n_spp > 5)
+
+``` {r}
+plot(trend_rast)
+```
+
+### Number of species by risk
+
+``` {r}
+plot(n_spp_rast)
+```
+
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+# prov_wrapup(commit_outputs = FALSE)
+```
+

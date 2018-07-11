@@ -1,0 +1,371 @@
+---
+title: 'Regress risk vs stressor groups'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+At the LOICZID raster scale (0.5° cells), compare ecosystem risk and trends to stressors layers.  Stressors are aggregated to LOICZID in a data_setup script.
+
+# Data Sources
+
+# Methods {.tabset}
+
+For each stressors group, read in the various stressor layers from stressor_to_loiczid folder.  Join them and regress them against mean risk.  In each case, limit analysis to cells with at least 5 species indicated.
+
+## Fisheries
+
+``` {r log_fis_prs}
+
+fis_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'demersal|pelagic|artisanal',
+                            full.names = TRUE)
+
+rm(fis_stressor_df)
+for(stressor_file in fis_stressor_files) {  ### stressor_file <- fis_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('fis_stressor_df')) {
+    fis_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    fis_stressor_df <- fis_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_stressor_df <- full_join(risk_df, fis_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5) ### leaves 145014 cells (out of 159535)
+  # filter(n_spp >= 10) ### leaves 126466 cells
+
+fis_stressor_mdl <- lm(log_mean_risk ~ artisanal_fishing_mean + 
+                         demersal_destructive_fishing_mean + 
+                         demersal_nondest_high_bycatch_mean +
+                         pelagic_high_bycatch_mean +
+                         pelagic_low_bycatch_mean,
+                       data = risk_v_stressor_df)
+
+summary(fis_stressor_mdl)
+
+fis_stressor_mdl1 <- lm(mean_risk ~ artisanal_fishing_mean + 
+                         demersal_destructive_fishing_mean + 
+                         demersal_nondest_high_bycatch_mean +
+                         pelagic_high_bycatch_mean +
+                         pelagic_low_bycatch_mean,
+                       data = risk_v_stressor_df)
+
+summary(fis_stressor_mdl1)
+
+```
+
+## Pollution
+
+``` {r pollution_prs}
+
+poll_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'inorg|poll|plume',
+                            full.names = TRUE)
+
+rm(poll_stressor_df)
+for(stressor_file in poll_stressor_files) {  ### stressor_file <- poll_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('poll_stressor_df')) {
+    poll_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    poll_stressor_df <- poll_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_stressor_df <- full_join(risk_df, poll_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5)
+
+poll_stressor_mdl <- lm(log_mean_risk ~ inorganic_mean + 
+                          ocean_pollution_mean + 
+                          plumes_fert_mean +
+                          plumes_pest_mean,
+                        data = risk_v_stressor_df)
+
+summary(poll_stressor_mdl)
+
+poll_stressor_mdl1 <- lm(mean_risk ~ inorganic_mean + 
+                          ocean_pollution_mean + 
+                          plumes_fert_mean +
+                          plumes_pest_mean,
+                        data = risk_v_stressor_df)
+
+summary(poll_stressor_mdl1)
+
+```
+
+## Other non-climate
+
+``` {r other_prs}
+
+other_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'invasive|oil_rigs|night|pop|shipping',
+                            full.names = TRUE)
+
+rm(other_stressor_df)
+for(stressor_file in other_stressor_files) {  ### stressor_file <- other_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('other_stressor_df')) {
+    other_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    other_stressor_df <- other_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+risk_v_stressor_df <- full_join(risk_df, other_stressor_df, by = 'loiczid') %>%
+  filter(n_spp >= 5)
+
+other_stressor_mdl <- lm(log_mean_risk ~ invasives_mean + 
+                           night_lights_mean + 
+                           oil_rigs_mean +
+                           population_mean + 
+                           shipping_mean,
+                         data = risk_v_stressor_df)
+
+summary(other_stressor_mdl)
+
+other_stressor_mdl1 <- lm(mean_risk ~ invasives_mean + 
+                           night_lights_mean + 
+                           oil_rigs_mean +
+                           population_mean + 
+                           shipping_mean,
+                         data = risk_v_stressor_df)
+
+summary(other_stressor_mdl1)
+
+```
+
+## Climate
+
+``` {r cc_prs}
+
+cc_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'slr|sst|uv|acid',
+                            full.names = TRUE)
+
+rm(cc_stressor_df)
+for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('cc_stressor_df')) {
+    cc_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    cc_stressor_df <- cc_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'),
+                    col_types = 'ddddd')
+
+lat_df <- read_csv(file.path(dir_data, 'latitude_lookup.csv'), col_types = 'dd')
+
+risk_v_stressor_df <- full_join(risk_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat)) %>%
+  filter(n_spp >= 5)
+
+cc_stressor_mdl <- lm(log_mean_risk ~ ocean_acidification_mean + ### on its own, R^2 = .0567
+                    slr_mean + ### on its own, R^2 = .0198
+                    sst_mean + ### on its own, R^2 = .0457
+                    uv_mean,   ### on its own, R^2 = .2321, estimate = .149
+                  data = risk_v_stressor_df)
+
+summary(cc_stressor_mdl)
+
+cc_stressor_mdl1 <- lm(mean_risk ~ ocean_acidification_mean + ### on its own, R^2 = .0567
+                    slr_mean + ### on its own, R^2 = .0198
+                    sst_mean + ### on its own, R^2 = .0457
+                    uv_mean,   ### on its own, R^2 = .2321, estimate = .149
+                  data = risk_v_stressor_df)
+
+summary(cc_stressor_mdl1)
+
+
+```
+
+### What about UV and latitude?
+
+Add latitude to the regression model for climate stressors especially UV; consider both latitude and absolute value of latitude (as a measure of symmetric distance toward poles)
+
+``` {r cc_and_lat}
+
+risk_v_stressor_df <- full_join(risk_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  mutate(lat_abs = abs(lat)) %>%
+  filter(n_spp >= 5)
+
+cc_stressor_mdl1 <- lm(log_mean_risk ~ ocean_acidification_mean + ### on its own, R^2 = .0567
+                    slr_mean + ### on its own, R^2 = .0198
+                    sst_mean + ### on its own, R^2 = .0457
+                    uv_mean +  ### on its own, R^2 = .2321, estimate = .149
+                    lat + lat_abs,
+                  data = risk_v_stressor_df)
+summary(cc_stressor_mdl1)
+
+cc_stressor_mdl1 <- lm(mean_risk ~ ocean_acidification_mean + ### on its own, R^2 = .0567
+                    slr_mean + ### on its own, R^2 = .0198
+                    sst_mean + ### on its own, R^2 = .0457
+                    uv_mean +  ### on its own, R^2 = .2321, estimate = .149
+                    lat + lat_abs,
+                  data = risk_v_stressor_df)
+summary(cc_stressor_mdl1)
+
+cc_stressor_mdl2 <- lm(log_mean_risk ~ uv_mean +   ### on its own, R^2 = .1572
+                    # lat_abs +
+                    # n_spp +
+                    lat, ### on its own, R^2 = .0740
+                  data = risk_v_stressor_df)
+
+summary(cc_stressor_mdl2)
+
+cc_stressor_mdl2 <- lm(mean_risk ~ uv_mean +   ### on its own, R^2 = .1572
+                    # lat_abs +
+                    # n_spp +
+                    lat, ### on its own, R^2 = .0740
+                  data = risk_v_stressor_df)
+
+summary(cc_stressor_mdl2)
+
+ggplot(risk_v_stressor_df, aes(x = uv_mean, y = log_mean_risk)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+ggplot(risk_v_stressor_df, aes(x = lat, y = uv_mean)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+ggplot(risk_v_stressor_df, aes(x = lat_abs, y = uv_mean)) +
+  geom_point(alpha = .01) +
+  ggtheme_plot() +
+  stat_smooth(method = 'lm')
+
+```
+
+There seems to be a strong correlation between UV stressor (number of extreme UV events over five-year period) on its own and mean species extinction risk.  This seems to be separate from latitude-driven differences in UV events.  Other possibilities?
+
+``` {r plot_uv_and_log_mean_risk}
+
+log_mean_risk_df <- read_csv(file.path(dir_data, 'current_risk_by_loiczid.csv'), col_types = 'ddddd') %>%
+  filter(n_spp >= 5)
+uv_df <- read_csv(file.path(dir_git, 'stressor_to_loiczid/uv_simple.csv'), col_types = 'ddddd')
+
+loiczid_rast <- raster(file.path(dir_spatial, 'loiczid_raster.tif'))
+
+risk_rast <- subs(loiczid_rast, log_mean_risk_df, by = 'loiczid', which = 'log_mean_risk')
+
+uv_rast <- subs(loiczid_rast, uv_df, by = 'loiczid', which = 'stressor_mean')
+
+```
+
+### Mean spp risk (n_spp > 5)
+
+``` {r}
+plot(risk_rast)
+```
+
+### UV stressor 
+
+``` {r}
+plot(uv_rast)
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+# prov_wrapup(commit_outputs = FALSE)
+```
+

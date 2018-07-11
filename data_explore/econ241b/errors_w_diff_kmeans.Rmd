@@ -1,0 +1,400 @@
+---
+title: 'Clustered std errors with different clustering'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+
+```
+
+# Summary
+
+At the LOICZID raster scale (0.5° cells), compare ecosystem risk and trends to stressors layers.  Stressors are aggregated to LOICZID in a data_setup script.
+
+# Data Sources
+
+# Methods {.tabset}
+
+## Regression model
+
+To examine the effects of climate stressors on the mean extinction risk of species in a particular location, we will use OLS estimation to estimate the projection coefficients on the regressors.  The regressors we will examine include:
+
+* UV $x_{UV}$: Extreme ultraviolet events relative to historic baseline.  This is determined by counting the number of weekly UV measurements (tallied over the relevant five-year period) in each location that exceed the (mean + 1 standard deviation) of the historic UV intensity (based on REF YEARS???) at that location.  The number of extreme UV events for each cell is then normalized by the highest event count observed globally, to produce a scaled stressor with values from 0 to 1.
+* SST $x_{SST}$: Extreme sea surface temperature events relative to historic baseline.  Similar to UV, though in this case an event is counted if the weekly mean SST in a location exceeds the (mean + sd) of the historic reference point for that location.
+* OA $x_{OA}$: Ocean acidification is based upon modeled values of aragonite saturation state $\Omega_a$, and the score uses a biological reference point and a historic reference point.  The historic reference point allows for spatial comparison to historic conditions to measure decreases toward a biological reference point ($\Omega_a = 1$, below which organisms cannot build calcium shells).  No decrease in $\Omega_a$ results in a stressor value of 0; decreases in $\Omega_a$ far from 1 are weighted less heavily than changes near 1; when $\Omega_a = 1$, the stressor is given a value of 1.
+* MPA $x_{MPA}$:  Presence/absense of marine protected areas: percent of ocean area protected, categories I-VI, all current protections.
+* abs(Latitude) $\lambda$: Climate preferences of marine species typically include strong preferences for temperature, which are dependent on distance from equator/toward poles.  Including absolute latitude roughly allows for changes in mean risk due to changes in species composition.
+* Latitude < 0 (dummy) $D_{\lambda}$: Including a southern latitude dummy variable allows for asymmetric effects of latitude (i.e. northern and southern hemisphere) on mean risk and interactions with covariates.
+* Constant term (1).
+
+### Our model for regression
+
+$$y = x_{UV}\beta_1 + x_{SST}\beta_2 + x_{OA}\beta_3 + D_{\lambda}x_{UV}\beta_4 + D_{\lambda}x_{SST}\beta_5 + D_{\lambda}x_{OA}\beta_6 + x_{MPA} \beta_7 + \lambda\beta_8 + D_{\lambda}\lambda \beta_9 + D_{\lambda}\beta_{10} + \beta{11} + e$$
+
+To run the regression we eliminate any cells with NA values in mean_risk, oa_mean, sst_mean, and/or uv_mean.  This filter, combined with filtering for n_spp >= 5, leaves us with 136380 observations out of 159535 total observations.  
+
+``` {r create_data_frame}
+
+cc_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'slr|sst|uv|acid',
+                            full.names = TRUE)
+
+if(exists('cc_stressor_df')) rm(cc_stressor_df)
+for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'dddii') %>%
+    select(-n_na) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean'), paste0(stressor_name, '_var'), 
+               paste0(stressor_name, '_zeros')))
+  
+  if(!exists('cc_stressor_df')) {
+    cc_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    cc_stressor_df <- cc_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+risk_df <- read_csv(file.path(dir_data, 'risk_by_cell_all.csv'),
+                    col_types = 'ddddd')
+
+lat_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd') %>%
+  select(loiczid, lat) %>%
+  mutate(dummySouth = as.integer(lat < 0),
+         latAbs     = abs(lat))
+
+mpa_df <- read_csv(file.path(dir_data, 'wdpa_i_vi_lookup.csv'), col_types = 'ddd') %>%
+  left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv')), col_types = 'dd') %>%
+  group_by(loiczid) %>%
+  summarize(mpa_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+
+
+risk_v_stressor_df <- full_join(risk_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  filter(n_spp >= 5) %>%
+  select(loiczid, 
+         mean_risk,
+         # log_mean_risk, 
+         sst_mean, oa_mean = ocean_acidification_mean, uv_mean, 
+         latAbs, dummySouth) %>%
+  # filter(!is.na(log_mean_risk)) %>%
+  filter(!is.na(mean_risk)) %>%
+  filter(!is.na(sst_mean)) %>%
+  filter(!is.na(oa_mean)) %>%
+  filter(!is.na(uv_mean)) %>%
+  left_join(mpa_df, by = 'loiczid') %>%
+  mutate(mpa_pct = ifelse(is.na(mpa_pct), 0, mpa_pct))
+
+```
+
+## Cluster robust errors
+
+### Clustered dependence (4.20)
+
+> The standard clustering assumption is that the clusters are known to the researcher and that
+the observations are independent across clusters.
+
+What can we use as clusters here?  Let's try [Longhurst biogeographical provinces](http://www.marineregions.org/gazetteer.php?p=image&pic=64934).  This uses a reasonable cluster grouping variable, but results in very different cluster sizes...
+
+``` {r cluster_by_longhurst}
+
+longh_df <- read_csv(file.path(dir_git, 'data/longhurst_cells.csv'),
+                     col_types = 'idcc')
+
+risk_clusters <- risk_v_stressor_df %>%
+  left_join(longh_df, by = 'loiczid') %>%
+  arrange(loiczid) %>%
+  fill(longhurst, .direction = 'up') %>% ### Do a VERY rough interpolation
+  group_by(longhurst) %>%
+  mutate(n_cluster = n()) %>% ### 184 to 15099 -> 233 to 15102
+  ungroup() %>%
+  arrange(longhurst, loiczid)
+
+# hist(risk_clusters$n_cluster)
+
+### before "interpolation", 2521 dropped cells:
+# risk_clusters %>% filter(is.na(longhurst)) %>% nrow()
+
+```
+
+Now that observations are clustered by Longhurst biogeophysical provinces, determine a clustered robust covariance matrix estimator 
+
+$$\mathbf{\widetilde{V}_{\widehat\beta}} = (\mathbf{X'X})^{-1}\left(\sum_{g=1}^G \mathbf{X'}_g \widetilde e_g \widetilde e_g' \mathbf{X}_g \right) (\mathbf{X'X})^{-1}$$
+
+where 
+
+$$\widetilde e_g = \mathbf{y}_g - \mathbf{X}_g \widehat \beta_{-g}$$
+
+Previously we calculated $\widehat \beta_{-i}$ values using leverage values: $\widetilde e_i = (1 - h_{ii})^{-1}\widehat e_i$.  Can we calculate leverage values at the group level and do the same?  In the mean time I will use the brute-force approach and simply calculate $\widetilde e_g$ for each group separately.
+
+``` {r clustered robust errors}
+
+### Let's re-set all our key variables in case we decide to do something else
+### with risk clusters, e.g. filter out cells with no Longhurst value.
+y <- risk_clusters$mean_risk
+n_obs <- length(y)
+clust_vec <- risk_clusters$longhurst
+clust_ids <- unique(clust_vec)
+
+X <- risk_clusters %>%
+  mutate(oa_S  = oa_mean * dummySouth,
+         sst_S = sst_mean * dummySouth,
+         uv_S  = uv_mean * dummySouth,
+         latS  = latAbs * dummySouth,
+         const = 1) %>%
+  select(oa_mean, sst_mean, uv_mean, oa_S, sst_S, uv_S, mpa_pct, latAbs, latS, dummySouth, const) %>%
+  as.matrix()
+
+### Calculate Beta_hat, though should be identical to original beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat <- Xt_X %*% Xt_y
+
+### Calculate Beta_hat (-g): remove g obs and calc beta hat; then calc
+### e_tilde_g for each group (store in a list object)
+e_tilde_g <- vector('list', length = length(clust_ids))
+for (g in clust_ids) { ### g <- 1
+  X_minusg <- X[clust_vec != g, ]
+  y_minusg <- y[clust_vec != g]
+  Xt_X_minusg <- t(X_minusg) %*% X_minusg
+  Xt_y_minusg <- t(X_minusg) %*% y_minusg
+
+  beta_hat_minusg <- solve(Xt_X_minusg) %*% Xt_y_minusg
+  
+  y_g <- y[clust_vec == g]
+  X_g <- X[clust_vec == g, ]
+  
+  e_tilde_g[[g]] <- y_g - X_g %*% beta_hat_minusg
+}
+
+
+```
+
+Now that error terms are calculated for each cluster $g$, calculate the $\mathbf{\widetilde V_{\widehat \beta}}$: first calculate a list of sum terms (use `Reduce()` to sum all the terms), then multiply by the X inverse terms.
+
+``` {r cluster robust covar matrix}
+
+Gsum_terms <- vector('list', length = length(clust_ids))
+
+for (g in clust_ids) { ### g <- 1
+  X_g <- X[clust_vec == g, ]
+  e_g <- e_tilde_g[[g]]
+  
+  Gsum_terms[[g]] <- t(X_g) %*% e_g %*% t(e_g) %*% X_g
+}
+
+Gsum <- Reduce('+', Gsum_terms)
+
+V_tilde_clustered <- Xt_X %*% Gsum %*% Xt_X
+
+s_beta_tilde_clust <- diag(V_tilde_clustered) %>% sqrt()
+
+```
+
+
+## K-means clustering
+
+Can we cluster based on lat, long, and Longhurst province?  This is based on: https://www.r-statistics.com/2013/08/k-means-clustering-from-r-in-action/
+
+Let's look at effect of weighting the "province" in the clustering at different rates.
+
+``` {r try out kmeans clustering}
+
+latlong_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd')
+
+cluster_df <- risk_clusters %>%
+  select(loiczid, longhurst) %>%
+  left_join(latlong_df, by = 'loiczid')
+
+set.seed(1234)
+n_clusts <- 54
+n_starts <- 10
+
+### K-means - we should probably rescale all variables to 0-1; otherwise
+### lat/long will dominate over longhurst... We can also weight these if
+### we like!
+longhurst_weight <- c(0, 1, 2, 5, 100)
+
+### define helper function to rescale from 0 to 1
+rescale <- function(x) {(x - min(x)) / (max(x) - min(x))}
+
+cluster_id_matrix <- matrix(nrow = length(y), ncol = length(longhurst_weight))
+
+for(i in seq_along(longhurst_weight)) { ### i <- 1
+  
+  wt <- longhurst_weight[i]
+  
+  cluster_norm_df <- cluster_df %>%
+    select(-loiczid) %>% ### not spatially relevant
+    mutate(lat_norm = rescale(lat),
+           long_norm = rescale(long),
+           longh_norm = rescale(longhurst),
+           longh_norm = wt * longh_norm) %>%
+    select(-lat, -long, -longhurst)
+  
+  fit_km <- kmeans(cluster_norm_df,
+                   n_clusts, 
+                   nstart = n_starts)
+  
+  cluster_id_matrix[ , i] <- fit_km$cluster
+
+  cluster_df1 <- cluster_df %>%
+    mutate(cluster = fit_km$cluster)
+  
+  if(!exists('loiczid_rast')) {
+    loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+  }
+  
+  clust_rast <- raster::subs(loiczid_rast, cluster_df1, 
+                                 by = 'loiczid', which = 'cluster')
+  
+  rpalette <- randomcoloR::distinctColorPalette(n_clusts)
+  plot(clust_rast, col = rpalette, 
+       main = sprintf('K-means: %d clusters, %d starts, province wt = %d', 
+                      n_clusts, n_starts, wt))
+
+}
+
+```
+
+
+### Clustered robust errors using K-means clusters
+
+``` {r clustered robust errors 2}
+
+### Let's re-set all our key variables
+kmeans_df <- risk_clusters
+
+y <- kmeans_df$mean_risk
+n_obs <- length(y)
+
+X <- kmeans_df %>%
+  mutate(oa_S  = oa_mean * dummySouth,
+         sst_S = sst_mean * dummySouth,
+         uv_S  = uv_mean * dummySouth,
+         latS  = latAbs * dummySouth,
+         const = 1) %>%
+  select(oa_mean, sst_mean, uv_mean, oa_S, sst_S, uv_S, mpa_pct, latAbs, latS, dummySouth, const) %>%
+  as.matrix()
+
+### Calculate Beta_hat, though should be identical to original beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat_kmeans <- Xt_X %*% Xt_y
+
+s_beta_matrix <- matrix(nrow = length(beta_hat_kmeans), ncol = length(longhurst_weight))
+
+for (i in seq_along(longhurst_weight)) { ### i <- 1
+  
+  kmeans_vec <- cluster_id_matrix[ , i]
+  kmeans_ids <- unique(kmeans_vec)
+  
+  ### Calculate Beta_hat (-g): remove g obs and calc beta hat; then calc
+  ### e_tilde_g for each group (store in a list object)
+  e_tilde_g <- vector('list', length = length(kmeans_ids))
+  for (g in kmeans_ids) { ### g <- 1
+    
+    X_minusg <- X[kmeans_vec != g, ]
+    y_minusg <- y[kmeans_vec != g]
+    Xt_X_minusg <- t(X_minusg) %*% X_minusg
+    Xt_y_minusg <- t(X_minusg) %*% y_minusg
+  
+    beta_hat_minusg <- solve(Xt_X_minusg) %*% Xt_y_minusg
+    
+    y_g <- y[kmeans_vec == g]
+    X_g <- X[kmeans_vec == g, ]
+    
+    e_tilde_g[[g]] <- y_g - X_g %*% beta_hat_minusg
+  }
+  
+  Gsum_terms <- vector('list', length = length(kmeans_ids))
+  
+  for (g in kmeans_ids) { ### g <- 1
+    X_g <- X[kmeans_vec == g, ]
+    e_g <- e_tilde_g[[g]]
+    
+    Gsum_terms[[g]] <- t(X_g) %*% e_g %*% t(e_g) %*% X_g
+  }
+  
+  Gsum <- Reduce('+', Gsum_terms)
+  
+  V_tilde_kmeans <- Xt_X %*% Gsum %*% Xt_X
+  
+  s_beta_matrix[ , i] <- diag(V_tilde_kmeans) %>% sqrt()
+}
+
+s_beta_df <- s_beta_matrix %>%
+  as.data.frame() %>%
+  setNames(paste0('sB_kmeans_wt', longhurst_weight))
+
+```
+
+
+``` {r calc_std_errors 4}
+
+std_error_df <- data.frame(estimate  = rownames(beta_hat), 
+                        B_hat     = beta_hat %>% round(4), 
+                        # sB        = s_beta_tilde, 
+                        sB_clust  = s_beta_tilde_clust %>% round(4)) %>%
+  bind_cols(s_beta_df %>% round(4)) %>%
+  mutate(t_clust   = round(B_hat / sB_clust, 4),
+         t_kmeans0 = round(B_hat / sB_kmeans_wt0, 4),
+         t_kmeans1 = round(B_hat / sB_kmeans_wt1, 4),
+         t_kmeans2 = round(B_hat / sB_kmeans_wt2, 4),
+         t_kmeans5 = round(B_hat / sB_kmeans_wt5, 4))
+
+knitr::kable(std_error_df)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

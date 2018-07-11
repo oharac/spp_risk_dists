@@ -1,0 +1,563 @@
+---
+title: Impacts of global climate stressors and marine protected areas on biodiversity risk
+author: Casey O'Hara
+date: March 19, 2018
+output:
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    includes:
+      in_header: ~/github/src/templates/ohara_hdr.html
+    number_sections: no
+    theme: cerulean
+    toc: no
+    toc_depth: 3
+    toc_float: no
+  word_document:
+    toc: no
+  pdf_document:
+    toc: no
+    latex_engine: xelatex
+header-includes: 
+  - \usepackage{float}
+---
+
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(kableExtra)
+# library(stargazer)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+
+```
+
+
+## Methods 
+
+### Preparing data layers
+
+``` {r mean_risk_raster}
+loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+### gotta force the mean_risk column to be double; there are lots of zero
+### values so will default to thinking that column is integer.
+risk_by_cell <- read_csv(file.path(dir_data, 'risk_by_cell_all.csv'),
+                         col_types = 'ddddd') %>%
+  filter(n_spp >= 5) %>%
+  mutate(mean_risk = 100 * mean_risk)
+
+risk_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'mean_risk') %>%
+  rasterToPoints() %>%
+  as.data.frame()
+nspp_rast <- subs(loiczid_rast, risk_by_cell, by = 'loiczid', which = 'n_spp') %>%
+  rasterToPoints() %>%
+  as.data.frame()
+
+library(rnaturalearth)
+library(sf)
+ctrys50m <- rnaturalearth::ne_countries(scale = 50, type = 'countries', returnclass = 'sf') %>%
+  select(iso_a3, iso_n3, admin)
+
+
+ggplot(risk_rast) +
+  ggtheme_plot() +
+  theme(axis.title = element_blank(),
+        axis.text  = element_blank()) +
+  geom_sf(data = ctrys50m, fill = 'grey55', color = 'grey45', size = .25) +
+  geom_raster(aes(x, y, fill = layer)) +
+  scale_fill_distiller(palette = 'RdYlGn') +
+  labs(fill = 'Mean risk',
+       title = 'Mean extinction risk (0 = Least Concern, 100 = Extinct')
+
+ggplot(nspp_rast) +
+  ggtheme_plot() +
+  theme(axis.title = element_blank(),
+        axis.text  = element_blank()) +
+  geom_sf(data = ctrys50m, fill = 'grey55', color = 'grey45', size = .25) +
+  geom_raster(aes(x, y, fill = n_spp)) +
+  scale_fill_distiller(palette = 'Oranges', direction = 1) +
+  labs(fill = 'N spp',
+       title = 'Number of included species')
+
+```
+
+
+``` {r cc_rasts_and_mpas}
+
+cc_stressor_files <- list.files('stressor_to_loiczid', 
+                            pattern = 'slr_2016|sst_2012|uv_2016|oa_2016',
+                            full.names = TRUE)
+
+if(exists('cc_stressor_df')) rm(cc_stressor_df)
+for(stressor_file in cc_stressor_files) {  ### stressor_file <- cc_stressor_files[3]
+  stressor_name <- basename(stressor_file) %>%
+    str_replace('_simple.csv', '')
+  
+  # cat('Processing', stressor_name, '...\n')
+  
+  tmp <- read_csv(stressor_file, col_types = 'ddddd') %>%
+    select(-n_na, -contains('var'), -contains('zero')) %>%
+    setNames(c('loiczid', 
+               paste0(stressor_name, '_mean')))
+  
+  if(!exists('cc_stressor_df')) {
+    cc_stressor_df <- tmp    ### create it the first time through the loop
+  } else {
+    cc_stressor_df <- cc_stressor_df %>%
+      full_join(tmp, by = 'loiczid')     ### join it on subsequent times through the loop
+  }
+}
+
+cc_stressor_df <- cc_stressor_df %>%
+  setNames(names(cc_stressor_df) %>% str_replace('[0-9]{4}_', ''))
+
+```
+
+### Regression
+
+``` {r create_data_frame}
+
+### use cc_stressor_df from before
+
+risk_df <- read_csv(file.path(dir_data, 'risk_by_cell_all.csv'),
+                    col_types = 'ddddd')
+
+lat_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd') %>%
+  select(loiczid, lat) %>%
+  mutate(dummyS = as.integer(lat < 0),
+         latAbs = abs(lat))
+
+mpa_df <- read_csv(file.path(dir_data, 'wdpa_i_iv_lookup.csv'), col_types = 'ddd') %>%
+  left_join(read_csv(file.path(dir_data, 'ocean_area_lookup.csv'), col_types = 'dd')) %>%
+  group_by(loiczid) %>%
+  summarize(mpa_pct = sum(wdpa_yr_km2) / first(ocean_area_km2))
+
+
+risk_v_stressor_df <- full_join(risk_df, cc_stressor_df, by = 'loiczid') %>%
+  left_join(lat_df, by = 'loiczid') %>%
+  filter(n_spp >= 5) %>%
+  select(loiczid, 
+         mean_risk,
+         # log_mean_risk, 
+         sst_mean, oa_mean, uv_mean, 
+         latAbs, dummyS) %>%
+  # filter(!is.na(log_mean_risk)) %>%
+  filter(!is.na(mean_risk)) %>%
+  filter(!is.na(sst_mean)) %>%
+  filter(!is.na(oa_mean)) %>%
+  filter(!is.na(uv_mean)) %>%
+  left_join(mpa_df, by = 'loiczid') %>%
+  mutate(mpa_pct = ifelse(is.na(mpa_pct), 0, mpa_pct),
+         mean_risk = 100 * mean_risk)
+
+```
+
+### Spatial clustering on marine ecoregions
+
+MEOW: 232 ecoregions; sizes vary from 25 cells to 2978 cells (before filtering out cells with too few species).  First analyze with the groups as is.  Since we're now working with only 59286 cells, figure a good group size is ~ 245 groups with ~245 cells, so we're already pretty close.
+
+``` {r map meow}
+
+### There are duped cells in here... assign cell to the eco_code with the largest area.
+### eco_code is unique in the last three digits.
+meow_df <- read_csv(file.path(dir_git, 'data/meow_lookup.csv'),
+                     col_types = 'ddd') %>%
+  mutate(meow_id = eco_code %% 1000) %>%
+  group_by(loiczid) %>%
+  arrange(meow_km2) %>%
+  summarize(meow_id = last(meow_id))
+
+if(!exists('loiczid_rast')) {
+  loiczid_rast <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+}
+
+meow_rnd_ids <- data.frame(meow_id = 1:232,
+                           rnd_id = sample(1:232, size = 232))
+meow_rast <- raster::subs(loiczid_rast, meow_df,
+                               by = 'loiczid', which = 'meow_id') %>%
+  rasterToPoints() %>%
+  as.data.frame() %>%
+  left_join(meow_rnd_ids, by = 'meow_id')
+
+ggplot(meow_rast) +
+  ggtheme_plot() +
+  theme(axis.title = element_blank(),
+        axis.text  = element_blank()) +
+  geom_raster(aes(x, y, fill = rnd_id), show.legend = FALSE) +
+  geom_sf(data = ctrys50m, fill = 'grey55', color = 'grey45', size = .25, alpha = .2) +
+  scale_fill_distiller(palette = 'Spectral') +
+  labs(title = 'Marine ecoregions')
+
+
+risk_clusters <- risk_v_stressor_df %>%
+  left_join(meow_df, by = 'loiczid') %>%
+  arrange(loiczid) %>%
+  filter(!is.na(meow_id))
+
+meow_cell_count <- risk_clusters %>%
+  group_by(meow_id) %>%
+  summarize(n_cells = n())
+
+meow_cell_count_summary <- summary(meow_cell_count$n_cells) %>%
+  broom::tidy()
+
+knitr::kable(meow_cell_count_summary,
+             caption = 'Cell counts per cluster (after filtering n_spp >= 5)') %>%
+  kable_styling('striped', full_width = FALSE)
+
+   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   #  8.0   124.5   206.5   257.9   304.2  1836.0  
+
+```
+
+Clustering our observations by marine ecoregions, we can determine a clustered robust covariance matrix estimator analogous to the robust adjusted White estimator:
+$$\mathbf{\widehat{V}_{\widehat\beta_{cluster}}} = a_n(\mathbf{X'X})^{-1}\widehat\Omega_n (\mathbf{X'X})^{-1}$$
+where
+$$\widehat\Omega_n = \sum_{g=1}^G \mathbf{X_g'\hat e_g \hat e_g' X_g}$$
+and 
+$$a_n = \left(\frac{n-1}{n-k}\right)\left(\frac{G}{G-1}\right)$$
+
+``` {r clustered robust errors}
+### Reset vars to make sure they're in appropriate cluster order
+
+y <- risk_clusters$mean_risk
+n_obs <- length(y)
+clust_vec <- risk_clusters$meow_id
+clust_ids <- unique(clust_vec)
+
+X <- risk_clusters %>%
+  mutate(oa_S  = oa_mean * dummyS,
+         sst_S = sst_mean * dummyS,
+         uv_S  = uv_mean * dummyS,
+         latS  = latAbs * dummyS,
+         const = 1) %>%
+  select(-loiczid, -mean_risk, -meow_id) %>%
+  as.matrix()
+
+### Calculate Beta_hat, though should be identical to original beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat <- Xt_X %*% Xt_y
+k_regr <- length(beta_hat) 
+
+### Calculate Omega_n: remove g obs and calc beta hat; then calc
+### e_tilde_g for each group (store in a list object)
+G <- length(clust_ids)
+omega_g <- vector('list', length = G)
+for (g in clust_ids) { ### g <- 1
+
+  y_g <- y[clust_vec == g]
+  X_g <- X[clust_vec == g, ]
+  
+  e_hat_g <- y_g - X_g %*% beta_hat
+  
+  omega_g[[g]] <- t(X_g) %*% e_hat_g %*% t(e_hat_g) %*% X_g
+}
+
+Omega_n <- Reduce('+', omega_g)
+
+a_n <- (n_obs - 1) / (n_obs - k_regr) * G / (G - 1)
+
+V_hat_clust <- a_n * Xt_X %*% Omega_n %*% Xt_X
+
+se_hat_clust <- sqrt(diag(V_hat_clust))
+
+```
+
+We can also calculate an alternative cluster-robust covariance matrix estimator based on cluster-level prediction errors and a leave-one-cluster-out type of process, as detailed in Hansen:
+$$\mathbf{\widetilde{V}_{\widehat\beta_{cluster}}} = (\mathbf{X'X})^{-1}\left(\sum_{g=1}^G \mathbf{X'}_g \widetilde e_g \widetilde e_g' \mathbf{X}_g \right) (\mathbf{X'X})^{-1}$$
+
+where 
+
+$$\widetilde e_g = \mathbf{y}_g - \mathbf{X}_g \widehat \beta_{-g}$$
+
+Previously we calculated $\widehat \beta_{-i}$ values using leverage values: $\widetilde e_i = (1 - h_{ii})^{-1}\widehat e_i$.  Can we calculate leverage values at the group level and do the same?  In the mean time we will use the brute-force approach and simply calculate $\widetilde e_g$ for each group separately.
+
+``` {r alternative clustered robust errors}
+### Use X, y, beta, etc from above.
+
+### Calculate Beta_hat (-g): remove g obs and calc beta hat; then calc
+### e_tilde_g for each group (store in a list object)
+e_tilde_g <- vector('list', length = length(clust_ids))
+for (g in clust_ids) { ### g <- 1
+  X_minusg <- X[clust_vec != g, ]
+  y_minusg <- y[clust_vec != g]
+  Xt_X_minusg <- t(X_minusg) %*% X_minusg
+  Xt_y_minusg <- t(X_minusg) %*% y_minusg
+
+  beta_hat_minusg <- solve(Xt_X_minusg) %*% Xt_y_minusg
+  
+  y_g <- y[clust_vec == g]
+  X_g <- X[clust_vec == g, ]
+  
+  e_tilde_g[[g]] <- y_g - X_g %*% beta_hat_minusg
+}
+
+Gsum_terms <- vector('list', length = length(clust_ids))
+
+for (g in clust_ids) { ### g <- 1
+  X_g <- X[clust_vec == g, ]
+  e_g <- e_tilde_g[[g]]
+  
+  Gsum_terms[[g]] <- t(X_g) %*% e_g %*% t(e_g) %*% X_g
+}
+
+Gsum <- Reduce('+', Gsum_terms)
+
+V_tilde_clust <- Xt_X %*% Gsum %*% Xt_X
+
+se_tilde_clust <- sqrt(diag(V_tilde_clust))
+
+```
+
+
+#### Cluster-robust standard errors
+
+Calculating standard errors from the square root of the diagonal of the covariance matrix estimators based upon a simple marine ecoregion clustering:
+
+$$s(\widehat\beta_{j}) = \sqrt{\mathbf{\widehat{V}_{\widehat\beta_j}}} = \sqrt{[\mathbf{\widehat{V}_{\widehat\beta}}]_{jj}}$$
+
+Standard error terms $s(\widehat\beta)$ calculated using standard and alternative (leave-one-out) clustered covariance matrix estimators $\mathbf{\widehat{V}_{\widehat\beta_{cluster}}}$ and $\mathbf{\widetilde{V}_{\widehat\beta_{cluster}}}$.
+
+``` {r calc_std_errors}
+
+beta_se_df <- data.frame(estimate = rownames(beta_hat),
+                          beta_hat,
+                          se_hat_clust,
+                          se_tilde_clust) %>%
+  mutate(t_hat_clust   = round(beta_hat / se_hat_clust, 2),
+         t_tilde_clust = round(beta_hat / se_tilde_clust, 2),
+         se_hat_clust  = round(se_hat_clust, 4),
+         se_tilde_clust = round(se_tilde_clust, 4),
+         beta_hat       = round(beta_hat, 2))
+
+```
+
+Recalculate with adjusted clusters; this should join ecoregions that are too small and divide ecoregions that are too large.  We will stick with 232 divisions in total.
+
+``` {r set up kmeans clustering}
+
+latlong_df <- read_csv(file.path(dir_data, 'latlong_lookup.csv'), col_types = 'ddd')
+
+cluster_df <- risk_clusters %>%
+  select(loiczid, meow_id) %>%
+  left_join(latlong_df, by = 'loiczid')
+ 
+### define helper function
+rescale <- function(x) {(x - min(x)) / (max(x) - min(x))}
+
+meow_weight <- 2
+n_clusts    <- 232
+n_start     <- 25
+
+### slow process; save results for future use (and consistency)
+clust_id_file <- file.path(dir_data, 'meow_clust_ids.csv')
+
+if(!file.exists(clust_id_file)) {
+  cluster_norm_df <- cluster_df %>%
+    select(-loiczid) %>% ### not spatially relevant
+      mutate(lat_norm   = rescale(lat),
+             long_norm  = rescale(long),
+             meow_norm = rescale(meow_id),
+             meow_norm = meow_weight * meow_norm) %>%
+    select(-lat, -long, -meow_id)
+  
+  set.seed(1234)
+
+  fit_km <- kmeans(cluster_norm_df,
+                   n_clusts, 
+                   nstart = n_start)
+  
+  meow_clust_df <- risk_clusters %>%
+    select(loiczid, meow_id) %>%
+    mutate(meow_adj = fit_km$cluster)
+  
+  # x <- meow_clust_df %>%
+  #   group_by(meow_adj) %>%
+  #   summarize(n_cells = n())
+  # summary(x$n_cells)
+  #  #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  #  # 17.0   174.0   223.0   244.2   288.0  1164.0 
+  # 
+  write_csv(meow_clust_df, clust_id_file)
+  
+} else {
+  
+  meow_clust_df <- read_csv(clust_id_file)
+  
+}
+ 
+meow_cell_count <- meow_clust_df %>%
+  group_by(meow_adj) %>%
+  summarize(n_cells = n())
+
+meow_cell_count_summary <- summary(meow_cell_count$n_cells) %>%
+  broom::tidy()
+
+knitr::kable(meow_cell_count_summary,
+             caption = 'Cell counts per adjusted cluster (after filtering n_spp >= 5)') %>%
+  kable_styling('striped', full_width = FALSE)
+
+clust_rast <- raster::subs(loiczid_rast, meow_clust_df, 
+                               by = 'loiczid', which = 'meow_adj') %>%
+  rasterToPoints() %>%
+  as.data.frame()
+
+
+ggplot(clust_rast) +
+  ggtheme_plot() +
+  theme(axis.title = element_blank(),
+        axis.text  = element_blank()) +
+  geom_raster(aes(x, y, fill = layer), show.legend = FALSE) +
+  geom_sf(data = ctrys50m, fill = 'grey55', color = 'grey45', size = .25) +
+  scale_fill_distiller(palette = 'Spectral') +
+  labs(title = 'Re-clustered marine ecoregions, 245 clusters')
+
+```
+
+
+``` {r clustered robust errors 2}
+
+cluster_df <- risk_clusters %>%
+  left_join(meow_clust_df, by = c('loiczid', 'meow_id'))
+
+y <- cluster_df$mean_risk
+n_obs <- length(y)
+
+X <- cluster_df %>%
+  mutate(oa_S  = oa_mean * dummyS,
+         sst_S = sst_mean * dummyS,
+         uv_S  = uv_mean * dummyS,
+         latS  = latAbs * dummyS,
+         const = 1) %>%
+  select(sst_mean, oa_mean, uv_mean, 
+         latAbs, dummyS, mpa_pct, oa_S, sst_S, uv_S, latS, const) %>%
+  as.matrix()
+
+### Calculate Beta_hat, though should be identical to original beta_hat
+Xt_X <- solve(t(X) %*% X)
+Xt_y <- t(X) %*% y
+beta_hat_kmeans <- Xt_X %*% Xt_y
+
+### Calculate Beta_hat (-g): remove g obs and calc beta hat; then calc
+### e_tilde_g for each group (store in a list object)
+
+clust_vec <- cluster_df$meow_adj
+clust_id_vec <- unique(clust_vec) %>% sort()
+
+e_tilde_g <- vector('list', length = length(clust_id_vec))
+
+for (g in clust_id_vec) { ### g <- 3
+  X_minusg <- X[clust_vec != g, ]
+  y_minusg <- y[clust_vec != g]
+  Xt_X_minusg <- t(X_minusg) %*% X_minusg
+  Xt_y_minusg <- t(X_minusg) %*% y_minusg
+
+  beta_hat_minusg <- solve(Xt_X_minusg) %*% Xt_y_minusg
+  
+  y_g <- y[clust_vec == g]
+  X_g <- X[clust_vec == g, ]
+  
+  e_tilde_g[[g]] <- y_g - X_g %*% beta_hat_minusg
+}
+
+
+Gsum_terms <- vector('list', length = length(clust_id_vec))
+
+for (g in clust_id_vec) { ### g <- 1
+  X_g <- X[clust_vec == g, ]
+  e_g <- e_tilde_g[[g]]
+  
+  Gsum_terms[[g]] <- t(X_g) %*% e_g %*% t(e_g) %*% X_g
+}
+
+Gsum <- Reduce('+', Gsum_terms)
+
+V_tilde_kmeans <- Xt_X %*% Gsum %*% Xt_X
+
+se_tilde_kmeans <- diag(V_tilde_kmeans) %>% sqrt()
+
+```
+
+``` {r clustered robust errors 3}
+
+### Calculate Omega_n: remove g obs and calc beta hat; then calc
+### e_tilde_g for each group (store in a list object)
+clust_vec <- cluster_df$meow_adj
+clust_id_vec <- unique(clust_vec) %>% sort()
+
+G <- length(unique(clust_id_vec))
+
+omega_g <- vector('list', length = G)
+
+for (g in 1:G) { ### g <- 1
+
+  y_g <- y[clust_vec == g]
+  X_g <- X[clust_vec == g, ]
+  
+  e_hat_g <- y_g - X_g %*% beta_hat_kmeans
+  
+  omega_g[[g]] <- t(X_g) %*% e_hat_g %*% t(e_hat_g) %*% X_g
+}
+
+Omega_n <- Reduce('+', omega_g)
+
+a_n <- (n_obs - 1) / (n_obs - k_regr) * G / (G - 1)
+
+V_hat_kmeans <- a_n * Xt_X %*% Omega_n %*% Xt_X
+
+se_hat_kmeans <- sqrt(diag(V_hat_kmeans))
+
+```
+
+``` {r gather diff kmeans cluster results, eval = TRUE, fig.pos = 'H'}
+
+beta_se_df <- data.frame(estimate = rownames(beta_hat),
+                          beta_hat,
+                          se_hat_clust,
+                          se_tilde_clust,
+                          se_hat_kmeans,
+                          se_tilde_kmeans) %>%
+  mutate(t_hat   = round(beta_hat / se_hat_clust, 2),
+         t_tilde = round(beta_hat / se_tilde_clust, 2),
+         t_tilde_k = round(beta_hat / se_tilde_kmeans, 2),
+         t_hat_k   = round(beta_hat / se_hat_kmeans, 2),
+         se_tilde_clust = round(se_tilde_clust, 4),
+         se_hat_clust = round(se_hat_clust, 4),
+         se_tilde_kmeans = round(se_tilde_kmeans, 4),
+         se_hat_kmeans = round(se_hat_kmeans, 4),
+         beta_hat = round(beta_hat, 2))
+
+knitr::kable(beta_se_df,  format = 'html',
+             caption = 'Comparison of std (hat) and alt (tilde) clustering for orig and reclustered ecoregions',
+             col.names = c('Estimate', 'B^', 
+                           'se^(meow)',
+                           'se~(meow)',
+                           'se^(adj)',
+                           'se~(adj)',
+                           't~(meow)',
+                           't~(meow)',
+                           't^(adj)',
+                           't~(adj)')) %>%
+  kable_styling('striped', full_width = FALSE)
+
+
+```

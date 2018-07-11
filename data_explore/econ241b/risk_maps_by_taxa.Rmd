@@ -1,0 +1,91 @@
+---
+title: Impacts of global climate stressors and marine protected areas on biodiversity risk
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output:
+  pdf_document:
+    toc: no
+    latex_engine: xelatex
+  word_document:
+    toc: no
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    includes:
+      in_header: ~/github/src/templates/ohara_hdr.html
+    number_sections: no
+    theme: cerulean
+    toc: no
+    toc_depth: 3
+    toc_float: no
+header-includes: 
+  - \usepackage{float}
+---
+
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(kableExtra)
+# library(stargazer)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_health_dists'
+
+### goal specific folders and info
+dir_data    <- file.path(dir_git, 'data')
+dir_spatial <- file.path(dir_git, 'spatial')
+dir_anx     <- file.path(dir_M, 'git-annex')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_health_dists')
+# ### provenance tracking
+# library(provRmd); prov_setup()
+
+### support scripts
+# source('https://raw.githubusercontent.com/oharac/src/master/R/rast_tools.R')) 
+  ### raster plotting and analyzing scripts
+source('fxns.R')
+
+```
+
+
+## Methods 
+
+### Preparing data layers
+
+``` {r mean_risk_raster}
+
+### gotta force the mean_risk column to be double; there are lots of zero
+### values so will default to thinking that column is integer.
+risk_by_cell_df <- read_csv(file.path(dir_data, 'risk_by_cell_by_taxa.csv'),
+                         col_types = 'dcdd') %>%
+  # filter(n_spp >= 5) %>% ### leave all in for this analysis
+  mutate(mean_risk = 100 * mean_risk) %>%
+  filter(taxa != 'other vertebrate') ### too few species; causes singular matrix
+
+
+for(gp in risk_by_cell_df$taxa %>% unique()) { ### gp <- risk_by_cell_df$taxa[1]
+  tmp_df <- risk_by_cell_df %>%
+    filter(taxa == gp)
+  
+  gp <- gp %>% str_replace('[^a-z]', '_')
+  
+  risk_map <- plot_map(tmp_df, 'mean_risk', 
+                       leg_title = 'Mean Risk',
+                       plot_title = paste0('Mean extinction risk, taxa = ', gp))
+  
+  print(risk_map)
+  
+  ggsave(plot = risk_map, filename = sprintf('Figs/mean_risk_%s.png', gp), height = 4, width = 6, dpi = 600)
+
+  nspp_map <- plot_map(tmp_df, 'n_spp', 
+                       leg_title = 'N spp',
+                       plot_title = paste0('# of included spp, taxa = ', gp),
+                       pal = 'RdYlBu')
+  
+  print(nspp_map)
+}
+
+```
+
