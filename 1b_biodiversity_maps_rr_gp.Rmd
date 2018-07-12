@@ -267,7 +267,7 @@ if(!file.exists(map_plot_file) | reload == TRUE) {
     geom_raster(aes(long, lat, fill = value)) +
     geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
-    scale_fill_gradientn(colors = c('green4', 'lightyellow', 'red2', 'red3', 'red4', 'purple4'),
+    scale_fill_gradientn(colors = c('green4', 'lightyellow', 'orange', 'red2', 'red4', 'purple4'),
                          limits = c(0, 1),
                          labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                          breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +

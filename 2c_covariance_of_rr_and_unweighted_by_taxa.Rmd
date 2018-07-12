@@ -100,9 +100,11 @@ taxa_sums <- data.frame(unweighted = list.files(file.path(dir_o_anx, 'taxa_summa
 # [29] "LYCOPODIOPSIDA"     "CLITELLATA" 
 ```
 
-## All spp: covariance of unweighted vs rr-weighted
+## All spp
 
-Covariance calculated for risk, percent threatened, and species richness.
+### covariance of unweighted vs rr-weighted
+
+Covariance calculated for risk, percent threatened, and species richness.  Does range-rarity weighting provide a significantly different picture of status compared to unweighted?
 
 Here we can use the overall rasters for simplicity.
 
@@ -121,68 +123,58 @@ df <- data.frame(risk_unweight = values(risk_un_rast),
                  threat_rrweight = values(threat_rr_rast),
                  nspp_unweight = values(n_spp_rast),
                  nspp_rrweight = values(n_rr_rast)) %>%
+  mutate(pct_thr_unweight = threat_unweight / nspp_unweight,
+         pct_thr_rrweight = threat_rrweight / nspp_rrweight) %>%
   filter(!is.na(risk_unweight))
 
 
 mdl_summary <- function(mdl) {
   mdl %>%
     broom::tidy() %>%
-    mutate(adj.rsq = mdl %>% summary() %>% .$adj.r.squared,
+    mutate(adj.rsq = round(mdl %>% summary() %>% .$adj.r.squared, 4),
            call = as.character(mdl$call)[2])
 }
 
 mdl_summary(lm(risk_rrweight ~ risk_unweight, data = df)) %>%
   knitr::kable()
-# Residuals:
-#      Min       1Q   Median       3Q      Max 
-# -0.45056 -0.03855 -0.00579  0.04003  0.98114 
-# 
-# Coefficients:
-#                 Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)   -4.603e-02  8.792e-05  -523.5   <2e-16 ***
-# risk_unweight  1.249e+00  4.848e-04  2576.6   <2e-16 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.0642 on 4375495 degrees of freedom
-#   (2104503 observations deleted due to missingness)
-# Multiple R-squared:  0.6028,	Adjusted R-squared:  0.6028 
-# F-statistic: 6.639e+06 on 1 and 4375495 DF,  p-value: < 2.2e-16
 
 mdl_summary(lm(threat_rrweight ~ threat_unweight, data = df)) %>%
   knitr::kable()
-# Residuals:
-#      Min       1Q   Median       3Q      Max 
-# -0.69471 -0.07398 -0.00086  0.06076  1.00624 
-# 
-# Coefficients:
-#                   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)     -0.0607579  0.0001309  -464.3   <2e-16 ***
-# threat_unweight  1.1408528  0.0004050  2816.6   <2e-16 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.1118 on 4375495 degrees of freedom
-# Multiple R-squared:  0.6445,	Adjusted R-squared:  0.6445 
-# F-statistic: 7.933e+06 on 1 and 4375495 DF,  p-value: < 2.2e-16
 
 mdl_summary(lm(nspp_rrweight ~ nspp_unweight, data = df)) %>%
   knitr::kable()
 
-# Residuals:
-#       Min        1Q    Median        3Q       Max 
-# -0.000187 -0.000014 -0.000010  0.000000  0.067444 
-# 
-# Coefficients:
-#                 Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)   -1.037e-05  7.220e-08  -143.6   <2e-16 ***
-# nspp_unweight  4.174e-07  6.138e-10   680.1   <2e-16 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.000129 on 4375495 degrees of freedom
-# Multiple R-squared:  0.0956,	Adjusted R-squared:  0.0956 
-# F-statistic: 4.625e+05 on 1 and 4375495 DF,  p-value: < 2.2e-16
+```
+
+### covariance of factors within weighting groups
+
+Compare correlations between:
+
+* species richness ~ n threatened 
+* mean risk ~ pct threatened 
+* mean risk ~ species richness
+
+``` {r covariance checks global 2, results = 'asis'}
+
+mdl_summary(lm(nspp_unweight ~ threat_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(nspp_rrweight ~ threat_rrweight, data = df)) %>%
+  knitr::kable()
+
+
+mdl_summary(lm(risk_unweight ~ pct_thr_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(risk_rrweight ~ pct_thr_rrweight, data = df)) %>%
+  knitr::kable()
+
+
+mdl_summary(lm(risk_unweight ~ nspp_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(risk_rrweight ~ nspp_rrweight, data = df)) %>%
+  knitr::kable()
 
 ```
 

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sun Jul 8 09:56:33 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Jul 11 10:54:41 2018 by ohara" />
 
 
 <title>Biodiversity risk covariance exploration</title>
@@ -261,7 +261,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk covariance exploration</h1>
-<h4 class="author"><em><em>Compiled on Sun Jul 8 09:56:33 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Jul 11 10:54:41 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -342,9 +342,11 @@ taxa_sums &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="co"># [25] &quot;CEPHALOPODA&quot;        &quot;POLYPODIOPSIDA&quot;     &quot;HOLOTHUROIDEA&quot;      &quot;AVES&quot;              </span>
 <span class="co"># [29] &quot;LYCOPODIOPSIDA&quot;     &quot;CLITELLATA&quot; </span></code></pre></div>
 </div>
-<div id="all-spp-covariance-of-unweighted-vs-rr-weighted" class="section level2">
-<h2><span class="header-section-number">2.2</span> All spp: covariance of unweighted vs rr-weighted</h2>
-<p>Covariance calculated for risk, percent threatened, and species richness.</p>
+<div id="all-spp" class="section level2">
+<h2><span class="header-section-number">2.2</span> All spp</h2>
+<div id="covariance-of-unweighted-vs-rr-weighted" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> covariance of unweighted vs rr-weighted</h3>
+<p>Covariance calculated for risk, percent threatened, and species richness. Does range-rarity weighting provide a significantly different picture of status compared to unweighted?</p>
 <p>Here we can use the overall rasters for simplicity.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">risk_un_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_risk_raster_010deg.tif'</span>))
 risk_rr_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_rr_risk_raster_010deg.tif'</span>))
@@ -359,13 +361,15 @@ df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class=
                  <span class="dt">threat_rrweight =</span> <span class="kw">values</span>(threat_rr_rast),
                  <span class="dt">nspp_unweight =</span> <span class="kw">values</span>(n_spp_rast),
                  <span class="dt">nspp_rrweight =</span> <span class="kw">values</span>(n_rr_rast)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct_thr_unweight =</span> threat_unweight <span class="op">/</span><span class="st"> </span>nspp_unweight,
+         <span class="dt">pct_thr_rrweight =</span> threat_rrweight <span class="op">/</span><span class="st"> </span>nspp_rrweight) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(risk_unweight))
 
 
 mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) {
   mdl <span class="op">%&gt;%</span>
 <span class="st">    </span>broom<span class="op">::</span><span class="kw">tidy</span>() <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">adj.rsq =</span> mdl <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summary</span>() <span class="op">%&gt;%</span><span class="st"> </span>.<span class="op">$</span>adj.r.squared,
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">adj.rsq =</span> <span class="kw">round</span>(mdl <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summary</span>() <span class="op">%&gt;%</span><span class="st"> </span>.<span class="op">$</span>adj.r.squared, <span class="dv">4</span>),
            <span class="dt">call =</span> <span class="kw">as.character</span>(mdl<span class="op">$</span>call)[<span class="dv">2</span>])
 }
 
@@ -390,7 +394,7 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">0.0000879</td>
 <td align="right">-523.4746</td>
 <td align="right">0</td>
-<td align="right">0.6027553</td>
+<td align="right">0.6028</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -399,28 +403,12 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">0.0004848</td>
 <td align="right">2576.6480</td>
 <td align="right">0</td>
-<td align="right">0.6027553</td>
+<td align="right">0.6028</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Residuals:</span>
-<span class="co">#      Min       1Q   Median       3Q      Max </span>
-<span class="co"># -0.45056 -0.03855 -0.00579  0.04003  0.98114 </span>
-<span class="co"># </span>
-<span class="co"># Coefficients:</span>
-<span class="co">#                 Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="co"># (Intercept)   -4.603e-02  8.792e-05  -523.5   &lt;2e-16 ***</span>
-<span class="co"># risk_unweight  1.249e+00  4.848e-04  2576.6   &lt;2e-16 ***</span>
-<span class="co"># ---</span>
-<span class="co"># Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="co"># </span>
-<span class="co"># Residual standard error: 0.0642 on 4375495 degrees of freedom</span>
-<span class="co">#   (2104503 observations deleted due to missingness)</span>
-<span class="co"># Multiple R-squared:  0.6028,  Adjusted R-squared:  0.6028 </span>
-<span class="co"># F-statistic: 6.639e+06 on 1 and 4375495 DF,  p-value: &lt; 2.2e-16</span>
-
-<span class="kw">mdl_summary</span>(<span class="kw">lm</span>(threat_rrweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(threat_rrweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
 <table>
 <thead>
@@ -441,7 +429,7 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">0.0001309</td>
 <td align="right">-464.2981</td>
 <td align="right">0</td>
-<td align="right">0.6445213</td>
+<td align="right">0.6445</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -450,27 +438,12 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">0.0004050</td>
 <td align="right">2816.6022</td>
 <td align="right">0</td>
-<td align="right">0.6445213</td>
+<td align="right">0.6445</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Residuals:</span>
-<span class="co">#      Min       1Q   Median       3Q      Max </span>
-<span class="co"># -0.69471 -0.07398 -0.00086  0.06076  1.00624 </span>
-<span class="co"># </span>
-<span class="co"># Coefficients:</span>
-<span class="co">#                   Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="co"># (Intercept)     -0.0607579  0.0001309  -464.3   &lt;2e-16 ***</span>
-<span class="co"># threat_unweight  1.1408528  0.0004050  2816.6   &lt;2e-16 ***</span>
-<span class="co"># ---</span>
-<span class="co"># Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="co"># </span>
-<span class="co"># Residual standard error: 0.1118 on 4375495 degrees of freedom</span>
-<span class="co"># Multiple R-squared:  0.6445,  Adjusted R-squared:  0.6445 </span>
-<span class="co"># F-statistic: 7.933e+06 on 1 and 4375495 DF,  p-value: &lt; 2.2e-16</span>
-
-<span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
 <table>
 <thead>
@@ -491,7 +464,7 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">1e-07</td>
 <td align="right">-143.5657</td>
 <td align="right">0</td>
-<td align="right">0.0955952</td>
+<td align="right">0.0956</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -500,25 +473,231 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <td align="right">0e+00</td>
 <td align="right">680.0656</td>
 <td align="right">0</td>
-<td align="right">0.0955952</td>
+<td align="right">0.0956</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Residuals:</span>
-<span class="co">#       Min        1Q    Median        3Q       Max </span>
-<span class="co"># -0.000187 -0.000014 -0.000010  0.000000  0.067444 </span>
-<span class="co"># </span>
-<span class="co"># Coefficients:</span>
-<span class="co">#                 Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="co"># (Intercept)   -1.037e-05  7.220e-08  -143.6   &lt;2e-16 ***</span>
-<span class="co"># nspp_unweight  4.174e-07  6.138e-10   680.1   &lt;2e-16 ***</span>
-<span class="co"># ---</span>
-<span class="co"># Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="co"># </span>
-<span class="co"># Residual standard error: 0.000129 on 4375495 degrees of freedom</span>
-<span class="co"># Multiple R-squared:  0.0956,  Adjusted R-squared:  0.0956 </span>
-<span class="co"># F-statistic: 4.625e+05 on 1 and 4375495 DF,  p-value: &lt; 2.2e-16</span></code></pre></div>
+</div>
+<div id="covariance-of-factors-within-weighting-groups" class="section level3">
+<h3><span class="header-section-number">2.2.2</span> covariance of factors within weighting groups</h3>
+<p>Compare correlations between:</p>
+<ul>
+<li>species richness ~ n threatened</li>
+<li>mean risk ~ pct threatened</li>
+<li>mean risk ~ species richness</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_unweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">52.50513</td>
+<td align="right">0.1175151</td>
+<td align="right">446.79474</td>
+<td align="right">0</td>
+<td align="right">0.0015</td>
+<td align="left">nspp_unweight ~ threat_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">threat_unweight</td>
+<td align="right">29.59066</td>
+<td align="right">0.3637408</td>
+<td align="right">81.35097</td>
+<td align="right">0</td>
+<td align="right">0.0015</td>
+<td align="left">nspp_unweight ~ threat_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>threat_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">3.01e-05</td>
+<td align="right">1e-07</td>
+<td align="right">262.1471</td>
+<td align="right">0</td>
+<td align="right">0.0056</td>
+<td align="left">nspp_rrweight ~ threat_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">threat_rrweight</td>
+<td align="right">-5.42e-05</td>
+<td align="right">3e-07</td>
+<td align="right">-157.1878</td>
+<td align="right">0</td>
+<td align="right">0.0056</td>
+<td align="left">nspp_rrweight ~ threat_rrweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.1477613</td>
+<td align="right">0.0000428</td>
+<td align="right">3449.5303</td>
+<td align="right">0</td>
+<td align="right">0.1003</td>
+<td align="left">risk_unweight ~ pct_thr_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_unweight</td>
+<td align="right">3.3774775</td>
+<td align="right">0.0048367</td>
+<td align="right">698.2971</td>
+<td align="right">0</td>
+<td align="right">0.1003</td>
+<td align="left">risk_unweight ~ pct_thr_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.0942539</td>
+<td align="right">4.93e-05</td>
+<td align="right">1913.722</td>
+<td align="right">0</td>
+<td align="right">0.4924</td>
+<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_rrweight</td>
+<td align="right">0.0000002</td>
+<td align="right">0.00e+00</td>
+<td align="right">2060.213</td>
+<td align="right">0</td>
+<td align="right">0.4924</td>
+<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.1693845</td>
+<td align="right">3.54e-05</td>
+<td align="right">4778.78721</td>
+<td align="right">0</td>
+<td align="right">2e-04</td>
+<td align="left">risk_unweight ~ nspp_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">nspp_unweight</td>
+<td align="right">0.0000094</td>
+<td align="right">3.00e-07</td>
+<td align="right">31.19552</td>
+<td align="right">0</td>
+<td align="right">2e-04</td>
+<td align="left">risk_unweight ~ nspp_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>nspp_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.167119</td>
+<td align="right">0.0000489</td>
+<td align="right">3419.8565</td>
+<td align="right">0</td>
+<td align="right">0.0055</td>
+<td align="left">risk_rrweight ~ nspp_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">nspp_rrweight</td>
+<td align="right">-55.699674</td>
+<td align="right">0.3581456</td>
+<td align="right">-155.5224</td>
+<td align="right">0</td>
+<td align="right">0.0055</td>
+<td align="left">risk_rrweight ~ nspp_rrweight</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="by-taxa-covariance-of-unweighted-vs-rr-weighted" class="section level2">
 <h2><span class="header-section-number">2.3</span> By taxa: covariance of unweighted vs rr-weighted</h2>
@@ -606,7 +785,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000638</td>
 <td align="right">-274.509</td>
 <td align="right">0</td>
-<td align="right">0.8338311</td>
+<td align="right">0.8338</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -615,7 +794,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0003152</td>
 <td align="right">3747.665</td>
 <td align="right">0</td>
-<td align="right">0.8338311</td>
+<td align="right">0.8338</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -639,7 +818,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001139</td>
 <td align="right">-246.1712</td>
 <td align="right">0</td>
-<td align="right">0.7976835</td>
+<td align="right">0.7977</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -648,7 +827,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0003696</td>
 <td align="right">3321.9742</td>
 <td align="right">0</td>
-<td align="right">0.7976835</td>
+<td align="right">0.7977</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -672,7 +851,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">-104.2923</td>
 <td align="right">0</td>
-<td align="right">0.1416751</td>
+<td align="right">0.1417</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -681,7 +860,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">679.7011</td>
 <td align="right">0</td>
-<td align="right">0.1416751</td>
+<td align="right">0.1417</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -708,7 +887,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001551</td>
 <td align="right">-540.144</td>
 <td align="right">0</td>
-<td align="right">0.6558654</td>
+<td align="right">0.6559</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -717,7 +896,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004718</td>
 <td align="right">2531.945</td>
 <td align="right">0</td>
-<td align="right">0.6558654</td>
+<td align="right">0.6559</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -741,7 +920,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0002942</td>
 <td align="right">-627.9091</td>
 <td align="right">0</td>
-<td align="right">0.7180572</td>
+<td align="right">0.7181</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -750,7 +929,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004116</td>
 <td align="right">2926.9148</td>
 <td align="right">0</td>
-<td align="right">0.7180572</td>
+<td align="right">0.7181</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -774,7 +953,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">-384.7234</td>
 <td align="right">0</td>
-<td align="right">0.1692819</td>
+<td align="right">0.1693</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -783,7 +962,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">827.9228</td>
 <td align="right">0</td>
-<td align="right">0.1692819</td>
+<td align="right">0.1693</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -810,7 +989,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000456</td>
 <td align="right">30.10702</td>
 <td align="right">0</td>
-<td align="right">0.7384382</td>
+<td align="right">0.7384</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -819,7 +998,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0053173</td>
 <td align="right">624.78148</td>
 <td align="right">0</td>
-<td align="right">0.7384382</td>
+<td align="right">0.7384</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -843,7 +1022,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000953</td>
 <td align="right">23.73072</td>
 <td align="right">0</td>
-<td align="right">0.7709073</td>
+<td align="right">0.7709</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -852,7 +1031,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0053233</td>
 <td align="right">682.10884</td>
 <td align="right">0</td>
-<td align="right">0.7709073</td>
+<td align="right">0.7709</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -876,7 +1055,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">1.4e-06</td>
 <td align="right">20.730432</td>
 <td align="right">0.00e+00</td>
-<td align="right">0.0001181</td>
+<td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -885,7 +1064,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0e+00</td>
 <td align="right">4.163483</td>
 <td align="right">3.14e-05</td>
-<td align="right">0.0001181</td>
+<td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -912,7 +1091,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0002632</td>
 <td align="right">30.7166</td>
 <td align="right">0</td>
-<td align="right">0.778985</td>
+<td align="right">0.779</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -921,7 +1100,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0018763</td>
 <td align="right">626.3167</td>
 <td align="right">0</td>
-<td align="right">0.778985</td>
+<td align="right">0.779</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -945,7 +1124,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004410</td>
 <td align="right">90.56528</td>
 <td align="right">0</td>
-<td align="right">0.7810561</td>
+<td align="right">0.7811</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -954,7 +1133,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0017632</td>
 <td align="right">630.10806</td>
 <td align="right">0</td>
-<td align="right">0.7810561</td>
+<td align="right">0.7811</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -978,7 +1157,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">1e-07</td>
 <td align="right">78.86926</td>
 <td align="right">0</td>
-<td align="right">0.7347715</td>
+<td align="right">0.7348</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -987,7 +1166,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0e+00</td>
 <td align="right">555.27300</td>
 <td align="right">0</td>
-<td align="right">0.7347715</td>
+<td align="right">0.7348</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1014,7 +1193,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000363</td>
 <td align="right">-1.582474</td>
 <td align="right">0.113544</td>
-<td align="right">0.9741491</td>
+<td align="right">0.9741</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1023,7 +1202,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004991</td>
 <td align="right">2170.548980</td>
 <td align="right">0.000000</td>
-<td align="right">0.9741491</td>
+<td align="right">0.9741</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1047,7 +1226,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">5.34e-05</td>
 <td align="right">13.5665</td>
 <td align="right">0</td>
-<td align="right">0.9777354</td>
+<td align="right">0.9777</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1056,7 +1235,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">5.23e-04</td>
 <td align="right">2343.1414</td>
 <td align="right">0</td>
-<td align="right">0.9777354</td>
+<td align="right">0.9777</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1080,7 +1259,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">2e-07</td>
 <td align="right">-55.86394</td>
 <td align="right">0</td>
-<td align="right">0.0458329</td>
+<td align="right">0.0458</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1089,7 +1268,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">2e-07</td>
 <td align="right">77.50102</td>
 <td align="right">0</td>
-<td align="right">0.0458329</td>
+<td align="right">0.0458</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1116,7 +1295,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000009</td>
 <td align="right">4.276182</td>
 <td align="right">1.9e-05</td>
-<td align="right">0.8265252</td>
+<td align="right">0.8265</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1125,7 +1304,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0020661</td>
 <td align="right">1982.254749</td>
 <td align="right">0.0e+00</td>
-<td align="right">0.8265252</td>
+<td align="right">0.8265</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1173,7 +1352,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">-27.98206</td>
 <td align="right">0</td>
-<td align="right">0.04867</td>
+<td align="right">0.0487</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1182,7 +1361,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">205.40923</td>
 <td align="right">0</td>
-<td align="right">0.04867</td>
+<td align="right">0.0487</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1209,7 +1388,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001070</td>
 <td align="right">114.4430</td>
 <td align="right">0</td>
-<td align="right">0.7853353</td>
+<td align="right">0.7853</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1218,7 +1397,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0018695</td>
 <td align="right">799.7683</td>
 <td align="right">0</td>
-<td align="right">0.7853353</td>
+<td align="right">0.7853</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1242,7 +1421,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0002113</td>
 <td align="right">101.8205</td>
 <td align="right">0</td>
-<td align="right">0.7772274</td>
+<td align="right">0.7772</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1251,7 +1430,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0018581</td>
 <td align="right">781.0165</td>
 <td align="right">0</td>
-<td align="right">0.7772274</td>
+<td align="right">0.7772</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1275,7 +1454,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">81.49214</td>
 <td align="right">0</td>
-<td align="right">0.2152304</td>
+<td align="right">0.2152</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1284,7 +1463,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">218.97870</td>
 <td align="right">0</td>
-<td align="right">0.2152304</td>
+<td align="right">0.2152</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1311,7 +1490,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001079</td>
 <td align="right">-187.526</td>
 <td align="right">0</td>
-<td align="right">0.2892874</td>
+<td align="right">0.2893</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1320,7 +1499,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0006652</td>
 <td align="right">1327.325</td>
 <td align="right">0</td>
-<td align="right">0.2892874</td>
+<td align="right">0.2893</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1344,7 +1523,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001946</td>
 <td align="right">-151.4136</td>
 <td align="right">0</td>
-<td align="right">0.2781824</td>
+<td align="right">0.2782</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1353,7 +1532,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0006533</td>
 <td align="right">1291.5485</td>
 <td align="right">0</td>
-<td align="right">0.2781824</td>
+<td align="right">0.2782</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1377,7 +1556,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">22.133773</td>
 <td align="right">0</td>
-<td align="right">1.1e-05</td>
+<td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1386,7 +1565,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">6.976932</td>
 <td align="right">0</td>
-<td align="right">1.1e-05</td>
+<td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1413,7 +1592,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0002566</td>
 <td align="right">-1672.601</td>
 <td align="right">0</td>
-<td align="right">0.8403127</td>
+<td align="right">0.8403</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1422,7 +1601,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004277</td>
 <td align="right">3703.442</td>
 <td align="right">0</td>
-<td align="right">0.8403127</td>
+<td align="right">0.8403</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1446,7 +1625,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0003312</td>
 <td align="right">-2238.982</td>
 <td align="right">0</td>
-<td align="right">0.8883777</td>
+<td align="right">0.8884</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1455,7 +1634,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0003755</td>
 <td align="right">4554.529</td>
 <td align="right">0</td>
-<td align="right">0.8883777</td>
+<td align="right">0.8884</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1479,7 +1658,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">1e-07</td>
 <td align="right">-1.777095</td>
 <td align="right">0.0755527</td>
-<td align="right">0.0001933</td>
+<td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1488,7 +1667,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0e+00</td>
 <td align="right">22.471136</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0001933</td>
+<td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1515,7 +1694,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000217</td>
 <td align="right">-1.935375</td>
 <td align="right">0.0529445</td>
-<td align="right">0.9665552</td>
+<td align="right">0.9666</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1524,7 +1703,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001689</td>
 <td align="right">5965.703536</td>
 <td align="right">0.0000000</td>
-<td align="right">0.9665552</td>
+<td align="right">0.9666</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1548,7 +1727,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000415</td>
 <td align="right">-12.42583</td>
 <td align="right">0</td>
-<td align="right">0.978069</td>
+<td align="right">0.9781</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1557,7 +1736,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001347</td>
 <td align="right">7410.84525</td>
 <td align="right">0</td>
-<td align="right">0.978069</td>
+<td align="right">0.9781</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1581,7 +1760,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">-2.113536</td>
 <td align="right">0.0345551</td>
-<td align="right">0.0371943</td>
+<td align="right">0.0372</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1590,7 +1769,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">218.115044</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0371943</td>
+<td align="right">0.0372</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>
@@ -1617,7 +1796,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000907</td>
 <td align="right">214.364</td>
 <td align="right">0</td>
-<td align="right">0.469601</td>
+<td align="right">0.4696</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 <tr class="even">
@@ -1626,7 +1805,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0006001</td>
 <td align="right">1920.393</td>
 <td align="right">0</td>
-<td align="right">0.469601</td>
+<td align="right">0.4696</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
 </tr>
 </tbody>
@@ -1650,7 +1829,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0001176</td>
 <td align="right">146.6806</td>
 <td align="right">0</td>
-<td align="right">0.6220189</td>
+<td align="right">0.622</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 <tr class="even">
@@ -1659,7 +1838,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0004585</td>
 <td align="right">2618.1443</td>
 <td align="right">0</td>
-<td align="right">0.6220189</td>
+<td align="right">0.622</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
 </tr>
 </tbody>
@@ -1683,7 +1862,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">1e-07</td>
 <td align="right">-274.5238</td>
 <td align="right">0</td>
-<td align="right">0.0345092</td>
+<td align="right">0.0345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 <tr class="even">
@@ -1692,7 +1871,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0e+00</td>
 <td align="right">385.8526</td>
 <td align="right">0</td>
-<td align="right">0.0345092</td>
+<td align="right">0.0345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
 </tr>
 </tbody>

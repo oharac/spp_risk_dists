@@ -72,30 +72,36 @@ log_f_rast <- log10(f_rast)
 Now let's load the rasters of mean risk and associated variance, threatened spp, spp richness, and eez info. I'll normalize threatend spp by dividing it by spp richness.
 
 ```{r}
-eez_rast <- raster(here('spatial', 'eez_rast_010_wgs84.tif'))
-mean_rr_rast <- raster(here('output', 'mean_rr_risk_raster_010deg.tif'))
-var_rr_rast <- raster(here('output', 'var_rr_risk_raster_010deg.tif'))
-n_spp_rast <- raster(here('output', 'n_spp_risk_raster_010deg.tif'))
-n_threat_rast <- raster(here('output', 'n_threat_raster_010deg.tif'))
-n_norm_threat_rast <- n_threat_rast / n_spp_rast
+cell_id_rast    <- raster(file.path(dir_git, 'spatial', 'cell_id_rast_gp.tif'))
+eez_rast        <- raster(file.path(dir_git, 'spatial', 'eez_rast_gp.tif'))
+mean_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_gp.tif'))
+var_rr_rast     <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_gp.tif'))
+n_spp_rast      <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_gp.tif'))
+n_threat_rast   <- raster(file.path(dir_git, 'output', 'n_threat_raster_gp.tif'))
+pct_threat_rast <- raster(file.path(dir_git, 'output', 'pct_threat_raster_gp.tif'))
 
-land_poly <- sf::read_sf(here('spatial', 'ne_10m_land', 'ne_10m_land.shp'))
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+land_poly <- sf::read_sf(file.path(dir_git, 'spatial', 'ne_10m_land', 'ne_10m_land.shp')) %>%
+  st_transform(gp_proj4)
 ```
 
 ```{r}
 # Get rasters into a data.frame
-risk_f_df <- data.frame(cell_id = 1:length(values(mean_rr_rast)),
-                        rgn_id = values(eez_rast),
+risk_f_df <- data.frame(cell_id      = values(cell_id_rast),
+                        rgn_id       = values(eez_rast),
                         mean_rr_risk = values(mean_rr_rast),
-                        var_rr_risk = values(var_rr_rast),
-                        n_spp = values(n_spp_rast),
-                        n_threat = values(n_threat_rast),
-                        n_norm_threat = values(n_norm_threat_rast),
-                        f_effort = values(f_rast),
-                        ln_f_effort= values(ln_f_rast)) %>%
+                        var_rr_risk  = values(var_rr_rast),
+                        n_spp        = values(n_spp_rast),
+                        n_threat     = values(n_threat_rast),
+                        pct_threat   = values(pct_threat_rast),
+                        f_effort     = values(f_rast),
+                        ln_f_effort  = values(log_f_rast)) %>%
   cbind(coordinates(mean_rr_rast)) %>% 
   filter(!is.na(mean_rr_risk)) %>%
-  left_join(read_csv(here('spatial','rgn_names.csv')), by = c('rgn_id'))
+  left_join(read_csv(file.path(dir_git, 'spatial', 'rgn_names.csv')), 
+            by = c('rgn_id'))
 ```
 
 # Mean risk (range-rarity weighted)
@@ -105,7 +111,7 @@ risk_f_df <- data.frame(cell_id = 1:length(values(mean_rr_rast)),
 ```{r global_risk}
 ggplot() +
   geom_raster(data = risk_f_df, aes(x = x, y = y, fill = mean_rr_risk)) +
-  scale_fill_gradientn(colors = colorRamps::matlab.like(10),
+  scale_fill_gradientn(colors = c('green4', 'lightyellow', 'orange', 'red2', 'red4', 'purple4'),
                        limits = c(0, 1),
                        labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                        breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0),
@@ -114,6 +120,7 @@ ggplot() +
                                               ticks.colour = "black",
                                               ticks.linewidth = 1)) +
   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+  coord_sf(datum = NA) +
   ggtheme_map() + 
   labs(title = 'Mean risk, range-rarity weighted',
        fill  = 'Mean risk')
@@ -124,7 +131,7 @@ ggplot() +
 ```{r regional_map}
 ggplot() +
   geom_raster(data = risk_f_df, aes(x = x, y = y, fill = mean_rr_risk)) +
-  scale_fill_gradientn(colors = colorRamps::matlab.like(10),
+  scale_fill_gradientn(colors = c('green4', 'lightyellow', 'orange', 'red2', 'red4', 'purple4'),
                        limits = c(0, 1),
                        labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                        breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0),
@@ -143,8 +150,8 @@ ggplot() +
 ```{r}
 breaks <- c(0.01, 0.05, 0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 0.9, 0.95, 0.99)
 
-quantiles <- data.frame(f_effort = quantile(risk_f_df$f_effort, breaks, na.rm = T),
-                        ln_f_effort = quantile(risk_f_df$ln_f_effort, breaks, na.rm = T),
+quantiles <- data.frame(f_effort     = quantile(risk_f_df$f_effort, breaks, na.rm = T),
+                        ln_f_effort  = quantile(risk_f_df$ln_f_effort, breaks, na.rm = T),
                         mean_rr_risk = quantile(risk_f_df$mean_rr_risk, breaks, na.rm = T))
 ```
 
@@ -157,7 +164,8 @@ risk_f_df %>%
   geom_vline(xintercept = quantiles$ln_f_effort[3], linetype = "dashed") +
   geom_hline(yintercept = c(0.2, 0.4), linetype = "dashed", color = c("black", "red")) +
   scale_color_distiller(palette = 'YlGnBu') +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                     breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   ggtheme_plot() +
   labs(title = 'range-rarity-weighted mean risk vs. log fishing effort',
        color = "Threatened\nspecies")
@@ -207,7 +215,8 @@ risk_f_df %>%
   geom_vline(data = quantiles_rgn, aes(xintercept = ln_f_effort), linetype = "dashed") +
   geom_hline(yintercept = 0.2, linetype = "dashed") +
   scale_color_distiller(palette = 'YlGnBu') +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                     breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
   ggtheme_plot() +
   facet_wrap( ~ r1_label) +
   labs(title = 'range-rarity-weighted mean risk vs. log fishing effort by region',
@@ -271,7 +280,9 @@ risk_f_df %>%
                                               ticks.colour = "black",
                                               ticks.linewidth = 1)) +
   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+  coord_sf(datum = NA) +
   ggtheme_map() + 
+  theme(panel.background = element_rect(fill = 'grey80')) +
   labs(title = 'Mean risk, range-rarity weighted',
        fill  = 'Mean risk')
 ```
@@ -293,7 +304,9 @@ risk_f_df %>%
                                               ticks.colour = "black",
                                               ticks.linewidth = 1)) +
   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) +
+  coord_sf(datum = NA) +
   ggtheme_map() + 
+  theme(panel.background = element_rect(fill = 'grey80')) +
   labs(title = 'Mean risk, range-rarity weighted',
        fill  = 'Mean risk')
 ```
@@ -302,25 +315,5 @@ risk_f_df %>%
 # Short paragraph?
 
 Great conservation benefits could be achieved at a low cost to fisheries (Fig \@ref(fig:rf)). Conservation interventions may follow any of the two observed strategies of protecting nearly pristine sites or areas with higher impacts that could potentially be restored. The first approach would aim to implement marine protected areas in regions with low fishing effort (the bottom 10th percentile) and low mean risk (*i.e.* rrmr < 0.2). The average cell meeting these conditions contains `r n_threat_spp_mean` $\pm$ `r n_threat_spp_sd` threatened species and a total of `r n_spp_mean` $\pm$ `r n_spp_sd` species (M $\pm$ SD). Although highly variable across regions, this approach could protect sites where mean risk is low but have many threateend species (Table \@ref(tab:upsides)). Another strategy would be to protect areas where mean risk is high and fishing effort is low. The low fishing effort - high risk values of these areas could be caused by the presence of small-scale fisheries or where GFW data don't have great ressolution (*e.g.* South China Sea), or by impacts that are not driven by fishing effort. On either case, limiting industrial fishing effort in these regions would produce similar benefits as the ones mentioned before (Table \@ref(tab:upsidesu)). A summary of the locations where fishing activity represents the lower 10th percentile is shown on Figure \@ref(fig:upsidesg) and region-specific relationships of risk and fishing effort are presented in Figure \@ref(fig:regionrf).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

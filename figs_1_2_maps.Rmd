@@ -1,0 +1,203 @@
+---
+title: 'Biodiversity risk maps'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+library(sf)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, 'data_setup')
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, 'data_setup/api_fxns.R'))
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+```
+
+# Summary
+
+Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN.  These maps are generated at 10 km^2^ resolution in a Gall-Peters projection.  These maps will be generated using all available species:
+
+* Mean risk
+* Variance of risk
+* Number of species for mean/var calculations
+* Number of species categorized as "threatened" (i.e. VU, EN, CR)
+* Mean trend
+* Number of species for trend calculations
+    
+A selection of these maps will be generated for taxonomic groups and range sizes in a separate Rmd.
+
+Future iterations may include:
+
+* Range-rarity-weighted mean and variance of risk
+* Range rarity-weighted species richness
+
+# Data Sources
+
+IUCN Red List spatial data download
+IUCN Red List API
+Gina Ralph (IUCN)
+
+# Methods
+
+## Spatial distribution of current extinction risk
+
+From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps:
+
+* Mean risk (unweighted and range-rarity-weighted)
+* Pct threatened (unweighted and range-rarity-weighted)
+
+``` {r get_rasts}
+
+agg_fact <- 1 ### for map creation, aggregate for speed and ease; but
+              ### not for distribution plots!
+
+risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_gp.tif'))
+risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_gp.tif'))
+threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster_gp.tif'))
+threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_gp.tif'))
+n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_gp.tif'))
+n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_gp.tif'))
+
+```
+
+### And now, the maps
+
+First do a facet grid of mean risk (unweighted and rr-weighted); then do a facet grid of distribution; then combine with gridExtra
+
+``` {r four panel map function}
+
+four_panel <- function(map1_rast, map2_rast,
+                       colors = c('green4', 'lightyellow', 'orange', 'red2', 'red4', 'purple4'),
+                       values = c(0, .2, .4, .6, .8, 1.0),
+                       limits = c(0, 1),
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) {
+
+  land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+    st_transform(gp_proj4)
+  
+  map_df <- data.frame(val_1 = values(map1_rast),
+                       val_2 = values(map2_rast)) %>%
+    cbind(coordinates(map1_rast)) %>% 
+    filter(!is.na(val_1))
+  
+  map1 <- ggplot(map_df) +
+    geom_raster(aes(x, y, fill = val_1)) +
+    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
+    ggtheme_map() +
+    theme(legend.title = element_blank()) +
+    scale_fill_gradientn(colors = colors,
+                         values = values,
+                         limits = limits,
+                         labels = labels,
+                         breaks = breaks) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  map2 <- ggplot(map_df) +
+    geom_raster(aes(x, y, fill = val_2)) +
+    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
+    ggtheme_map() +
+    theme(legend.title = element_blank()) +
+    scale_fill_gradientn(colors = colors,
+                         values = values,
+                         limits = limits,
+                         labels = labels,
+                         breaks = breaks) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  ###################
+  
+  dist1 <- ggplot(map_df, aes(x = val_1)) + # , ..scaled..)) +
+    ggtheme_plot() +
+    geom_vline(xintercept = mean(map_df$val_1, na.rm = TRUE)) +
+    geom_density(alpha = .3, size = .25, fill = 'grey30') +
+    theme(axis.text.x = element_blank(),
+          axis.title = element_blank(),
+          panel.grid.major.x = element_blank()) +
+    scale_x_continuous(labels = labels,
+                       breaks = breaks,
+                       limits = limits) +
+    coord_flip()
+    
+  dist2 <- ggplot(map_df, aes(x = val_2)) + # , ..scaled..)) +
+    ggtheme_plot() +
+    geom_vline(xintercept = mean(map_df$val_2, na.rm = TRUE)) +
+    geom_density(alpha = .3, size = .25, fill = 'grey30') +
+    theme(axis.text.x = element_blank(),
+          axis.title = element_blank(),
+          panel.grid.major.x = element_blank()) +
+    scale_x_continuous(labels = labels,
+                       breaks = breaks,
+                       limits = limits) +
+    coord_flip()
+  
+  panel_top <- cowplot::plot_grid(map1, dist1, 
+                                  labels = c('A', 'B'), 
+                                  axis = 'b',
+                                  rel_widths = c(2, 1))
+  panel_btm <- cowplot::plot_grid(map2, dist2, 
+                                  labels = c('C', 'D'), 
+                                  axis = 'b',
+                                  rel_widths = c(2, 1))
+  
+  four_panel <- cowplot::plot_grid(panel_top, panel_btm, nrow = 2, ncol = 1, align = 'v')
+
+}
+
+```
+
+``` {r figs 1 and 2 mean maps and pct threatened maps}
+
+mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast)
+
+ggsave(plot = mean_four_panel, 
+       filename = file.path(dir_git, 'ms_figures/fig1_mean_maps_with_dists.png'), 
+       width = 6, height = 4, dpi = 300)
+
+
+
+
+threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
+                                colors = c('grey90', 'coral', 'red2', 'red4', 'purple4'),
+                                values = c(0, .3, .5, .7, 1),
+                                breaks = c(0, .25, .5, .75, 1),
+                                labels = c('0%', '25%', '50%', '75%', '100%'))
+
+ggsave(plot = threat_four_panel, 
+       filename = file.path(dir_git, 'ms_figures/fig2_pct_thr_maps_with_dists.png'), 
+       width = 6, height = 4, dpi = 300)
+```
+
+
