@@ -1,5 +1,5 @@
 ---
-title: 'Biodiversity risk maps'
+title: 'Biodiversity risk four-panel figures'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -120,7 +120,9 @@ four_panel <- function(map1_rast, map2_rast,
                          values = values,
                          limits = limits,
                          labels = labels,
-                         breaks = breaks) +
+                         breaks = breaks,
+                         guide  = guide_colourbar(label.position = 'left',
+                                                  label.hjust = 1)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0))
   
@@ -133,7 +135,9 @@ four_panel <- function(map1_rast, map2_rast,
                          values = values,
                          limits = limits,
                          labels = labels,
-                         breaks = breaks) +
+                         breaks = breaks,
+                         guide  = guide_colourbar(label.position = 'left',
+                                                  label.hjust = 1)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0))
   
@@ -181,9 +185,10 @@ four_panel <- function(map1_rast, map2_rast,
 ``` {r figs 1 and 2 mean maps and pct threatened maps}
 
 mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast)
-
+  ### function defaults set up for this plot
+fig1_path <- file.path(dir_git, 'ms_figures/fig1_mean_maps_with_dists.png')
 ggsave(plot = mean_four_panel, 
-       filename = file.path(dir_git, 'ms_figures/fig1_mean_maps_with_dists.png'), 
+       filename = fig1_path, 
        width = 6, height = 4, dpi = 300)
 
 
@@ -194,10 +199,19 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
                                 values = c(0, .3, .5, .7, 1),
                                 breaks = c(0, .25, .5, .75, 1),
                                 labels = c('0%', '25%', '50%', '75%', '100%'))
-
+fig2_path <- file.path(dir_git, 'ms_figures/fig2_pct_thr_maps_with_dists.png')
 ggsave(plot = threat_four_panel, 
-       filename = file.path(dir_git, 'ms_figures/fig2_pct_thr_maps_with_dists.png'), 
+       filename = fig2_path,
        width = 6, height = 4, dpi = 300)
+
 ```
 
+### Fig 1: Biodiversity risk
 
+`r knitr::include_graphics(path.expand(fig1_path))`
+
+### Fig 2: Percent of species threatened
+
+`r knitr::include_graphics(path.expand(fig2_path))`
+
+```
