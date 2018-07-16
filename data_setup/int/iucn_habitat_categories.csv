@@ -50,8 +50,8 @@ Caves and Subterranean Habitats (non-aquatic) - Other Subterranean Habitats,7.2,
 Desert - Hot,8.1,8,1,NA,FALSE
 Desert - Temperate,8.2,8,2,NA,FALSE
 Desert - Cold,8.3,8,3,NA,FALSE
-Marine Neritic - Estuaries,9.1,9,1,NA,TRUE
 Marine Neritic - Pelagic,9.1,9,1,NA,TRUE
+Marine Neritic - Estuaries,9.1,9,1,NA,TRUE
 Marine Neritic - Subtidal Rock and Rocky Reefs,9.2,9,2,NA,TRUE
 Marine Neritic - Subtidal Loose Rock/pebble/gravel,9.3,9,3,NA,TRUE
 Marine Neritic - Subtidal Sandy,9.4,9,4,NA,TRUE

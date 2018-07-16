@@ -2,6 +2,20 @@
 
 ### * IUCN API functions
 ### * Simple Features and Raster common functions
+### * Other random helper functions
+
+### cat if not knitting; message if knitting
+
+cat_msg <- function(x, ...) {
+  if(is.null(knitr:::.knitEnv$input.dir)) {
+    ### not in knitr environment, so use cat()
+    cat(x, ..., '\n')
+  } else {
+    ### in knitr env, so use message()
+    message(x, ...)
+  }
+  return(invisible(NULL))
+}
 
 ### Simple Features functions
 
@@ -51,10 +65,10 @@ api_file <- file.path(dir_M, 'git-annex/globalprep/spp_ico',
                       'api_key.csv')
 api_key <- scan(api_file, what = 'character')
 
-# api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
-#   .$version
+api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
+  .$version
 
-api_version <- '2017-3'
+# api_version <- '2017-3'
 
 
 get_from_api <- function(url, param, api_key, delay) {

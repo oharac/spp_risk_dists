@@ -26,14 +26,14 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 dir_git <- '~/github/spp_risk_dists'
 
+### provenance tracking
+library(provRmd); prov_setup()
+
 ### goal specific folders and info
 dir_setup   <- file.path(dir_git, 'data_setup')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-### provenance tracking
-library(provRmd); prov_setup()
-
-source(file.path(dir_setup, 'api_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ```
 
@@ -61,7 +61,7 @@ reload <- FALSE
 
 if(!file.exists(spp_info_from_api_file) | reload) {
   
-  message('Using API to create full species list from scratch')
+  cat_msg('Using API to create full species list from scratch')
   
   spp_npage_url <- sprintf('http://apiv3.iucnredlist.org/api/v3/speciescount?token=%s', api_key)
   n_spp <- fromJSON(spp_npage_url) %>%
@@ -77,13 +77,13 @@ if(!file.exists(spp_info_from_api_file) | reload) {
     setNames(names(.) %>%
                str_replace('_name', ''))
   
-  message('Full list length: ', nrow(spp_df_all), '; unique species IDs: ', 
+  cat_msg('Full list length: ', nrow(spp_df_all), '; unique species IDs: ', 
           length(spp_df_all$iucn_sid %>% unique()))
   write_csv(spp_df_all, spp_info_from_api_file)
   
 } else {
   
-  message('File of API species list exists: \n  ', spp_info_from_api_file)
+  cat_msg('File of API species list exists: \n  ', spp_info_from_api_file)
   git_prov(spp_info_from_api_file, filetype = 'output')
   
 }
@@ -105,9 +105,8 @@ reload <- FALSE
 
 if(!file.exists(spp_habs_from_api_file) | reload) {
   
-  message('Using API to determine species habitats from full species info list')
+  cat_msg('Using API to determine species habitats from full species info list')
   
-  spp_info_from_api_file <- file.path(dir_goal_anx, 'int/spp_info_from_api.csv')
   spp_ids_all <- read_csv(spp_info_from_api_file) %>%
     .$iucn_sid
   
@@ -117,33 +116,34 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
   ### Breaking this into chunks...
   ### 500 spp takes 184 seconds; at that rate, 87851 species should take 
   ###   about 9 hrs.  Each chunk will save to tmp for later combining.
-  
+
   chunk_size <- 2000
   n_chunks <- ceiling(length(spp_ids_all)/chunk_size)
   
-  if(!dir.exists(file.path(dir_goal_anx, 'tmp'))) 
-    dir.create(file.path(dir_goal_anx, 'tmp'))
+  if(!dir.exists(file.path(dir_o_anx, 'tmp'))) {
+    dir.create(file.path(dir_o_anx, 'tmp'))
+  }
   
   for(j in 1:n_chunks) { 
     ### j <- 2
     spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
-    chunk_file <- file.path(dir_goal_anx, 'tmp', 
+    chunk_file <- file.path(dir_o_anx, 'tmp', 
                     sprintf('spp_habs_chunk_%s_%s.csv', 
                             min(spp_index), max(spp_index)))
-    
+
     if(!file.exists(chunk_file)) {
-      message('Getting habitat info for species ', min(spp_index), ' to ', max(spp_index))
+      cat_msg('Getting habitat info for species ', min(spp_index), ' to ', max(spp_index))
       
       spp_ids_chunk <- spp_ids_all[spp_index]
       spp_habs_chunk <- mc_get_from_api(spp_habs_url, spp_ids_chunk, api_key, cores = 12, delay = .5)
 
-      message('... found ', nrow(spp_habs_chunk), ' habitat rows for these species')
+      cat_msg('... found ', nrow(spp_habs_chunk), ' habitat rows for these species')
       
       write_csv(spp_habs_chunk, chunk_file)
       
     } else {
       
-      message('Chunk file ', chunk_file, ' already exists; skipping these spp')
+      cat_msg('Chunk file ', chunk_file, ' already exists; skipping these spp')
       
     }
   }
@@ -151,7 +151,7 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
   ### fields: 
   ### id | code | habitat | suitability | season | majorimportance
 
-  spp_hab_chunk_files <- list.files(file.path(dir_goal_anx, 'tmp'), 
+  spp_hab_chunk_files <- list.files(file.path(dir_o_anx, 'tmp'), 
                                     pattern = 'spp_habs_chunk', 
                                     full.names = TRUE)
   
@@ -172,7 +172,7 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
   
 } else {
   
-  message('File of species habitats from API exists: \n  ', spp_habs_from_api_file)
+  cat_msg('File of species habitats from API exists: \n  ', spp_habs_from_api_file)
   git_prov(spp_habs_from_api_file, filetype = 'output')
   
 }
