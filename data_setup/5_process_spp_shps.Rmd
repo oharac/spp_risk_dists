@@ -32,7 +32,8 @@ dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 ### project specific folders and info
 source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
-dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+# dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', '2017-3'))
 dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
 
 ### Gall-Peters doesn't have an EPSG?
@@ -113,7 +114,7 @@ api_spp <- read_csv(file.path(dir_o_anx, 'iucn',
   filter(iucn_sid %in% marine_spp$iucn_sid)
 
 
-shps_df <- lapply(shps_dbfs, foreign::read.dbf) %>%
+shps_df <- lapply(shps_dbfs, FUN = function(x) foreign::read.dbf(x, as.is = TRUE)) %>%
   setNames(basename(shps_dbfs)) %>%
   bind_rows(.id = 'dbf_file') %>%
   select(dbf_file, iucn_sid = id_no, sciname = binomial, code, presence, subpop) %>%
@@ -192,15 +193,10 @@ map_files <- c(iucn_dbfs, bli_dbfs)
 #   str_replace_all('\\.dbf$|_PART_.+', '') %>%
 #   unique()
 
-map_info_list <- vector('list', length = length(map_files)) %>%
+map_info_list <- lapply(map_files, FUN = function(x) {
+    foreign::read.dbf(x, as.is = TRUE)
+  }) %>%
   setNames(basename(map_files))
-
-for(map_file in map_files) {
-  # cat('Processing', map_file, '...\n')
-  tmp_df <- foreign::read.dbf(map_file)
-
-  map_info_list[[map_file]] <- tmp_df
-}
 
 map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
   mutate(dbf_file = basename(dbf_file)) %>%
@@ -291,7 +287,7 @@ rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 ### If some species already processed, remove from the list to process.
 if(reload == FALSE) {
   maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters'),
-                                        pattern = 'gp.csv') %>%
+                                        pattern = '.csv') %>%
     str_replace_all('iucn_sid_|.csv', '') %>%
     as.integer()
 
@@ -302,11 +298,11 @@ if(reload == FALSE) {
 
 if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
   
-  message('reload == ', reload, '... No maps to process...')
+  cat_msg('reload == ', reload, '... No maps to process...')
   
 } else {
   
-  message('reload == ', reload, '... Maps to process: ', nrow(maps_to_rasterize))
+  cat_msg('reload == ', reload, '... Maps to process: ', nrow(maps_to_rasterize))
 
   ### These will be used as masks
   rast_bathy <- raster(file.path(dir_git, 'spatial',
@@ -334,7 +330,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
     
     shp_full <- ifelse(str_detect(shp, 'bli'), file.path(dir_bli, shp), file.path(dir_shp, shp))
     
-    message(i, ' of ', length(shps), ': reading ', shp, ' from: \n  ', shp_full)
+    cat_msg(i, ' of ', length(shps), ': reading ', shp, ' from: \n  ', shp_full)
 
     polys_all <- read_sf(shp_full) %>%
       clip_to_globe() 
@@ -358,7 +354,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
     ### In each shapefile, loop over each species ID using mclapply().
     ####################################################################.
     
-    message(i, ' of ', length(shps), ': Processing ', shp, ' with ', length(spp_ids), ' species...')
+    cat_msg(i, ' of ', length(shps), ': Processing ', shp, ' with ', length(spp_ids), ' species...')
     
     # system.time({
       tmp <- parallel::mclapply(seq_along(spp_ids),
@@ -366,8 +362,8 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
                                 FUN = function(x) {
         ### x <- 1
         spp <- spp_ids[x]
-        # cat(j, 'of', length(spp_ids), ': Processing', spp, 'in', shp,
-        #     '( group', i, 'of', length(shps), ')...\n')
+        cat_msg(j, 'of', length(spp_ids), ': Processing', spp, 'in', shp,
+                '( group', i, 'of', length(shps), ')...\n')
         
         spp_shp <- polys_match %>%
           filter(iucn_sid == spp) %>%

@@ -33,7 +33,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 # ### provenance tracking
 library(provRmd); prov_setup()
 
-source(file.path(dir_setup, 'api_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ```
 
@@ -78,7 +78,7 @@ if(!file.exists(trends_file)) {
   spp_narr <- vector('list', length = length(spp_ids_valid))
   for(i in seq_along(spp_ids_valid)) { # i <- 1
     spp_id <- spp_ids_valid[i]
-    cat(i, 'Trying ', spp_id, '\n')
+    cat_msg(i, 'Trying ', spp_id, '\n')
     spp_narr_tmp <- get_from_api(spp_narr_url, spp_id, api_key, delay = .1)
     spp_narr[[i]] <- spp_narr_tmp
   }
@@ -116,7 +116,7 @@ if(!file.exists(trends_file)) {
   for(i in 1:nrow(spp_ids_valid)) { # i <- 1
     spp_id <- spp_ids_valid$iucn_sid[i]
     rgn_id <- spp_ids_valid$iucn_rgn[i]
-    cat(i, 'of', nrow(spp_ids_valid), ': Trying spp', spp_id, 'from', rgn_id, '\n')
+    cat_msg(i, 'of', nrow(spp_ids_valid), ': Trying spp', spp_id, 'from', rgn_id, '\n')
     spp_narr_rgn_url <- spp_narr_url %>% str_replace('RGN_ID', rgn_id)
     
     spp_narr_tmp <- get_from_api(spp_narr_rgn_url, spp_id, api_key, delay = .1)
@@ -360,7 +360,7 @@ trend_df <- read_csv(trends_file) %>%
   select(iucn_sid, iucn_rgn, pop_trend, trend_score, trend_source) %>%
   distinct()
 
-write_csv(trend_df, file.path(dir_git, sprintf('data/iucn_trend_by_spp_%s.csv', api_version))
+write_csv(trend_df, file.path(dir_git, sprintf('data/iucn_trend_by_spp_%s.csv', api_version)))
 
 DT::datatable(trend_df)
 ```

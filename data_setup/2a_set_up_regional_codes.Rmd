@@ -33,7 +33,7 @@ dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 # ### provenance tracking
 library(provRmd); prov_setup()
 
-source(file.path(dir_setup, 'api_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ```
 

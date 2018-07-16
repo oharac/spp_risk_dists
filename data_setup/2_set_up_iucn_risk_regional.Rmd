@@ -24,21 +24,22 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
+### provenance tracking
+library(provRmd); prov_setup()
+
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
 dir_setup   <- file.path(dir_git, 'data_setup')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-# ### provenance tracking
-library(provRmd); prov_setup()
 
-source(file.path(dir_setup, 'api_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ```
 
 # Summary
 
-Examine IUCN Red List regional assessments for extinction risk categories.
+Examine IUCN Red List regional assessments for conservation status categories.
 
 # Data Sources
 

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Jun 4 14:44:04 2018 by ohara" />
+<meta name="author" content="Compiled on Mon Jul 16 11:19:14 2018 by ohara" />
 
 
 <title>Set up IUCN marine species ranges by regional assessment</title>
@@ -279,7 +279,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Set up IUCN marine species ranges by regional assessment</h1>
-<h4 class="author"><em><em>Compiled on Mon Jun 4 14:44:04 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Mon Jul 16 11:19:14 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -290,16 +290,16 @@ div.tocify {
 
 <span class="kw">source</span>(<span class="st">'https://raw.githubusercontent.com/oharac/src/master/R/common.R'</span>)
 
-dir_git &lt;-<span class="st"> '~/github/spp_health_dists'</span>
+dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
 
 ### goal specific folders and info
 dir_setup   &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_setup'</span>)
-dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_health_dists'</span>)
+dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
 <span class="co"># </span><span class="al">###</span><span class="co"> provenance tracking</span>
 <span class="kw">library</span>(provRmd); <span class="kw">prov_setup</span>()
 
-<span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'api_fxns.R'</span>))</code></pre></div>
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'common_fxns.R'</span>))</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Examine IUCN Red List regional assessments for extinction risk categories.</p>
@@ -394,7 +394,8 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
                 <span class="st">'pan-africa'</span>          =<span class="st"> '26,27,28,29,30,31,32,33'</span>,
                 <span class="st">'gulf_of_mexico'</span>      =<span class="st"> '5'</span>,
                 <span class="st">'mediterranean'</span>       =<span class="st"> '26,62'</span>, 
-                <span class="st">'persian_gulf'</span>        =<span class="st"> '32'</span>)
+                <span class="st">'persian_gulf'</span>        =<span class="st"> '32'</span>,
+                <span class="st">'global'</span>              =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">66</span>, <span class="dt">collapse =</span> <span class="st">','</span>))
 
 rgn_to_lme_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">iucn_rgn =</span> <span class="kw">names</span>(rgn_to_lme),
                             <span class="dt">lme_id =</span> rgn_to_lme) <span class="op">%&gt;%</span>
@@ -402,34 +403,13 @@ rgn_to_lme_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<
 <span class="st">  </span><span class="kw">unnest</span>(lme_id) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(iucn_rgn) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lme_id =</span> <span class="kw">as.integer</span>(lme_id),
-         <span class="dt">priority =</span> <span class="kw">n</span>())
+         <span class="dt">priority =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(priority)
 
-rgn_spp_lme &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, 
-                                   <span class="kw">sprintf</span>(<span class="st">'data/iucn/iucn_risk_rgn_current_%s.csv'</span>, 
-                                           api_version))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(rgn_to_lme_df, <span class="dt">by =</span> <span class="st">'iucn_rgn'</span>)
-
-rgn_spp_global &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, 
-                                   <span class="kw">sprintf</span>(<span class="st">'data/iucn/iucn_risk_current_%s.csv'</span>, 
-                                           api_version))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(iucn_sid, <span class="dt">gl_cat =</span> cat, <span class="dt">gl_cat_score =</span> cat_score)
-
-clean_conflicts &lt;-<span class="st"> </span>rgn_spp_lme <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(rgn_spp_global, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) <span class="op">%&gt;%</span><span class="st"> </span>### to compare vs. global scores
-<span class="st">  </span><span class="kw">group_by</span>(iucn_sid, sciname, lme_id) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(priority <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(priority)) <span class="op">%&gt;%</span><span class="st"> </span>### in a conflict, keep the rgn with fewer LMEs
-<span class="st">  </span><span class="kw">filter</span>(priority <span class="op">&lt;=</span><span class="st"> </span><span class="dv">3</span> <span class="op">|</span><span class="st"> </span><span class="kw">n</span>() <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st">  </span>### drop if still a conflict between rgns with many LMEs
-<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">cat_score =</span> <span class="kw">mean</span>(cat_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-            <span class="dt">cat_current =</span> <span class="kw">paste</span>(<span class="kw">unique</span>(cat_current), <span class="dt">collapse =</span> <span class="st">','</span>),
-            <span class="dt">rgns =</span> <span class="kw">paste</span>(iucn_rgn, <span class="dt">collapse =</span> <span class="st">','</span>),
-            <span class="dt">cat_score_global =</span> <span class="kw">first</span>(gl_cat_score)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cat_score =</span> <span class="kw">ifelse</span>(<span class="kw">is.nan</span>(cat_score), <span class="ot">NA</span>, cat_score))
-
-<span class="kw">write_csv</span>(clean_conflicts, <span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'data/iucn/iucn_rgn_to_lme_%s.csv'</span>, api_version)))</code></pre></div>
+<span class="kw">write_csv</span>(rgn_to_lme_df, <span class="kw">file.path</span>(dir_git, <span class="kw">sprintf</span>(<span class="st">'spatial/iucn_rgn_to_lme.csv'</span>)))</code></pre></div>
 <p>Where an LME is assigned to multiple regions, use a prioritization then averaging method:</p>
 <ul>
-<li>Prioritize by the region comprising the smallest number of LMEs; e.g. Mediterranean has 1 LME, North Africa has 3, Europe has 8; they all overlap in LME 26. So for the score for LME 26 for a species occurring in all three regions, keep the score for the Mediterranean.</li>
+<li>Prioritize by the region comprising the smallest number of LMEs; e.g. Mediterranean has 1 LME, North Africa has 3, Europe has 8; they all overlap in LME 26. So for the score for LME 26 for a species assessed in all three regions, keep the score for the Mediterranean.</li>
 <li>If after prioritizing, multiple regions still overlap in an LME, take the average score of the overlapping regional assessments for that LME.</li>
 </ul>
 <hr />
@@ -439,14 +419,14 @@ clean_conflicts &lt;-<span class="st"> </span>rgn_spp_lme <span class="op">%&gt;
 <div id="provenance" class="section level1">
 <h1><span class="header-section-number">4</span> Provenance</h1>
 <ul>
-<li><em>Run ID: 2 (6eb3c5f); run tag: “standard run”</em></li>
-<li><em>Run elapsed time: 5.039 seconds; run memory usage: 982.1 MB</em></li>
+<li><em>Run ID: 1 (dcc787b); run tag: “standard run”</em></li>
+<li><em>Run elapsed time: 1.695 seconds; run memory usage: 164.9 MB</em></li>
 <li><em>System info: </em>
 <ul>
 <li><em>System: Linux, Release: 4.4.0-112-generic. Machine: x86_64. User: ohara.</em></li>
 <li><em>R version: R version 3.4.4 (2018-03-15), Platform: x86_64-pc-linux-gnu, Running under: Ubuntu 14.04.5 LTS.</em></li>
 <li><em>Attached base packages: parallel, stats, graphics, grDevices, utils, datasets, methods, base</em></li>
-<li><em>Other attached packages: bindrcpp_0.2, jsonlite_1.5, provRmd_0.1.1, stringr_1.2.0, RColorBrewer_1.1-2, dplyr_0.7.2, purrr_0.2.3, readr_1.1.0, tidyr_0.7.0, tibble_1.3.4, ggplot2_2.2.1.9000, tidyverse_1.1.1</em></li>
+<li><em>Other attached packages: bindrcpp_0.2, jsonlite_1.5, provRmd_0.1.1, stringr_1.3.1, RColorBrewer_1.1-2, dplyr_0.7.2, purrr_0.2.3, readr_1.1.0, tidyr_0.7.0, tibble_1.3.4, ggplot2_2.2.1.9000, tidyverse_1.1.1</em></li>
 </ul></li>
 </ul>
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
@@ -454,75 +434,59 @@ clean_conflicts &lt;-<span class="st"> </span>rgn_spp_lme <span class="op">%&gt;
 <!-- Generated by graphviz version 2.38.0 (20140413.2041)
  -->
 <!-- Title: %3 Pages: 1 -->
-<svg width="544pt" height="202pt" viewBox="0.00 0.00 544.22 202.40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="438pt" height="202pt" viewBox="0.00 0.00 438.20 202.40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 198.4)">
 <title>
 %3
 </title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-198.4 540.225,-198.4 540.225,4 -4,4"></polygon> <!-- 5 --> <g id="node1" class="node">
+<polygon fill="white" stroke="none" points="-4,4 -4,-198.4 434.204,-198.4 434.204,4 -4,4"></polygon> <!-- 5 --> <g id="node1" class="node">
 <title>
 5
 </title>
-<g id="a_node1"><a xlink:title="no version control info found"> <polygon fill="#fffacc" stroke="red" stroke-width="3" points="87.185,-36 33.185,-36 33.185,-0 87.185,-0 87.185,-36"></polygon> <text text-anchor="middle" x="60.185" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">api_fxns.R</text> </a> </g> </g> <!-- 6 --> <g id="node2" class="node">
+<g id="a_node1"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/f8c9c98f42719e09189157a4ca602dc702dc5127"> <polygon fill="#fffacc" stroke="#b38f59" stroke-width="2" points="90.024,-36 30.346,-36 30.346,-0 90.024,-0 90.024,-36"></polygon> <text text-anchor="middle" x="60.185" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">common_fxns.R</text> </a> </g> </g> <!-- 6 --> <g id="node2" class="node">
 <title>
 6
 </title>
-<g id="a_node2"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="red" stroke-width="3" cx="355.185" cy="-176.4" rx="58.8219" ry="18"></ellipse> <text text-anchor="middle" x="355.185" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_rgn_current_2017-3.csv</text> </a> </g> </g> <!-- 2 --> <g id="node7" class="node">
-<title>
-2
-</title>
-<g id="a_node7"><a xlink:title="no version control info found"> <polygon fill="#e6c18a" stroke="red" stroke-width="3" points="430.058,-115.2 292.312,-115.2 292.312,-79.2 430.058,-79.2 430.058,-115.2"></polygon> <text text-anchor="middle" x="361.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#code_LMEs</text> </a> </g> </g> <!-- 6&#45;&gt;2 --> <g id="edge2" class="edge">
-<title>
-6-&gt;2
-</title>
-<g id="a_edge2"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M356.517,-158.267C357.387,-147.073 358.531,-132.347 359.469,-120.277"></path> <polygon fill="#334766" stroke="#334766" points="361.214,-120.406 359.857,-115.285 357.725,-120.135 361.214,-120.406"></polygon> </a> </g> <text text-anchor="middle" x="365.688" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 7 --> <g id="node3" class="node">
-<title>
-7
-</title>
-<g id="a_node3"><a xlink:title="https://github.com/oharac/spp_health_dists/commit/4420de079611b71683fd8379a15699b2738b7765"> <ellipse fill="#a1bce6" stroke="yellow" stroke-width="3" cx="484.185" cy="-176.4" rx="52.0797" ry="18"></ellipse> <text text-anchor="middle" x="484.185" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_current_2017-3.csv</text> </a> </g> </g> <!-- 7&#45;&gt;2 --> <g id="edge3" class="edge">
-<title>
-7-&gt;2
-</title>
-<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M460.177,-160.332C440.988,-148.288 413.924,-131.301 392.942,-118.132"></path> <polygon fill="#334766" stroke="#334766" points="393.728,-116.559 388.563,-115.383 391.867,-119.524 393.728,-116.559"></polygon> </a> </g> <text text-anchor="middle" x="432.688" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 8 --> <g id="node4" class="node">
-<title>
-8
-</title>
-<g id="a_node4"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="red" stroke-width="3" cx="361.185" cy="-18" rx="51.1169" ry="18"></ellipse> <text text-anchor="middle" x="361.185" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_rgn_to_lme_2017-3.csv</text> </a> </g> </g> <!-- 1 --> <g id="node5" class="node">
+<g id="a_node2"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/23b143de1e129dada553208e7c08ad3f8b1149c6"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="207.185" cy="-18" rx="39.3367" ry="18"></ellipse> <text text-anchor="middle" x="207.185" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_rgn_to_lme.csv</text> </a> </g> </g> <!-- 1 --> <g id="node3" class="node">
 <title>
 1
 </title>
-<g id="a_node5"><a xlink:title="no version control info found"> <polygon fill="#e6c18a" stroke="red" stroke-width="3" points="257.547,-194.4 154.823,-194.4 154.823,-158.4 257.547,-158.4 257.547,-194.4"></polygon> <text text-anchor="middle" x="206.185" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd</text> </a> </g> </g> <!-- 4 --> <g id="node6" class="node">
+<g id="a_node3"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/23b143de1e129dada553208e7c08ad3f8b1149c6"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="258.547,-194.4 155.823,-194.4 155.823,-158.4 258.547,-158.4 258.547,-194.4"></polygon> <text text-anchor="middle" x="207.185" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd</text> </a> </g> </g> <!-- 4 --> <g id="node4" class="node">
 <title>
 4
 </title>
-<g id="a_node6"><a xlink:title="no version control info found"> <polygon fill="#e6c18a" stroke="red" stroke-width="3" points="120.556,-115.2 -0.18557,-115.2 -0.18557,-79.2 120.556,-79.2 120.556,-115.2"></polygon> <text text-anchor="middle" x="60.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#setup</text> </a> </g> </g> <!-- 1&#45;&gt;4 --> <g id="edge5" class="edge">
+<g id="a_node4"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/23b143de1e129dada553208e7c08ad3f8b1149c6"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="120.556,-115.2 -0.18557,-115.2 -0.18557,-79.2 120.556,-79.2 120.556,-115.2"></polygon> <text text-anchor="middle" x="60.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#setup</text> </a> </g> </g> <!-- 1&#45;&gt;4 --> <g id="edge3" class="edge">
 <title>
 1-&gt;4
 </title>
-<g id="a_edge5"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M173.783,-158.267C151.1,-146.273 120.75,-130.225 97.1272,-117.734"></path> <polygon fill="#665233" stroke="#665233" points="97.7347,-116.076 92.4966,-115.285 96.0986,-119.17 97.7347,-116.076"></polygon> </a> </g> <text text-anchor="middle" x="159.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge6" class="edge">
+<g id="a_edge3"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M174.561,-158.267C151.723,-146.273 121.165,-130.225 97.3802,-117.734"></path> <polygon fill="#665233" stroke="#665233" points="97.9582,-116.061 92.7179,-115.285 96.3309,-119.159 97.9582,-116.061"></polygon> </a> </g> <text text-anchor="middle" x="159.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 2 --> <g id="node5" class="node">
+<title>
+2
+</title>
+<g id="a_node5"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/23b143de1e129dada553208e7c08ad3f8b1149c6"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="276.058,-115.2 138.312,-115.2 138.312,-79.2 276.058,-79.2 276.058,-115.2"></polygon> <text text-anchor="middle" x="207.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#code_LMEs</text> </a> </g> </g> <!-- 1&#45;&gt;2 --> <g id="edge4" class="edge">
 <title>
 1-&gt;2
 </title>
-<g id="a_edge6"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M240.585,-158.267C264.766,-146.223 297.155,-130.091 322.279,-117.578"></path> <polygon fill="#665233" stroke="#665233" points="323.186,-119.081 326.882,-115.285 321.626,-115.948 323.186,-119.081"></polygon> </a> </g> <text text-anchor="middle" x="310.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3 --> <g id="node8" class="node">
+<g id="a_edge4"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M207.185,-158.267C207.185,-147.173 207.185,-132.609 207.185,-120.601"></path> <polygon fill="#665233" stroke="#665233" points="208.935,-120.285 207.185,-115.285 205.435,-120.285 208.935,-120.285"></polygon> </a> </g> <text text-anchor="middle" x="228.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 3 --> <g id="node6" class="node">
 <title>
 3
 </title>
-<g id="a_node8"><a xlink:title="no version control info found"> <polygon fill="#e6c18a" stroke="red" stroke-width="3" points="274.223,-115.2 138.147,-115.2 138.147,-79.2 274.223,-79.2 274.223,-115.2"></polygon> <text text-anchor="middle" x="206.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;3 --> <g id="edge7" class="edge">
+<g id="a_node6"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/23b143de1e129dada553208e7c08ad3f8b1149c6"> <polygon fill="#e6c18a" stroke="yellow" stroke-width="3" points="430.223,-115.2 294.147,-115.2 294.147,-79.2 430.223,-79.2 430.223,-115.2"></polygon> <text text-anchor="middle" x="362.185" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2a_set_up_regional_codes.Rmd#prov_footer</text> </a> </g> </g> <!-- 1&#45;&gt;3 --> <g id="edge5" class="edge">
 <title>
 1-&gt;3
 </title>
-<g id="a_edge7"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M206.185,-158.267C206.185,-147.173 206.185,-132.609 206.185,-120.601"></path> <polygon fill="#665233" stroke="#665233" points="207.935,-120.285 206.185,-115.285 204.435,-120.285 207.935,-120.285"></polygon> </a> </g> <text text-anchor="middle" x="227.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 4&#45;&gt;5 --> <g id="edge1" class="edge">
+<g id="a_edge5"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M241.585,-158.267C265.766,-146.223 298.155,-130.091 323.279,-117.578"></path> <polygon fill="#665233" stroke="#665233" points="324.186,-119.081 327.882,-115.285 322.626,-115.948 324.186,-119.081"></polygon> </a> </g> <text text-anchor="middle" x="311.524" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 4&#45;&gt;5 --> <g id="edge1" class="edge">
 <title>
 4-&gt;5
 </title>
-<g id="a_edge1"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M60.185,-79.0668C60.185,-67.9726 60.185,-53.4093 60.185,-41.4011"></path> <polygon fill="#665233" stroke="#665233" points="61.9351,-41.0853 60.185,-36.0853 58.4351,-41.0853 61.9351,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="81.5243" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 2&#45;&gt;8 --> <g id="edge4" class="edge">
+<g id="a_edge1"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M60.185,-79.0668C60.185,-67.9726 60.185,-53.4093 60.185,-41.4011"></path> <polygon fill="#665233" stroke="#665233" points="61.9351,-41.0853 60.185,-36.0853 58.4351,-41.0853 61.9351,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="81.5243" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 2&#45;&gt;6 --> <g id="edge2" class="edge">
 <title>
-2-&gt;8
+2-&gt;6
 </title>
-<g id="a_edge4"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M361.185,-79.0668C361.185,-67.9726 361.185,-53.4093 361.185,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="362.935,-41.0853 361.185,-36.0853 359.435,-41.0853 362.935,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="384.191" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
+<g id="a_edge2"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M207.185,-79.0668C207.185,-67.9726 207.185,-53.4093 207.185,-41.4011"></path> <polygon fill="#3d6633" stroke="#3d6633" points="208.935,-41.0853 207.185,-36.0853 205.435,-41.0853 208.935,-41.0853"></polygon> </a> </g> <text text-anchor="middle" x="230.191" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> </g>
 </svg>
-<div id="htmlwidget-03ecd8e35f54958e394d" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-03ecd8e35f54958e394d">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 2 (6eb3c5f): standard run (Mon Jun  4 14:44:10 2018)<\/caption>","data":[[0,0,0,0,1,2,3,4],["2a_set_up_regional_codes.Rmd","2a_set_up_regional_codes.Rmd#code_LMEs","2a_set_up_regional_codes.Rmd#prov_footer","2a_set_up_regional_codes.Rmd#setup","api_fxns.R","iucn_risk_rgn_current_2017-3.csv","iucn_risk_current_2017-3.csv","iucn_rgn_to_lme_2017-3.csv"],["prov_footer","code_LMEs","prov_footer","setup","setup","code_LMEs","code_LMEs","code_LMEs"],["~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data_setup","~/github/spp_health_dists/data/iucn","~/github/spp_health_dists/data/iucn","~/github/spp_health_dists/data/iucn"],["parent_script","parent_chunk","parent_chunk","parent_chunk","sourced_script","input","input","output"],[null,null,null,null,null,null,true,null],[null,null,null,null,null,null,"4420de0",null]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d187b94ca690d17ff0ba" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d187b94ca690d17ff0ba">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 1 (dcc787b): standard run (Mon Jul 16 11:19:17 2018)<\/caption>","data":[[0,0,0,0,1,2],["2a_set_up_regional_codes.Rmd","2a_set_up_regional_codes.Rmd#code_LMEs","2a_set_up_regional_codes.Rmd#prov_footer","2a_set_up_regional_codes.Rmd#setup","common_fxns.R","iucn_rgn_to_lme.csv"],["prov_footer","code_LMEs","prov_footer","setup","setup","code_LMEs"],["~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/data_setup","~/github/spp_risk_dists/spatial"],["parent_script","parent_chunk","parent_chunk","parent_chunk","sourced_script","output"],[true,true,true,true,false,false],["23b143d","23b143d","23b143d","23b143d","f8c9c98","23b143d"]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 
