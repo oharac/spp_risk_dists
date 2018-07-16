@@ -190,11 +190,20 @@ spp_info <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv'
   select(iucn_sid, sciname, shp_basename) %>%
   left_join(taxa_sums, by = 'shp_basename')
 
+spp_range_var <- read_csv(file.path(dir_git, 'data', 
+                                    sprintf('iucn_spp_range_area_%s.csv', api_version)),
+                          col_types = 'ddcc') %>%
+  mutate(shp_basename = str_replace_all(basename(tolower(dbf_file)), '.dbf|_part.+', '')) %>%
+  left_join(taxa_sums, by = 'shp_basename') %>%
+  group_by(taxon) %>%
+  summarize(mean_range = mean(range_km2),
+            var_range = var(range_km2),
+            coef_var  = sd(range_km2) / mean(range_km2))
+  
+
 taxa_gps <- spp_info$taxon %>% unique()
 
-reload <- FALSE
-
-for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[1]
+for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[3]
   
   taxon_txt <- taxon_gp %>% tolower() %>% str_replace_all('chordata: |[^a-z]+', '')
 
@@ -234,18 +243,26 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[1]
   cat(paste0('\n\n### ', taxon_gp, ' (', n_spp_in_taxa, ' species)\n\n'))
 
   mdl_summary(lm(risk_rrweight ~ risk_unweight, data = df)) %>%
+    mutate(coef_var_range = spp_range_var %>% 
+             filter(taxon == taxon_gp) %>% 
+             .$coef_var) %>%
     knitr::kable() %>%
     print()
   
   mdl_summary(lm(threat_rrweight ~ threat_unweight, data = df)) %>%
+    mutate(coef_var_range = spp_range_var %>% 
+             filter(taxon == taxon_gp) %>% 
+             .$coef_var) %>%
     knitr::kable() %>%
     print()
   
   mdl_summary(lm(nspp_rrweight ~ nspp_unweight, data = df)) %>%
+    mutate(coef_var_range = spp_range_var %>% 
+             filter(taxon == taxon_gp) %>% 
+             .$coef_var) %>%
     knitr::kable() %>%
     print()
 
 }
 
 ```
-

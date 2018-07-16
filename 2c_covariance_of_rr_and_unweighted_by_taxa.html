@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Jul 11 10:54:41 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Jul 15 17:43:57 2018 by ohara" />
 
 
 <title>Biodiversity risk covariance exploration</title>
@@ -261,7 +261,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk covariance exploration</h1>
-<h4 class="author"><em><em>Compiled on Wed Jul 11 10:54:41 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Jul 15 17:43:57 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -708,11 +708,20 @@ mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) 
 <span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, shp_basename) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(taxa_sums, <span class="dt">by =</span> <span class="st">'shp_basename'</span>)
 
+spp_range_var &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>, 
+                                    <span class="kw">sprintf</span>(<span class="st">'iucn_spp_range_area_%s.csv'</span>, api_version)),
+                          <span class="dt">col_types =</span> <span class="st">'ddcc'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">shp_basename =</span> <span class="kw">str_replace_all</span>(<span class="kw">basename</span>(<span class="kw">tolower</span>(dbf_file)), <span class="st">'.dbf|_part.+'</span>, <span class="st">''</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(taxa_sums, <span class="dt">by =</span> <span class="st">'shp_basename'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(taxon) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean_range =</span> <span class="kw">mean</span>(range_km2),
+            <span class="dt">var_range =</span> <span class="kw">var</span>(range_km2),
+            <span class="dt">coef_var  =</span> <span class="kw">sd</span>(range_km2) <span class="op">/</span><span class="st"> </span><span class="kw">mean</span>(range_km2))
+  
+
 taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unique</span>()
 
-reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
-
-<span class="cf">for</span>(taxon_gp <span class="cf">in</span> taxa_gps) { ### taxon_gp &lt;- taxa_gps[1]
+<span class="cf">for</span>(taxon_gp <span class="cf">in</span> taxa_gps) { ### taxon_gp &lt;- taxa_gps[3]
   
   taxon_txt &lt;-<span class="st"> </span>taxon_gp <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tolower</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">str_replace_all</span>(<span class="st">'chordata: |[^a-z]+'</span>, <span class="st">''</span>)
 
@@ -752,14 +761,23 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="kw">cat</span>(<span class="kw">paste0</span>(<span class="st">'</span><span class="ch">\n\n</span><span class="st">### '</span>, taxon_gp, <span class="st">' ('</span>, n_spp_in_taxa, <span class="st">' species)</span><span class="ch">\n\n</span><span class="st">'</span>))
 
   <span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>risk_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">coef_var_range =</span> spp_range_var <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span><span class="kw">filter</span>(taxon <span class="op">==</span><span class="st"> </span>taxon_gp) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span>.<span class="op">$</span>coef_var) <span class="op">%&gt;%</span>
 <span class="st">    </span>knitr<span class="op">::</span><span class="kw">kable</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">print</span>()
   
   <span class="kw">mdl_summary</span>(<span class="kw">lm</span>(threat_rrweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">coef_var_range =</span> spp_range_var <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span><span class="kw">filter</span>(taxon <span class="op">==</span><span class="st"> </span>taxon_gp) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span>.<span class="op">$</span>coef_var) <span class="op">%&gt;%</span>
 <span class="st">    </span>knitr<span class="op">::</span><span class="kw">kable</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">print</span>()
   
   <span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">coef_var_range =</span> spp_range_var <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span><span class="kw">filter</span>(taxon <span class="op">==</span><span class="st"> </span>taxon_gp) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">             </span>.<span class="op">$</span>coef_var) <span class="op">%&gt;%</span>
 <span class="st">    </span>knitr<span class="op">::</span><span class="kw">kable</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">print</span>()
 
@@ -776,6 +794,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -787,6 +806,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8338</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -796,6 +816,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8338</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 </tbody>
 </table>
@@ -809,6 +830,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -820,6 +842,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7977</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -829,6 +852,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7977</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 </tbody>
 </table>
@@ -842,6 +866,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -853,6 +878,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.1417</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -862,6 +888,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.1417</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">6.155479</td>
 </tr>
 </tbody>
 </table>
@@ -878,6 +905,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -889,6 +917,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.6559</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -898,6 +927,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.6559</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 </tbody>
 </table>
@@ -911,6 +941,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -922,6 +953,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7181</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -931,6 +963,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7181</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 </tbody>
 </table>
@@ -944,6 +977,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -955,6 +989,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.1693</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -964,6 +999,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.1693</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">5.253686</td>
 </tr>
 </tbody>
 </table>
@@ -980,6 +1016,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -991,6 +1028,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7384</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1000,6 +1038,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7384</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 </tbody>
 </table>
@@ -1013,6 +1052,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1024,6 +1064,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7709</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1033,6 +1074,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7709</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 </tbody>
 </table>
@@ -1046,6 +1088,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1057,6 +1100,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.00e+00</td>
 <td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1066,6 +1110,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">3.14e-05</td>
 <td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.902521</td>
 </tr>
 </tbody>
 </table>
@@ -1082,6 +1127,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1093,6 +1139,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.779</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1102,6 +1149,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.779</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 </tbody>
 </table>
@@ -1115,6 +1163,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1126,6 +1175,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7811</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1135,6 +1185,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7811</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 </tbody>
 </table>
@@ -1148,6 +1199,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1159,6 +1211,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7348</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1168,6 +1221,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7348</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">0.7220314</td>
 </tr>
 </tbody>
 </table>
@@ -1184,6 +1238,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1195,6 +1250,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.113544</td>
 <td align="right">0.9741</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1204,6 +1260,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.000000</td>
 <td align="right">0.9741</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 </tbody>
 </table>
@@ -1217,6 +1274,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1228,6 +1286,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.9777</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1237,6 +1296,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.9777</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 </tbody>
 </table>
@@ -1250,6 +1310,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1261,6 +1322,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0458</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1270,6 +1332,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0458</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.668093</td>
 </tr>
 </tbody>
 </table>
@@ -1286,6 +1349,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1297,6 +1361,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">1.9e-05</td>
 <td align="right">0.8265</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">2.23027</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1306,6 +1371,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0e+00</td>
 <td align="right">0.8265</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">2.23027</td>
 </tr>
 </tbody>
 </table>
@@ -1319,6 +1385,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1330,6 +1397,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">NaN</td>
 <td align="right">0</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">2.23027</td>
 </tr>
 </tbody>
 </table>
@@ -1343,6 +1411,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1354,6 +1423,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0487</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">2.23027</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1363,6 +1433,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0487</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">2.23027</td>
 </tr>
 </tbody>
 </table>
@@ -1379,6 +1450,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1390,6 +1462,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7853</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1399,6 +1472,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7853</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 </tbody>
 </table>
@@ -1412,6 +1486,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1423,6 +1498,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7772</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1432,6 +1508,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.7772</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 </tbody>
 </table>
@@ -1445,6 +1522,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1456,6 +1534,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2152</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1465,6 +1544,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2152</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.108053</td>
 </tr>
 </tbody>
 </table>
@@ -1481,6 +1561,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1492,6 +1573,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2893</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1501,6 +1583,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2893</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 </tbody>
 </table>
@@ -1514,6 +1597,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1525,6 +1609,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2782</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1534,6 +1619,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.2782</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 </tbody>
 </table>
@@ -1547,6 +1633,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1558,6 +1645,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1567,6 +1655,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.52777</td>
 </tr>
 </tbody>
 </table>
@@ -1583,6 +1672,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1594,6 +1684,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8403</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1603,6 +1694,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8403</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 </tbody>
 </table>
@@ -1616,6 +1708,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1627,6 +1720,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8884</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1636,6 +1730,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.8884</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 </tbody>
 </table>
@@ -1649,6 +1744,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1660,6 +1756,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0755527</td>
 <td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1669,6 +1766,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000000</td>
 <td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">4.523029</td>
 </tr>
 </tbody>
 </table>
@@ -1685,6 +1783,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1696,6 +1795,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0529445</td>
 <td align="right">0.9666</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1705,6 +1805,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000000</td>
 <td align="right">0.9666</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 </tbody>
 </table>
@@ -1718,6 +1819,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1729,6 +1831,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.9781</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1738,6 +1841,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.9781</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 </tbody>
 </table>
@@ -1751,6 +1855,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1762,6 +1867,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0345551</td>
 <td align="right">0.0372</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1771,6 +1877,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0.0000000</td>
 <td align="right">0.0372</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">1.639402</td>
 </tr>
 </tbody>
 </table>
@@ -1787,6 +1894,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1798,6 +1906,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.4696</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
@@ -1807,6 +1916,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.4696</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 </tbody>
 </table>
@@ -1820,6 +1930,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1831,6 +1942,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.622</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 <tr class="even">
 <td align="left">threat_unweight</td>
@@ -1840,6 +1952,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.622</td>
 <td align="left">threat_rrweight ~ threat_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 </tbody>
 </table>
@@ -1853,6 +1966,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <th align="right">p.value</th>
 <th align="right">adj.rsq</th>
 <th align="left">call</th>
+<th align="right">coef_var_range</th>
 </tr>
 </thead>
 <tbody>
@@ -1864,6 +1978,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
@@ -1873,6 +1988,7 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 <td align="right">0</td>
 <td align="right">0.0345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
+<td align="right">2.66497</td>
 </tr>
 </tbody>
 </table>

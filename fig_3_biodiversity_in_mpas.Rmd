@@ -35,7 +35,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/api_fxns.R'))
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
 ```
 
@@ -52,9 +52,9 @@ Examine correlation between risk and variance?  A cell with medium risk and high
 
 ``` {r var vs mean, eval = FALSE}
 
-mean_rast   <- raster(file.path(dir_git, 'output', 'mean_risk_raster_gp.tif'))
-var_rast    <- raster(file.path(dir_git, 'output', 'var_risk_raster_gp.tif'))
-n_spp_rast  <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_gp.tif'))
+mean_rast   <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
+var_rast    <- raster(file.path(dir_git, 'output', 'var_risk_raster.tif'))
+n_spp_rast  <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster.tif'))
 
 
 mean_var_df <- data.frame(mean_risk = values(mean_rast),
@@ -94,13 +94,13 @@ MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs
 
 ``` {r set up mpa and values dataframe}
 
-mean_rast     <- raster(file.path(dir_git, 'output', 'mean_risk_raster_gp.tif'))
-var_rast      <- raster(file.path(dir_git, 'output', 'var_risk_raster_gp.tif'))
-n_spp_rast    <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_gp.tif'))
-n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_gp.tif'))
-trend_rast    <- raster(file.path(dir_git, 'output', 'trend_raster_gp.tif'))
-eez_rast      <- raster(file.path(dir_git, 'spatial', 'eez_rast_gp.tif'))
-mpa_df        <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area_gp.csv'))
+mean_rast     <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
+var_rast      <- raster(file.path(dir_git, 'output', 'var_risk_raster.tif'))
+n_spp_rast    <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster.tif'))
+n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster.tif'))
+trend_rast    <- raster(file.path(dir_git, 'output', 'trend_raster.tif'))
+eez_rast      <- raster(file.path(dir_git, 'spatial', 'eez_rast.tif'))
+mpa_df        <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area.csv'))
 
 # tmp_rast <- calc(eez_rast, fun = function(x) x %in% c(1:212, 214:255))
 ### excludes high seas and antarctica
@@ -158,11 +158,11 @@ no_take_means <- no_take_df %>%
 
 ``` {r set up overall rr-weighted dataframe}
 
-mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_gp.tif'))
-var_rr_rast       <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_gp.tif'))
-sr_rr_rast        <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_gp.tif'))
-sr_rr_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_gp.tif'))
-trend_rr_rast     <- raster(file.path(dir_git, 'output', 'trend_rr_raster_gp.tif'))
+mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
+var_rr_rast       <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster.tif'))
+sr_rr_rast        <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster.tif'))
+sr_rr_threat_rast <- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster.tif'))
+trend_rr_rast     <- raster(file.path(dir_git, 'output', 'trend_rr_raster.tif'))
 
 risk_rr_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
                          eez       = values(eez_rast),

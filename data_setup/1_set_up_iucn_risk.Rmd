@@ -430,7 +430,7 @@ spp_assessed_yr_class <- spp_ts %>%
   arrange(year) %>%
   ungroup() %>%
   left_join(spp_class, by = 'iucn_sid') %>%
-  select(year, iucn_sid, kingdom, phylum, class) %>%
+  select(year, iucn_sid, kingdom, phylum, class, order) %>%
   distinct()
 
 spp_assessed <- spp_assessed_yr_class %>%
@@ -446,6 +446,17 @@ ggplot(spp_assessed, aes(x = year, y = n_in_gp, fill = taxa_gp)) +
   ggtheme_plot() +
   geom_area() +
   scale_x_continuous(limits = c(1982, 2018))
+
+spp_class_order <- spp_ts %>%
+  filter(!is.na(cat_ts_score)) %>%
+  select(-year, -cat_ts_score) %>%
+  distinct() %>%
+  left_join(spp_class, by = 'iucn_sid') %>%
+  group_by(kingdom, phylum, class, order) %>%
+  summarize(n_in_order = n()) %>%
+  group_by(class) %>%
+  mutate(n_in_class = sum(n_in_order)) %>%
+  ungroup()
 
 ```
 -----
