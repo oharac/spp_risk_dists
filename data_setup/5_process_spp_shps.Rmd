@@ -332,9 +332,9 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
     
     cat_msg(i, ' of ', length(shps), ': reading ', shp, ' from: \n  ', shp_full)
 
-    polys_all <- read_sf(shp_full) %>%
-      clip_to_globe() 
-    ### in common_fxn.R: ensures no coordinates outside +-180, +-90
+    polys_all <- read_sf(shp_full) 
+      ### we will check geoms and fix them inside the mclapply, 
+      ### and then reproject, one species at a time
     
     if(str_detect(shp, 'bli_marine')) {
       polys_all$subpop <- NA
@@ -362,11 +362,38 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
                                 FUN = function(x) {
         ### x <- 1
         spp <- spp_ids[x]
-        cat_msg(j, 'of', length(spp_ids), ': Processing', spp, 'in', shp,
-                '( group', i, 'of', length(shps), ')...\n')
+        cat_msg(x, ' of ', length(spp_ids), ': Processing ', spp, ' in ', shp,
+                ' (group ', i, ' of ', length(shps), ')...\n')
         
         spp_shp <- polys_match %>%
-          filter(iucn_sid == spp) %>%
+          filter(iucn_sid == spp)
+        
+        valid_check <- st_is_valid(spp_shp)
+          ### can return a vector if multiple polygons with same ID
+        if(any(!valid_check)) {
+          cat_msg('Found invalid geometries in ', spp, '; fixing with buffer = 0...')
+          
+          ### check area before and after buffering to make sure no loss
+          area_pre  <- st_area(spp_shp)
+          spp_shp   <- st_buffer(spp_shp, dist = 0)
+          area_post <- st_area(spp_shp)
+          
+          ### error check to make sure the buffer didn't lose polygons
+          if(!all.equal(area_pre, area_post)) {
+              ### use all.equal() for near equality, and for comparing all 
+              ### elements in case of a vector
+            cat_msg('Error: iucn_sid: ', spp, ': area_pre = ', area_pre, 
+                    '; area_post = ', area_post, '; not equal!')
+            stop('Area_pre and area_post not equal!')
+          } else {
+            cat_msg('Area check good! iucn_sid: ', spp, ': area_pre = ', area_pre, 
+                    '; area_post = ', area_post, '; all equal!')
+          }
+        }
+      
+        spp_shp <- spp_shp %>%
+          clip_to_globe() %>%
+            ### in common_fxn.R: ensures no coordinates outside +-180, +-90
           st_transform(gp_proj4)
         ### plot(spp_shp %>% select(presence))
         

@@ -1,5 +1,5 @@
 ---
-title: 'Biodiversity risk four-panel figures'
+title: 'Biodiversity risk and pct threatened four-panel figures'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -36,7 +36,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/api_fxns.R'))
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -78,15 +78,12 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-agg_fact <- 1 ### for map creation, aggregate for speed and ease; but
-              ### not for density plots!
-
-risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_gp.tif'))
-risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_gp.tif'))
-threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster_gp.tif'))
-threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_gp.tif'))
-n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_gp.tif'))
-n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_gp.tif'))
+risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
+risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
+threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster.tif'))
+threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster.tif'))
+n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster.tif'))
+n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster.tif'))
 
 ```
 
@@ -114,7 +111,7 @@ four_panel <- function(map1_rast, map2_rast,
   marg_val <- .25 ### plot.margin values in cm, with 0 between the map and density
   
   map1 <- ggplot(map_df) +
-    geom_raster(aes(x, y, fill = val_2), show.legend = FALSE) +
+    geom_raster(aes(x, y, fill = val_1), show.legend = FALSE) +
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
@@ -125,8 +122,6 @@ four_panel <- function(map1_rast, map2_rast,
                                                   label.hjust = 1)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0))
-  
-  # ggsave('map1_test.png')
   
   map2 <- ggplot(map_df) +
     geom_raster(aes(x, y, fill = val_2), show.legend = FALSE) +
@@ -165,7 +160,7 @@ four_panel <- function(map1_rast, map2_rast,
     coord_flip()
     
 
-  dens2 <- ggplot(map_df, aes(x = val_2)) +
+  dens2 <- ggplot(map_df) +
     ggtheme_plot() +
     geom_vline(xintercept = mean(map_df$val_2, na.rm = TRUE)) +
     geom_segment(data = colorbar_df, 
