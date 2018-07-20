@@ -79,15 +79,19 @@ n_threat_rast <- raster(here('output', 'n_threat_raster.tif'))
 
 ```{r}
 # Original raster
-f_rast <- raster(here("data", "gfw_data", "fishing_intensity_gp.tif"))
-log_f_rast <- log10(f_rast)
+f_rast <- raster(here("data", "gfw_data", "total_fishing_hours.tif"))
+
+# Calculate intensity (hours / area) log-transform, re-project
+log_f_rast_gp <- (f_rast / area(f_rast)) %>% 
+  log() %>% 
+  projectRaster(to = mean_rr_rast)
 ```
 
 We also need a coastline shapefile for the maps
 
 ```{r}
 land_poly <- sf::read_sf(here('spatial', 'ne_10m_land', 'ne_10m_land.shp')) %>% 
-  sf::st_transform(crs = "+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs ")
+  sf::st_transform(crs = "+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
 ```
 
 
@@ -101,7 +105,7 @@ risk_f_df <- coordinates(mean_rr_rast) %>%
          n_spp = values(n_spp_rast),
          n_threat = values(n_threat_rast),
          n_norm_threat = n_threat / n_spp,
-         log_f_effort= values(log_f_rast)) %>%
+         log_f_effort= values(log_f_rast_gp)) %>%
   filter(!is.na(mean_rr_risk)) %>%
   left_join(read_csv(here('spatial','rgn_names.csv')), by = c('rgn_id'))
 ```
@@ -115,18 +119,18 @@ quantiles <- data.frame(log_f_effort = quantile(risk_f_df$log_f_effort, breaks, 
                         mean_rr_risk = quantile(risk_f_df$mean_rr_risk, breaks, na.rm = T))
 ```
 
-```{r rf, fig.cap = paste("Dashed vertical line indicates the 10th percentile of the log-transformed fishing effort corresponding to", formatC(quantiles$log_f_effort[3], digits = 2, format = "f"), "log(hours / pixel) or", formatC(exp(quantiles$log_f_effort[3]), digits = 2, format = "f"), "hours / pixel on the linear scale. Horizontal lines show the limits of NT (0.2) and VU (0.4) categories in black and red, respectively. Colors indicate the number of threatened species on each pixel.")}
+```{r rf}
 risk_effort <- risk_f_df %>% 
   arrange(n_threat) %>% 
   ggplot(aes(x = log_f_effort, y = mean_rr_risk, color = n_threat)) + 
   ggtheme_plot() +
   geom_point(size = 1, alpha = 0.5) +
-  geom_vline(xintercept = quantiles$log_f_effort[c(3, 9)], linetype = "dashed", color = c("black", "red")) +
+  geom_vline(xintercept = quantiles$log_f_effort[c(4, 8)], linetype = "dashed", color = c("black", "red")) +
   geom_hline(yintercept = c(0.2, 0.4), linetype = "dashed", color = c("black", "red")) +
   scale_color_distiller(palette = 'YlGnBu') +
   scale_y_continuous(labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                      breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
-  labs(color = "Threatened\nspecies", y = "", x = expression(log[10]~(fishing~hours)))
+  labs(color = "Threatened\nspecies", y = "", x = expression(log~(fishing~hours)))
 
 risk_effort
 ```
@@ -148,77 +152,72 @@ risk_effort
 
 ## Areas with low effort
 
-```{r upsidesg, fig.cap = "Mean risk, range-rarity weighted for regions with the bottom 25th percentile of fishing hours. Colors indicate whether the cell are located in the lower, middle, or upper quadrats outlined in the previous figure."}
+```{r upsidesg}
 (areas_w_l_effort <- risk_f_df %>% 
-  filter(log_f_effort <= quantiles$log_f_effort[4]) %>% 
-  mutate(mean_rr_risk_bin = case_when(mean_rr_risk > 0.4 ~ 3,
-                                       mean_rr_risk < 0.2 ~ 1,
-                                       TRUE ~ 2)) %>% 
-  ggplot() +
-  geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
-  scale_fill_gradientn(colors = c('gray', 'green4', 'lightyellow', 'red2'),
-                       limits = c(0, 3),
-                       labels = c("r < 0.2", "0.2 < r < 0.4", "r > 0.4"),
-                       breaks = c(1, 2, 3),
-                       guide = guide_colorbar(frame.colour = "black",
-                                              frame.linewidth = 1,
-                                              ticks.colour = "black",
-                                              ticks.linewidth = 1)) +
-  geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
-  ggtheme_map() + 
-  labs(fill  = 'Mean risk') +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)))
+   filter(log_f_effort <= quantiles$log_f_effort[4]) %>% 
+   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                         "r > 0.4",
+                                         "0.2 < r < 0.4",
+                                         "r < 0.2")) %>% 
+   ggplot() +
+   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.justification = c(0, 0.5),
+         legend.position = c(1.1, 0.5)))
 ```
 
 ## Areas with high effort
 
-```{r upsidesg2, fig.cap = "Mean risk, range-rarity weighted for regions with the top 25th percentile of fishing hours. Colors indicate whether the cells are located in the lower, middle, or upper quadrats outlined in the previous figure."}
+```{r upsidesg2}
 (areas_w_h_effort <- risk_f_df %>% 
   filter(log_f_effort >= quantiles$log_f_effort[8]) %>% 
-  mutate(mean_rr_risk_bin = case_when(mean_rr_risk > 0.4 ~ 3,
-                                       mean_rr_risk < 0.2 ~ 1,
-                                       TRUE ~ 2)) %>% 
+  mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+         mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                        "r > 0.4",
+                                        "0.2 < r < 0.4",
+                                        "r < 0.2")) %>% 
   ggplot() +
   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
-  scale_fill_gradientn(colors = c('gray', 'green4', 'lightyellow', 'red2'),
-                       limits = c(0, 3),
-                       labels = c("r < 0.2", "0.2 < r < 0.4", "r > 0.4"),
-                       breaks = c(1, 2, 3),
-                       guide = guide_colorbar(frame.colour = "black",
-                                              frame.linewidth = 1,
-                                              ticks.colour = "black",
-                                              ticks.linewidth = 1)) +
-  geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
-  ggtheme_map() + 
-  labs(fill  = 'Mean risk') +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)))
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.position = "none"))
 ```
 
 ## Areas with no effort (at least GFW...)
 
-```{r, fig.cap = "Mean risk, range-rarity weighted for regions with no fishing hours. Colors indicate whether the cells are located in the lower, middle, or upper quadrats outlined in the previous figure."}
+```{r}
 (areas_w_no_effort <- risk_f_df %>% 
   filter(is.na(log_f_effort)) %>% 
-  mutate(mean_rr_risk_bin = case_when(mean_rr_risk > 0.4 ~ 3,
-                                       mean_rr_risk < 0.2 ~ 1,
-                                       TRUE ~ 2)) %>% 
-  ggplot() +
-  geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
-  scale_fill_gradientn(colors = c('gray', 'green4', 'lightyellow', 'red2'),
-                       limits = c(0, 3),
-                       labels = c("r < 0.2", "0.2 < r < 0.4", "r > 0.4"),
-                       breaks = c(1, 2, 3),
-                       guide = guide_colorbar(frame.colour = "black",
-                                              frame.linewidth = 1,
-                                              ticks.colour = "black",
-                                              ticks.linewidth = 1)) +
-  geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) +
-  ggtheme_map() +
-  labs(fill  = 'Mean risk') +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)))
+   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                         "r > 0.4",
+                                         "0.2 < r < 0.4",
+                                         "r < 0.2")) %>% 
+   ggplot() +
+   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.position = "none"))
 ```
 
 
@@ -242,13 +241,19 @@ percentiles <- ecdf(risk_f_df$log_f_effort)
 
 # Figure 4
 
-```{r}
-(figure4 <- cowplot::plot_grid(risk_effort, areas_w_no_effort, areas_w_l_effort, areas_w_h_effort,
-                   ncol = 2,
-                   labels = "AUTO"))
+```{r, fig.width = 8, fig.height = 4}
+(figure4 <- cowplot::plot_grid(risk_effort,
+                               areas_w_no_effort,
+                               NULL,
+                               areas_w_l_effort,
+                               areas_w_h_effort,
+                               ncol = 3,
+                               labels = c("A", "B", "", "C", "D"),
+                               rel_widths = c(2, 2, 1),
+                               label_size = 11))
 
 ggsave(here("ms_figures", "fig4_fishing_intensity.png"),
-       height = 4, width = 6, dpi = 300, units = 'in')
+       height = 4, width = 8, dpi = 300, units = 'in')
 ```
 
 ## Density of fishing effort
