@@ -1,0 +1,275 @@
+---
+title: 'MPAs and biodiversity intactness'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+  pdf_document:
+    toc: true
+---
+
+# Set up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 6,
+                      fig.height = 4,
+                      fig.path = 'figs/',
+                      echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+# plot and map themes from: https://raw.githubusercontent.com/oharac/src/master/R/common.R
+
+ggtheme_plot <- function(base_size = 9) {
+  theme(axis.ticks = element_blank(),
+        text       = element_text(#family = 'Helvetica',
+          color = 'gray30', size = base_size),
+        plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+        panel.background = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(size = base_size, face = 'italic'),
+        legend.position  = 'right',
+        panel.border     = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(colour = 'grey90', size = .25),
+        # panel.grid.major = element_blank(),
+        legend.key       = element_rect(colour = NA, fill = NA),
+        axis.line        = element_blank() # element_line(colour = "grey30", size = .5)
+  )}
+
+ggtheme_map <- function(base_size = 9) {
+  theme(text             = element_text(#family = 'Helvetica',
+    color = 'gray30', size = base_size),
+        plot.title       = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+        panel.background = element_rect(fill = "gray"),
+        legend.position  = 'right',
+        panel.border     = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "transparent"),
+        axis.ticks       = element_blank(),
+        axis.text        = element_blank(),
+        axis.title       = element_blank(),
+        legend.key       = element_rect(colour = NA, fill = NA),
+        axis.line        = element_blank()) # element_line(colour = "grey30", size = .5)) +
+}
+```
+
+```{r load_pkg}
+suppressPackageStartupMessages({
+  library(magrittr)
+  library(here)
+  library(raster)
+  library(tidyverse)
+})
+```
+
+```{r}
+eez_rast <- raster(here('spatial', 'eez_rast.tif'))
+mean_rr_rast <- raster(here('output', 'mean_rr_risk_raster.tif'))
+n_spp_rast <- raster(here('output', 'n_spp_risk_raster.tif'))
+n_threat_rast <- raster(here('output', 'n_threat_raster.tif'))
+```
+
+```{r}
+# Original raster
+f_rast <- raster(here("data", "gfw_data", "total_fishing_hours.tif"))
+
+# Calculate intensity (hours / area) log-transform, re-project
+log_f_rast_gp <- (f_rast / area(f_rast)) %>% 
+  log() %>% 
+  projectRaster(to = mean_rr_rast)
+```
+
+We also need a coastline shapefile for the maps
+
+```{r}
+land_poly <- sf::read_sf(here('spatial', 'ne_10m_land', 'ne_10m_land.shp')) %>% 
+  sf::st_transform(crs = "+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
+```
+
+
+```{r}
+# Get rasters into a data.frame
+risk_f_df <- coordinates(mean_rr_rast) %>% 
+  as.tibble() %>% 
+  mutate(cell_id = 1:length(values(mean_rr_rast)),
+         rgn_id = values(eez_rast),
+         mean_rr_risk = values(mean_rr_rast),
+         n_spp = values(n_spp_rast),
+         n_threat = values(n_threat_rast),
+         n_norm_threat = n_threat / n_spp,
+         log_f_effort= values(log_f_rast_gp)) %>%
+  filter(!is.na(mean_rr_risk)) %>%
+  left_join(read_csv(here('spatial','rgn_names.csv')), by = c('rgn_id'))
+```
+
+# Biodiversity vs fisheries
+
+```{r}
+breaks <- c(0.01, 0.05, 0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 0.9, 0.95, 0.99)
+
+quantiles <- data.frame(log_f_effort = quantile(risk_f_df$log_f_effort, breaks, na.rm = T),
+                        mean_rr_risk = quantile(risk_f_df$mean_rr_risk, breaks, na.rm = T))
+```
+
+```{r rf}
+risk_effort <- risk_f_df %>% 
+  arrange(n_threat) %>% 
+  ggplot(aes(x = log_f_effort, y = mean_rr_risk, color = n_threat)) + 
+  ggtheme_plot() +
+  geom_point(size = 1, alpha = 0.5) +
+  geom_vline(xintercept = quantiles$log_f_effort[c(4, 8)], linetype = "dashed", color = c("black", "red")) +
+  geom_hline(yintercept = c(0.2, 0.4), linetype = "dashed", color = c("black", "red")) +
+  scale_color_distiller(palette = 'YlGnBu') +
+  scale_y_continuous(labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                     breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
+  labs(color = "Threatened\nspecies", y = "", x = expression(log~(fishing~hours)))
+
+risk_effort
+```
+
+# Areas with null, high and low fishing effort
+
+## Density of risk scores for areas with and without fishing
+
+```{r}
+(risk_density_by_effort <- risk_f_df %>%
+  mutate(f = ifelse(is.na(log_f_effort), "No fishing", "Fishing")) %>%
+  ggplot(mapping = aes(x = mean_rr_risk, fill = f)) +
+  ggtheme_plot() +
+  geom_density(alpha = 0.5) +
+  scale_fill_brewer(palette = "Set1",
+                    name = "Presence of fishing effort") +
+  ylab(""))
+```
+
+## Areas with no effort (at least GFW...)
+
+```{r}
+(areas_w_no_effort <- risk_f_df %>% 
+  filter(is.na(log_f_effort)) %>% 
+   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                         "r > 0.4",
+                                         "0.2 < r < 0.4",
+                                         "r < 0.2")) %>% 
+   ggplot() +
+   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.position = "none"))
+```
+
+## Areas with low effort
+
+```{r upsidesg}
+(areas_w_l_effort <- risk_f_df %>% 
+   filter(log_f_effort <= quantiles$log_f_effort[4]) %>% 
+   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                         "r > 0.4",
+                                         "0.2 < r < 0.4",
+                                         "r < 0.2")) %>% 
+   ggplot() +
+   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.position = "none"))
+```
+
+## Areas with high effort
+
+```{r upsidesg2}
+(areas_w_h_effort <- risk_f_df %>% 
+  filter(log_f_effort >= quantiles$log_f_effort[8]) %>% 
+  mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+         mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                        "r > 0.4",
+                                        "0.2 < r < 0.4",
+                                        "r < 0.2")) %>% 
+  ggplot() +
+  geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.justification = c(0, 0.5),
+         legend.position = c(1.1, 1.5)))
+```
+
+## Fishing hours represented by their percentiles
+
+```{r}
+percentiles <- ecdf(risk_f_df$log_f_effort)
+
+(quantile_plot <- risk_f_df %>% 
+    mutate(log_f_effort_p = percentiles(log_f_effort)) %>% 
+    ggplot() +
+    geom_raster(aes(x = x, y = y, fill = log_f_effort_p)) +
+    geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+    ggtheme_map() + 
+    scale_fill_viridis_c() +
+    labs(title = "Fishing hour percentiles",
+         fill  = "Percentile") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)))
+```
+
+# Figure 4
+
+```{r, fig.width = 8, fig.height = 4}
+(figure4 <- cowplot::plot_grid(risk_effort,
+                               areas_w_no_effort,
+                               NULL,
+                               areas_w_l_effort,
+                               areas_w_h_effort,
+                               ncol = 3,
+                               labels = c("A", "B", "", "C", "D"),
+                               rel_widths = c(2, 2, 1),
+                               label_size = 11))
+
+ggsave(here("ms_figures", "fig4_fishing_intensity.png"),
+       height = 4, width = 8, dpi = 300, units = 'in')
+```
+
+## Density of fishing effort
+
+```{r}
+dens <- density(risk_f_df$log_f_effort, na.rm = T)
+
+f_effort_density <- tibble(log_f_effort = dens$x, density = dens$y) %>% 
+  mutate(quant = factor(findInterval(x = log_f_effort, vec = quantiles$log_f_effort[c(4, 8)]))) %>% 
+  ggplot(mapping = aes(x = log_f_effort, y = density)) +
+  ggtheme_plot() +
+  geom_line(size = 1) +
+  geom_ribbon(aes(ymin = 0, ymax = density, fill = quant)) +
+  scale_fill_brewer(guide="none") +
+  geom_vline(xintercept = quantiles$log_f_effort[c(4, 8)], linetype = "dashed")
+
+f_effort_density
+```
+
+
