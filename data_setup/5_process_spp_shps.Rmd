@@ -337,12 +337,13 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
       ### and then reproject, one species at a time
     
     if(str_detect(shp, 'bli_marine')) {
-      polys_all$subpop <- NA
+      polys_all$subpop <- NA_character_
       ### BOTW doesn't have subpop column, so add it
     }        
     
     polys_match <- polys_all %>%
       select(shp_iucn_sid = id_no, sciname = binomial, subpop, presence, geometry) %>%
+      mutate(subpop = as.character(subpop)) %>%
       inner_join(id_fix, by = c('shp_iucn_sid', 'subpop')) 
     
     spp_ids <- maps_in_shp$iucn_sid %>% 
@@ -368,28 +369,8 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
         spp_shp <- polys_match %>%
           filter(iucn_sid == spp)
         
-        valid_check <- st_is_valid(spp_shp)
-          ### can return a vector if multiple polygons with same ID
-        if(any(!valid_check)) {
-          cat_msg('Found invalid geometries in ', spp, '; fixing with buffer = 0...')
-          
-          ### check area before and after buffering to make sure no loss
-          area_pre  <- st_area(spp_shp)
-          spp_shp   <- st_buffer(spp_shp, dist = 0)
-          area_post <- st_area(spp_shp)
-          
-          ### error check to make sure the buffer didn't lose polygons
-          if(!all.equal(area_pre, area_post)) {
-              ### use all.equal() for near equality, and for comparing all 
-              ### elements in case of a vector
-            cat_msg('Error: iucn_sid: ', spp, ': area_pre = ', area_pre, 
-                    '; area_post = ', area_post, '; not equal!')
-            stop('Area_pre and area_post not equal!')
-          } else {
-            cat_msg('Area check good! iucn_sid: ', spp, ': area_pre = ', area_pre, 
-                    '; area_post = ', area_post, '; all equal!')
-          }
-        }
+        spp_shp <- valid_check(spp_shp, spp)
+          ### if invalid geometry, buffer to 0 and cast back to multipolygon
       
         spp_shp <- spp_shp %>%
           clip_to_globe() %>%
@@ -418,6 +399,10 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
         spp_present <- data.frame(cell_id  = values(rast_base),
                                   presence = values(spp_rast)) %>%
           filter(!is.na(presence))
+        
+        if(nrow(spp_present) == 0) {
+          msg_cat('Species ID ', spp, ' resulted in a zero-length dataframe.')
+        }
         write_csv(spp_present, file.path(dir_o_anx, 'spp_rasters',
                                          sprintf('iucn_sid_%s.csv', spp)))
         return(NA)

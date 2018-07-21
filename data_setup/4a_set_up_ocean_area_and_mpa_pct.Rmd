@@ -66,7 +66,7 @@ To define spatial areas more accurately, create rasters of WDPA and ocean area a
 
 ### Create a 10 km^2 Gall Peters projection cell ID raster
 
-``` {r rasterize NE ocean polygons to Gall-Peters}
+``` {r rasterize natural earth ocean polygons to Gall-Peters}
 
 ocean_area_file <- file.path(dir_spatial, 'ocean_area_rast.tif')
 cell_id_file    <- file.path(dir_spatial, 'cell_id_rast.tif')
@@ -104,7 +104,7 @@ if(!file.exists(ocean_area_file)) {
                                      progress = 'text')
   
   rast_ocean_area <- rast_ocean_10km * 100 ### multiply by 100 km^2 per cell
-  values(rast_ocean_area)[values(rast_ocean_area) == 0] <- NA
+  values(rast_ocean_area)[values(rast_ocean_area) < 0.005] <- NA
   
   writeRaster(rast_ocean_area, ocean_area_file, overwrite = TRUE)
 }
@@ -126,7 +126,7 @@ Because we are rasterizing the protected areas down to the CHI raster resolution
 
 ### Create WDPA map at GP 1 km^2 resolution
 
-Actually, create two maps: one by protection category, another by year for no-take only (categories I1, Ib, II, and no-take).
+Actually, create two maps: one by protection category, another by year for no-take only (categories Ia, Ib, II, and no-take).
 
 ``` {r rasterize_wdpa_to_GP_1km2}
 
@@ -276,7 +276,7 @@ if(!file.exists(cell_id_1km_file)) {
 } else {
   rast_cell_id_1km <- raster(cell_id_1km_file)
 }
-  
+
 wdpa_cell_area_file <- file.path(dir_spatial, 'wdpa_mpa_area.csv')
 
 ### now break into chunks and mclapply across them to crosstab WDPA categories to cell IDs

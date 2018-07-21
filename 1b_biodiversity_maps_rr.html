@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Fri Jul 13 11:40:55 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Jul 18 17:58:12 2018 by ohara" />
 
 
 <title>Biodiversity risk maps - range-rarity weighting - Gall-Peters</title>
@@ -261,7 +261,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - range-rarity weighting - Gall-Peters</h1>
-<h4 class="author"><em><em>Compiled on Fri Jul 13 11:40:55 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Jul 18 17:58:12 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -284,7 +284,7 @@ dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_gi
 dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
 dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
-<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/api_fxns.R'</span>))
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/common_fxns.R'</span>))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
@@ -334,15 +334,15 @@ Note: reconstructing the weighted mean per cell from the group means is straight
                V_{1,gp} \bar x_{w,gp}^2 \right] - \gamma_T V_{1,T} \bar x_{w,T}^2 
 \end{align*}\]</span>
 <p>Because of file sizes, the intermediate files will be stored outside of GitHub.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'cell_summary_rr_weighted_gp.csv'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'cell_summary_rr_weighted.csv'</span>)
 ### unlink(cell_summary_file)
-reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
 
   dir_taxa_summaries &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>)
   sum_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_taxa_summaries,
-                          <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_rrweight_%s_gp.csv'</span>, api_version),
+                          <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_rrweight_%s.csv'</span>, api_version),
                           <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
   
   ########################################################.
@@ -469,16 +469,16 @@ reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 }</code></pre></div>
 </div>
-<div id="and-now-the-maps" class="section level3">
-<h3><span class="header-section-number">3.1.2</span> And now, the maps</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+<div id="and-now-the-rasters" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> And now, the rasters</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
 
-rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'cell_id_rast_gp.tif'</span>))
+rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'cell_id_rast.tif'</span>))
 
 land_poly &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/ne_10m_land/ne_10m_land.shp'</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">st_transform</span>(gp_proj4)
 
-map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_rr_risk_raster_gp.tif'</span>)
+map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_rr_risk_raster.tif'</span>)
 
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
@@ -487,7 +487,7 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
   <span class="kw">writeRaster</span>(mean_rast, map_rast_file,
               <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
   
-  ### mean_rast &lt;- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_gp.tif'))
+  ### mean_rast &lt;- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
   
   mean_df &lt;-<span class="st"> </span>mean_rast <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="co"># aggregate(fact = 4) %&gt;%</span>
@@ -513,7 +513,7 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'var_rr_risk_raster_gp.tif'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'var_rr_risk_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   
@@ -541,7 +541,7 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_risk_raster_gp.tif'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_risk_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   
@@ -571,14 +571,14 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_threat_raster_gp.tif'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_threat_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   
   n_threat_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">'cell_id'</span>, <span class="dt">which =</span> <span class="st">'sr_rr_threatened'</span>)
   <span class="kw">writeRaster</span>(n_threat_rast, map_rast_file,
               <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
-  ### n_threat_rast &lt;- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster_gp.tif'))
+  ### n_threat_rast &lt;- raster(file.path(dir_git, 'output', 'sr_rr_threat_raster.tif'))
   <span class="co"># n_threat_df &lt;- n_threat_rast %&gt;% </span>
   <span class="co">#   aggregate(fact = 4) %&gt;%</span>
   <span class="co">#   rasterToPoints() %&gt;% </span>
@@ -597,9 +597,9 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
   <span class="co">#        fill  = 'ln N_w')</span>
   
   pct_threat_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">'cell_id'</span>, <span class="dt">which =</span> <span class="st">'pct_rr_threatened'</span>)
-  <span class="kw">writeRaster</span>(pct_threat_rast, <span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_pct_threat_raster_gp.tif'</span>),
+  <span class="kw">writeRaster</span>(pct_threat_rast, <span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_pct_threat_raster.tif'</span>),
               <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
-  ### n_threat_rast &lt;- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_gp.tif'))
+  ### n_threat_rast &lt;- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster.tif'))
   pct_threat_df &lt;-<span class="st"> </span>pct_threat_rast <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="co"># aggregate(fact = 4) %&gt;%</span>
 <span class="st">    </span><span class="kw">rasterToPoints</span>() <span class="op">%&gt;%</span><span class="st"> </span>
@@ -632,7 +632,11 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'trend_rr_raster_gp.tif'</span>)
+<pre><code>##         1%         5%        10%        20%        30%        40% 
+## 0.00000000 0.02717467 0.06829194 0.14919559 0.22214980 0.27518559 
+##        50%        60%        70%        80%        90%       100% 
+## 0.31654796 0.36809013 0.41936888 0.46945714 0.53658888 1.00000000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'trend_rr_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   
@@ -663,7 +667,7 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_trend_raster_gp.tif'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_trend_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   

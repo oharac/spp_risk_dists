@@ -49,23 +49,35 @@ rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
 # r1 <- raster(file.path(dir_data, 'gfw_data', 'monthly_mean_fishing_hours_casey.grd'))
 f_hrs_rast <- raster(file.path(dir_data, 'gfw_data', 'total_fishing_hours_casey.grd'))
-area_rast <- f_hrs_rast %>%
+values(f_hrs_rast)[is.na(values(f_hrs_rast))] <- 0
+area_rast_010deg <- f_hrs_rast %>%
   setValues(values(raster::area(.)))
 
-effort_reproj <- projectRaster(f_hrs_rast, rast_base, method = 'ngb')
-writeRaster(effort_reproj, file.path(dir_data, 'gfw_data', 'fishing_effort_gp.tif'),
+ocean_area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
+values(ocean_area_rast)[values(ocean_area_rast) < .005] <- NA
+
+effort_reproj <- projectRaster(f_hrs_rast, rast_base, method = 'ngb') %>%
+  mask(ocean_area_rast)
+writeRaster(effort_reproj, file.path(dir_data, 'gfw_data', 'fishing_effort.tif'),
             overwrite = TRUE)
 
-f_intensity <- f_hrs_rast / area_rast
+f_intensity <- f_hrs_rast / area_rast_010deg
 f_intensity_reproj <- projectRaster(f_intensity, rast_base, method = 'ngb')
-writeRaster(f_intensity_reproj, file.path(dir_data, 'gfw_data', 'fishing_intensity_gp.tif'),
+f_intensity_reproj <- f_intensity_reproj / ocean_area_rast
+# quantile(f_intensity_reproj, c(0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90))
+# values(f_intensity_reproj)[values(f_intensity_reproj) < .00001] <- NA
+  ### from the quad plot below it might make sense to have a cutoff at 10^(-7.5)
+
+
+  ### masks out NA cells, and adjusts coastal cell intensity relative to ocean area
+writeRaster(f_intensity_reproj, file.path(dir_data, 'gfw_data', 'fishing_intensity.tif'),
             overwrite = TRUE)
 
 ```
 
 
 ```{r}
-f_rast     <- raster(file.path(dir_data, 'gfw_data', 'fishing_intensity_gp.tif'))
+f_rast     <- raster(file.path(dir_data, 'gfw_data', 'fishing_intensity.tif'))
 log_f_rast <- log10(f_rast)
 ```
 

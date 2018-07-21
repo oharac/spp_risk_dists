@@ -36,7 +36,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/api_fxns.R'))
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -56,10 +56,10 @@ Compare MPAs to biodiversity intactness:
 shp_to_taxa <- read_csv(file.path(dir_git, 'data_setup/raw', 'shps_to_taxa.csv'))
 
 taxa_sums <- data.frame(unweighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
-                                                pattern = sprintf('cell_sum_%s_gp.csv', api_version),
+                                                pattern = sprintf('cell_sum_%s.csv', api_version),
                                                 full.names = TRUE),
                         rr_weighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
-                                                pattern = sprintf('cell_sum_rrweight_%s_gp.csv', api_version),
+                                                pattern = sprintf('cell_sum_rrweight_%s.csv', api_version),
                                                 full.names = TRUE)) %>%
   mutate(shp_basename = str_replace_all(basename(unweighted), '_cell_sum.+|_part.+', '')) %>%
   left_join(shp_to_taxa, by = 'shp_basename')
@@ -116,16 +116,16 @@ spp_info <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv'
 
 taxa_gps <- spp_info$taxon %>% unique()
 
-reload <- FALSE
+reload <- TRUE
 
 for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[1]
   
   taxon_txt <- taxon_gp %>% tolower() %>% str_replace_all('chordata: |[^a-z]+', '')
   dens_plot_file <- file.path(dir_git, 'ms_figures/taxa_figs',
-                             sprintf('fig_SI_density_risk_%s_gp.png',
+                             sprintf('fig_SI_density_risk_%s.png',
                                      taxon_txt))
   threat_plot_file <- file.path(dir_git, 'ms_figures/taxa_figs',
-                             sprintf('fig_SI_pct_threat_%s_gp.png',
+                             sprintf('fig_SI_pct_threat_%s.png',
                                      taxon_txt))
   
   if(any(!file.exists(c(dens_plot_file, threat_plot_file))) | reload == TRUE) {
@@ -200,9 +200,9 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[1]
 
 ``` {r mean_risk_raster, results = 'asis', eval = TRUE}
 
-reload <- FALSE
+reload <- TRUE
 
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast_gp.tif'))
+rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
 land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
@@ -213,10 +213,10 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[1]
     
   taxon_txt <- taxon_gp %>% tolower() %>% str_replace_all('chordata: |[^a-z]+', '')
   map_plot_file <- file.path(dir_git, 'ms_figures/taxa_maps',
-                             sprintf('fig_SI_map_risk_%s_gp.png',
+                             sprintf('fig_SI_map_risk_%s.png',
                                      taxon_txt))
   rr_map_plot_file <- file.path(dir_git, 'ms_figures/taxa_maps',
-                             sprintf('fig_SI_map_rr_risk_%s_gp.png',
+                             sprintf('fig_SI_map_rr_risk_%s.png',
                                      taxon_txt))
   
   ### Check whether plots already exist.
