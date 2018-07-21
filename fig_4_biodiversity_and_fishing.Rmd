@@ -150,53 +150,6 @@ risk_effort
   ylab(""))
 ```
 
-## Areas with low effort
-
-```{r upsidesg}
-(areas_w_l_effort <- risk_f_df %>% 
-   filter(log_f_effort <= quantiles$log_f_effort[4]) %>% 
-   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
-                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
-                                       TRUE ~ "0.2 < r < 0.4"),
-          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
-                                         "r > 0.4",
-                                         "0.2 < r < 0.4",
-                                         "r < 0.2")) %>% 
-   ggplot() +
-   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
-   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
-   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
-   ggtheme_map() + 
-   labs(fill  = 'Mean risk') +
-   scale_x_continuous(expand = c(0, 0)) +
-   scale_y_continuous(expand = c(0, 0)) +
-   theme(legend.justification = c(0, 0.5),
-         legend.position = c(1.1, 0.5)))
-```
-
-## Areas with high effort
-
-```{r upsidesg2}
-(areas_w_h_effort <- risk_f_df %>% 
-  filter(log_f_effort >= quantiles$log_f_effort[8]) %>% 
-  mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
-                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
-                                       TRUE ~ "0.2 < r < 0.4"),
-         mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
-                                        "r > 0.4",
-                                        "0.2 < r < 0.4",
-                                        "r < 0.2")) %>% 
-  ggplot() +
-  geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
-   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
-   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
-   ggtheme_map() + 
-   labs(fill  = 'Mean risk') +
-   scale_x_continuous(expand = c(0, 0)) +
-   scale_y_continuous(expand = c(0, 0)) +
-   theme(legend.position = "none"))
-```
-
 ## Areas with no effort (at least GFW...)
 
 ```{r}
@@ -220,6 +173,52 @@ risk_effort
    theme(legend.position = "none"))
 ```
 
+## Areas with low effort
+
+```{r upsidesg}
+(areas_w_l_effort <- risk_f_df %>% 
+   filter(log_f_effort <= quantiles$log_f_effort[4]) %>% 
+   mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+          mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                         "r > 0.4",
+                                         "0.2 < r < 0.4",
+                                         "r < 0.2")) %>% 
+   ggplot() +
+   geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.position = "none"))
+```
+
+## Areas with high effort
+
+```{r upsidesg2}
+(areas_w_h_effort <- risk_f_df %>% 
+  filter(log_f_effort >= quantiles$log_f_effort[8]) %>% 
+  mutate(mean_rr_risk_bin = case_when(mean_rr_risk >= 0.4 ~ "r > 0.4",
+                                       mean_rr_risk <= 0.2 ~ "r < 0.2",
+                                       TRUE ~ "0.2 < r < 0.4"),
+         mean_rr_risk_bin = fct_relevel(mean_rr_risk_bin,
+                                        "r > 0.4",
+                                        "0.2 < r < 0.4",
+                                        "r < 0.2")) %>% 
+  ggplot() +
+  geom_raster(aes(x = x, y = y, fill = mean_rr_risk_bin)) +
+   scale_fill_manual(values = c('red2', 'lightyellow', 'green4')) +
+   geom_sf(data = land_poly, fill = 'grey96', color = 'grey40', size = .10) + 
+   ggtheme_map() + 
+   labs(fill  = 'Mean risk') +
+   scale_x_continuous(expand = c(0, 0)) +
+   scale_y_continuous(expand = c(0, 0)) +
+   theme(legend.justification = c(0, 0.5),
+         legend.position = c(1.1, 1.5)))
+```
 
 ## Fishing hours represented by their percentiles
 
