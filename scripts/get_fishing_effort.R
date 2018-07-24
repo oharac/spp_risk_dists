@@ -67,14 +67,14 @@ gfw_data_2016 <- gfw_data %>%
 proj <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 ## Get total fishing effort for 2016, summ across all days,
-## rasterize and export as *.grd
+## rasterize and export as *.tif
 gfw_data_2016 %>%
   group_by(lon_bin, lat_bin) %>%
-  summarize(total_fishing_hours = log(sum(fishing_hours, na.rm = T))) %>%
+  summarize(total_fishing_hours = sum(fishing_hours, na.rm = T)) %>%
   ungroup() %>%
   collect() %>% 
   raster::rasterFromXYZ(crs = proj) %>% 
-  raster::writeRaster(filename = here("data", "gfw_data", "ln_fishing_hours.tif"))
+  raster::writeRaster(filename = here("data", "gfw_data", "fishing_hours.tif"))
 
 ## Close connection
 spark_disconnect_all()
