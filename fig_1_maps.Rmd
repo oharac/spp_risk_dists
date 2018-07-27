@@ -89,8 +89,6 @@ n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster.tif'))
 
 ### And now, the maps
 
-First do a facet grid of mean risk (unweighted and rr-weighted); then do a facet grid of density; then combine with gridExtra or cowplot
-
 ``` {r four panel map function}
 
 four_panel <- function(map1_rast, map2_rast,
@@ -156,7 +154,7 @@ four_panel <- function(map1_rast, map2_rast,
           plot.margin = unit(c(1, 0, 1, 0), units = 'cm')) +
     scale_x_continuous(labels = labels, breaks = breaks, limits = limits,
                        expand = c(0, 0)) +
-    scale_y_continuous(limits = c(-.2, 1)) +
+    scale_y_continuous(limits = c(-.4, 1)) +
     coord_flip()
     
 
@@ -176,7 +174,7 @@ four_panel <- function(map1_rast, map2_rast,
           plot.margin = unit(c(1, 0, 1, 0), units = 'cm')) +
     scale_x_continuous(labels = labels, breaks = breaks, limits = limits,
                        expand = c(0, 0)) +
-    scale_y_continuous(limits = c(-.2, 1)) +
+    scale_y_continuous(limits = c(-.4, 1)) +
     coord_flip()
  
   panel_top <- cowplot::plot_grid(map1, dens1, 
@@ -205,12 +203,7 @@ mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
                               values = c(0, .2, .3, .4, .5, .7, 1.0),
                               labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
                               breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0),
-                              plot_labs = c('A', 'C'))
-
-# fig1_path <- file.path(dir_git, 'ms_figures/fig1_mean_maps_with_dens.png')
-# ggsave(plot = mean_four_panel, 
-#        filename = fig1_path, 
-#        width = 6, height = 6, units = 'in', dpi = 300)
+                              plot_labs = c('A', 'B'))
 
 ```
 
@@ -225,12 +218,7 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
                                   ### much of the density between .25 and .50
                                 breaks = c(0, .25, .50, .75, 1),
                                 labels = c('0%', '25%', '50%', '75%', '100%'),
-                                plot_labs = c('B', 'D'))
-
-# fig2_path <- file.path(dir_git, 'ms_figures/fig2_pct_thr_maps_with_dens.png')
-# ggsave(plot = threat_four_panel, 
-#        filename = fig2_path,
-#        width = 6, height = 6, dpi = 300)
+                                plot_labs = c('C', 'D'))
 
 ```
 
@@ -239,7 +227,7 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
 four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel, 
                                 nrow = 1, ncol = 2, align = 'v')
 
-fig1_path <- file.path(dir_git, 'ms_figures/fig1_mean_threat_maps_with_dens.png')
+fig1_path <- file.path(dir_git, 'ms_figures/fig1_mean_and_threat_maps_with_dens.png')
 ggsave(plot = four_maps,
        filename = fig1_path,
        width = 10, height = 5, units = 'in', dpi = 300)
@@ -249,6 +237,3 @@ ggsave(plot = four_maps,
 ### Fig 1: Biodiversity risk and threatened species
 
 `r knitr::include_graphics(path.expand(fig1_path))`
-
-
-```
