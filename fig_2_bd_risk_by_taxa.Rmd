@@ -91,9 +91,14 @@ rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
-taxa_gps <- spp_maps$taxon %>% unique() %>% .[1:10] %>% sort()
-### Here also could filter the taxa to specific groups of interest...
-### ten might be too many!
+taxa_gps <- c("Cnidaria",
+              "Tracheophyta",
+              "Chordata: Actinopterygii",
+              "Chordata: Mammalia",
+              "Chordata: Chondrichthyes",
+              "Chordata: Aves",
+              "Chordata: Reptilia",
+              "Echinodermata")
 
 map_list <- vector('list', length = length(taxa_gps)) %>%
   setNames(taxa_gps)
@@ -126,14 +131,14 @@ for(i in seq_along(taxa_gps)) { ### i <- 1
   mean_rr_rast <- subs(rast_base, taxon_df_rr, by = 'cell_id', which = 'mean_risk_sum')
 
   mean_rr_df <- mean_rr_rast %>% 
-    aggregate(fact = 5) %>%
+    aggregate(fact = 2) %>%
       ### should look OK for tiny maps?
     rasterToPoints() %>% 
     as.data.frame() %>%
     setNames(c('long', 'lat', 'value'))
 
+  ### This color scheme and label scheme matches the mean risk maps
   colors = c('green4', viridis::inferno(6, direction = -1))
-    ### use viridis scheme but add green on the bottom for LC
   values = c(0, .2, .3, .4, .5, .7, 1.0)
   labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')
   breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)
@@ -143,7 +148,10 @@ for(i in seq_along(taxa_gps)) { ### i <- 1
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
-    theme(plot.margin = unit(c(.05, .2, .2, .2), units = 'cm')) +
+    theme(plot.margin = unit(c(.05, .2, .2, .2), units = 'cm'),
+          panel.background = element_rect(fill = 'grey80'),
+          axis.title = element_text(face = 'bold', hjust = 1),
+          axis.title.x = element_blank()) +
     coord_sf(datum = NA) + ### ditch graticules
     scale_fill_gradientn(colors = colors, values = values, limits = c(0, 1),
                          labels = labels, breaks = breaks,
@@ -151,7 +159,7 @@ for(i in seq_along(taxa_gps)) { ### i <- 1
                                                   label.hjust = 1)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    labs(title = taxon_gp)
+    labs(y = taxon_gp)
 
   map_list[[i]] <- x
   

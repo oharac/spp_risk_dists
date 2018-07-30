@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sun Jul 15 17:43:57 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Jul 29 10:30:16 2018 by ohara" />
 
 
 <title>Biodiversity risk covariance exploration</title>
@@ -121,6 +121,9 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -261,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk covariance exploration</h1>
-<h4 class="author"><em><em>Compiled on Sun Jul 15 17:43:57 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Jul 29 10:30:16 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -283,15 +286,384 @@ dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_gi
 dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
 dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
-<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/api_fxns.R'</span>))</code></pre></div>
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/common_fxns.R'</span>))</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Compare MPAs to biodiversity intactness:</p>
 </div>
 <div id="methods" class="section level1">
 <h1><span class="header-section-number">2</span> Methods</h1>
-<div id="set-up-taxonomic-groups" class="section level2">
-<h2><span class="header-section-number">2.1</span> set up taxonomic groups</h2>
+<div id="all-spp" class="section level2">
+<h2><span class="header-section-number">2.1</span> All spp</h2>
+<div id="covariance-of-unweighted-vs-rr-weighted" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> covariance of unweighted vs rr-weighted</h3>
+<p>Covariance calculated for risk, percent threatened, and species richness. Does range-rarity weighting provide a significantly different picture of status compared to unweighted?</p>
+<p>Here we can use the overall rasters for simplicity.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">risk_un_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_risk_raster.tif'</span>))
+risk_rr_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_rr_risk_raster.tif'</span>))
+pct_thr_un_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'pct_threat_raster.tif'</span>))
+pct_thr_rr_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_pct_threat_raster.tif'</span>))
+n_spp_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'n_spp_risk_raster.tif'</span>))
+n_rr_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_risk_raster.tif'</span>))
+
+df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">risk_unweight =</span> <span class="kw">values</span>(risk_un_rast),
+                 <span class="dt">risk_rrweight =</span> <span class="kw">values</span>(risk_rr_rast),
+                 <span class="dt">pct_thr_unweight =</span> <span class="kw">values</span>(pct_thr_un_rast),
+                 <span class="dt">pct_thr_rrweight =</span> <span class="kw">values</span>(pct_thr_rr_rast),
+                 <span class="dt">nspp_unweight =</span> <span class="kw">values</span>(n_spp_rast),
+                 <span class="dt">nspp_rrweight =</span> <span class="kw">values</span>(n_rr_rast)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(risk_unweight))
+
+
+mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) {
+  mdl <span class="op">%&gt;%</span>
+<span class="st">    </span>broom<span class="op">::</span><span class="kw">tidy</span>() <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">adj.rsq =</span> <span class="kw">round</span>(mdl <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summary</span>() <span class="op">%&gt;%</span><span class="st"> </span>.<span class="op">$</span>adj.r.squared, <span class="dv">4</span>),
+           <span class="dt">call =</span> <span class="kw">as.character</span>(mdl<span class="op">$</span>call)[<span class="dv">2</span>])
+}
+
+<span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>risk_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-0.0833104</td>
+<td align="right">0.0001436</td>
+<td align="right">-580.1251</td>
+<td align="right">0</td>
+<td align="right">0.5035</td>
+<td align="left">risk_rrweight ~ risk_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">risk_unweight</td>
+<td align="right">1.4474793</td>
+<td align="right">0.0007498</td>
+<td align="right">1930.3947</td>
+<td align="right">0</td>
+<td align="right">0.5035</td>
+<td align="left">risk_rrweight ~ risk_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(pct_thr_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-0.118487</td>
+<td align="right">0.0002096</td>
+<td align="right">-565.4255</td>
+<td align="right">0</td>
+<td align="right">0.5592</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.317375</td>
+<td align="right">0.0006102</td>
+<td align="right">2159.0393</td>
+<td align="right">0</td>
+<td align="right">0.5592</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-1.31e-05</td>
+<td align="right">1e-07</td>
+<td align="right">-141.9033</td>
+<td align="right">0</td>
+<td align="right">0.097</td>
+<td align="left">nspp_rrweight ~ nspp_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">nspp_unweight</td>
+<td align="right">4.00e-07</td>
+<td align="right">0e+00</td>
+<td align="right">628.1434</td>
+<td align="right">0</td>
+<td align="right">0.097</td>
+<td align="left">nspp_rrweight ~ nspp_unweight</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="covariance-of-factors-within-weighting-groups" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> covariance of factors within weighting groups</h3>
+<p>Compare correlations between:</p>
+<ul>
+<li>species richness ~ n threatened</li>
+<li>mean risk ~ pct threatened</li>
+<li>mean risk ~ species richness</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">'#### Threatened spp ~ species richness</span><span class="ch">\n\n</span><span class="st">'</span>)</code></pre></div>
+<div id="threatened-spp-species-richness" class="section level4">
+<h4><span class="header-section-number">2.1.2.1</span> Threatened spp ~ species richness</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_unweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">151.3452</td>
+<td align="right">0.2109008</td>
+<td align="right">717.6134</td>
+<td align="right">0</td>
+<td align="right">0.0359</td>
+<td align="left">nspp_unweight ~ pct_thr_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_unweight</td>
+<td align="right">-227.1183</td>
+<td align="right">0.6140895</td>
+<td align="right">-369.8455</td>
+<td align="right">0</td>
+<td align="right">0.0359</td>
+<td align="left">nspp_unweight ~ pct_thr_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.0000516</td>
+<td align="right">2e-07</td>
+<td align="right">305.5508</td>
+<td align="right">0</td>
+<td align="right">0.0132</td>
+<td align="left">nspp_rrweight ~ pct_thr_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_rrweight</td>
+<td align="right">-0.0001042</td>
+<td align="right">5e-07</td>
+<td align="right">-221.5441</td>
+<td align="right">0</td>
+<td align="right">0.0132</td>
+<td align="left">nspp_rrweight ~ pct_thr_rrweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">'#### Threatened spp ~ risk</span><span class="ch">\n\n</span><span class="st">'</span>)</code></pre></div>
+</div>
+<div id="threatened-spp-risk" class="section level4">
+<h4><span class="header-section-number">2.1.2.2</span> Threatened spp ~ risk</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.0365759</td>
+<td align="right">2.56e-05</td>
+<td align="right">1430.442</td>
+<td align="right">0</td>
+<td align="right">0.9098</td>
+<td align="left">risk_unweight ~ pct_thr_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_unweight</td>
+<td align="right">0.4532252</td>
+<td align="right">7.45e-05</td>
+<td align="right">6087.465</td>
+<td align="right">0</td>
+<td align="right">0.9098</td>
+<td align="left">risk_unweight ~ pct_thr_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.0217095</td>
+<td align="right">3.37e-05</td>
+<td align="right">644.3278</td>
+<td align="right">0</td>
+<td align="right">0.893</td>
+<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">pct_thr_rrweight</td>
+<td align="right">0.5199466</td>
+<td align="right">9.39e-05</td>
+<td align="right">5538.5997</td>
+<td align="right">0</td>
+<td align="right">0.893</td>
+<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">'#### Risk ~ species richness</span><span class="ch">\n\n</span><span class="st">'</span>)</code></pre></div>
+</div>
+<div id="risk-species-richness" class="section level4">
+<h4><span class="header-section-number">2.1.2.3</span> Risk ~ species richness</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.1924744</td>
+<td align="right">2.81e-05</td>
+<td align="right">6842.4998</td>
+<td align="right">0</td>
+<td align="right">0.0474</td>
+<td align="left">risk_unweight ~ nspp_unweight</td>
+</tr>
+<tr class="even">
+<td align="left">nspp_unweight</td>
+<td align="right">-0.0000863</td>
+<td align="right">2.00e-07</td>
+<td align="right">-427.5306</td>
+<td align="right">0</td>
+<td align="right">0.0474</td>
+<td align="left">risk_unweight ~ nspp_unweight</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>nspp_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">adj.rsq</th>
+<th align="left">call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.1869912</td>
+<td align="right">0.0000492</td>
+<td align="right">3801.9828</td>
+<td align="right">0</td>
+<td align="right">0.0123</td>
+<td align="left">risk_rrweight ~ nspp_rrweight</td>
+</tr>
+<tr class="even">
+<td align="left">nspp_rrweight</td>
+<td align="right">-67.2477419</td>
+<td align="right">0.3144172</td>
+<td align="right">-213.8806</td>
+<td align="right">0</td>
+<td align="right">0.0123</td>
+<td align="left">risk_rrweight ~ nspp_rrweight</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="by-taxa-covariance-of-unweighted-vs-rr-weighted" class="section level2">
+<h2><span class="header-section-number">2.2</span> By taxa: covariance of unweighted vs rr-weighted</h2>
+<div id="set-up-taxonomic-groups" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> set up taxonomic groups</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">shp_to_taxa &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/raw'</span>, <span class="st">'shps_to_taxa.csv'</span>))
 
 taxa_sums &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">unweighted =</span> <span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>),
@@ -341,366 +713,6 @@ taxa_sums &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="co"># [21] &quot;HYDROZOA&quot;           &quot;MALACOSTRACA&quot;       &quot;MYXINI&quot;             &quot;BIVALVIA&quot;          </span>
 <span class="co"># [25] &quot;CEPHALOPODA&quot;        &quot;POLYPODIOPSIDA&quot;     &quot;HOLOTHUROIDEA&quot;      &quot;AVES&quot;              </span>
 <span class="co"># [29] &quot;LYCOPODIOPSIDA&quot;     &quot;CLITELLATA&quot; </span></code></pre></div>
-</div>
-<div id="all-spp" class="section level2">
-<h2><span class="header-section-number">2.2</span> All spp</h2>
-<div id="covariance-of-unweighted-vs-rr-weighted" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> covariance of unweighted vs rr-weighted</h3>
-<p>Covariance calculated for risk, percent threatened, and species richness. Does range-rarity weighting provide a significantly different picture of status compared to unweighted?</p>
-<p>Here we can use the overall rasters for simplicity.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">risk_un_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_risk_raster_010deg.tif'</span>))
-risk_rr_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'mean_rr_risk_raster_010deg.tif'</span>))
-threat_un_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'pct_threat_raster_010deg.tif'</span>))
-threat_rr_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_pct_threat_raster_010deg.tif'</span>))
-n_spp_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'n_spp_risk_raster_010deg.tif'</span>))
-n_rr_rast  &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'sr_rr_risk_raster_010deg.tif'</span>))
-
-df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">risk_unweight =</span> <span class="kw">values</span>(risk_un_rast),
-                 <span class="dt">risk_rrweight =</span> <span class="kw">values</span>(risk_rr_rast),
-                 <span class="dt">threat_unweight =</span> <span class="kw">values</span>(threat_un_rast),
-                 <span class="dt">threat_rrweight =</span> <span class="kw">values</span>(threat_rr_rast),
-                 <span class="dt">nspp_unweight =</span> <span class="kw">values</span>(n_spp_rast),
-                 <span class="dt">nspp_rrweight =</span> <span class="kw">values</span>(n_rr_rast)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct_thr_unweight =</span> threat_unweight <span class="op">/</span><span class="st"> </span>nspp_unweight,
-         <span class="dt">pct_thr_rrweight =</span> threat_rrweight <span class="op">/</span><span class="st"> </span>nspp_rrweight) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(risk_unweight))
-
-
-mdl_summary &lt;-<span class="st"> </span><span class="cf">function</span>(mdl) {
-  mdl <span class="op">%&gt;%</span>
-<span class="st">    </span>broom<span class="op">::</span><span class="kw">tidy</span>() <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">adj.rsq =</span> <span class="kw">round</span>(mdl <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summary</span>() <span class="op">%&gt;%</span><span class="st"> </span>.<span class="op">$</span>adj.r.squared, <span class="dv">4</span>),
-           <span class="dt">call =</span> <span class="kw">as.character</span>(mdl<span class="op">$</span>call)[<span class="dv">2</span>])
-}
-
-<span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>risk_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-0.0460262</td>
-<td align="right">0.0000879</td>
-<td align="right">-523.4746</td>
-<td align="right">0</td>
-<td align="right">0.6028</td>
-<td align="left">risk_rrweight ~ risk_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">risk_unweight</td>
-<td align="right">1.2491104</td>
-<td align="right">0.0004848</td>
-<td align="right">2576.6480</td>
-<td align="right">0</td>
-<td align="right">0.6028</td>
-<td align="left">risk_rrweight ~ risk_unweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(threat_rrweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-0.0607579</td>
-<td align="right">0.0001309</td>
-<td align="right">-464.2981</td>
-<td align="right">0</td>
-<td align="right">0.6445</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.1408528</td>
-<td align="right">0.0004050</td>
-<td align="right">2816.6022</td>
-<td align="right">0</td>
-<td align="right">0.6445</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-1.04e-05</td>
-<td align="right">1e-07</td>
-<td align="right">-143.5657</td>
-<td align="right">0</td>
-<td align="right">0.0956</td>
-<td align="left">nspp_rrweight ~ nspp_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">nspp_unweight</td>
-<td align="right">4.00e-07</td>
-<td align="right">0e+00</td>
-<td align="right">680.0656</td>
-<td align="right">0</td>
-<td align="right">0.0956</td>
-<td align="left">nspp_rrweight ~ nspp_unweight</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="covariance-of-factors-within-weighting-groups" class="section level3">
-<h3><span class="header-section-number">2.2.2</span> covariance of factors within weighting groups</h3>
-<p>Compare correlations between:</p>
-<ul>
-<li>species richness ~ n threatened</li>
-<li>mean risk ~ pct threatened</li>
-<li>mean risk ~ species richness</li>
-</ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_unweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">52.50513</td>
-<td align="right">0.1175151</td>
-<td align="right">446.79474</td>
-<td align="right">0</td>
-<td align="right">0.0015</td>
-<td align="left">nspp_unweight ~ threat_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">29.59066</td>
-<td align="right">0.3637408</td>
-<td align="right">81.35097</td>
-<td align="right">0</td>
-<td align="right">0.0015</td>
-<td align="left">nspp_unweight ~ threat_unweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(nspp_rrweight <span class="op">~</span><span class="st"> </span>threat_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">3.01e-05</td>
-<td align="right">1e-07</td>
-<td align="right">262.1471</td>
-<td align="right">0</td>
-<td align="right">0.0056</td>
-<td align="left">nspp_rrweight ~ threat_rrweight</td>
-</tr>
-<tr class="even">
-<td align="left">threat_rrweight</td>
-<td align="right">-5.42e-05</td>
-<td align="right">3e-07</td>
-<td align="right">-157.1878</td>
-<td align="right">0</td>
-<td align="right">0.0056</td>
-<td align="left">nspp_rrweight ~ threat_rrweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.1477613</td>
-<td align="right">0.0000428</td>
-<td align="right">3449.5303</td>
-<td align="right">0</td>
-<td align="right">0.1003</td>
-<td align="left">risk_unweight ~ pct_thr_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">pct_thr_unweight</td>
-<td align="right">3.3774775</td>
-<td align="right">0.0048367</td>
-<td align="right">698.2971</td>
-<td align="right">0</td>
-<td align="right">0.1003</td>
-<td align="left">risk_unweight ~ pct_thr_unweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.0942539</td>
-<td align="right">4.93e-05</td>
-<td align="right">1913.722</td>
-<td align="right">0</td>
-<td align="right">0.4924</td>
-<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
-</tr>
-<tr class="even">
-<td align="left">pct_thr_rrweight</td>
-<td align="right">0.0000002</td>
-<td align="right">0.00e+00</td>
-<td align="right">2060.213</td>
-<td align="right">0</td>
-<td align="right">0.4924</td>
-<td align="left">risk_rrweight ~ pct_thr_rrweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_unweight <span class="op">~</span><span class="st"> </span>nspp_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.1693845</td>
-<td align="right">3.54e-05</td>
-<td align="right">4778.78721</td>
-<td align="right">0</td>
-<td align="right">2e-04</td>
-<td align="left">risk_unweight ~ nspp_unweight</td>
-</tr>
-<tr class="even">
-<td align="left">nspp_unweight</td>
-<td align="right">0.0000094</td>
-<td align="right">3.00e-07</td>
-<td align="right">31.19552</td>
-<td align="right">0</td>
-<td align="right">2e-04</td>
-<td align="left">risk_unweight ~ nspp_unweight</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdl_summary</span>(<span class="kw">lm</span>(risk_rrweight <span class="op">~</span><span class="st"> </span>nspp_rrweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">adj.rsq</th>
-<th align="left">call</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.167119</td>
-<td align="right">0.0000489</td>
-<td align="right">3419.8565</td>
-<td align="right">0</td>
-<td align="right">0.0055</td>
-<td align="left">risk_rrweight ~ nspp_rrweight</td>
-</tr>
-<tr class="even">
-<td align="left">nspp_rrweight</td>
-<td align="right">-55.699674</td>
-<td align="right">0.3581456</td>
-<td align="right">-155.5224</td>
-<td align="right">0</td>
-<td align="right">0.0055</td>
-<td align="left">risk_rrweight ~ nspp_rrweight</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="by-taxa-covariance-of-unweighted-vs-rr-weighted" class="section level2">
-<h2><span class="header-section-number">2.3</span> By taxa: covariance of unweighted vs rr-weighted</h2>
 <p>Covariance calculated for risk, percent threatened, and species richness.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
                      <span class="dt">col_types =</span> <span class="st">'ddciccc'</span>) <span class="op">%&gt;%</span>
@@ -742,7 +754,7 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <span class="st">    </span><span class="kw">bind_rows</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">group_by</span>(cell_id) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">summarize</span>(<span class="dt">risk_unweight =</span> <span class="dv">1</span><span class="op">/</span><span class="kw">sum</span>(n_spp_risk) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(mean_risk <span class="op">*</span><span class="st"> </span>n_spp_risk),
-              <span class="dt">threat_unweight =</span> <span class="kw">sum</span>(n_spp_threatened) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n_spp_risk),
+              <span class="dt">pct_thr_unweight =</span> <span class="kw">sum</span>(n_spp_threatened) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n_spp_risk),
               <span class="dt">nspp_unweight =</span> <span class="kw">sum</span>(n_spp_risk))
   
   taxon_df_rr &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(rr_weighted_files, <span class="dt">mc.cores =</span> <span class="dv">12</span>,
@@ -752,7 +764,7 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <span class="st">    </span><span class="kw">bind_rows</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">group_by</span>(cell_id) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">summarize</span>(<span class="dt">risk_rrweight =</span> <span class="dv">1</span><span class="op">/</span><span class="kw">sum</span>(sr_rr_risk) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(mean_risk <span class="op">*</span><span class="st"> </span>sr_rr_risk),
-              <span class="dt">threat_rrweight =</span> <span class="kw">sum</span>(sr_rr_threatened) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(sr_rr_risk),
+              <span class="dt">pct_thr_rrweight =</span> <span class="kw">sum</span>(sr_rr_threatened) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(sr_rr_risk),
               <span class="dt">nspp_rrweight =</span> <span class="kw">sum</span>(sr_rr_risk))
 
   df &lt;-<span class="st"> </span>taxon_df <span class="op">%&gt;%</span>
@@ -767,7 +779,7 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <span class="st">    </span>knitr<span class="op">::</span><span class="kw">kable</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">print</span>()
   
-  <span class="kw">mdl_summary</span>(<span class="kw">lm</span>(threat_rrweight <span class="op">~</span><span class="st"> </span>threat_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
+  <span class="kw">mdl_summary</span>(<span class="kw">lm</span>(pct_thr_rrweight <span class="op">~</span><span class="st"> </span>pct_thr_unweight, <span class="dt">data =</span> df)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">coef_var_range =</span> spp_range_var <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">             </span><span class="kw">filter</span>(taxon <span class="op">==</span><span class="st"> </span>taxon_gp) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">             </span>.<span class="op">$</span>coef_var) <span class="op">%&gt;%</span>
@@ -782,8 +794,9 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <span class="st">    </span><span class="kw">print</span>()
 
 }</code></pre></div>
+</div>
 <div id="chordata-actinopterygii-2274-species" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Chordata: Actinopterygii (2274 species)</h3>
+<h3><span class="header-section-number">2.2.2</span> Chordata: Actinopterygii (2274 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -800,23 +813,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0175268</td>
+<td align="right">-0.0247515</td>
 <td align="right">0.0000638</td>
-<td align="right">-274.509</td>
+<td align="right">-387.7744</td>
 <td align="right">0</td>
-<td align="right">0.8338</td>
+<td align="right">0.8204</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">6.139773</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.1813355</td>
-<td align="right">0.0003152</td>
-<td align="right">3747.665</td>
+<td align="right">1.2177509</td>
+<td align="right">0.0003303</td>
+<td align="right">3687.0318</td>
 <td align="right">0</td>
-<td align="right">0.8338</td>
+<td align="right">0.8204</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">6.139773</td>
 </tr>
 </tbody>
 </table>
@@ -836,23 +849,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0280414</td>
-<td align="right">0.0001139</td>
-<td align="right">-246.1712</td>
+<td align="right">-0.0414743</td>
+<td align="right">0.0001135</td>
+<td align="right">-365.3744</td>
 <td align="right">0</td>
-<td align="right">0.7977</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">0.7881</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">6.139773</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.2277452</td>
-<td align="right">0.0003696</td>
-<td align="right">3321.9742</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.2753385</td>
+<td align="right">0.0003833</td>
+<td align="right">3327.2865</td>
 <td align="right">0</td>
-<td align="right">0.7977</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">0.7881</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">6.139773</td>
 </tr>
 </tbody>
 </table>
@@ -872,29 +885,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-4.7e-06</td>
+<td align="right">-4.8e-06</td>
 <td align="right">0</td>
-<td align="right">-104.2923</td>
+<td align="right">-113.2877</td>
 <td align="right">0</td>
-<td align="right">0.1417</td>
+<td align="right">0.1559</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">6.139773</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
-<td align="right">8.0e-07</td>
+<td align="right">7.0e-07</td>
 <td align="right">0</td>
-<td align="right">679.7011</td>
+<td align="right">741.4695</td>
 <td align="right">0</td>
-<td align="right">0.1417</td>
+<td align="right">0.1559</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">6.155479</td>
+<td align="right">6.139773</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="chordata-chondrichthyes-837-species" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Chordata: Chondrichthyes (837 species)</h3>
+<div id="chordata-chondrichthyes-834-species" class="section level3">
+<h3><span class="header-section-number">2.2.3</span> Chordata: Chondrichthyes (834 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -911,23 +924,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0837864</td>
-<td align="right">0.0001551</td>
-<td align="right">-540.144</td>
+<td align="right">-0.1105285</td>
+<td align="right">0.0001858</td>
+<td align="right">-595.0356</td>
 <td align="right">0</td>
-<td align="right">0.6559</td>
+<td align="right">0.6055</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">5.248027</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.1944849</td>
-<td align="right">0.0004718</td>
-<td align="right">2531.945</td>
+<td align="right">1.2826757</td>
+<td align="right">0.0005698</td>
+<td align="right">2251.1854</td>
 <td align="right">0</td>
-<td align="right">0.6559</td>
+<td align="right">0.6055</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">5.248027</td>
 </tr>
 </tbody>
 </table>
@@ -947,23 +960,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.1847157</td>
-<td align="right">0.0002942</td>
-<td align="right">-627.9091</td>
+<td align="right">-0.2571855</td>
+<td align="right">0.0003639</td>
+<td align="right">-706.6549</td>
 <td align="right">0</td>
-<td align="right">0.7181</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">0.6639</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">5.248027</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.2048252</td>
-<td align="right">0.0004116</td>
-<td align="right">2926.9148</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.3103585</td>
+<td align="right">0.0005131</td>
+<td align="right">2553.6923</td>
 <td align="right">0</td>
-<td align="right">0.7181</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">0.6639</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">5.248027</td>
 </tr>
 </tbody>
 </table>
@@ -983,29 +996,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-2.9e-06</td>
+<td align="right">-3.5e-06</td>
 <td align="right">0</td>
-<td align="right">-384.7234</td>
+<td align="right">-397.7986</td>
 <td align="right">0</td>
-<td align="right">0.1693</td>
+<td align="right">0.1558</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">5.248027</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">4.0e-07</td>
 <td align="right">0</td>
-<td align="right">827.9228</td>
+<td align="right">780.6170</td>
 <td align="right">0</td>
-<td align="right">0.1693</td>
+<td align="right">0.1558</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">5.253686</td>
+<td align="right">5.248027</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="mollusca-580-species" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Mollusca (580 species)</h3>
+<h3><span class="header-section-number">2.2.4</span> Mollusca (580 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1022,23 +1035,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0013732</td>
-<td align="right">0.0000456</td>
-<td align="right">30.10702</td>
+<td align="right">0.0013163</td>
+<td align="right">0.0000421</td>
+<td align="right">31.2322</td>
 <td align="right">0</td>
-<td align="right">0.7384</td>
+<td align="right">0.7386</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">1.902063</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">3.3221316</td>
-<td align="right">0.0053173</td>
-<td align="right">624.78148</td>
+<td align="right">3.3339238</td>
+<td align="right">0.0049862</td>
+<td align="right">668.6340</td>
 <td align="right">0</td>
-<td align="right">0.7384</td>
+<td align="right">0.7386</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">1.902063</td>
 </tr>
 </tbody>
 </table>
@@ -1058,23 +1071,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0022607</td>
-<td align="right">0.0000953</td>
-<td align="right">23.73072</td>
+<td align="right">0.0021764</td>
+<td align="right">0.0000878</td>
+<td align="right">24.79852</td>
 <td align="right">0</td>
-<td align="right">0.7709</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">0.7707</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.902063</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">3.6310732</td>
-<td align="right">0.0053233</td>
-<td align="right">682.10884</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">3.6681383</td>
+<td align="right">0.0050299</td>
+<td align="right">729.26138</td>
 <td align="right">0</td>
-<td align="right">0.7709</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">0.7707</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.902063</td>
 </tr>
 </tbody>
 </table>
@@ -1094,29 +1107,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">2.84e-05</td>
+<td align="right">2.75e-05</td>
 <td align="right">1.4e-06</td>
-<td align="right">20.730432</td>
-<td align="right">0.00e+00</td>
+<td align="right">20.097738</td>
+<td align="right">0e+00</td>
 <td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">1.902063</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">1.00e-07</td>
 <td align="right">0.0e+00</td>
-<td align="right">4.163483</td>
-<td align="right">3.14e-05</td>
+<td align="right">4.610501</td>
+<td align="right">4e-06</td>
 <td align="right">1e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.902521</td>
+<td align="right">1.902063</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="cnidaria-766-species" class="section level3">
-<h3><span class="header-section-number">2.3.4</span> Cnidaria (766 species)</h3>
+<h3><span class="header-section-number">2.2.5</span> Cnidaria (766 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1133,23 +1146,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0080833</td>
-<td align="right">0.0002632</td>
-<td align="right">30.7166</td>
+<td align="right">0.0079441</td>
+<td align="right">0.0002502</td>
+<td align="right">31.75377</td>
 <td align="right">0</td>
-<td align="right">0.779</td>
+<td align="right">0.772</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7204871</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.1751628</td>
-<td align="right">0.0018763</td>
-<td align="right">626.3167</td>
+<td align="right">1.1761781</td>
+<td align="right">0.0017832</td>
+<td align="right">659.59563</td>
 <td align="right">0</td>
-<td align="right">0.779</td>
+<td align="right">0.772</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7204871</td>
 </tr>
 </tbody>
 </table>
@@ -1169,23 +1182,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0399399</td>
-<td align="right">0.0004410</td>
-<td align="right">90.56528</td>
+<td align="right">0.0392982</td>
+<td align="right">0.0004152</td>
+<td align="right">94.65184</td>
 <td align="right">0</td>
-<td align="right">0.7811</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7754</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">0.7204871</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.1110048</td>
-<td align="right">0.0017632</td>
-<td align="right">630.10806</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.1176577</td>
+<td align="right">0.0016780</td>
+<td align="right">666.05418</td>
 <td align="right">0</td>
-<td align="right">0.7811</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7754</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">0.7204871</td>
 </tr>
 </tbody>
 </table>
@@ -1205,29 +1218,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">8.8e-06</td>
+<td align="right">9.1e-06</td>
 <td align="right">1e-07</td>
-<td align="right">78.86926</td>
+<td align="right">86.19697</td>
 <td align="right">0</td>
-<td align="right">0.7348</td>
+<td align="right">0.7345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7204871</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">2.0e-07</td>
 <td align="right">0e+00</td>
-<td align="right">555.27300</td>
+<td align="right">596.31066</td>
 <td align="right">0</td>
-<td align="right">0.7348</td>
+<td align="right">0.7345</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">0.7220314</td>
+<td align="right">0.7204871</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="chordata-myxini-75-species" class="section level3">
-<h3><span class="header-section-number">2.3.5</span> Chordata: Myxini (75 species)</h3>
+<h3><span class="header-section-number">2.2.6</span> Chordata: Myxini (75 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1244,23 +1257,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0000575</td>
-<td align="right">0.0000363</td>
-<td align="right">-1.582474</td>
-<td align="right">0.113544</td>
-<td align="right">0.9741</td>
+<td align="right">-0.000056</td>
+<td align="right">0.0000403</td>
+<td align="right">-1.391464</td>
+<td align="right">0.1640875</td>
+<td align="right">0.9737</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">1.666418</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.0834227</td>
-<td align="right">0.0004991</td>
-<td align="right">2170.548980</td>
-<td align="right">0.000000</td>
-<td align="right">0.9741</td>
+<td align="right">1.084975</td>
+<td align="right">0.0005226</td>
+<td align="right">2076.291864</td>
+<td align="right">0.0000000</td>
+<td align="right">0.9737</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">1.666418</td>
 </tr>
 </tbody>
 </table>
@@ -1280,23 +1293,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0007245</td>
-<td align="right">5.34e-05</td>
-<td align="right">13.5665</td>
+<td align="right">0.0008135</td>
+<td align="right">0.0000589</td>
+<td align="right">13.820</td>
 <td align="right">0</td>
-<td align="right">0.9777</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">0.978</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.666418</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.2254651</td>
-<td align="right">5.23e-04</td>
-<td align="right">2343.1414</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.2264477</td>
+<td align="right">0.0005392</td>
+<td align="right">2274.611</td>
 <td align="right">0</td>
-<td align="right">0.9777</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">0.978</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.666418</td>
 </tr>
 </tbody>
 </table>
@@ -1316,29 +1329,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-1.16e-05</td>
+<td align="right">-1.14e-05</td>
 <td align="right">2e-07</td>
-<td align="right">-55.86394</td>
+<td align="right">-48.90066</td>
 <td align="right">0</td>
-<td align="right">0.0458</td>
+<td align="right">0.0405</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">1.666418</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
-<td align="right">1.29e-05</td>
+<td align="right">1.28e-05</td>
 <td align="right">2e-07</td>
-<td align="right">77.50102</td>
+<td align="right">70.16805</td>
 <td align="right">0</td>
-<td align="right">0.0458</td>
+<td align="right">0.0405</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.668093</td>
+<td align="right">1.666418</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="arthropoda-156-species" class="section level3">
-<h3><span class="header-section-number">2.3.6</span> Arthropoda (156 species)</h3>
+<h3><span class="header-section-number">2.2.7</span> Arthropoda (156 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1355,23 +1368,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0000038</td>
-<td align="right">0.0000009</td>
-<td align="right">4.276182</td>
-<td align="right">1.9e-05</td>
-<td align="right">0.8265</td>
+<td align="right">0.000000</td>
+<td align="right">0</td>
+<td align="right">1.072997e+01</td>
+<td align="right">0</td>
+<td align="right">1</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">2.23027</td>
+<td align="right">2.228597</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">4.0954724</td>
-<td align="right">0.0020661</td>
-<td align="right">1982.254749</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.8265</td>
+<td align="right">5.224076</td>
+<td align="right">0</td>
+<td align="right">2.349980e+14</td>
+<td align="right">0</td>
+<td align="right">1</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">2.23027</td>
+<td align="right">2.228597</td>
 </tr>
 </tbody>
 </table>
@@ -1396,8 +1409,8 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <td align="right">NaN</td>
 <td align="right">NaN</td>
 <td align="right">0</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">2.23027</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">2.228597</td>
 </tr>
 </tbody>
 </table>
@@ -1419,27 +1432,27 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <td align="left">(Intercept)</td>
 <td align="right">-3e-07</td>
 <td align="right">0</td>
-<td align="right">-27.98206</td>
+<td align="right">-28.79057</td>
 <td align="right">0</td>
-<td align="right">0.0487</td>
+<td align="right">0.0524</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">2.23027</td>
+<td align="right">2.228597</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">5e-07</td>
 <td align="right">0</td>
-<td align="right">205.40923</td>
+<td align="right">219.51286</td>
 <td align="right">0</td>
-<td align="right">0.0487</td>
+<td align="right">0.0524</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">2.23027</td>
+<td align="right">2.228597</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="tracheophyta-137-species" class="section level3">
-<h3><span class="header-section-number">2.3.7</span> Tracheophyta (137 species)</h3>
+<h3><span class="header-section-number">2.2.8</span> Tracheophyta (137 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1456,23 +1469,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0122447</td>
-<td align="right">0.0001070</td>
-<td align="right">114.4430</td>
+<td align="right">0.0146927</td>
+<td align="right">0.0001165</td>
+<td align="right">126.0718</td>
 <td align="right">0</td>
-<td align="right">0.7853</td>
+<td align="right">0.764</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">1.1038</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.4951321</td>
-<td align="right">0.0018695</td>
-<td align="right">799.7683</td>
+<td align="right">1.5078697</td>
+<td align="right">0.0020217</td>
+<td align="right">745.8335</td>
 <td align="right">0</td>
-<td align="right">0.7853</td>
+<td align="right">0.764</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">1.1038</td>
 </tr>
 </tbody>
 </table>
@@ -1492,23 +1505,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0215156</td>
-<td align="right">0.0002113</td>
-<td align="right">101.8205</td>
+<td align="right">0.0255476</td>
+<td align="right">0.0002292</td>
+<td align="right">111.4616</td>
 <td align="right">0</td>
-<td align="right">0.7772</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">0.7583</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.1038</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.4512152</td>
-<td align="right">0.0018581</td>
-<td align="right">781.0165</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.4688442</td>
+<td align="right">0.0020008</td>
+<td align="right">734.1204</td>
 <td align="right">0</td>
-<td align="right">0.7772</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">0.7583</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.1038</td>
 </tr>
 </tbody>
 </table>
@@ -1528,29 +1541,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">2.8e-06</td>
+<td align="right">3.1e-06</td>
 <td align="right">0</td>
-<td align="right">81.49214</td>
+<td align="right">90.45053</td>
 <td align="right">0</td>
-<td align="right">0.2152</td>
+<td align="right">0.2367</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">1.1038</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
-<td align="right">5.0e-07</td>
+<td align="right">4.0e-07</td>
 <td align="right">0</td>
-<td align="right">218.97870</td>
+<td align="right">230.81270</td>
 <td align="right">0</td>
-<td align="right">0.2152</td>
+<td align="right">0.2367</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.108053</td>
+<td align="right">1.1038</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="chordata-mammalia-127-species" class="section level3">
-<h3><span class="header-section-number">2.3.8</span> Chordata: Mammalia (127 species)</h3>
+<div id="chordata-mammalia-125-species" class="section level3">
+<h3><span class="header-section-number">2.2.9</span> Chordata: Mammalia (125 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1567,23 +1580,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0202248</td>
-<td align="right">0.0001079</td>
-<td align="right">-187.526</td>
+<td align="right">-0.0210328</td>
+<td align="right">0.0001434</td>
+<td align="right">-146.7028</td>
 <td align="right">0</td>
-<td align="right">0.2893</td>
+<td align="right">0.2172</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">1.509982</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">0.8829202</td>
-<td align="right">0.0006652</td>
-<td align="right">1327.325</td>
+<td align="right">0.9081947</td>
+<td align="right">0.0009050</td>
+<td align="right">1003.4816</td>
 <td align="right">0</td>
-<td align="right">0.2893</td>
+<td align="right">0.2172</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">1.509982</td>
 </tr>
 </tbody>
 </table>
@@ -1603,23 +1616,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0294646</td>
-<td align="right">0.0001946</td>
-<td align="right">-151.4136</td>
+<td align="right">-0.0587972</td>
+<td align="right">0.0002657</td>
+<td align="right">-221.2676</td>
 <td align="right">0</td>
-<td align="right">0.2782</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">0.2238</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.509982</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">0.8437190</td>
-<td align="right">0.0006533</td>
-<td align="right">1291.5485</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">0.9790602</td>
+<td align="right">0.0009571</td>
+<td align="right">1022.9580</td>
 <td align="right">0</td>
-<td align="right">0.2782</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">0.2238</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.509982</td>
 </tr>
 </tbody>
 </table>
@@ -1639,29 +1652,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">2e-07</td>
+<td align="right">4e-07</td>
 <td align="right">0</td>
-<td align="right">22.133773</td>
+<td align="right">28.49607</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">1.509982</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">0e+00</td>
 <td align="right">0</td>
-<td align="right">6.976932</td>
+<td align="right">-7.95288</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.52777</td>
+<td align="right">1.509982</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="chordata-reptilia-184-species" class="section level3">
-<h3><span class="header-section-number">2.3.9</span> Chordata: Reptilia (184 species)</h3>
+<div id="chordata-reptilia-183-species" class="section level3">
+<h3><span class="header-section-number">2.2.10</span> Chordata: Reptilia (183 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1678,23 +1691,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.4291083</td>
-<td align="right">0.0002566</td>
-<td align="right">-1672.601</td>
+<td align="right">-0.4309741</td>
+<td align="right">0.0002476</td>
+<td align="right">-1740.339</td>
 <td align="right">0</td>
-<td align="right">0.8403</td>
+<td align="right">0.8396</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">4.508204</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.5839760</td>
-<td align="right">0.0004277</td>
-<td align="right">3703.442</td>
+<td align="right">1.5897833</td>
+<td align="right">0.0004124</td>
+<td align="right">3854.992</td>
 <td align="right">0</td>
-<td align="right">0.8403</td>
+<td align="right">0.8396</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">4.508204</td>
 </tr>
 </tbody>
 </table>
@@ -1714,23 +1727,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.741495</td>
-<td align="right">0.0003312</td>
-<td align="right">-2238.982</td>
+<td align="right">-0.7397687</td>
+<td align="right">0.0003266</td>
+<td align="right">-2265.070</td>
 <td align="right">0</td>
-<td align="right">0.8884</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">0.8827</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">4.508204</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.710245</td>
-<td align="right">0.0003755</td>
-<td align="right">4554.529</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.7074718</td>
+<td align="right">0.0003695</td>
+<td align="right">4620.739</td>
 <td align="right">0</td>
-<td align="right">0.8884</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">0.8827</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">4.508204</td>
 </tr>
 </tbody>
 </table>
@@ -1750,29 +1763,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-1e-07</td>
+<td align="right">-3e-07</td>
 <td align="right">1e-07</td>
-<td align="right">-1.777095</td>
-<td align="right">0.0755527</td>
+<td align="right">-4.00892</td>
+<td align="right">6.1e-05</td>
 <td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">4.508204</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">4e-07</td>
 <td align="right">0e+00</td>
-<td align="right">22.471136</td>
-<td align="right">0.0000000</td>
+<td align="right">22.98634</td>
+<td align="right">0.0e+00</td>
 <td align="right">2e-04</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">4.523029</td>
+<td align="right">4.508204</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="echinodermata-196-species" class="section level3">
-<h3><span class="header-section-number">2.3.10</span> Echinodermata (196 species)</h3>
+<h3><span class="header-section-number">2.2.11</span> Echinodermata (196 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1789,23 +1802,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.000042</td>
-<td align="right">0.0000217</td>
-<td align="right">-1.935375</td>
-<td align="right">0.0529445</td>
-<td align="right">0.9666</td>
+<td align="right">-0.0001749</td>
+<td align="right">0.0000289</td>
+<td align="right">-6.047344</td>
+<td align="right">0</td>
+<td align="right">0.9665</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">1.639521</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.007361</td>
-<td align="right">0.0001689</td>
-<td align="right">5965.703536</td>
-<td align="right">0.0000000</td>
-<td align="right">0.9666</td>
+<td align="right">1.0056138</td>
+<td align="right">0.0001872</td>
+<td align="right">5371.946935</td>
+<td align="right">0</td>
+<td align="right">0.9665</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">1.639521</td>
 </tr>
 </tbody>
 </table>
@@ -1825,23 +1838,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-0.0005162</td>
-<td align="right">0.0000415</td>
-<td align="right">-12.42583</td>
+<td align="right">-0.0010953</td>
+<td align="right">0.0000555</td>
+<td align="right">-19.71911</td>
 <td align="right">0</td>
-<td align="right">0.9781</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">0.9782</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.639521</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">0.9980441</td>
-<td align="right">0.0001347</td>
-<td align="right">7410.84525</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">0.9976627</td>
+<td align="right">0.0001488</td>
+<td align="right">6702.53825</td>
 <td align="right">0</td>
-<td align="right">0.9781</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">0.9782</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">1.639521</td>
 </tr>
 </tbody>
 </table>
@@ -1861,29 +1874,29 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0e+00</td>
+<td align="right">1e-07</td>
 <td align="right">0</td>
-<td align="right">-2.113536</td>
-<td align="right">0.0345551</td>
-<td align="right">0.0372</td>
+<td align="right">7.835491</td>
+<td align="right">0</td>
+<td align="right">0.0455</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">1.639521</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
 <td align="right">3e-07</td>
 <td align="right">0</td>
-<td align="right">218.115044</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0372</td>
+<td align="right">218.405828</td>
+<td align="right">0</td>
+<td align="right">0.0455</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">1.639402</td>
+<td align="right">1.639521</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="chordata-aves-801-species" class="section level3">
-<h3><span class="header-section-number">2.3.11</span> Chordata: Aves (801 species)</h3>
+<h3><span class="header-section-number">2.2.12</span> Chordata: Aves (801 species)</h3>
 <table>
 <thead>
 <tr class="header">
@@ -1900,23 +1913,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.0194481</td>
-<td align="right">0.0000907</td>
-<td align="right">214.364</td>
+<td align="right">0.0248973</td>
+<td align="right">0.0001014</td>
+<td align="right">245.6408</td>
 <td align="right">0</td>
-<td align="right">0.4696</td>
+<td align="right">0.4579</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">2.660438</td>
 </tr>
 <tr class="even">
 <td align="left">risk_unweight</td>
-<td align="right">1.1524740</td>
-<td align="right">0.0006001</td>
-<td align="right">1920.393</td>
+<td align="right">1.1972424</td>
+<td align="right">0.0006808</td>
+<td align="right">1758.4799</td>
 <td align="right">0</td>
-<td align="right">0.4696</td>
+<td align="right">0.4579</td>
 <td align="left">risk_rrweight ~ risk_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">2.660438</td>
 </tr>
 </tbody>
 </table>
@@ -1936,23 +1949,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.017244</td>
-<td align="right">0.0001176</td>
-<td align="right">146.6806</td>
+<td align="right">0.0287882</td>
+<td align="right">0.0001450</td>
+<td align="right">198.5298</td>
 <td align="right">0</td>
-<td align="right">0.622</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">0.5734</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">2.660438</td>
 </tr>
 <tr class="even">
-<td align="left">threat_unweight</td>
-<td align="right">1.200537</td>
-<td align="right">0.0004585</td>
-<td align="right">2618.1443</td>
+<td align="left">pct_thr_unweight</td>
+<td align="right">1.2210238</td>
+<td align="right">0.0005505</td>
+<td align="right">2218.0412</td>
 <td align="right">0</td>
-<td align="right">0.622</td>
-<td align="left">threat_rrweight ~ threat_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">0.5734</td>
+<td align="left">pct_thr_rrweight ~ pct_thr_unweight</td>
+<td align="right">2.660438</td>
 </tr>
 </tbody>
 </table>
@@ -1972,23 +1985,23 @@ taxa_gps &lt;-<span class="st"> </span>spp_info<span class="op">$</span>taxon <s
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-2.19e-05</td>
+<td align="right">-3.24e-05</td>
 <td align="right">1e-07</td>
-<td align="right">-274.5238</td>
+<td align="right">-302.3860</td>
 <td align="right">0</td>
-<td align="right">0.0345</td>
+<td align="right">0.0391</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">2.660438</td>
 </tr>
 <tr class="even">
 <td align="left">nspp_unweight</td>
-<td align="right">1.20e-06</td>
+<td align="right">1.60e-06</td>
 <td align="right">0e+00</td>
-<td align="right">385.8526</td>
+<td align="right">385.9485</td>
 <td align="right">0</td>
-<td align="right">0.0345</td>
+<td align="right">0.0391</td>
 <td align="left">nspp_rrweight ~ nspp_unweight</td>
-<td align="right">2.66497</td>
+<td align="right">2.660438</td>
 </tr>
 </tbody>
 </table>

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Jul 18 17:58:12 2018 by ohara" />
+<meta name="author" content="Compiled on Mon Jul 30 09:57:57 2018 by ohara" />
 
 
 <title>Biodiversity risk maps - range-rarity weighting - Gall-Peters</title>
@@ -121,6 +121,9 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -261,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - range-rarity weighting - Gall-Peters</h1>
-<h4 class="author"><em><em>Compiled on Wed Jul 18 17:58:12 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Mon Jul 30 09:57:57 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -633,9 +636,9 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
 <pre><code>##         1%         5%        10%        20%        30%        40% 
-## 0.00000000 0.02717467 0.06829194 0.14919559 0.22214980 0.27518559 
+## 0.00000000 0.02666723 0.06779431 0.14810627 0.22098688 0.27472131 
 ##        50%        60%        70%        80%        90%       100% 
-## 0.31654796 0.36809013 0.41936888 0.46945714 0.53658888 1.00000000</code></pre>
+## 0.31644776 0.36802351 0.41928481 0.46945714 0.53648021 1.00000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'trend_rr_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {

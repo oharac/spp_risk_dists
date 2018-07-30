@@ -35,7 +35,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/api_fxns.R'))
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
 ```
 
@@ -45,7 +45,90 @@ Compare MPAs to biodiversity intactness:
 
 # Methods
 
-## set up taxonomic groups
+
+## All spp
+
+### covariance of unweighted vs rr-weighted
+
+Covariance calculated for risk, percent threatened, and species richness.  Does range-rarity weighting provide a significantly different picture of status compared to unweighted?
+
+Here we can use the overall rasters for simplicity.
+
+``` {r covariance checks global, results = 'asis'}
+
+risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
+risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
+pct_thr_un_rast <- raster(file.path(dir_git, 'output', 'pct_threat_raster.tif'))
+pct_thr_rr_rast <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster.tif'))
+n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster.tif'))
+n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster.tif'))
+
+df <- data.frame(risk_unweight = values(risk_un_rast),
+                 risk_rrweight = values(risk_rr_rast),
+                 pct_thr_unweight = values(pct_thr_un_rast),
+                 pct_thr_rrweight = values(pct_thr_rr_rast),
+                 nspp_unweight = values(n_spp_rast),
+                 nspp_rrweight = values(n_rr_rast)) %>%
+  filter(!is.na(risk_unweight))
+
+
+mdl_summary <- function(mdl) {
+  mdl %>%
+    broom::tidy() %>%
+    mutate(adj.rsq = round(mdl %>% summary() %>% .$adj.r.squared, 4),
+           call = as.character(mdl$call)[2])
+}
+
+mdl_summary(lm(risk_rrweight ~ risk_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(pct_thr_rrweight ~ pct_thr_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(nspp_rrweight ~ nspp_unweight, data = df)) %>%
+  knitr::kable()
+
+```
+
+### covariance of factors within weighting groups
+
+Compare correlations between:
+
+* species richness ~ n threatened 
+* mean risk ~ pct threatened 
+* mean risk ~ species richness
+
+``` {r covariance checks global 2, results = 'asis'}
+
+cat('#### Threatened spp ~ species richness\n\n')
+
+mdl_summary(lm(nspp_unweight ~ pct_thr_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(nspp_rrweight ~ pct_thr_rrweight, data = df)) %>%
+  knitr::kable()
+
+cat('#### Threatened spp ~ risk\n\n')
+
+mdl_summary(lm(risk_unweight ~ pct_thr_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(risk_rrweight ~ pct_thr_rrweight, data = df)) %>%
+  knitr::kable()
+
+cat('#### Risk ~ species richness\n\n')
+
+mdl_summary(lm(risk_unweight ~ nspp_unweight, data = df)) %>%
+  knitr::kable()
+
+mdl_summary(lm(risk_rrweight ~ nspp_rrweight, data = df)) %>%
+  knitr::kable()
+
+```
+
+## By taxa: covariance of unweighted vs rr-weighted
+
+### set up taxonomic groups
 
 ``` {r set up taxa groupings}
 
@@ -100,86 +183,6 @@ taxa_sums <- data.frame(unweighted = list.files(file.path(dir_o_anx, 'taxa_summa
 # [29] "LYCOPODIOPSIDA"     "CLITELLATA" 
 ```
 
-## All spp
-
-### covariance of unweighted vs rr-weighted
-
-Covariance calculated for risk, percent threatened, and species richness.  Does range-rarity weighting provide a significantly different picture of status compared to unweighted?
-
-Here we can use the overall rasters for simplicity.
-
-``` {r covariance checks global, results = 'asis'}
-
-risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_010deg.tif'))
-risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_010deg.tif'))
-threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster_010deg.tif'))
-threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_010deg.tif'))
-n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_010deg.tif'))
-n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_010deg.tif'))
-
-df <- data.frame(risk_unweight = values(risk_un_rast),
-                 risk_rrweight = values(risk_rr_rast),
-                 threat_unweight = values(threat_un_rast),
-                 threat_rrweight = values(threat_rr_rast),
-                 nspp_unweight = values(n_spp_rast),
-                 nspp_rrweight = values(n_rr_rast)) %>%
-  mutate(pct_thr_unweight = threat_unweight / nspp_unweight,
-         pct_thr_rrweight = threat_rrweight / nspp_rrweight) %>%
-  filter(!is.na(risk_unweight))
-
-
-mdl_summary <- function(mdl) {
-  mdl %>%
-    broom::tidy() %>%
-    mutate(adj.rsq = round(mdl %>% summary() %>% .$adj.r.squared, 4),
-           call = as.character(mdl$call)[2])
-}
-
-mdl_summary(lm(risk_rrweight ~ risk_unweight, data = df)) %>%
-  knitr::kable()
-
-mdl_summary(lm(threat_rrweight ~ threat_unweight, data = df)) %>%
-  knitr::kable()
-
-mdl_summary(lm(nspp_rrweight ~ nspp_unweight, data = df)) %>%
-  knitr::kable()
-
-```
-
-### covariance of factors within weighting groups
-
-Compare correlations between:
-
-* species richness ~ n threatened 
-* mean risk ~ pct threatened 
-* mean risk ~ species richness
-
-``` {r covariance checks global 2, results = 'asis'}
-
-mdl_summary(lm(nspp_unweight ~ threat_unweight, data = df)) %>%
-  knitr::kable()
-
-mdl_summary(lm(nspp_rrweight ~ threat_rrweight, data = df)) %>%
-  knitr::kable()
-
-
-mdl_summary(lm(risk_unweight ~ pct_thr_unweight, data = df)) %>%
-  knitr::kable()
-
-mdl_summary(lm(risk_rrweight ~ pct_thr_rrweight, data = df)) %>%
-  knitr::kable()
-
-
-mdl_summary(lm(risk_unweight ~ nspp_unweight, data = df)) %>%
-  knitr::kable()
-
-mdl_summary(lm(risk_rrweight ~ nspp_rrweight, data = df)) %>%
-  knitr::kable()
-
-```
-
-## By taxa: covariance of unweighted vs rr-weighted
-
 Covariance calculated for risk, percent threatened, and species richness.
 
 ``` {r calc covar by taxon, results = 'asis'}
@@ -224,7 +227,7 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[3]
     bind_rows() %>%
     group_by(cell_id) %>%
     summarize(risk_unweight = 1/sum(n_spp_risk) * sum(mean_risk * n_spp_risk),
-              threat_unweight = sum(n_spp_threatened) / sum(n_spp_risk),
+              pct_thr_unweight = sum(n_spp_threatened) / sum(n_spp_risk),
               nspp_unweight = sum(n_spp_risk))
   
   taxon_df_rr <- parallel::mclapply(rr_weighted_files, mc.cores = 12,
@@ -234,7 +237,7 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[3]
     bind_rows() %>%
     group_by(cell_id) %>%
     summarize(risk_rrweight = 1/sum(sr_rr_risk) * sum(mean_risk * sr_rr_risk),
-              threat_rrweight = sum(sr_rr_threatened) / sum(sr_rr_risk),
+              pct_thr_rrweight = sum(sr_rr_threatened) / sum(sr_rr_risk),
               nspp_rrweight = sum(sr_rr_risk))
 
   df <- taxon_df %>%
@@ -249,7 +252,7 @@ for(taxon_gp in taxa_gps) { ### taxon_gp <- taxa_gps[3]
     knitr::kable() %>%
     print()
   
-  mdl_summary(lm(threat_rrweight ~ threat_unweight, data = df)) %>%
+  mdl_summary(lm(pct_thr_rrweight ~ pct_thr_unweight, data = df)) %>%
     mutate(coef_var_range = spp_range_var %>% 
              filter(taxon == taxon_gp) %>% 
              .$coef_var) %>%

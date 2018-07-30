@@ -67,47 +67,88 @@ Greenland, Morocco and Western Sahara.
 Options: 
 
 * LME 20-26 (26 = Mediterranean) and 59 (Iceland)?
+* MEOW 2 (Northern Iceland/Svalbard), [21:27, 30:31, 34:36] (Mediterranean), 44 (Black Sea)
 * Alternately: Use EEZs for all countries listed as Europe by UN classification
 
 ## Northern Africa 
 
 * LME 33 (Red Sea), 26 (Mediterranean), 27 (West Coast of North Africa)
+* MEOW 87-88 (Red Sea), [32, 33, 35, 36] (Mediterranean), 28, 29 (Lusitanean upwelling)
 
 ## Southern Africa 
 
 * LME 29 (Western Southern Africa) and 30 (Madagascar)
+* MEOW 192:194 (Temperate southern Africa)
 
 ## Eastern Africa 
 
 * LME 30 (Madagascar) and 31 (Horn of Africa)
+* MEOW 94:102 (Western Indian Ocean)
 
 ## Western Africa   
 
 * LME 28
+* MEOW 79:86 (West African Transition, Gulf of Guinea)
 
 ## Central Africa  
 
 * LME 28, 29
+* If this is truly "Central" then no marine anyway! ignore
 
 ## Northeastern Africa 
 
 * LME 32, 33
+* MEOW 87:93 (Red Sea, Gulf of Aden, Somali/Arabian)
 
 ## Pan-Africa 
 
 * LME 26-33
+* MEOW 28, 29, 32, 33, 35, 36 (Med and N), 
+    79:86 (West), 87:89, 93 (NE), 94:102 (E), 192:194 (S)
 
 ## Gulf of Mexico 
 
 * LME 5
+* MEOW 43 (N Gulf), 68:70 (S Gulf)
 
 ## Mediterranean
 
 * LME 26 and 62 for Mediterranean and Black Seas
+* MEOW 30:36, 44
 
 ## Persian Gulf
 
 * LME 32 (NOTE: this encompasses the entire Arabian Sea)
+* MEOW 90:91
+
+``` {r code MEOWs}
+
+rgn_to_meow <- c('europe'             = paste(c(2,21:27, 30:31, 34:36, 44), collapse = ','),
+                'northern_africa'     = paste0(c(87:88, 32, 33, 35, 36, 28, 29), collapse = ','),
+                'western_africa'      = paste0(79:86, collapse = ','), 
+                # 'central_africa'      = '28,29',
+                'northeastern_africa' = paste0(87:93, collapse = ','),
+                'southern_africa'     = paste0(192:194, collapse = ','),
+                'eastern_africa'      = paste0(94:102, collapse = ','),
+                'pan-africa'          = paste0(c(28, 29, 32, 33, 35, 36, 79:89, 93:102, 192:194), 
+                                                 collapse = ','),
+                'gulf_of_mexico'      = paste0(c(43, 68:70), collapse = ','),
+                'mediterranean'       = paste0(c(30:36, 44), collapse = ','), 
+                'persian_gulf'        = paste0(90:91, collapse = ','),
+                'global'              = paste0(1:232, collapse = ','))
+
+rgn_to_meow_df <- data.frame(iucn_rgn = names(rgn_to_meow),
+                             meow_id  = rgn_to_meow) %>%
+  mutate(meow_id = str_split(meow_id, ',')) %>%
+  unnest(meow_id) %>%
+  group_by(iucn_rgn) %>%
+  mutate(meow_id = as.integer(meow_id),
+         priority = n()) %>%
+  arrange(priority)
+
+write_csv(rgn_to_meow_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_meow.csv')))
+
+```
 
 ``` {r code LMEs}
 

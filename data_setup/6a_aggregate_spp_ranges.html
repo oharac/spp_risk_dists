@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Jul 18 11:54:13 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Jul 29 22:16:55 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -134,6 +134,9 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -274,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Wed Jul 18 11:54:13 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Jul 29 22:16:55 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -341,18 +344,17 @@ spp_risk_trend &lt;-<span class="st"> </span>spp_risk <span class="op">%&gt;%</s
 ### raster for cell IDs
 rast_cell_ids &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'cell_id_rast.tif'</span>))
 
-### Make a dataframe of cell ID to LME for regional assessments... also 
-### make a lookup of LME to region
-lme_rgns_rast &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'lme_rast.tif'</span>))
-lme_cells_all &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="kw">values</span>(rast_cell_ids),
-                            <span class="dt">lme_id  =</span> <span class="kw">values</span>(lme_rgns_rast)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(lme_id))
-lme_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/iucn_rgn_to_lme.csv'</span>))</code></pre></div>
+### Make a dataframe of cell ID to MEOW for regional assessments... also 
+### make a lookup of MEOW to region
+meow_rgns_rast &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'meow_rast.tif'</span>))
+meow_cells_all &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id =</span> <span class="kw">values</span>(rast_cell_ids),
+                             <span class="dt">meow_id =</span> <span class="kw">values</span>(meow_rgns_rast)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(meow_id))
+meow_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/iucn_rgn_to_meow.csv'</span>))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Make a list of taxonomic groups to loop over:
 taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="st">''</span>)
-
 
 ##########################################################.
 ### Looping over taxonomic groups -----
@@ -399,21 +401,21 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
 <span class="st">          </span><span class="kw">left_join</span>(taxon_risk_trend, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) 
         
         ### Identify regional assessments if any
-        lme_rgns &lt;-<span class="st"> </span>lme_to_rgn <span class="op">%&gt;%</span>
+        meow_rgns &lt;-<span class="st"> </span>meow_to_rgn <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">filter</span>(iucn_rgn <span class="op">%in%</span><span class="st"> </span>spp_risk_map<span class="op">$</span>iucn_rgn)
         
-        non_global_rgns &lt;-<span class="st"> </span>lme_rgns <span class="op">%&gt;%</span>
+        non_global_rgns &lt;-<span class="st"> </span>meow_rgns <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">filter</span>(iucn_rgn <span class="op">!=</span><span class="st"> 'global'</span>)
   
         <span class="cf">if</span>(<span class="kw">nrow</span>(non_global_rgns) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {
-          ### If any regional assessments, clip the LME cells down to the appropriate region...
-          lme_cells &lt;-<span class="st"> </span>lme_cells_all <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">inner_join</span>(lme_rgns, <span class="dt">by =</span> <span class="st">'lme_id'</span>) <span class="op">%&gt;%</span>
+          ### If any regional assessments, clip the MEOW cells down to the appropriate region...
+          meow_cells &lt;-<span class="st"> </span>meow_cells_all <span class="op">%&gt;%</span>
+<span class="st">            </span><span class="kw">inner_join</span>(meow_rgns, <span class="dt">by =</span> <span class="st">'meow_id'</span>) <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">rename</span>(<span class="dt">rgn_name =</span> iucn_rgn)
           ### ... then filter out non-matching overlapped cells
           spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">left_join</span>(lme_cells, <span class="dt">by =</span> <span class="st">'cell_id'</span>) <span class="op">%&gt;%</span>
-<span class="st">            </span><span class="kw">mutate</span>(<span class="dt">rgn_name =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(lme_id), <span class="st">'global'</span>, rgn_name),
+<span class="st">            </span><span class="kw">left_join</span>(meow_cells, <span class="dt">by =</span> <span class="st">'cell_id'</span>) <span class="op">%&gt;%</span>
+<span class="st">            </span><span class="kw">mutate</span>(<span class="dt">rgn_name =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(meow_id), <span class="st">'global'</span>, rgn_name),
                    <span class="dt">priority =</span> <span class="kw">ifelse</span>(rgn_name <span class="op">==</span><span class="st"> 'global'</span>, <span class="dv">100</span>, priority)) <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">filter</span>(iucn_rgn <span class="op">==</span><span class="st"> </span>rgn_name) <span class="op">%&gt;%</span>
 <span class="st">            </span><span class="kw">group_by</span>(cell_id) <span class="op">%&gt;%</span>
@@ -425,12 +427,15 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
           ### the group_by() below.
         }
         
-        ### select down to main columns; also, if presence == 5 (extinct), adjust category and trend scores.
+        ### select down to main columns; also, if presence == 5 (extinct), 
+        ### adjust category and trend scores.
         spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">select</span>(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span>
-<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">cat_score   =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="dv">1</span>, cat_score),        ### fix local extinctions
-                 <span class="dt">trend_score =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="ot">NA</span>, trend_score)) <span class="op">%&gt;%</span><span class="st"> </span>### fix local extinctions
+<span class="st">          </span><span class="kw">mutate</span>(<span class="dt">cat_score   =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="dv">1</span>, cat_score),        
+                   ### fix local extinctions
+                 <span class="dt">trend_score =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="ot">NA</span>, trend_score)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">                   </span>### fix local extinctions
 <span class="st">          </span><span class="kw">group_by</span>(cell_id, iucn_sid) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">summarize</span>(<span class="dt">cat_score   =</span> <span class="kw">mean</span>(cat_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
                     <span class="dt">trend_score =</span> <span class="kw">mean</span>(trend_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),

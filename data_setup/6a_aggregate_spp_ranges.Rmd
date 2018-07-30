@@ -84,13 +84,13 @@ spp_risk_trend <- spp_risk %>%
 ### raster for cell IDs
 rast_cell_ids <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
-### Make a dataframe of cell ID to LME for regional assessments... also 
-### make a lookup of LME to region
-lme_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'lme_rast.tif'))
-lme_cells_all <- data.frame(cell_id = values(rast_cell_ids),
-                            lme_id  = values(lme_rgns_rast)) %>%
-  filter(!is.na(lme_id))
-lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv'))
+### Make a dataframe of cell ID to MEOW for regional assessments... also 
+### make a lookup of MEOW to region
+meow_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'meow_rast.tif'))
+meow_cells_all <- data.frame(cell_id = values(rast_cell_ids),
+                             meow_id = values(meow_rgns_rast)) %>%
+  filter(!is.na(meow_id))
+meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
 
 ```
 
@@ -99,7 +99,6 @@ lme_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_lme.csv'))
 taxa <- spp_maps$dbf_file %>%
   unique() %>%
   str_replace('\\.dbf$', '')
-
 
 ##########################################################.
 ### Looping over taxonomic groups -----
@@ -146,21 +145,21 @@ for(taxon in taxa) {
           left_join(taxon_risk_trend, by = 'iucn_sid') 
         
         ### Identify regional assessments if any
-        lme_rgns <- lme_to_rgn %>%
+        meow_rgns <- meow_to_rgn %>%
           filter(iucn_rgn %in% spp_risk_map$iucn_rgn)
         
-        non_global_rgns <- lme_rgns %>%
+        non_global_rgns <- meow_rgns %>%
           filter(iucn_rgn != 'global')
   
         if(nrow(non_global_rgns) > 0) {
-          ### If any regional assessments, clip the LME cells down to the appropriate region...
-          lme_cells <- lme_cells_all %>%
-            inner_join(lme_rgns, by = 'lme_id') %>%
+          ### If any regional assessments, clip the MEOW cells down to the appropriate region...
+          meow_cells <- meow_cells_all %>%
+            inner_join(meow_rgns, by = 'meow_id') %>%
             rename(rgn_name = iucn_rgn)
           ### ... then filter out non-matching overlapped cells
           spp_risk_map <- spp_risk_map %>%
-            left_join(lme_cells, by = 'cell_id') %>%
-            mutate(rgn_name = ifelse(is.na(lme_id), 'global', rgn_name),
+            left_join(meow_cells, by = 'cell_id') %>%
+            mutate(rgn_name = ifelse(is.na(meow_id), 'global', rgn_name),
                    priority = ifelse(rgn_name == 'global', 100, priority)) %>%
             filter(iucn_rgn == rgn_name) %>%
             group_by(cell_id) %>%
@@ -172,12 +171,15 @@ for(taxon in taxa) {
           ### the group_by() below.
         }
         
-        ### select down to main columns; also, if presence == 5 (extinct), adjust category and trend scores.
+        ### select down to main columns; also, if presence == 5 (extinct), 
+        ### adjust category and trend scores.
         spp_risk_map <- spp_risk_map %>%
           select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
           distinct() %>%
-          mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        ### fix local extinctions
-                 trend_score = ifelse(presence == 5, NA, trend_score)) %>% ### fix local extinctions
+          mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
+                   ### fix local extinctions
+                 trend_score = ifelse(presence == 5, NA, trend_score)) %>% 
+                   ### fix local extinctions
           group_by(cell_id, iucn_sid) %>%
           summarize(cat_score   = mean(cat_score, na.rm = TRUE),
                     trend_score = mean(trend_score, na.rm = TRUE),
