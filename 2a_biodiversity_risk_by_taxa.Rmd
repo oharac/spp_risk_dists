@@ -51,6 +51,11 @@ Compare MPAs to biodiversity intactness:
 
 ## set up taxonomic groups
 
+``` {r set up shapes to taxa}
+shps <- 
+
+```
+
 ``` {r set up taxa groupings}
 
 shp_to_taxa <- read_csv(file.path(dir_git, 'data_setup/raw', 'shps_to_taxa.csv'))

@@ -84,7 +84,7 @@ spp_maps <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv'
 
 ``` {r mean_risk_raster, results = 'asis', eval = TRUE}
 
-reload <- TRUE
+reload <- FALSE
 
 rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
@@ -105,7 +105,7 @@ map_list <- vector('list', length = length(taxa_gps)) %>%
 
 taxa_map_file <- file.path(dir_git, 'ms_figures/fig2_taxa_maps.png')
 
-for(i in seq_along(taxa_gps)) { ### i <- 1
+for(i in seq_along(taxa_gps)) { ### i <- 3
     
   taxon_gp <- taxa_gps[i]
   taxon_txt <- taxon_gp %>% tolower() %>% str_replace_all('chordata: |[^a-z]+', '')
@@ -113,22 +113,34 @@ for(i in seq_along(taxa_gps)) { ### i <- 1
   taxa_info <- taxa_sums %>%
     filter(taxon == taxon_gp)
   
-  cat_msg('Processing ', taxon_gp)
+  taxa_rast_file <- file.path(dir_o_anx, 'taxa_rasters', 
+                              paste0(tolower(taxon_txt), '_rr.tif'))
   
-  rr_weighted_files <- taxa_info$rr_weighted %>% unique()
+  if(!file.exists(taxa_rast_file) | reload == TRUE) {
   
-  taxon_df_rr <- parallel::mclapply(rr_weighted_files, mc.cores = 12,
-      FUN = function (x) { ### x <- rr_weighted_files[1]
-        read_csv(x, col_types = 'ddd___d___')
-      }) %>% 
-    bind_rows() %>%
-    group_by(cell_id) %>%
-    summarize(mean_risk_sum = 1/sum(sr_rr_risk) * sum(mean_risk * sr_rr_risk),
-              pct_threat_sum = sum(sr_rr_threatened) / sum(sr_rr_risk)) %>%
-    select(cell_id, mean_risk_sum, pct_threat_sum) %>%
-    mutate(wt = 'rr_weighted')
-  
-  mean_rr_rast <- subs(rast_base, taxon_df_rr, by = 'cell_id', which = 'mean_risk_sum')
+    cat_msg('Building: ', taxa_rast_file)
+
+    rr_weighted_files <- taxa_info$rr_weighted %>% unique()
+    
+    taxon_df_rr <- parallel::mclapply(rr_weighted_files, mc.cores = 12,
+        FUN = function (x) { ### x <- rr_weighted_files[1]
+          read_csv(x, col_types = 'ddd___d___')
+        }) %>% 
+      bind_rows() %>%
+      group_by(cell_id) %>%
+      summarize(mean_risk_sum = 1/sum(sr_rr_risk) * sum(mean_risk * sr_rr_risk),
+                pct_threat_sum = sum(sr_rr_threatened) / sum(sr_rr_risk)) %>%
+      select(cell_id, mean_risk_sum, pct_threat_sum) %>%
+      mutate(wt = 'rr_weighted')
+    
+    mean_rr_rast <- subs(rast_base, taxon_df_rr, by = 'cell_id', which = 'mean_risk_sum')
+    
+    raster::writeRaster(mean_rr_rast, filename = taxa_rast_file, overwrite = TRUE)
+    
+  } else {
+    cat_msg('File exists: ', taxa_rast_file)
+    mean_rr_rast <- raster(taxa_rast_file)
+  }
 
   mean_rr_df <- mean_rr_rast %>% 
     aggregate(fact = 2) %>%
@@ -143,6 +155,7 @@ for(i in seq_along(taxa_gps)) { ### i <- 1
   labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')
   breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)
 
+  cat_msg('Building plot for ', taxon_gp)
   x <- ggplot(mean_rr_df) +
     geom_raster(aes(long, lat, fill = value), show.legend = FALSE) +
     geom_sf(data = land_poly, aes(geometry = geometry), 

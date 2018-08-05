@@ -84,7 +84,7 @@ Marine Intertidal - Mud Flats and Salt Flats,12.4,12,4,NA,TRUE
 Marine Intertidal - Salt Marshes (Emergent Grasses),12.5,12,5,NA,TRUE
 Marine Intertidal - Tidepools,12.6,12,6,NA,TRUE
 Marine Intertidal - Mangrove Submerged Roots,12.7,12,7,NA,TRUE
-Marine Coastal/Supratidal - Sea Cliffs and Rocky Offshore Islands,13.1,13,1,NA,FALSE
+Marine Coastal/Supratidal - Sea Cliffs and Rocky Offshore Islands,13.1,13,1,NA,TRUE
 Marine Coastal/supratidal - Coastal Caves/Karst,13.2,13,2,NA,FALSE
 Marine Coastal/Supratidal - Coastal Sand Dunes,13.3,13,3,NA,FALSE
 Marine Coastal/Supratidal - Coastal Brackish/Saline Lagoons/Marine Lakes,13.4,13,4,NA,FALSE
@@ -110,5 +110,5 @@ Artificial/Marine - Marine Anthropogenic Structures,15.11,15,11,NA,TRUE
 Artificial/Marine - Mariculture Cages,15.12,15,12,NA,TRUE
 Artificial/Marine - Mari/Brackishculture Ponds,15.13,15,13,NA,TRUE
 Introduced vegetation,16,16,NA,NA,FALSE
-Other,17,17,NA,NA,FALSE
-Unknown,18,18,NA,NA,FALSE
+Other,17,17,NA,NA,TRUE
+Unknown,18,18,NA,NA,TRUE

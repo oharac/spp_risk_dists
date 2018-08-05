@@ -97,6 +97,7 @@ meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
 ``` {r loop}
 ### Make a list of taxonomic groups to loop over:
 taxa <- spp_maps$dbf_file %>%
+  basename() %>%
   unique() %>%
   str_replace('\\.dbf$', '')
 
@@ -104,12 +105,12 @@ taxa <- spp_maps$dbf_file %>%
 ### Looping over taxonomic groups -----
 ##########################################################.
 for(taxon in taxa) {
-  ### taxon <- taxa[25]
+  ### taxon <- taxa[45]
   
   taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_%s.csv', tolower(taxon), api_version))
   
-  reload <- TRUE
+  reload <- FALSE
   if(!file.exists(taxon_risk_sum_file) | reload == TRUE) {
     
     taxon_maps <- spp_maps %>%
@@ -135,7 +136,7 @@ for(taxon in taxa) {
     ### this takes about 30-40 seconds
     taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
                                         FUN = function(x) {
-        ### x <- taxon_ids[761]
+        ### x <- taxon_ids[16]
         ### x <- 6336                            
         csv_file <- file.path(dir_o_anx, 'spp_rasters', 
                               sprintf('iucn_sid_%s.csv', x))
@@ -173,7 +174,7 @@ for(taxon in taxa) {
         
         ### select down to main columns; also, if presence == 5 (extinct), 
         ### adjust category and trend scores.
-        spp_risk_map <- spp_risk_map %>%
+        spp_risk_sum <- spp_risk_map %>%
           select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
           distinct() %>%
           mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
@@ -182,13 +183,11 @@ for(taxon in taxa) {
                    ### fix local extinctions
           group_by(cell_id, iucn_sid) %>%
           summarize(cat_score   = mean(cat_score, na.rm = TRUE),
-                    trend_score = mean(trend_score, na.rm = TRUE),
-                    iucn_rgn = paste0(iucn_rgn, collapse = ','),
-                    presence = paste0(presence, collapse = ',')) %>%
+                    trend_score = mean(trend_score, na.rm = TRUE)) %>%
           ungroup() %>%
           mutate(trend_score = ifelse(is.nan(trend_score), NA, trend_score))
         
-        return(spp_risk_map)
+        return(spp_risk_sum)
       }) ### end of mclapply over all species in taxonomic group
   
     ##########################################################.
@@ -197,6 +196,7 @@ for(taxon in taxa) {
   
     ### Set up for keyed data.table merging: key for iucn_sid, cell_id
     cat_msg('...binding rows to data.frame...')
+
     taxon_risk_map <- bind_rows(taxon_cells_list) ### this is pretty fast!
     
     cat_msg('...summarizing...')

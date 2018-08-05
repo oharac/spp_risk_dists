@@ -123,9 +123,9 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
     
   ### chunk into smaller bits for mclapply usage in the summarizing step.  Use mclapply to chunk,
   ### then pass result to mclapply to calculate weighted average values
-  chunksize  <- 10000
+  chunksize <- 10000
   cell_ids  <- cell_values_all$cell_id %>% unique() %>% sort()
-  n_chunks <- ceiling(length(cell_ids) / chunksize)
+  n_chunks  <- ceiling(length(cell_ids) / chunksize)
   
   message('going into the second mclapply...')
   # system.time({ 

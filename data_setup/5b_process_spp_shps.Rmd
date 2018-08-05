@@ -22,6 +22,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
+library(rgeos)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 library(sf)
@@ -32,9 +33,12 @@ dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 ### project specific folders and info
 source(file.path(dir_git, 'data_setup/common_fxns.R'))
 
-# dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
 dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', '2017-3'))
 dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
+dir_shp2 <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+  ### These are shapefiles directly from IUCN as individual species map files
+  ### (in the unzipped folder).
+  ### in the base folder are shapefiles at a taxonomic level.
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -60,6 +64,7 @@ IUCN: Gina Ralph direct communication
 ### Create subpopulation lookup to match maps with IUCN SIDs for subpops
 
 From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend. 
+
 ``` {r convert BLI to shp-dbf-etc}
 
 ### convert BirdLife Int'l .gdb to shapefile, after filtering to species in the "marine" list.
@@ -84,7 +89,7 @@ if(!file.exists(bli_marine_shp)) {
   
   att_table <- foreign::read.dbf(bli_marine_dbf) %>%
     setNames(names(bli_marine_sf)[1:(ncol(bli_marine_sf) - 1)]) %>%
-    rename(id_no = sisid, binomial = sciname, year = date, tax_comm = tax_com) %>%
+    rename(iucn_sid = sisid, binomial = sciname, year = date, tax_comm = tax_com) %>%
     mutate(year = as.integer(as.character(year)))
     #  [1] "sisid"        "sciname"      "date"         "source"       "presence"     "origin"       "seasonal"    
     #  [8] "data_sens"    "sens_comm"    "compiler"     "tax_com"      "dist_com"     "reviewers"    "citation"    
@@ -99,25 +104,53 @@ if(!file.exists(bli_marine_shp)) {
 
 ```
 
-Note that there appear to be no subpopulation polygons within the BirdLife International map set; there is no "subpop" column in that attribute table.
+Note that there appear to be no subpopulation polygons within the BirdLife International map set; there is no "subpop" column in that attribute table.  It appears that the individual files may not have "subpop" column either.
 
 ``` {r create_subpop_lookup}
 
 iucn_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+iucn2_dbfs <- list.files(dir_shp2, pattern = '\\.dbf$', recursive = FALSE,
+                         full.names = TRUE)
 bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
-shps_dbfs <- c(iucn_dbfs, bli_dbfs)
+shps_dbfs <- c(iucn_dbfs, bli_dbfs, iucn2_dbfs)
 
+### This is all "marine" species by habitat:
 marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)))
-### This is all "marine" species by habitat
+
+### This is *all* spp from the API, filtered down to those in marine_spp: 
 api_spp <- read_csv(file.path(dir_o_anx, 'iucn', 
                               sprintf('spp_info_from_api_%s.csv', api_version))) %>%
   filter(iucn_sid %in% marine_spp$iucn_sid)
 
+### Define helper function to cleanly get the info from DBF files,
+### including colname checks
+get_dbf <- function(x) { ### x <- shps_dbfs[1]
+  spp_dbf_info <- foreign::read.dbf(x, as.is = TRUE) %>%
+    clean_df_names()
+  
+  ### Individual files call the id number 'iucn_sid'; bli has been fixed to
+  ### 'iucn_sid' as well; Red List Data Download files are 'id_no'... So:
+  ### fix that here!
+  names(spp_dbf_info)[names(spp_dbf_info) == 'id_no'] <- 'iucn_sid'
+  
+  ### Some files (e.g. bli and individual files) don't have 'subpop':
+  ### add it in as NAs.
+  if(!'subpop' %in% names(spp_dbf_info)) spp_dbf_info$subpop <- NA
+  
+  ### some files don't have 'presence' field: if not present or NA,
+  ### set to presence = 1.  Some have presence = 0?
+  if(!'presence' %in% names(spp_dbf_info)) spp_dbf_info$presence <- 1
+  
+  spp_dbf_info <- spp_dbf_info %>%
+    mutate(presence = ifelse(presence == 0, 1, presence))
+  
+  return(spp_dbf_info)
+}
 
-shps_df <- lapply(shps_dbfs, FUN = function(x) foreign::read.dbf(x, as.is = TRUE)) %>%
+shps_df <- lapply(shps_dbfs, get_dbf) %>%
   setNames(basename(shps_dbfs)) %>%
   bind_rows(.id = 'dbf_file') %>%
-  select(dbf_file, iucn_sid = id_no, sciname = binomial, code, presence, subpop) %>%
+  select(dbf_file, iucn_sid, sciname = binomial, presence, subpop) %>%
   filter(iucn_sid %in% marine_spp$iucn_sid)
 
 shp_subpops <- shps_df %>%
@@ -126,7 +159,11 @@ shp_subpops <- shps_df %>%
   distinct() %>%
   mutate(shp_subpop_clean = str_replace(tolower(shp_subpop), ' subpopulation| ocean', ''),
          shp_subpop_clean = str_replace_all(shp_subpop_clean, '[^a-z]', ' ') %>% str_trim,
-         shp_subpop_clean = str_replace(shp_subpop_clean, 'noth', 'north')) ### fix typo
+         shp_subpop_clean = str_replace(shp_subpop_clean, 'noth', 'north'), 
+           ### fix typo
+         shp_subpop_clean = ifelse(str_detect(shp_subpop_clean, 'svalbard barents sea'),
+                                   'east greenland svalbard barents sea', shp_subpop_clean))
+           ### fix mismatch between 2018-1 api subpop and 2017-3 shp subpop
 
 api_subpops <- api_spp %>%
   select(api_iucn_sid = iucn_sid, sciname, api_subpop = population) %>%
@@ -167,12 +204,18 @@ subpops_match <- subpops_match_raw %>%
 # api_subpops$api_iucn_sid[!api_subpops$api_iucn_sid %in% subpops_match$api_iucn_sid]
 ### API subpop, not matched: 16369383 Tursiops truncatus Mediterranean subpopulation
 ### OK - no polygon for this subpopulation.  Make sure it gets picked up by regional assessment!
+### API subpop, not matched: 2472 Balaena mysticetus East Greenland-Svalbard-Barents Sea subpopulation
+### NOOO! This is called something slightly different between shp and api.
+### * Code above is fixed for this special case.  Note, if/when 2018-1 shapefiles are
+###   added in, this code may need to come out or be adjusted.
 
 # shp_subpops$shp_subpop[!shp_subpops$shp_subpop %in% subpops_match$shp_subpop]
 ### Shapefile subpop, not matched: 16285718 Chelonia mydas Hawaiian subpopulation
 ### OK - the shapefile ID matches the API ID so this will match automatically
 
-write_csv(subpops_match, file.path(dir_git, sprintf('data_setup/int/subpops_match_api_to_shp_%s.csv', api_version)))
+write_csv(subpops_match, 
+          file.path(dir_git, sprintf('data_setup/int/subpops_match_api_to_shp_%s.csv', 
+                                     api_version)))
 
 ```
 
@@ -183,9 +226,11 @@ From the species range map shapefiles, pull map info from the .dbf files.  For s
 ``` {r generate map list from dbfs}
 
 iucn_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+iucn2_dbfs <- list.files(dir_shp2, pattern = '\\.dbf$', recursive = FALSE,
+                         full.names = TRUE)
 bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
 
-map_files <- c(iucn_dbfs, bli_dbfs)
+map_files <- c(iucn_dbfs, bli_dbfs, iucn2_dbfs)
 
 
 # spp_group_names <- map_files %>%
@@ -193,14 +238,11 @@ map_files <- c(iucn_dbfs, bli_dbfs)
 #   str_replace_all('\\.dbf$|_PART_.+', '') %>%
 #   unique()
 
-map_info_list <- lapply(map_files, FUN = function(x) {
-    foreign::read.dbf(x, as.is = TRUE)
-  }) %>%
-  setNames(basename(map_files))
+map_info_list <- lapply(map_files, get_dbf) %>%
+  setNames(map_files)
 
 map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
-  mutate(dbf_file = basename(dbf_file)) %>%
-  select(shp_iucn_sid = id_no, 
+  select(shp_iucn_sid = iucn_sid, 
          sciname = binomial, 
          presence, 
          subpop, 
@@ -288,12 +330,11 @@ rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 if(reload == FALSE) {
   maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters'),
                                         pattern = '.csv') %>%
-    str_replace_all('iucn_sid_|.csv', '') %>%
+    str_replace_all('iucn_sid_|.csv$', '') %>%
     as.integer()
 
   maps_to_rasterize <- maps_to_rasterize %>%
     filter(!iucn_sid %in% maps_already_rasterized)
-  
 }
 
 if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
@@ -328,21 +369,29 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
       select(shp_iucn_sid, iucn_sid, subpop, max_depth) %>%
       distinct()
     
-    shp_full <- ifelse(str_detect(shp, 'bli'), file.path(dir_bli, shp), file.path(dir_shp, shp))
-    
-    cat_msg(i, ' of ', length(shps), ': reading ', shp, ' from: \n  ', shp_full)
+    cat_msg(i, ' of ', length(shps), ': reading ', basename(shp), ' from: \n  ', shp)
 
-    polys_all <- read_sf(shp_full) 
+    polys_all <- read_sf(shp, type = 6) %>%
+      clean_df_names()
       ### we will check geoms and fix them inside the mclapply, 
       ### and then reproject, one species at a time
     
-    if(str_detect(shp, 'bli_marine')) {
+    if(!'subpop' %in% names(polys_all)) {
       polys_all$subpop <- NA_character_
-      ### BOTW doesn't have subpop column, so add it
-    }        
+      ### if shape doesn't have subpop column, add it as NA
+    }
+    if('id_no' %in% names(polys_all)) {
+      polys_all <- polys_all %>%
+        rename(iucn_sid = id_no)
+    }
+    if(!'presence' %in% names(polys_all)) {
+      polys_all <- polys_all %>%
+        mutate(presence = 1)
+    }
+
     
     polys_match <- polys_all %>%
-      select(shp_iucn_sid = id_no, sciname = binomial, subpop, presence, geometry) %>%
+      select(shp_iucn_sid = iucn_sid, sciname = binomial, subpop, presence, geometry) %>%
       mutate(subpop = as.character(subpop)) %>%
       inner_join(id_fix, by = c('shp_iucn_sid', 'subpop')) 
     
@@ -355,7 +404,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
     ### In each shapefile, loop over each species ID using mclapply().
     ####################################################################.
     
-    cat_msg(i, ' of ', length(shps), ': Processing ', shp, ' with ', length(spp_ids), ' species...')
+    cat_msg('Processing ', basename(shp), ' with ', length(spp_ids), ' species...')
     
     # system.time({
       tmp <- parallel::mclapply(seq_along(spp_ids),
@@ -363,18 +412,28 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
                                 FUN = function(x) {
         ### x <- 1
         spp <- spp_ids[x]
-        cat_msg(x, ' of ', length(spp_ids), ': Processing ', spp, ' in ', shp,
+        
+        ### AAAARRRGGHHH with this problem
+        problem_spp <- c(21132910, 190317, 15598596, 15598672, 190197)
+        if(spp %in% problem_spp) {
+          cat_msg('Species ', spp, ' is a problem... skipping!')
+          return(NA)
+        }
+        
+        
+        cat_msg(x, ' of ', length(spp_ids), ': Processing ', spp, ' in ', basename(shp),
                 ' (group ', i, ' of ', length(shps), ')...\n')
         
         spp_shp <- polys_match %>%
           filter(iucn_sid == spp)
         
-        spp_shp <- valid_check(spp_shp, spp)
+        spp_shp <- valid_check(spp_shp)
           ### if invalid geometry, buffer to 0 and cast back to multipolygon
       
         spp_shp <- spp_shp %>%
           clip_to_globe() %>%
             ### in common_fxn.R: ensures no coordinates outside +-180, +-90
+            ### otherwise transform to eq area proj creates horizontal lines
           st_transform(gp_proj4)
         ### plot(spp_shp %>% select(presence))
         
@@ -403,8 +462,10 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
         if(nrow(spp_present) == 0) {
           msg_cat('Species ID ', spp, ' resulted in a zero-length dataframe.')
         }
+        
         write_csv(spp_present, file.path(dir_o_anx, 'spp_rasters',
                                          sprintf('iucn_sid_%s.csv', spp)))
+        
         return(NA)
       }) ### end of mclapply FUN definition
     # }) ### end of system.time call

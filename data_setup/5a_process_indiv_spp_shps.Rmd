@@ -1,0 +1,210 @@
+---
+title: 'Process IUCN spp shapes provided individually'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(rgeos)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+library(sf)
+
+dir_git <- '~/github/spp_risk_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+### project specific folders and info
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
+
+dir_shp <- file.path(dir_M, sprintf('git-annex/globalprep/_raw_data/iucn_spp/d%s', api_version))
+
+  ### These are shapefiles directly from IUCN as individual species map files;
+  ### these will be handled differently from those taken from Red List Spatial
+  ### Data Download page
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+```
+
+# Summary
+
+Gather individually provided species shapefiles into taxa shapefiles for easier processing.
+
+# Data source
+
+IUCN: Gina Ralph direct communication
+
+# Methods
+
+At this stage, no need to worry about duplicates from other shapefiles (e.g. SEASNAKES and REPTILES), and no need to worry about subpopulations - just keep those fields in the master shapefiles.
+
+## Read spp shapes, correct subpop IDs, `fasterize()`, depth clip, save to csv
+
+We will loop over each species in each shapefile and rasterize separately, using `sf` and `fasterize` packages.  
+
+* Identify all the species in the unzipped folder(s).
+* Identify taxonomic groups for species from the IUCN API list; gather into
+    * phylum groups for all but Chordata
+    * class groups for Chordata
+    
+``` {r define fxn}
+### Define helper function to cleanly get the info from DBF files,
+### including colname checks
+get_dbf <- function(x) { ### x <- shps_dbfs[1]
+  spp_dbf_info <- foreign::read.dbf(x, as.is = TRUE) %>%
+    clean_df_names()
+  
+  ### Individual files call the id number 'iucn_sid'; bli has been fixed to
+  ### 'iucn_sid' as well; Red List Data Download files are 'id_no'... So:
+  ### fix that here!
+  names(spp_dbf_info)[names(spp_dbf_info) == 'id_no'] <- 'iucn_sid'
+  
+  ### Some files (e.g. bli and individual files) don't have 'subpop':
+  ### add it in as NAs.
+  if(!'subpop' %in% names(spp_dbf_info)) spp_dbf_info$subpop <- NA
+  
+  ### some files don't have 'presence' field: if not present or NA,
+  ### set to presence = 1.  Some have presence = 0?
+  if(!'presence' %in% names(spp_dbf_info)) spp_dbf_info$presence <- 1
+  
+  spp_dbf_info <- spp_dbf_info %>%
+    mutate(presence = ifelse(presence == 0, 1, presence))
+  
+  return(spp_dbf_info)
+}
+```
+
+``` {r generate map list from dbfs}
+
+unzip_dirs <- list.dirs(dir_shp) %>%
+  .[. != dir_shp] ### exclude home (dir_shp) from results
+
+iucn_indiv_dbfs <- list.files(unzip_dirs, pattern = '\\.dbf$', 
+                              recursive = FALSE,
+                              full.names = TRUE)
+
+map_info_list <- lapply(iucn_indiv_dbfs, get_dbf) %>%
+  setNames(iucn_indiv_dbfs)
+
+map_info_raw <- bind_rows(map_info_list, .id = 'dbf_file') %>%
+  select(iucn_sid, 
+         sciname = binomial, 
+         presence, 
+         subpop, 
+         dbf_file) %>%
+  distinct()
+### Notes on presence, origin, seasonal fields:
+### * presence = 5 is extinct; 4 = probably extinct; others are extant-ish or 
+###   uncertain. We will drop field and include all polygons for now.
+### * origin is native, introduced, etc.  We will drop this field and not
+###   worry about origin.
+### * seasonal is breeding/non-breeding/passage.  We will drop this field
+###   and not worry about seasonality.
+
+### filter to marine habitat species (to drop terrestrial reptiles e.g.)
+marine_spp_ids <- read_csv(file.path(dir_git, 'data',
+                                     sprintf('spp_marine_from_api_%s.csv', 
+                                             api_version)),
+                           col_types = 'dcc') %>%
+  select(iucn_sid, max_depth)
+### Find taxonomic info and attach
+spp_taxa <- read_csv(file.path(dir_o_anx, 'iucn',
+                               sprintf('spp_info_from_api_%s.csv', api_version)),
+                     col_types = 'dcccc_____') %>%
+  mutate(phylum = tolower(phylum),
+         class  = tolower(class),
+         order  = tolower(order))
+
+marine_map_info <- map_info_raw %>%
+  inner_join(marine_spp_ids, by = 'iucn_sid') %>%
+  inner_join(spp_taxa, by = 'iucn_sid') %>%
+  mutate(taxon = case_when(class  == 'actinopterygii' ~ order,
+                           phylum == 'chordata'       ~ class,
+                           TRUE                       ~ phylum))
+
+```
+
+
+``` {r gather ids and read into a single shapefile}
+
+reload <- FALSE
+
+maps_shps <- marine_map_info %>%
+  mutate(shp_file = str_replace(dbf_file, '\\.dbf$', '.shp'))
+
+taxa <- maps_shps$taxon %>% unique() %>% sort()
+  
+for(taxon_gp in taxa) { ### taxon_gp <- taxa[1]
+  taxon_shps <- maps_shps %>%
+    filter(taxon == taxon_gp)
+  
+  cat_msg('Processing ', taxon_gp, ' with ', nrow(taxon_shps), ' separate spp files')
+  
+  outfile <- file.path(dir_shp, paste0(taxon_gp, '.shp'))
+  
+  if(!file.exists(outfile) | reload == TRUE) {
+  
+    shps_list <- lapply(taxon_shps$shp_file, read_sf)
+    
+    polys_all <- do.call(rbind, shps_list) %>%
+      ### allows to pass a list of arguments to a function separately!
+      clean_df_names()
+    
+    ### clean up the attributes of resulting sf object
+    if(!'subpop' %in% names(polys_all)) {
+      polys_all$subpop <- NA_character_
+      ### if shape doesn't have subpop column, add it as NA
+    }
+    if('id_no' %in% names(polys_all)) {
+      polys_all <- polys_all %>%
+        rename(iucn_sid = id_no)
+    }
+    if(!'presence' %in% names(polys_all)) {
+      polys_all <- polys_all %>%
+        mutate(presence = 1)
+    }
+    
+    problem_taxa <- c('lophiiformes', 'myctophiformes', 'stomiiformes')
+      ### will just save as is, need to manually fix the bastards
+      ### lophiiformes: just seemed to hang on cropping
+      ### myctophiformes: Error in ClosePol(unclass(x)) : polygons require at least 4 points
+      ###   after buffering/cropping
+      ### stomiiformes same problem as myctophiformes
+    if(!taxon_gp %in% problem_taxa) {
+      cat_msg('Checking and trimming ', taxon_gp)
+      polys_all <- polys_all %>%
+        valid_check() %>%
+        clip_to_globe() ### trim to +/- 180
+    
+    } else {
+      cat_msg('skipping check/trim on ', taxon_gp)
+    }
+    
+    st_write(polys_all, outfile, 
+             delete_layer = TRUE)
+  } else {
+    cat_msg('Shapefile found: ', outfile)
+  }
+}
+
+```
+
+
