@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sun Jul 29 22:16:55 2018 by ohara" />
+<meta name="author" content="Compiled on Tue Aug 7 06:16:51 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -277,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Sun Jul 29 22:16:55 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Tue Aug 7 06:16:51 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -353,6 +353,7 @@ meow_cells_all &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
 meow_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/iucn_rgn_to_meow.csv'</span>))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Make a list of taxonomic groups to loop over:
 taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">basename</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="st">''</span>)
 
@@ -360,12 +361,12 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
 ### Looping over taxonomic groups -----
 ##########################################################.
 <span class="cf">for</span>(taxon <span class="cf">in</span> taxa) {
-  ### taxon &lt;- taxa[25]
+  ### taxon &lt;- taxa[23]
   
   taxon_risk_sum_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>,
                                    <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_%s.csv'</span>, <span class="kw">tolower</span>(taxon), api_version))
   
-  reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+  reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_risk_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
     
     taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
@@ -391,7 +392,7 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
     ### this takes about 30-40 seconds
     taxon_cells_list &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(taxon_ids, <span class="dt">mc.cores =</span> <span class="dv">24</span>,
                                         <span class="dt">FUN =</span> <span class="cf">function</span>(x) {
-        ### x &lt;- taxon_ids[761]
+        ### x &lt;- taxon_ids[16]
         ### x &lt;- 6336                            
         csv_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'spp_rasters'</span>, 
                               <span class="kw">sprintf</span>(<span class="st">'iucn_sid_%s.csv'</span>, x))
@@ -429,7 +430,7 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
         
         ### select down to main columns; also, if presence == 5 (extinct), 
         ### adjust category and trend scores.
-        spp_risk_map &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
+        spp_risk_sum &lt;-<span class="st"> </span>spp_risk_map <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">select</span>(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">mutate</span>(<span class="dt">cat_score   =</span> <span class="kw">ifelse</span>(presence <span class="op">==</span><span class="st"> </span><span class="dv">5</span>, <span class="dv">1</span>, cat_score),        
@@ -438,13 +439,11 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
 <span class="st">                   </span>### fix local extinctions
 <span class="st">          </span><span class="kw">group_by</span>(cell_id, iucn_sid) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">summarize</span>(<span class="dt">cat_score   =</span> <span class="kw">mean</span>(cat_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-                    <span class="dt">trend_score =</span> <span class="kw">mean</span>(trend_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-                    <span class="dt">iucn_rgn =</span> <span class="kw">paste0</span>(iucn_rgn, <span class="dt">collapse =</span> <span class="st">','</span>),
-                    <span class="dt">presence =</span> <span class="kw">paste0</span>(presence, <span class="dt">collapse =</span> <span class="st">','</span>)) <span class="op">%&gt;%</span>
+                    <span class="dt">trend_score =</span> <span class="kw">mean</span>(trend_score, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">mutate</span>(<span class="dt">trend_score =</span> <span class="kw">ifelse</span>(<span class="kw">is.nan</span>(trend_score), <span class="ot">NA</span>, trend_score))
         
-        <span class="kw">return</span>(spp_risk_map)
+        <span class="kw">return</span>(spp_risk_sum)
       }) ### end of mclapply over all species in taxonomic group
   
     ##########################################################.
@@ -453,6 +452,7 @@ taxa &lt;-<span class="st"> </span>spp_maps<span class="op">$</span>dbf_file <sp
   
     ### Set up for keyed data.table merging: key for iucn_sid, cell_id
     <span class="kw">cat_msg</span>(<span class="st">'...binding rows to data.frame...'</span>)
+
     taxon_risk_map &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(taxon_cells_list) ### this is pretty fast!
     
     <span class="kw">cat_msg</span>(<span class="st">'...summarizing...'</span>)

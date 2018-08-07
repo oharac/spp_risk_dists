@@ -64,18 +64,22 @@ Compare the list of species from the downloaded maps to the list of marine speci
 ``` {r}
 
 map_info <- read_csv(file.path(dir_git, 'data',
-                               sprintf('spp_marine_maps_%s.csv', api_version))) %>%
+                               sprintf('spp_marine_maps_%s.csv', api_version)),
+                     col_types = 'ddciccc') %>%
   select(-presence, -max_depth, -sciname) %>%
   distinct() %>%
   mutate(dbf_file = basename(dbf_file))
 
 marine_spp_by_hab <- read_csv(file.path(dir_git, 'data', 
-                                        sprintf('spp_marine_from_api_%s.csv', api_version)))
+                                        sprintf('spp_marine_from_api_%s.csv', api_version)),
+                              col_types = 'dcc')
 
 spp_info_mar <- read_csv(file.path(dir_git, 'data',
-                           sprintf('iucn_risk_current_%s.csv', api_version)))
+                           sprintf('iucn_risk_current_%s.csv', api_version)),
+                         col_types = 'dccicccdc')
 spp_info_all <- read_csv(file.path(dir_o_anx, 'iucn',
-                           sprintf('spp_info_from_api_%s.csv', api_version)))
+                           sprintf('spp_info_from_api_%s.csv', api_version)),
+                         col_types = 'dccccccccc')
 
 marine_spp_mapped <- marine_spp_by_hab %>%
   full_join(map_info, by = c('iucn_sid')) %>%
@@ -84,14 +88,19 @@ marine_spp_mapped <- marine_spp_by_hab %>%
   select(iucn_sid, dbf_file, 
          sciname, main_common_name, 
          cat, cat_score, 
-         published_year, iucn_version)
-  
+         published_year, iucn_version) %>%
+  distinct()
+
+write_csv(marine_spp_mapped, file.path(dir_git, 'data/map_check/marine_spp_mapped.csv'))
 
 ```
 
 ### Species unavailable from Spatial Data Download
 
 ``` {r}
+
+marine_spp_mapped <- read_csv(file.path(dir_git, 'data/map_check/marine_spp_mapped.csv'),
+                              col_types = 'dccccddc')
 
 # marine_spp_mapped$iucn_sid %>% unique() %>% length()
 # 12913 spp either marine by hab or incl in marine maps
@@ -110,5 +119,71 @@ maps_missing_with_score <- maps_missing %>%
 
 write_csv(maps_missing_with_score, file.path(dir_git, 'data/map_check/assessed_maps_missing.csv'))
 
-write_csv(marine_spp_mapped, file.path(dir_git, 'data/map_check/marine_spp_mapped.csv'))
+```
+
+## Distribution of category scores for mapped spp
+
+``` {r}
+
+marine_spp_mapped <- read_csv(file.path(dir_git, 'data/map_check/marine_spp_mapped.csv'),
+                              col_types = 'dccccddc')
+
+df <- marine_spp_mapped %>%
+  filter(!is.na(cat_score)) %>%
+  mutate(comp_assessed = (dbf_file != tolower(dbf_file)),
+         comp_assessed = ifelse(is.na(dbf_file), FALSE, comp_assessed)) %>% 
+    ### Red List site shps are uppercase names
+  mutate(included = !is.na(dbf_file))
+
+df %>%
+  group_by(included) %>%
+  summarize(mean_cat = mean(cat_score))
+
+df %>%
+  group_by(comp_assessed) %>%
+  summarize(mean_cat = mean(cat_score))
+```
+``` {r}
+marine_spp_mapped <- read_csv(file.path(dir_git, 'data/map_check/marine_spp_mapped.csv'),
+                              col_types = 'dccccddc') 
+
+df <- marine_spp_mapped %>%
+  filter(!is.na(cat_score)) %>%
+  left_join(spp_info_all %>% select(-sciname), by = 'iucn_sid') %>%
+  select(iucn_sid, sciname, dbf_file,
+         kingdom, phylum, class, order,
+         cat_score) %>%
+  mutate(taxon = case_when(phylum != 'CHORDATA'       ~ tolower(phylum),
+                           class  != 'ACTINOPTERYGII' ~ tolower(class),
+                           TRUE                       ~ tolower(order))) 
+
+comp_ass_taxa <- df %>%
+  filter(!is.na(dbf_file)) %>%
+  mutate(comp_assessed = dbf_file != tolower(dbf_file)) %>%
+  select(taxon, comp_assessed) %>%
+  mutate(comp_assessed = ifelse(is.na(comp_assessed), FALSE, comp_assessed)) %>%
+  distinct()
+  
+  
+df2 <- df %>%
+  left_join(comp_ass_taxa, by = c('taxon')) %>% 
+    ### Red List site shps are uppercase names
+  mutate(included = !is.na(dbf_file))
+
+
+included_df <- df2 %>%
+  group_by(included, taxon) %>%
+  summarize(mean_cat = mean(cat_score), n = n()) %>%
+  arrange(taxon)
+
+DT::datatable(included_df)
+
+comp_assessed_df <- df2  %>%
+  filter(!(comp_assessed & !included)) %>%
+  group_by(comp_assessed, taxon, included) %>%
+  summarize(mean_cat = mean(cat_score), n = n()) %>%
+  arrange(taxon)
+
+DT::datatable(comp_assessed_df)
+
 ```

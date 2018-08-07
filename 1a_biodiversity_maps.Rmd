@@ -156,7 +156,8 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
                   n_spp_risk  = sum(n_spp_risk), ### n_total
                   n_spp_threatened = sum(n_spp_threatened, na.rm = TRUE),
                   pct_threatened   = n_spp_threatened / n_spp_risk,
-                  mean_trend  = sum(mean_trend * n_spp_trend, na.rm = TRUE) / sum(n_spp_trend, na.rm = TRUE),
+                  mean_trend  = sum(mean_trend * n_spp_trend, na.rm = TRUE) / 
+                                  sum(n_spp_trend, na.rm = TRUE),
                   n_spp_trend = sum(n_spp_trend, na.rm = TRUE))
       
       z <- x %>%
@@ -221,29 +222,6 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   
   ### mean_rast <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
   
-  mean_df <- mean_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value'))
-  
-  message('ggplotting the global map...')
-  
-  x <- ggplot(mean_df) +
-    geom_raster(aes(long, lat, fill = value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('green4', 'lightyellow', 'orange', 'red2', 'red4', 'purple4'),
-                         limits = c(0, 1),
-                         labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
-                         breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Mean risk',
-         fill  = 'Mean risk')
-  
-  # ggsave(filename = map_plot_file, width = 6, height = 4, units = 'in', dpi = 300)
-  
 } else {
   message('Map exists: ', map_rast_file)
 }
@@ -260,26 +238,6 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(var_rast, map_rast_file,
               overwrite = TRUE)
   
-  var_df <- var_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value'))
-  
-  x <- ggplot(var_df) +
-    geom_raster(aes(long, lat, fill = value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('green3', 'lightyellow', 'red3', 'purple4'),
-                         values = c(0, .25, .5, 1)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Variance of risk',
-         fill  = 'Var of risk')
-
-  # ggsave(filename = map_plot_file,
-  #        width = 6, height = 4, units = 'in', dpi = 300)
-
 } else {
   message('Map exists: ', map_rast_file)
 }
@@ -297,29 +255,6 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(n_spp_rast, map_rast_file,
               overwrite = TRUE)
   
-  n_spp_df <- n_spp_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value')) %>%
-    mutate(log_value = log10(value))
-  
-  x <- ggplot(n_spp_df) +
-    geom_raster(aes(long, lat, fill = log_value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('lightblue', 'blue1', 'blue3', 'purple4'),
-                         values = c(0, .7, .8, .9, 1),
-                         breaks = c(0,  1,   2,    3),
-                         labels = c(1, 10, 100, 1000)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Number of assessed species',
-         fill = 'N')
-
-  # ggsave(filename = map_plot_file,
-  #        width = 6, height = 4, units = 'in', dpi = 300)
-
 } else {
   message('Map exists: ', map_rast_file)
 }
@@ -336,62 +271,11 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(n_threat_rast, map_rast_file,
               overwrite = TRUE)
   ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster.tif'))
-  # n_threat_df <- n_threat_rast %>% 
-  #   # aggregate(fact = 4) %>%
-  #   rasterToPoints() %>% 
-  #   as.data.frame() %>%
-  #   setNames(c('long', 'lat', 'value')) %>%
-  #   mutate(log_value = log(value))
-  
-  
-  # x <- ggplot(n_threat_df) +
-  #   geom_raster(aes(long, lat, fill = value)) +
-  #   geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-  #   ggtheme_map() +
-  #   scale_fill_gradientn(colors = c('grey90', 'coral', 'red1', 'red3', 'red4', 'purple4'),
-  #                        values = c(0, .5, .7, .8, .9, 1)) +
-  #   scale_x_continuous(expand = c(0, 0)) +
-  #   scale_y_continuous(expand = c(0, 0)) +
-  #   labs(title = 'Number of threatened species (VU, EN, CR) (ln transformed)',
-  #        fill  = 'ln N')
-  # 
-  
+
   pct_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'pct_threatened')
   writeRaster(pct_threat_rast, file.path(dir_git, 'output', 'pct_threat_raster.tif'),
               overwrite = TRUE)
   ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster.tif'))
-  pct_threat_df <- pct_threat_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value'))
-  
-  
-  x <- ggplot(pct_threat_df) +
-    geom_raster(aes(long, lat, fill = value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('grey90', 'coral', 'red2', 'red4', 'purple4'),
-                         limits = c(0, 1),
-                         values = c(0, .25, .5, .6, 1)) +
-    coord_sf() +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Proportion of threatened species (VU, EN, CR)',
-         fill  = 'proportion')
-  
-  # ggsave(filename = map_plot_file,
-  #        width = 6, height = 4, units = 'in', dpi = 300)
-
-  
-  x <- ggplot(pct_threat_df, aes(x = value)) +
-    ggtheme_plot() +
-    geom_density(alpha = .3, size = .25, color = 'red') +
-    theme(axis.text.y = element_blank(),
-          axis.title.y = element_blank()) +
-    labs(title = 'dist of % species in VU, EN, CR')
-  
-  quantile(pct_threat_df$value, c(0.01, 0.05, seq(0.10, 1.00, 0.10)))
 
 } else {
   message('Map exists: ', map_rast_file)
@@ -411,29 +295,6 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(trend_rast, map_rast_file,
               overwrite = TRUE)
   
-  trend_df <- trend_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value'))
-  
-  trend_max <- abs(range(trend_df$value)) %>% max()
-  
-  x <- ggplot(trend_df) +
-    geom_raster(aes(long, lat, fill = value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('green4', 'green3', 'grey90', 'red3', 'purple4'),
-                         values = c(0, .25, .5, .75, 1),
-                         limits = c(-trend_max, trend_max)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Annual change in risk (trend)',
-         fill  = 'change in risk/yr')
-
-  # ggsave(filename = map_plot_file,
-  #        width = 6, height = 4, units = 'in', dpi = 300)
-
 } else {
   message('Map exists: ', map_rast_file)
 }
@@ -451,29 +312,6 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(n_trend_rast, map_rast_file,
               overwrite = TRUE)
   
-  n_trend_df <- n_trend_rast %>% 
-    # aggregate(fact = 4) %>%
-    rasterToPoints() %>% 
-    as.data.frame() %>%
-    setNames(c('long', 'lat', 'value')) %>%
-    mutate(log_value = log10(value))
-  
-  x <- ggplot(n_trend_df) +
-    geom_raster(aes(long, lat, fill = log_value)) +
-    geom_sf(data = land_poly, aes(geometry = geometry), fill = 'grey96', color = 'grey40', size = .10) +
-    ggtheme_map() +
-    scale_fill_gradientn(colors = c('lightblue', 'blue1', 'blue3', 'purple4'),
-                         values = c(0, .7, .8, .9, 1),
-                         breaks = c(0, 1, 2, 3),
-                         labels = c(1, 10, 100, 1000)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(title = 'Number of trend-assessed species',
-         fill  = 'N')
-  
-  # ggsave(filename = map_plot_file,
-  #        width = 6, height = 4, units = 'in', dpi = 300)
-
 } else {
   message('Map exists: ', map_rast_file)
 }

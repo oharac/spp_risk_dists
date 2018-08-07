@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sat Aug 4 08:26:07 2018 by ohara" />
+<meta name="author" content="Compiled on Tue Aug 7 06:24:31 2018 by ohara" />
 
 
 <title>Biodiversity risk maps</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps</h1>
-<h4 class="author"><em><em>Compiled on Sat Aug 4 08:26:07 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Tue Aug 7 06:24:31 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -616,10 +616,10 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
 } <span class="cf">else</span> {
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
-<pre><code>##        1%        5%       10%       20%       30%       40%       50% 
-## 0.0000000 0.1304348 0.1741573 0.2413793 0.2656250 0.2839506 0.3026316 
-##       60%       70%       80%       90%      100% 
-## 0.3188406 0.3333333 0.3506494 0.3714286 1.0000000</code></pre>
+<pre><code>##         1%         5%        10%        20%        30%        40% 
+## 0.08733624 0.13043478 0.15286624 0.16911765 0.18796992 0.21000000 
+##        50%        60%        70%        80%        90%       100% 
+## 0.22619048 0.23809524 0.25000000 0.27083333 0.30000000 1.00000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'trend_raster.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {

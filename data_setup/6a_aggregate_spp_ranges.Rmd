@@ -105,7 +105,7 @@ taxa <- spp_maps$dbf_file %>%
 ### Looping over taxonomic groups -----
 ##########################################################.
 for(taxon in taxa) {
-  ### taxon <- taxa[45]
+  ### taxon <- taxa[23]
   
   taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_%s.csv', tolower(taxon), api_version))

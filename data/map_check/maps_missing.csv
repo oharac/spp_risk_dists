@@ -9,7 +9,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 1086,Amblyrhynchus cristatus,Fernandina Marine Iguana,VU,0.4,2004,2018-1
 1308,Anisotremus moricandi,Brownstriped Grunt,LC,0,2015,2018-1
 1615,Choranthias salmopunctatus,NA,LC,0,2015,2018-1
-1793,Aonyx capensis,African Clawless Otter,NT,0.2,2015,2018-1
 1866,Aplochiton marinus,NA,DD,NA,1996,2018-1
 2064,Arctocephalus australis ssp. australis,South American Fur Seal,LC,0,2016,2018-1
 2066,Arctocephalus pusillus ssp. pusillus,Cape Fur Seal,LC,0,2015,2018-1
@@ -18,7 +17,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 2179,Assiminea infirma,Badwater Snail,VU,0.4,1996,2018-1
 2181,Assiminea palauensis,NA,DD,NA,1996,2018-1
 2182,Assiminea pecos,Pecos Assiminea,EN,0.6,1996,2018-1
-2218,Astraea heliotropium,NA,LC,0,2000,2018-1
+2218,Astraea heliotropium,NA,LC,0,2e3,2018-1
 2479,Balaenoptera musculus ssp. brevicauda,Pygmy Blue Whale,DD,NA,1996,2018-1
 2482,Balaenoptera musculus ssp. musculus North Pacific stock,Blue Whale,VU,0.4,1996,2018-1
 2483,Balaenoptera musculus ssp. musculus North Atlantic stock,North Atlantic Blue Whale,VU,0.4,1996,2018-1
@@ -39,7 +38,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 5362,Coregonus artedi,Cisco,LC,0,1996,2018-1
 5486,Crassispira sacerdotalis,NA,DD,NA,1996,2018-1
 5675,Croilia mossambica,Burrowing Goby,LC,0,2007,2018-1
-6069,Cymatium parthenopaeum,NA,LC,0,2000,2018-1
+6069,Cymatium parthenopaeum,NA,LC,0,2e3,2018-1
 6202,Cysticus gutta,NA,DD,NA,1996,2018-1
 6203,Cysticus josephinae,NA,DD,NA,1996,2018-1
 6814,Dunckerocampus dactyliophorus,Banded Pipefish,DD,NA,2016,2018-1
@@ -47,7 +46,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 7035,Edwardsia ivelli,Ivell's Sea Anemone,DD,NA,1996,2018-1
 7134,Eleotris sandwicensis,Hawaii Spinecheek Gudgeon,DD,NA,2013,2018-1
 7135,Eleotris melanosoma,Broadhead Sleeper,LC,0,2017,2018-1
-7750,Enhydra lutris,Sea Otter,EN,0.6,2015,2018-1
 8012,Erignathus barbatus ssp. barbatus,Atlantic Bearded Seal,LC,0,2016,2018-1
 8013,Erignathus barbatus ssp. nauticus,Pacific Bearded Seal,LC,0,2015,2018-1
 8261,Eunice viridis,Samoan Palolo Worm,DD,NA,1996,2018-1
@@ -101,23 +99,17 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 11060,Kuhlia marginata,Silver Flagtail,LC,0,2012,2018-1
 11191,Ophioglossolambis violacea,NA,DD,NA,1996,2018-1
 11368,Latiaxis babelis,NA,NT,0.2,1996,2018-1
-11375,Latimeria chalumnae,Coelacanth,CR,0.8,2000,2018-1
+11375,Latimeria chalumnae,Coelacanth,CR,0.8,2e3,2018-1
 11501,Lentipes concolor,Oopu Alamoo,DD,NA,1996,2018-1
 11533,Lepidochelys kempii,Kemp's Ridley,CR,0.8,1996,2018-1
 11987,Limulus polyphemus,American Horseshoe Crab,VU,0.4,2016,2018-1
 12103,Liosaccus pachygaster,NA,VU,0.4,1996,2018-1
 12242,Littoraria flammea,NA,EX,1,1996,2018-1
 12244,Liza luciae,St. Lucia Mullet,EN,0.6,1996,2018-1
-12302,Lontra canadensis,North American River Otter,LC,0,2015,2018-1
-12303,Lontra felina,Marine Otter,EN,0.6,2015,2018-1
-12305,Lontra provocax,Southern River Otter,EN,0.6,2015,2018-1
 12382,Lottia alveus,Eelgrass Limpet,EX,1,1996,2018-1
 12404,Luciogobius pallidus,Well Earthworm Goby,DD,NA,1996,2018-1
 12416,Lutjanus analis,Mutton Snapper,NT,0.2,2016,2018-1
 12417,Lutjanus cyanopterus,Cubera Snapper,VU,0.4,2016,2018-1
-12419,Lutra lutra,Eurasian Otter,NT,0.2,2015,2018-1
-12421,Lutra sumatrana,Hairy-nosed Otter,EN,0.6,2015,2018-1
-12427,Lutrogale perspicillata,Smooth-coated Otter,VU,0.4,2015,2018-1
 12807,Marginella chalmersi,NA,DD,NA,1996,2018-1
 12808,Marginella gemma,NA,DD,NA,1996,2018-1
 12809,Marginella liparozona,NA,DD,NA,1996,2018-1
@@ -251,26 +243,25 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 22140,Tridacna squamosa,Fluted Giant Clam,VU,0.4,1996,2018-1
 22141,Tridacna mbalavuana,Tevoro Clam,VU,0.4,1996,2018-1
 22594,Typhlatya iliffei,NA,CR,0.8,1996,2018-1
-22823,Ursus maritimus,Polar Bear,VU,0.4,2015,2018-1
 23045,Volvarina insulana,NA,DD,NA,1996,2018-1
 23090,Wrayanna soluta,NA,DD,NA,1996,2018-1
 23149,Xiphias gladius North Atlantic stock,Swordfish,EN,0.6,1996,2018-1
 23163,Xyrichtys virens,NA,VU,0.4,1996,2018-1
 23259,Zosterisessor ophiocephalus,Grass Goby,LC,0,2014,2018-1
-29609,Sebastolobus alascanus,Shortspine Thornyhead,EN,0.6,2000,2018-1
+29609,Sebastolobus alascanus,Shortspine Thornyhead,EN,0.6,2e3,2018-1
 39302,Anthias regalis,NA,VU,0.4,1996,2018-1
 39304,Serranus dewegeri,Meo Viejo,NT,0.2,1996,2018-1
 39331,Squatina occulta,Smoothback Angel Shark,EN,0.6,2007,2018-1
 39340,Cetorhinus maximus Northeast Atlantic subpopulation,Basking Shark,EN,0.6,2009,2018-1
 39343,Lamna nasus Northeast Atlantic subpopulation,Porbeagle,CR,0.8,2006,2018-1
 39344,Lamna nasus Northwest Atlantic subpopulation,Porbeagle,EN,0.6,2006,2018-1
-39373,Carcharhinus limbatus Northwest Atlantic subpopulation,Blacktip Shark,VU,0.4,2000,2018-1
-39376,Carcharhinus obscurus Northwest and Western Central Atlantic subpopulation,Dusky Shark,VU,0.4,2000,2018-1
+39373,Carcharhinus limbatus Northwest Atlantic subpopulation,Blacktip Shark,VU,0.4,2e3,2018-1
+39376,Carcharhinus obscurus Northwest and Western Central Atlantic subpopulation,Dusky Shark,VU,0.4,2e3,2018-1
 39427,Cephalorhynchus hectori ssp. maui,North Island Hector's Dolphin,CR,0.8,2013,2018-1
-39465,Squatina guggenheim Brazilian subpopulation,Angular Angel Shark,EN,0.6,2000,2018-1
-39541,Notorynchus cepedianus East Pacific subpopulation,Broadnose Sevengill,NT,0.2,2000,2018-1
+39465,Squatina guggenheim Brazilian subpopulation,Angular Angel Shark,EN,0.6,2e3,2018-1
+39541,Notorynchus cepedianus East Pacific subpopulation,Broadnose Sevengill,NT,0.2,2e3,2018-1
 39543,Carcharhinus amboinensis Southwest Indian Ocean subpopulation,Pigeye Shark,NT,0.2,2009,2018-1
-39544,Carcharhinus brevipinna Northwest Atlantic subpopulation,Spinner Shark,VU,0.4,2000,2018-1
+39544,Carcharhinus brevipinna Northwest Atlantic subpopulation,Spinner Shark,VU,0.4,2e3,2018-1
 39545,Cetorhinus maximus North Pacific subpopulation,Basking Shark,EN,0.6,2009,2018-1
 40710,Percarina demidoffii,NA,NT,0.2,1996,2018-1
 40715,Syngnathoides biaculeatus,Alligator Pipefish,LC,0,2017,2018-1
@@ -301,7 +292,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 43993,Vanvoorstia bennettiana,Bennett's Seaweed,EX,1,2003,2018-1
 44070,Carcharias taurus East coast of Australia subpopulation,Spotted Ragged-tooth Shark,CR,0.8,2003,2018-1
 44071,Carcharias taurus Western Australia subpopulation,Spotted Ragged-tooth Shark,NT,0.2,2003,2018-1
-44166,Aonyx cinereus,Asian Small-clawed Otter,VU,0.4,2015,2018-1
 44167,Sicyopterus stimpsoni,Stimpson's Goby,NT,0.2,1996,2018-1
 44168,Squalus acanthias Northeast Atlantic subpopulation,Spiny Dogfish,CR,0.8,2006,2018-1
 44169,Squalus acanthias Northwest Atlantic subpopulation,Spiny Dogfish,EN,0.6,2006,2018-1
@@ -437,7 +427,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 64403,Epinephelus lebretonianus,Mystery Grouper,DD,NA,2008,2018-1
 132832,Megaptera novaeangliae Oceania subpopulation,Humpback Whale,EN,0.6,2008,2018-1
 132835,Megaptera novaeangliae Arabian Sea subpopulation,Humpback Whale,EN,0.6,2008,2018-1
-133000,Acropora ocellata,NA,DD,NA,2014,2018-1
 133065,Tubipora musica,Organ Pipe Coral,NT,0.2,2008,2018-1
 133181,Acropora sukarnoi,NA,DD,NA,2008,2018-1
 133465,Plerogyra multilobata,NA,DD,NA,2008,2018-1
@@ -543,7 +532,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 154613,Synaphobranchus affinis,Grey Cutthroat Eel,LC,0,2010,2018-1
 154614,Pentaceros decacanthus,Big-spined Boarfish,LC,0,2010,2018-1
 154615,Laeops guentheri,Günther's Flounder,LC,0,2010,2018-1
-154616,Diaphus diadematus,Crown Lanternfish,LC,0,2010,2018-1
 154617,Bryx veleronis,Offshore Pipefish,DD,NA,2016,2018-1
 154618,Lepidotrigla omanensis,Oman Gurnard,LC,0,2010,2018-1
 154619,Alcichthys elongatus,NA,LC,0,2010,2018-1
@@ -634,7 +622,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 154726,Polyipnus clarus,Slope Hatchetfish,LC,0,2010,2018-1
 154727,Bathypterois oddi,NA,DD,NA,2010,2018-1
 154728,Amphistichus koelzi,Calico Surfperch,LC,0,2010,2018-1
-154729,Diaphus rafinesquii,White-spotted Lantern Fish,LC,0,2010,2018-1
 154730,Luzonichthys williamsi,NA,LC,0,2010,2018-1
 154733,Dermatopsoides talboti,Lesser Orange Brotula,LC,0,2010,2018-1
 154735,Sebastes koreanus,NA,DD,NA,2010,2018-1
@@ -778,7 +765,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 154912,Apogon fleurieu,Flower Cardinalfish,LC,0,2010,2018-1
 154913,Leviprora inops,Longhead Flatfish,LC,0,2010,2018-1
 154914,Rhombosolea plebeia,New Zealand Flounder,LC,0,2010,2018-1
-154916,Chaenophryne longiceps,Can-opener Smoothdream,LC,0,2010,2018-1
 154917,Favonigobius exquisitus,Exquisite Sand-goby,LC,0,2010,2018-1
 154918,Pycnocraspedum squamipinne,NA,LC,0,2010,2018-1
 154919,Ateleopus japonicus,Pacific Jellynose Fish,LC,0,2010,2018-1
@@ -835,10 +821,9 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 154992,Lophiodes caulinaris,Spottedtail Goosefish,LC,0,2010,2018-1
 154993,Pteraclis aesticola,Pacific Fanfish,LC,0,2010,2018-1
 154994,Plectranthias pallidus,NA,DD,NA,2010,2018-1
-154995,Diaphus holti,Small Lantern Fish,LC,0,2010,2018-1
 154996,Calumia godeffroyi,Tailface Sleeper,LC,0,2010,2018-1
 154999,Etelis carbunculus,Ruby Snapper,LC,0,2016,2018-1
-155000,Minous dempsterae,Obliquebanded Stingfish,LC,0,2010,2018-1
+155e3,Minous dempsterae,Obliquebanded Stingfish,LC,0,2010,2018-1
 155001,Chalixodytes tauensis,Saddled Sandburrower,LC,0,2010,2018-1
 155002,Bovichtus chilensis,Torito,LC,0,2010,2018-1
 155003,Astronesthes nigroides,NA,LC,0,2010,2018-1
@@ -1059,7 +1044,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 155272,Nesogobius hinsbyi,Orange-spotted Sand-goby,LC,0,2010,2018-1
 155273,Ostorhinchus lateralis,Humpback Cardinal,LC,0,2012,2018-1
 155274,Apogon wassinki,Kupang Cardinalfish,LC,0,2010,2018-1
-155277,Antennarius analis,Dwarf Frogfish,LC,0,2010,2018-1
 155278,Microgobius erectus,Erect Goby,LC,0,2010,2018-1
 155279,Liopropoma aberrans,Eyestripe Bass,LC,0,2010,2018-1
 155280,Thryssa gautamiensis,Gautama Thryssa,DD,NA,2010,2018-1
@@ -1614,7 +1598,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 167010,Oxyurichthys tentacularis,NA,DD,NA,2016,2018-1
 167710,Odontesthes regia,Chilean silverside,LC,0,2009,2018-1
 167997,Pellonula vorax,Bigtoothed Pellonula,LC,0,2010,2018-1
-168000,Enneacampus kaupi,Vipère de mer,LC,0,2017,2018-1
+168e3,Enneacampus kaupi,Vipère de mer,LC,0,2017,2018-1
 168297,Ayarnangra estuarius,NA,DD,NA,2010,2018-1
 168438,Gobiopterus chuno,NA,DD,NA,2010,2018-1
 168780,Acanthus ilicifolius,Holy Mangrove,LC,0,2011,2018-1
@@ -1632,7 +1616,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 169632,Plicofollis dussumieri,Blacktip Sea Catfish,LC,0,2017,2018-1
 169636,Bathygobius ostreicola,NA,DD,NA,2009,2018-1
 169975,Palinurus elephas,Common Spiny Lobster,VU,0.4,2014,2018-1
-170000,Acanthacaris caeca,Atlantic Deep-sea Lobster,LC,0,2011,2018-1
 170267,Diplodus sargus ssp. lineatus,White Seabream,LC,0,2014,2018-1
 170269,Diplodus sargus ssp. sargus,White Seabream,LC,0,2014,2018-1
 170270,Diplodus sargus ssp. ascensionis,White Sea-bream,LC,0,2014,2018-1
@@ -1701,7 +1684,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 176732,Hydrophis inornatus,Plain Sea Snake,DD,NA,2010,2018-1
 176773,Hydrophis walli,Wall's Sea Snake,DD,NA,2010,2018-1
 177115,Ischaemum muticum,NA,LC,0,2011,2018-1
-178000,Acanthurus leucosternon,Powder Blue Surgeonfish,LC,0,2012,2018-1
 178048,Pythonichthys asodes,Pacific Mud Eel,LC,0,2010,2018-1
 178051,Cynoponticus coniceps,Red pike-conger,DD,NA,2010,2018-1
 178054,Myroconger nigrodentatus,Orange Conger-Moray,LC,0,2010,2018-1
@@ -1737,7 +1719,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 178107,Sphyraena idiastes,Pelican Barracuda,LC,0,2010,2018-1
 178108,Sphyraena lucasana,Cortez Barracuda,DD,NA,2010,2018-1
 178111,Fistularia corneta,Pacific Cornetfish,LC,0,2017,2018-1
-179000,Helcogramma novaecaledoniae,New Caledonian Triplefin,LC,0,2014,2018-1
 180105,Bathygadus sulcatus,NA,DD,NA,2011,2018-1
 180106,Coelorinchus dorsalis,NA,DD,NA,2011,2018-1
 180107,Coelorinchus macrolepis,NA,DD,NA,2011,2018-1
@@ -1772,7 +1753,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 180926,Ambassis miops,Flag-tailed Glassfish,LC,0,2012,2018-1
 180964,Minyclupeoides dentibranchialus,NA,LC,0,2012,2018-1
 180966,Achiroides melanorhijnchus,NA,LC,0,2012,2018-1
-181000,Mugilogobius mertoni,Merton's mangrove goby,LC,0,2012,2018-1
+181e3,Mugilogobius mertoni,Merton's mangrove goby,LC,0,2012,2018-1
 181023,Eugnathogobius kabilia,NA,LC,0,2012,2018-1
 181029,Eugnathogobius mindora,NA,LC,0,2012,2018-1
 181048,Mugilogobius rambaiae,Queen of Siam goby,LC,0,2012,2018-1
@@ -2044,7 +2025,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 183517,Elacatinus puncticulatus,Redhead goby,LC,0,2010,2018-1
 183518,Gobiesox stenocephalus,Narrow-headed Clingfish,DD,NA,2010,2018-1
 183520,Stromateus stellatus,Palometa cagavino,LC,0,2010,2018-1
-183522,Antennatus strigatus,Bandtail Frogfish,LC,0,2010,2018-1
 183523,Ophioscion typicus,Point-nosed croaker,LC,0,2010,2018-1
 183524,Cathorops multiradiatus,Box sea catfish,LC,0,2010,2018-1
 183526,Anarchias galapagensis,Hardtail moray,LC,0,2010,2018-1
@@ -2135,7 +2115,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 183656,Ancylopsetta dendritica,Threespot Sand Flounder,LC,0,2010,2018-1
 183658,Trinectes fonsecensis,Spottedfin Sole,LC,0,2010,2018-1
 183659,Cratinus agassizii,Graery threadfin seabass,NT,0.2,2010,2018-1
-183660,Antennatus sanguineus,Bloody Frogfish,LC,0,2010,2018-1
 183661,Notarius kessleri,Sculptured sea catfish,LC,0,2010,2018-1
 183662,Opisthonema libertate,Deep-bodied Pacific thread herring,LC,0,2010,2018-1
 183663,Trinectes opercularis,Spottedcheek Sole,DD,NA,2010,2018-1
@@ -2193,7 +2172,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 183729,Trachurus symmetricus,Pacific Jack Mackerel,LC,0,2010,2018-1
 183735,Cathorops tuyra,Besudo sea catfish,DD,NA,2010,2018-1
 183736,Anisotremus davidsonii,Xantic Sargo,LC,0,2010,2018-1
-183737,Fowlerichthys avalonis,Roughbar Frogfish,LC,0,2010,2018-1
 183738,Poeciliopsis prolifica,Blackstripe Livebearer,NT,0.2,2010,2018-1
 183740,Stellifer chrysoleuca,Shortnose stardrum,LC,0,2010,2018-1
 183743,Syngnathus auliscus,Barred Pipefish,LC,0,2016,2018-1
@@ -2388,7 +2366,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 183997,Ophioscion imiceps,Blinkard croaker,LC,0,2010,2018-1
 183998,Ophidion iris,Brighteye cusk-eel,LC,0,2010,2018-1
 183999,Tomicodon prodomus,Ecuadorian Clingfish,DD,NA,2010,2018-1
-184000,Anchoa starksi,Starks's Anchovy,LC,0,2010,2018-1
 184002,Lythrypnus solanensis,Sola's Goby,DD,NA,2010,2018-1
 184003,Trachinotus stilbe,Steel Pompano,LC,0,2010,2018-1
 184005,Lepophidium pardale,Leopard cusk eel,LC,0,2010,2018-1
@@ -2453,7 +2430,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 184929,Clenchiella microscopica,NA,LC,0,2014,2018-1
 184939,Iravadia rohdei,NA,LC,0,2012,2018-1
 184940,Iravadia cochinchinensis,NA,LC,0,2012,2018-1
-185000,Stereomastis nana,NA,LC,0,2011,2018-1
 185182,Dactylopterus volitans,Flying Gurnard,LC,0,2015,2018-1
 185774,Pedipes affinis,NA,LC,0,2016,2018-1
 185865,Phaeoptyx pigmentaria,Dusky Cardinalfish,LC,0,2015,2018-1
@@ -2564,7 +2540,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 185997,Eugerres plumieri,Striped Mojarra,LC,0,2015,2018-1
 185998,Eugerres brasilianus,Brazilian Mojarra,LC,0,2015,2018-1
 185999,Evorthodus lyricus,Lyre Goby,LC,0,2015,2018-1
-186000,Gobiesox lucayanus,Bahama Skilletfish,LC,0,2015,2018-1
+186e3,Gobiesox lucayanus,Bahama Skilletfish,LC,0,2015,2018-1
 186001,Gobiesox nigripinnis,Blackfinned Clingfish,LC,0,2015,2018-1
 186003,Gobiesox punctulatus,Stippled Clingfish,LC,0,2015,2018-1
 186004,Gobiesox barbatulus,Lappetlip Clingfish,LC,0,2015,2018-1
@@ -2679,10 +2655,8 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 189824,Fundulus heteroclitus,Mummichog,LC,0,2013,2018-1
 189828,Trachyscorpia cristulata,Atlantic Thornyhead,LC,0,2015,2018-1
 189829,Chilomycterus spinosus,NA,LC,0,2015,2018-1
-190064,Chaunax pictus,Pink Frogmouth,LC,0,2015,2018-1
 190065,Cottunculus thomsonii,Pallid Sculpin,LC,0,2015,2018-1
 190066,Foetorepus goodenbeani,Palefin Dragonet,LC,0,2015,2018-1
-190067,Cryptopsaras couesii,Triplewart Seadevil,LC,0,2015,2018-1
 190069,Gadella imberbis,Beardless Codling,LC,0,2015,2018-1
 190070,Pseudocaranx dentex,White Trevally,LC,0,2015,2018-1
 190071,Channomuraena vittata,Broadbanded Moray,LC,0,2015,2018-1
@@ -2697,7 +2671,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190085,Xenomystax congroides,Bristletooth Conger,LC,0,2015,2018-1
 190086,Pontinus longispinis,Longspine Scorpionfish,LC,0,2015,2018-1
 190087,Pollichthys mauli,Stareye Lightfish,LC,0,2015,2018-1
-190089,Diceratias pileatus,NA,LC,0,2015,2018-1
 190090,Trichiurus lepturus,Largehead Hairtail,LC,0,2015,2018-1
 190091,Physiculus fulvus,Metallic Codling,LC,0,2015,2018-1
 190093,Malacocephalus laevis,Softhead Grenadier,LC,0,2015,2018-1
@@ -2757,7 +2730,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190194,Ogilbichthys ferocis,Ferocious Coralbrotula,EN,0.6,2015,2018-1
 190195,Strongylura timucu,Timucu,LC,0,2015,2018-1
 190196,Halosaurus guentheri,NA,LC,0,2015,2018-1
-190197,Diaphus mollis,Soft Lanternfish,LC,0,2015,2018-1
 190198,Talismania antillarum,Antillean Smooth-head,LC,0,2015,2018-1
 190199,Bellator ribeiroi,Caribbean Searobin,LC,0,2015,2018-1
 190200,Ogcocephalus corniger,Longnose Batfish,LC,0,2015,2018-1
@@ -2808,7 +2780,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190268,Catesbya pseudomuraena,False Moray Eel,DD,NA,2015,2018-1
 190274,Trichopsetta ventralis,Sash Flounder,LC,0,2015,2018-1
 190275,Trinectes microphthalmus,Smalleye Sole,LC,0,2015,2018-1
-190278,Dolopichthys longicornis,NA,LC,0,2015,2018-1
 190279,Pomatomus saltatrix,Bluefish,VU,0.4,2015,2018-1
 190281,Parahollardia lineata,Jambeau Spikefish,LC,0,2015,2018-1
 190282,Bathytroctes macrolepis,Koefoed's Smooth-head,LC,0,2015,2018-1
@@ -2831,13 +2802,10 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190311,Nannobrachium lineatum,Lanternfish,LC,0,2015,2018-1
 190312,Aldrovandia oleosa,NA,LC,0,2015,2018-1
 190313,Maurolicus weitzmani,Atlantic Pearlside,LC,0,2015,2018-1
-190314,Diaphus dumerilii,Lantern Fish,DD,NA,2015,2018-1
 190315,Serrivomer beanii,Bean's Sawtooth Eel,LC,0,2015,2018-1
 190316,Scopelarchus analis,Blackbelly Pearleye,LC,0,2015,2018-1
-190317,Bolinichthys photothorax,Spurcheek Lanternfish,LC,0,2015,2018-1
 190318,Gymnothorax polygonius,Polygon Moray,LC,0,2015,2018-1
 190320,Opsanus phobetron,Scarecrow Toadfish,LC,0,2015,2018-1
-190321,Diaphus garmani,Garman's Lanternfish,LC,0,2015,2018-1
 190323,Thalassophryne nattereri,Copper Joe Toadfish,LC,0,2015,2018-1
 190325,Diplectrum bivittatum,Dwarf Sand Perch,LC,0,2015,2018-1
 190327,Centropomus parallelus,Fat Snook,LC,0,2015,2018-1
@@ -2877,7 +2845,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190387,Neobythites gilli,Twospot Brotula,LC,0,2015,2018-1
 190388,Selar crumenophthalmus,Bigeye Scad,LC,0,2015,2018-1
 190389,Scopelosaurus lepidus,Blackfin Waryfish,LC,0,2015,2018-1
-190390,Bolinichthys indicus,Lanternfish,LC,0,2015,2018-1
 190392,Letharchus velifer,American Sailfin Eel,LC,0,2015,2018-1
 190393,Echeneis naucrates,Live Sharksucker,LC,0,2015,2018-1
 190394,Taractichthys longipinnis,Big-scale Pomfret,LC,0,2015,2018-1
@@ -2889,7 +2856,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190401,Ophidion nocomis,Letter Opener,LC,0,2015,2018-1
 190402,Spiniphryne gladisfenae,Prickly Dreamer,LC,0,2015,2018-1
 190403,Polyacanthonotus challengeri,Longnose Tapirfish,LC,0,2015,2018-1
-190404,Diaphus anderseni,Andersen's Lantern Fish,LC,0,2015,2018-1
 190405,Ichthyapus ophioneus,Surf Eel,LC,0,2015,2018-1
 190407,Trachinotus falcatus,Permit,LC,0,2015,2018-1
 190408,Microdesmus luscus,Blind Wormfish,DD,NA,2015,2018-1
@@ -2909,16 +2875,13 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190436,Prionotus martis,Gulf of Mexico Barred Searobin,LC,0,2015,2018-1
 190438,Opsanus dichrostomus,Bicolor Toadfish,LC,0,2015,2018-1
 190440,Myrichthys ocellatus,Goldspotted Eel,LC,0,2015,2018-1
-190441,Fowlerichthys ocellatus,Ocellated Frogfish,LC,0,2015,2018-1
 190444,Canthidermis maculata,Rough Triggerfish,LC,0,2015,2018-1
-190447,Caulophryne jordani,Fanfin Angler,LC,0,2015,2018-1
 190448,Citharichthys valdezi,Large-tooth Flounder,LC,0,2015,2018-1
 190451,Oligoplites saliens,Castin Leatherjacket,LC,0,2015,2018-1
 190452,Naucrates ductor,Pilotfish,LC,0,2015,2018-1
 190453,Myctophum punctatum,Spotted Lanternfish,LC,0,2015,2018-1
 190456,Ariopsis felis,Hardhead Sea Catfish,LC,0,2015,2018-1
 190458,Caranx hippos,Crevalle Jack,LC,0,2015,2018-1
-190459,Antennarius multiocellatus,Flagpole Frogfish,LC,0,2015,2018-1
 190461,Phtheirichthys lineatus,Slender Suckerfish,LC,0,2015,2018-1
 190462,Symphurus plagiusa,Blackcheek Tonguefish,LC,0,2015,2018-1
 190466,Symbolophorus veranyi,Large-scale Lantern Fish,LC,0,2015,2018-1
@@ -2933,7 +2896,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 190484,Synodus intermedius,Sand Diver,LC,0,2015,2018-1
 190485,Melanolagus bericoides,Bigscale Deepsea Smelt,LC,0,2015,2018-1
 190486,Aldrovandia gracilis,NA,LC,0,2015,2018-1
-190488,Bolinichthys supralateralis,Stubby Lanternfish,LC,0,2015,2018-1
 190489,Polyacanthonotus merretti,NA,LC,0,2015,2018-1
 190730,Nicholsina usta,Emerald Parrotfish,LC,0,2012,2018-1
 190915,Brachioteuthis linkovskyi,NA,DD,NA,2014,2018-1
@@ -2996,7 +2958,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 192996,Bryaninops loki,Loki Whip-goby,LC,0,2016,2018-1
 192997,Eviota pellucida,Pellucida Pygmy Goby,LC,0,2016,2018-1
 192998,Bryaninops erythrops,Erythrops Goby,LC,0,2016,2018-1
-193000,Asterropteryx ensifera,Bluedot Goby,LC,0,2016,2018-1
+193e3,Asterropteryx ensifera,Bluedot Goby,LC,0,2016,2018-1
 193002,Ctenogobiops aurocingulus,Gold-streaked Prawn-goby,LC,0,2016,2018-1
 193003,Cryptocentrus caeruleomaculatus,Blue-speckled Shrimpgoby,LC,0,2016,2018-1
 193009,Pleurosicya fringilla,Staghorn Ghostgoby,LC,0,2016,2018-1
@@ -3470,11 +3432,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 198608,Trachipterus trachypterus,Mediterranean Dealfish,LC,0,2015,2018-1
 198609,Lophius budegassa,Black-bellied Angler,DD,NA,2015,2018-1
 198610,Lophius piscatorius,Angler fish,LC,0,2015,2018-1
-198611,Benthosema glaciale,Glacier Lantern Fish,LC,0,2015,2018-1
-198612,Ceratoscopelus maderensis,Madeira Lantern Fish,LC,0,2015,2018-1
-198613,Diaphus metopoclampus,Spothead Lantern Fish,LC,0,2015,2018-1
-198614,Diogenichthys atlanticus,Longfin Lanternfish,LC,0,2015,2018-1
-198615,Electrona risso,Electric Lantern Fish,LC,0,2015,2018-1
 198616,Gonichthys cocco,Cocco's Lanternfish,LC,0,2015,2018-1
 198617,Hygophum hygomii,Bermuda Lantern Fish,LC,0,2015,2018-1
 198618,Lampanyctus crocodilus,Jewel Lanternfish,LC,0,2015,2018-1
@@ -3795,23 +3752,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 15522264,Physiculus cyanostrophus,NA,LC,0,2015,2018-1
 15522267,Physiculus huloti,NA,LC,0,2015,2018-1
 15522270,Physiculus microbarbata,NA,DD,NA,2015,2018-1
-15598524,Benthosema suborbitale,NA,LC,0,2015,2018-1
-15598540,Bolinichthys distofax,NA,LC,0,2015,2018-1
-15598550,Centrobranchus nigroocellatus,NA,LC,0,2015,2018-1
-15598596,Ceratoscopelus warmingii,NA,LC,0,2015,2018-1
-15598621,Diaphus bertelseni,Bertelsen's Lanternfish,LC,0,2015,2018-1
-15598630,Diaphus brachycephalus,NA,LC,0,2015,2018-1
-15598639,Diaphus effulgens,NA,LC,0,2015,2018-1
-15598666,Diaphus fragilis,NA,LC,0,2015,2018-1
-15598669,Diaphus hudsoni,NA,LC,0,2015,2018-1
-15598672,Diaphus lucidus,NA,LC,0,2015,2018-1
-15598700,Diaphus meadi,NA,LC,0,2015,2018-1
-15598704,Diaphus ostenfeldi,NA,LC,0,2015,2018-1
-15598778,Diaphus perspicillatus,NA,LC,0,2015,2018-1
-15598791,Diaphus splendidus,NA,LC,0,2015,2018-1
-15598799,Diaphus subtilis,NA,DD,NA,2015,2018-1
-15598809,Diaphus taaningi,NA,DD,NA,2015,2018-1
-15598812,Diaphus termophilus,NA,LC,0,2015,2018-1
 15598815,Hygophum macrochir,NA,LC,0,2015,2018-1
 15598887,Hygophum reinhardtii,NA,LC,0,2015,2018-1
 15598938,Hygophum taaningi,NA,LC,0,2015,2018-1
@@ -3914,8 +3854,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 16404805,Achirus declivis,Plainfin Sole,LC,0,2015,2018-1
 16404943,Aluterus monoceros,Unicorn Leatherjacket Filefish,LC,0,2015,2018-1
 16404974,Aluterus schoepfii,Orange Filefish,LC,0,2015,2018-1
-16406968,Antennarius pauciradiatus,Dwarf Frogfish,LC,0,2015,2018-1
-16406979,Antennarius striatus,Striated Frogfish,LC,0,2015,2018-1
 16407002,Anthias nicholsi,Yellowfin Bass,LC,0,2015,2018-1
 16407017,Choranthias tenuis,Threadnose Bass,LC,0,2015,2018-1
 16407132,Antigonia capros,Deepbody Boarfish,LC,0,2015,2018-1
@@ -4000,7 +3938,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 16466332,Pellona harroweri,American Coastal Pellona,LC,0,2017,2018-1
 16466377,Merluccius albidus,Offshore Hake,LC,0,2015,2018-1
 16466393,Merluccius bilinearis,Silver Hake,NT,0.2,2015,2018-1
-16467178,Fowlerichthys radiosus,Singlespot Frogfish,LC,0,2015,2018-1
 16501552,Ogilbia mccoskeri,McCosker's Coralbrotula,DD,NA,2015,2018-1
 16501568,Ogilbia sabaji,Sabaj's Coralbrotula,LC,0,2015,2018-1
 16501591,Ogilbia tyleri,Tyler's Coralbrotula,LC,0,2015,2018-1
@@ -4200,9 +4137,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 18125145,Raniceps raninus,Tadpole Fish,LC,0,2014,2018-1
 18125208,Trisopterus esmarkii,Norway Pout,LC,0,2014,2018-1
 18126034,Kumba dentoni,NA,DD,NA,2014,2018-1
-18127741,Ceratias holboelli,Deepsea Angler,LC,0,2015,2018-1
-18127783,Chaunax suttkusi,NA,LC,0,2015,2018-1
-18127809,Bufoceratias wedli,NA,LC,0,2015,2018-1
 18127828,Himantolophus compressus,NA,DD,NA,2014,2018-1
 18127836,Himantolophus groenlandicus,Atlantic Football-Fish,LC,0,2015,2018-1
 18127840,Melanocetus johnsonii,Humpback Anglerfish,LC,0,2015,2018-1
@@ -4351,8 +4285,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 20662018,Rosenblattichthys hubbsi,Hubb’s Pearleye,LC,0,2015,2018-1
 20662028,Scopelarchoides danae,NA,LC,0,2015,2018-1
 20662040,Kryptophanaron alfredi,Atlantic Flashlightfish,LC,0,2015,2018-1
-20663855,Dibranchus atlanticus,Atlantic Batfish,LC,0,2015,2018-1
-20663917,Dibranchus tremendus,NA,LC,0,2015,2018-1
 20664078,Halieutichthys aculeatus,Pancake Batfish,LC,0,2015,2018-1
 20664248,Ogcocephalus cubifrons,Polka-dot Batfish,LC,0,2015,2018-1
 20664320,Ogcocephalus nasutus,Shortnose Batfish,LC,0,2015,2018-1
@@ -4400,13 +4332,9 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 21112669,Stylephorus chordatus,Tube-eye,LC,0,2015,2018-1
 21112742,Zu elongatus,Taper-Tail Ribbonfish,LC,0,2015,2018-1
 21112785,Antennarius pardalis,NA,LC,0,2015,2018-1
-21112836,Fowlerichthys senegalensis,Senegalese Frogfish,LC,0,2015,2018-1
-21112867,Caulophryne polynema,NA,LC,0,2015,2018-1
-21112879,Ceratias uranoscopus,Stargazing Seadevil,LC,0,2015,2018-1
 21112889,Linophryne arborifera,Deepsea Anglerfish,LC,0,2015,2018-1
 21112898,Linophryne pennibarbata,NA,LC,0,2015,2018-1
 21112909,Lophiodes kempi,Longspine African Angler,DD,NA,2015,2018-1
-21112967,Dolopichthys dinema,NA,LC,0,2015,2018-1
 21112977,Oneirodes theodoritissieri,NA,LC,0,2015,2018-1
 21112990,Draculo shango,Shango Dragonet,LC,0,2015,2018-1
 21113041,Caranx senegallus,NA,LC,0,2015,2018-1
@@ -4510,15 +4438,12 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 22712294,Hirundo neoxena,Welcome Swallow,LC,0,2017,2018-1
 22718194,Passer flaveolus,Plain-backed Sparrow,LC,0,2016,2018-1
 22721043,Plectrophenax nivalis,Snow Bunting,LC,0,2016,2018-1
-22729000,Brachyramphus perdix,Long-billed Murrelet,NT,0.2,2016,2018-1
 42568145,Cruriraja hulleyi,Hulley's Pgymy Skate,LC,0,2018,2018-1
 42830204,Synagrops japonicus,NA,LC,0,2015,2018-1
 42830213,Himantolophus crinitus,NA,LC,0,2015,2018-1
 42830236,Himantolophus paucifilosus,NA,LC,0,2015,2018-1
 42830239,Melanocetus murrayi,NA,LC,0,2015,2018-1
 42830242,Liza bandialensis,Diassanga Mullet,DD,NA,2015,2018-1
-42830251,Chaenophryne ramifera,NA,LC,0,2015,2018-1
-42830260,Dolopichthys allector,NA,LC,0,2015,2018-1
 42830277,Microlophichthys microlophus,NA,LC,0,2015,2018-1
 42830286,Photocorynus spiniceps,NA,LC,0,2015,2018-1
 42830291,Hoplostethus vniro,Vniro's Roughy,DD,NA,2015,2018-1
@@ -4543,7 +4468,7 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 46086601,Parupeneus macronemus,Long-barbel Goatfish,LC,0,2016,2018-1
 46086703,Upeneus sundaicus,Ochrebanded Goatfish,LC,0,2016,2018-1
 46086775,Upeneus tragula,Freckled goatfish,LC,0,2016,2018-1
-46087000,Nemipterus peronii,Notchedfin Treadfin Bream,LC,0,2016,2018-1
+46087e3,Nemipterus peronii,Notchedfin Treadfin Bream,LC,0,2016,2018-1
 46087798,Polydactylus persicus,Persian Blackspot Threadfin,LC,0,2015,2018-1
 46087813,Priacanthus blochii,Paeony Bulleye,LC,0,2016,2018-1
 46087863,Priacanthus hamrur,Moontail Bullseye,LC,0,2016,2018-1
@@ -4651,7 +4576,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 47153782,Syngnathus makaxi,Makax's Pipefish,DD,NA,2015,2018-1
 47153791,Syngnathus springeri,Bull Pipefish,LC,0,2015,2018-1
 47153800,Astroscopus guttatus,Northern Stargazer,LC,0,2015,2018-1
-47165067,Diaphus luetkeni,Lutkens lanternfish,LC,0,2015,2018-1
 47165472,Photonectes parvimanus,NA,LC,0,2015,2018-1
 47165490,Photostomias goodyeari,NA,LC,0,2015,2018-1
 47165538,Sudis atrox,Fierce Pike Smelt,LC,0,2015,2018-1
@@ -4743,15 +4667,8 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 60469516,Bathylaco nielseni,NA,DD,NA,2015,2018-1
 60469527,Bathytroctes squamosus,NA,LC,0,2015,2018-1
 60469546,Bembrops cadenati,NA,LC,0,2015,2018-1
-60469615,Caulophryne pelagica,NA,DD,NA,2015,2018-1
-60469670,Centrophryne spinulosa,Horned lantern fish,LC,0,2015,2018-1
-60469804,Chaenophryne draco,NA,LC,0,2015,2018-1
 60469816,Chiasmodon braueri,NA,LC,0,2015,2018-1
-60470092,Diaphus problematicus,Problematic Lanternfish,LC,0,2015,2018-1
-60470096,Diaphus vanhoeffeni,VanHoffen's lanternfish,LC,0,2015,2018-1
 60470339,Didogobius amicuscaridis,NA,VU,0.4,2015,2018-1
-60470358,Dolopichthys jubatus,NA,DD,NA,2015,2018-1
-60470361,Dolopichthys pullatus,NA,DD,NA,2015,2018-1
 60470373,Dysalotus oligoscolus,NA,LC,0,2015,2018-1
 60470376,Epigonus affinis,NA,LC,0,2015,2018-1
 60470461,Gadella svetovidovi,NA,DD,NA,2015,2018-1
@@ -4869,7 +4786,6 @@ iucn_sid,sciname,main_common_name,cat,cat_score,published_year,iucn_version
 61382318,Pusa hispida ssp. hispida,Ringed Seal,LC,0,2016,2018-1
 61668607,Anguilla bengalensis,Indian Mottled Eel,NT,0.2,2014,2018-1
 61934220,Gigantactis watermani,NA,DD,NA,2015,2018-1
-61934241,Dolopichthys danae,NA,LC,0,2015,2018-1
 61934264,Scopeloberyx robustus,Longjaw Bigscale,DD,NA,2015,2018-1
 61934392,Monolene helenensis,NA,DD,NA,2015,2018-1
 61934408,Symphurus lubbocki,NA,DD,NA,2015,2018-1

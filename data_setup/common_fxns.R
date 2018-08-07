@@ -20,8 +20,7 @@ cat_msg <- function(x, ...) {
 ### Simple Features functions
 
 clip_to_globe <- function(x) {
-  ### for SF features, transform to ; if wgs84, clip to +-180 and +-90,
-  ### otherwise transform to WGS84, then clip
+  ### for SF features, transform to wgs84, clip to +-180 and +-90
   epsg <- st_crs(x)$epsg
   if(epsg != 4326 | is.na(epsg)) {
     message('Original EPSG = ', epsg, '; Proj4 = ', st_crs(x)$proj4string,
@@ -44,6 +43,33 @@ clip_to_globe <- function(x) {
     ### The st_crop solution works great most of the time; but for
     ### spp 21132910 (at least) the crop turned things into linestrings
     ### that couldn't be converted with st_cast('MULTIPOLYGON').
+  } else {
+    message('All bounds OK, no clipping necessary')
+    z <- x
+  }
+  return(z)
+}
+
+clip_to_globe_sp <- function(x) {
+  ### Convert to SP and use raster::crop - this is a backup when the 
+  ### sf method (st_crop) fails miserbably
+  epsg <- st_crs(x)$epsg
+  if(epsg != 4326 | is.na(epsg)) {
+    message('Original EPSG = ', epsg, '; Proj4 = ', st_crs(x)$proj4string,
+            '\n...converting to EPSG:4326 WGS84 for clipping')
+    x <- st_transform(x, 4326)
+  }
+  x_bbox <- st_bbox(x)
+  if(x_bbox$xmin < -180 | x_bbox$xmax > +180 |
+     x_bbox$ymin <  -90 | x_bbox$ymax >  +90) {
+    message('Some bounds outside +-180 and +-90 - clipping')
+    z <- as(x, 'Spatial') %>%
+      raster::crop(raster::extent(-180, 180, -90, 90)) 
+    z_sf <- z %>%
+      st_as_sf()
+    
+    return(z_sf)
+    
   } else {
     message('All bounds OK, no clipping necessary')
     z <- x

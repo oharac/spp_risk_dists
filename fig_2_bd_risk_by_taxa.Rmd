@@ -64,9 +64,14 @@ taxa_sums <- data.frame(unweighted = list.files(file.path(dir_o_anx, 'taxa_summa
   mutate(shp_basename = str_replace_all(basename(unweighted), '_cell_sum.+|_part.+', '')) %>%
   left_join(shp_to_taxa, by = 'shp_basename')
 
+# write_csv(taxa_sums %>% select(shp_basename, taxon) %>% distinct(),
+#           file.path(dir_setup, 'raw', 'shps_to_taxa_raw.csv'))
+
 spp_maps <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv', api_version)),
                      col_types = 'ddciccc') %>%
-  mutate(shp_basename = str_replace_all(tolower(dbf_file), '_part.+|.dbf', '')) %>%
+  mutate(shp_basename = tolower(dbf_file) %>%
+           basename() %>%
+           str_replace_all(., '_part.+|.dbf', '')) %>%
   select(iucn_sid, shp_basename) %>%
   distinct() %>%
   group_by(shp_basename) %>%
@@ -162,7 +167,7 @@ for(i in seq_along(taxa_gps)) { ### i <- 3
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
     theme(plot.margin = unit(c(.05, .2, .2, .2), units = 'cm'),
-          panel.background = element_rect(fill = 'grey80'),
+          panel.background = element_rect(fill = 'grey80', color = NA),
           axis.title = element_text(face = 'bold', hjust = 1),
           axis.title.x = element_blank()) +
     coord_sf(datum = NA) + ### ditch graticules
