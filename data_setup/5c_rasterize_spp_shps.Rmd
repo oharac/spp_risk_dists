@@ -47,7 +47,7 @@ gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +
 
 # Summary
 
-Using a set of IUCN species range maps, rasterize each species to 0.1° lat long raster using `fasterize`.  Use `presence` field from shapefile.
+Using a set of IUCN species range maps, rasterize each species to 10 km x 10 km raster using `fasterize`.  Use `presence` field from shapefile.
 
 * Subpopulation polygons must be identified and rasterized separately from the parent polygon; this must be done by sciname and subpop fields since the polygon IDs are based upon the parent ID.
 * Regional assessments need not be determined at this stage - the ID numbers match the global ID numbers (including subpops).

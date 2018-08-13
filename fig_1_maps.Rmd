@@ -78,12 +78,12 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
-risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
-threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster.tif'))
-threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster.tif'))
-n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster.tif'))
-n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster.tif'))
+risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
+risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_comp.tif'))
+threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster_comp.tif'))
+threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_comp.tif'))
+n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_comp.tif'))
+n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_comp.tif'))
 
 ```
 

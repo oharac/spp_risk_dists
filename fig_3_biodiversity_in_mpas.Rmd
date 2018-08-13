@@ -51,7 +51,7 @@ MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs
 
 ``` {r set up mpa and values dataframe}
 
-mean_rast     <- raster(file.path(dir_git, 'output', 'mean_risk_raster.tif'))
+mean_rast     <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
 eez_rast      <- raster(file.path(dir_git, 'spatial', 'eez_rast.tif'))
 ocean_area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
 
@@ -168,7 +168,7 @@ no_take_means <- no_take_df %>%
 
 ``` {r set up overall rr-weighted dataframe}
 
-mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster.tif'))
+mean_rr_rast      <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_comp.tif'))
 
 risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
                          ocean_area = values(ocean_area_rast),

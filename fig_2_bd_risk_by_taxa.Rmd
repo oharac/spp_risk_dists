@@ -119,7 +119,7 @@ for(i in seq_along(taxa_gps)) { ### i <- 3
     filter(taxon == taxon_gp)
   
   taxa_rast_file <- file.path(dir_o_anx, 'taxa_rasters', 
-                              paste0(tolower(taxon_txt), '_rr.tif'))
+                              paste0(tolower(taxon_txt), '_rr_comp.tif'))
   
   if(!file.exists(taxa_rast_file) | reload == TRUE) {
   
