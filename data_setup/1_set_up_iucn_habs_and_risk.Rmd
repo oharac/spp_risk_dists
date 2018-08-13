@@ -392,7 +392,8 @@ marg_suit <- spp_marine %>%
   arrange(suitability) %>%
   summarize(suit_all = tolower(paste0(unique(suitability), collapse = ', ')),
             intertidal_only = sum(!cat %in% c(12) & !(cat == 9 & subcat1 == 10)) == 0) %>%
-              ### cat 9.10 is estuaries - if only intertidal or estuaries, check for suitability
+              ### cat 9.10 is estuaries - if only intertidal or estuaries, 
+              ### check for suitability
   filter(!str_detect(suit_all, 'suitable|unknown|^na')) %>%
   filter(intertidal_only) %>%
   left_join(read_csv(spp_info_from_api_file), by = 'iucn_sid') %>%
@@ -408,7 +409,9 @@ spp_habs_clean <- spp_marine %>%
   filter(!iucn_sid %in% marg_suit$iucn_sid) %>%
   group_by(iucn_sid) %>%
   summarize(habs = paste0(code, collapse = ', '),
-            max_depth = case_when(any(cat %in% c(10, 11)) ~ '200 m +',
+            max_depth = case_when(all((cat == 10 & subcat1 %in% 3:4) |
+                                        cat == 11)        ~ 'deep oceanic',
+                                  any(cat %in% c(10, 11)) ~ '200 m +',
                                   any(cat %in% c(9, 15))  ~ '< 200 m',
                                   any(cat %in% c(12))     ~ '< 20 m',
                                   TRUE                    ~ 'unknown'))
