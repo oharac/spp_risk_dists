@@ -59,7 +59,7 @@ IUCN: Gina Ralph direct communication
 
 # Methods
 
-## Read spp shapes, trim to +/-180 deg, save as taxa level shapefiles
+## check new shps vs old shps
 
 ``` {r define fxn}
 ### Define helper function to cleanly get the info from DBF files,
@@ -88,85 +88,165 @@ get_dbf <- function(x) { ### x <- shps_dbfs[1]
 }
 ```
 
-### Check the validity and bounds of all spp shapefiles
+``` {r}
 
-``` {r gather all ids and check bounds, eval = FALSE}
-reload <- FALSE
+solo_map_files <- list.files(file.path(dir_zips, 'IUCN_moremaps_part1'), 
+                        pattern = '.dbf$', full.names = TRUE)
+map_by_order_files <- list.files(file.path(dir_zips, 
+                                           c('IUCN_maps_byorder_part1',
+                                             'Perciformes')),
+                           pattern = '.dbf$', full.names = TRUE)
 
-shps <- list.files(unzip_dirs, pattern = '\\.shp$', 
-                   recursive = FALSE, full.names = TRUE)
+solo_maps <- lapply(solo_map_files, FUN = function(x) {
+    foreign::read.dbf(x, as.is = TRUE)
+  }) %>%
+  setNames(solo_map_files) %>%
+  bind_rows(.id = 'dbf') %>%
+  select(iucn_sid, sciname = BINOMIAL, dbf)
 
-system.time({
-  spp_bounds_list <- parallel::mclapply(shps, mc.cores = 12, FUN = function(shp) {
-  # for(shp in shps) {
-    ### shp <- shps[1]
+### read.dbf messes up on reading large integers with trailing zeros.
+problem_ids <- c('Acanthurus leucosternon' = 178000)
 
-    spp_sf <- read_sf(shp)
-    
-    spp_bbox <- st_bbox(spp_sf)
-    spp_valid <- st_is_valid(spp_sf)
-    
-    spp_df <- data.frame(iucn_sid = spp_sf$iucn_sid,
-                         spp_shp = shp,
-                         valid = spp_valid,
-                         xmin = spp_bbox$xmin,
-                         xmax = spp_bbox$xmax,
-                         ymin = spp_bbox$ymin,
-                         ymax = spp_bbox$ymax) %>%
-      mutate(exceeds_bounds = (xmin < -180 | xmax > 180))
-    
-  }) ### end of mclapply
-}) ### end of system.time
+order_maps <- lapply(map_by_order_files, FUN = function(x) {
+    foreign::read.dbf(x, as.is = TRUE)
+  }) %>%
+  setNames(map_by_order_files) %>%
+  bind_rows(.id = 'dbf') %>%
+  select(iucn_sid, sciname = BINOMIAL, dbf) %>%
+  mutate(iucn_sid = ifelse(is.na(iucn_sid), problem_ids[sciname], iucn_sid))
 
-spp_bounds_df <- bind_rows(spp_bounds_list) %>%
+solo_not_in_orders <- solo_maps %>%
+  filter(!iucn_sid %in% order_maps$iucn_sid)
+
+maps_from_iucn <- bind_rows(order_maps, solo_not_in_orders) %>%
+  mutate(shp = str_replace(dbf, '.dbf$', '.shp')) %>%
   distinct()
 
-write_csv(spp_bounds_df, file.path(dir_git, 'data/map_check', 'spp_bounds.csv'))
+write_csv(maps_from_iucn, file.path(dir_git, 'data_setup/int/map_check',
+                                    'maps_direct_from_iucn.csv'))
+```
 
+## Read spp shapes, trim to +/-180 deg, save as taxa level shapefiles
+
+### Check the validity and bounds of all spp shapefiles
+
+Focus on the non-duplicated shapes from `data_setup/int/maps_direct_from_iucn.csv`.
+
+``` {r gather all ids and check bounds}
+
+reload <- FALSE
+
+maps_from_iucn <- read_csv(file.path(dir_git, 'data_setup/int/map_check',
+                                     'maps_direct_from_iucn.csv'))
+
+bounds_check_file <- file.path(dir_git, 'data_setup/int/map_check', 
+                               'spp_bounds.csv')
+
+if(!file.exists(bounds_check_file) | reload) {
+  
+  shp_list <- maps_from_iucn$shp %>%
+    unique()
+  
+  ### initialize a data frame 
+  all_bounds <- vector('list', length = length(shp_list)) %>%
+    setNames(shp_list)
+  
+  for(shp in shp_list) { ### shp <- shp_list[1]
+    shp_sf <- read_sf(shp)
+    spp_list <- shp_sf$iucn_sid
+    cat_msg('Processing ', basename(shp), ' with ', 
+            length(unique(shp_sf$iucn_sid)), ' spp')
+
+    system.time({
+      spp_bounds_list <- parallel::mclapply(spp_list, mc.cores = 12, 
+        FUN = function(spp) { ### spp <- spp_list[1]
+          spp_sf <- shp_sf %>%
+            filter(iucn_sid == spp)
+        
+          spp_bbox <- st_bbox(spp_sf)
+          spp_valid <- st_is_valid(spp_sf)
+        
+          spp_df <- data.frame(iucn_sid = spp_sf$iucn_sid,
+                               spp_shp = shp,
+                               valid = spp_valid,
+                               xmin = spp_bbox$xmin,
+                               xmax = spp_bbox$xmax,
+                               ymin = spp_bbox$ymin,
+                               ymax = spp_bbox$ymax) %>%
+            mutate(exceeds_bounds = (xmin < -180 | xmax > 180))
+        
+      }) ### end of mclapply
+    }) ### end of system.time
+    all_bounds[[shp]] <- bind_rows(spp_bounds_list)
+  } ### end of for-loop across shapes
+
+  spp_bounds_df <- bind_rows(all_bounds) %>%
+    distinct()
+  
+  write_csv(spp_bounds_df, bounds_check_file)
+  
+} else {
+  spp_bounds_df <- read_csv(bounds_check_file)
+}
+
+DT::datatable(spp_bounds_df %>% mutate(spp_shp = basename(spp_shp)))
 ```
 
 ### Attempt to trim problem files
 
 After trimming, overwrite the original shapefiles (we still have the ZIPs for *original* originals)
 
-``` {r attempt to trim indiv shapefiles and overwrite, eval = FALSE}
+``` {r attempt to trim indiv shapefiles and overwrite}
 ### This will try to fix each original shapefile from IUCN by clipping
 ### bounds to +/- 180 (only for those that exceed those bounds).
 
-spp_bounds_df <- read_csv(file.path(dir_git, 'data/map_check', 'spp_bounds.csv'))
+spp_bounds_df <- read_csv(bounds_check_file)
 cat_msg('Spp shapes that exceed x bounds: ', sum(spp_bounds_df$exceeds_bounds))
 
 shps_to_fix <- spp_bounds_df %>%
   filter(exceeds_bounds)
 
-spp_bounds_list <- parallel::mclapply(seq_along(shps_to_fix$iucn_sid),
-                                        mc.cores = 12, FUN = function(i) {
-  ### i <- 1
+skip <- FALSE
 
-  shp_file <- shps_to_fix$spp_shp[i]
-  spp_sf <- read_sf(shp_file)
-  spp_valid <- shps_to_fix$valid[i]
+if(nrow(shps_to_fix) > 0 & skip == FALSE) {
+  shps_list <- shps_to_fix$spp_shp %>% 
+    unique() %>% 
+    sort(decreasing = TRUE)
   
-  if(!spp_valid) {
-    cat_msg(shp_file, ': invalid geometry; buffering zero distance')
-    spp_sf <- st_buffer(spp_sf, 0)
-  }
+  spp_bounds_list <- parallel::mclapply(seq_along(shps_list),
+                                          mc.cores = 12, FUN = function(i) {
+    ### i <- 1
+    shp_file <- shps_list[i]
+    cat_msg(i, '. processing ', basename(shp_file))
+    spp_sf <- read_sf(shp_file)
+    spp_valid <- shps_to_fix %>%
+      filter(spp_shp == shp_file) %>%
+      .$valid %>%
+      all()
+    
+    if(!spp_valid) {
+      cat_msg(shp_file, ': invalid geometry; buffering zero distance')
+      spp_sf <- st_buffer(spp_sf, 0)
+    }
+    
+    ### if sf version (st_crop) fails, try with raster version (raster::crop)
+    tryCatch(spp_sf_trim <- clip_to_globe(spp_sf), 
+             finally = spp_sf_trim <- clip_to_globe_sp(spp_sf))
   
-  ### if sf version (st_crop) fails, try with raster version (raster::crop)
-  tryCatch(spp_sf_trim <- clip_to_globe(spp_sf), 
-           finally = spp_sf_trim <- clip_to_globe_sp(spp_sf))
-
-  write_sf(spp_sf_trim, shp_file, driver = 'ESRI Shapefile')
-
-}) ### end of mclapply
+    write_sf(spp_sf_trim, shp_file, driver = 'ESRI Shapefile')
+  
+  }) ### end of mclapply
+} else {
+  cat_msg(nrow(shps_to_fix), ' shapes that exceed bounds; skipping for now')
+}
 
 ```
 
 ## Combine spp shapes into taxa shapes
 
 ### Identify the species and taxa from the dbfs
-``` {r generate map list from dbfs}
 
+``` {r generate map list from dbfs, eval = FALSE}
 
 iucn_indiv_dbfs <- list.files(unzip_dirs, pattern = '\\.dbf$', 
                               recursive = FALSE,
@@ -211,14 +291,15 @@ marine_map_info <- map_info_raw %>%
                            phylum == 'chordata'       ~ class,
                            TRUE                       ~ phylum))
 
-write_csv(marine_map_info, file.path(dir_git, 'data/map_check', 'marine_spp_processed.csv'))
+write_csv(marine_map_info, 
+          file.path(dir_git, 'data/map_check', 'marine_spp_processed.csv'))
 ```
 
 ### Gather the species by taxa and save as a taxa-level shapefile
 
 Note this excludes problem species noted below.  Those will need to be examined manually and fixed, then the above chunks (currently set as eval = FALSE) will need to be rerun to update the spp_bounds.csv file.
 
-``` {r gather ids and read into a single shapefile}
+``` {r gather ids and read into a single shapefile, eval = FALSE}
 
 reload <- FALSE
 
@@ -279,7 +360,7 @@ for(taxon_gp in taxa) { ### taxon_gp <- taxa[15]
 
 ## Species shapes with problems still to fix
 
-``` {r}
+``` {r, eval = FALSE}
 spp_probs <- read_csv(file.path(dir_git, 'data/map_check', 'spp_bounds.csv')) %>%
   filter(exceeds_bounds) %>%
   mutate(spp_shp = basename(spp_shp))
