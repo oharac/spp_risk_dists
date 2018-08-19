@@ -32,11 +32,10 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -101,25 +100,13 @@ cell_summary_file <- file.path(dir_o_anx, 'cell_summary_rr_weighted_comp.csv')
 ### unlink(cell_summary_file)
 reload <- TRUE
 
-comp_assessed_taxa <- read_csv(file.path(dir_data, 
-                                         sprintf('spp_marine_maps_%s.csv', api_version)),
-                               col_types = 'ddcicccl') %>%
-  select(dbf_file, comp_assessed) %>%
-  filter(comp_assessed == TRUE) %>%
-  distinct() %>%
-  .$dbf_file %>%
-  basename(.) %>% tolower(.) %>%
-  str_replace_all('_part.*|.dbf', '')
-
 if(!file.exists(cell_summary_file) | reload == TRUE) {
 
   dir_taxa_summaries <- file.path(dir_o_anx, 'taxa_summaries')
-  sum_files <- list.files(dir_taxa_summaries,
-                          pattern = sprintf('cell_sum_rrweight_%s.csv', api_version),
+  comp_files <- list.files(dir_taxa_summaries,
+                          pattern = sprintf('cell_sum_comp_rrweight_%s.csv', api_version),
                           full.names = TRUE)
-  comp_files <- sum_files[basename(sum_files) %>% 
-                            str_replace_all('_part.*|_cell_sum.*', '') %in% comp_assessed_taxa]
-  
+
   ########################################################.
   ###      Read in all files and bind to df          #####
   ########################################################.

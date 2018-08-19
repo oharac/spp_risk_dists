@@ -23,6 +23,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
 
 library(raster)
 library(data.table)
+library(ggridges)
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
@@ -31,11 +32,10 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ```
 
@@ -62,7 +62,6 @@ risk_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
   filter(eez %in% c(1:212, 214:254, 256:277)) %>% 
     ### 213 is Antarctica, 255 is disputed territories, >255 is high seas
   filter(!is.na(mean_risk))
-
 
 ```
 
@@ -264,7 +263,7 @@ plot_dist <- function(df, means_df, var_name, x_lims = c(0, .75)) {
           axis.text.y  = element_blank(),
           axis.title   = element_blank(),
           panel.grid.major.y = element_blank()) +
-    geom_density(aes(weight = area, x = mean_risk), alpha = .5, size = .25) +
+    geom_density(aes(weight = area), alpha = .5, size = .25) +
     geom_vline(data = means_df, 
                aes(xintercept = mu, linetype = mpa_status),
                alpha = .8) +
@@ -311,3 +310,4 @@ ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
 ### rr-weighted means
 
 `r knitr::kable(no_take_rr_means)`
+

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Aug 13 13:53:39 2018 by ohara" />
+<meta name="author" content="Compiled on Sun Aug 19 06:46:33 2018 by ohara" />
 
 
 <title>Biodiversity risk maps</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps</h1>
-<h4 class="author"><em><em>Compiled on Mon Aug 13 13:53:39 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Sun Aug 19 06:46:33 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -283,11 +283,11 @@ div.tocify {
 dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
 
 ### goal specific folders and info
-dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_setup'</span>)
+dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'setup'</span>)
 dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
 dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
-<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/common_fxns.R'</span>))
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'common_fxns.R'</span>))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
@@ -344,24 +344,12 @@ Note: reconstructing the total mean per cell from the group means is straightfor
 ### unlink(cell_summary_file)
 reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
 
-comp_assessed_taxa &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, 
-                                         <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
-                               <span class="dt">col_types =</span> <span class="st">'ddcicccl'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(dbf_file, comp_assessed) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(comp_assessed <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span>.<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">basename</span>(.) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tolower</span>(.) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">str_replace_all</span>(<span class="st">'_part.*|.dbf'</span>, <span class="st">''</span>)
-
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   dir_taxa_summaries &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>)
-  sum_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_taxa_summaries,
-                          <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_%s.csv'</span>, api_version),
-                          <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
-  comp_files &lt;-<span class="st"> </span>sum_files[<span class="kw">basename</span>(sum_files) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">                            </span><span class="kw">str_replace_all</span>(<span class="st">'_part.*|_cell_sum.*'</span>, <span class="st">''</span>) <span class="op">%in%</span><span class="st"> </span>comp_assessed_taxa]
-  
+  comp_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_taxa_summaries,
+                           <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_comp_%s.csv'</span>, api_version),
+                           <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+
   <span class="kw">message</span>(<span class="st">'going into the first mclapply...'</span>)
   
   ptm &lt;-<span class="st"> </span><span class="kw">system.time</span>({

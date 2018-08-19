@@ -22,20 +22,18 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
-library(data.table)
-
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
   ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+library(ggridges)
 
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ```
 
@@ -87,8 +85,8 @@ rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 for(hab_1km in habs_1km_files) {
   ### hab_1km <- habs_1km_files[1]
   out_file <- habs_10km_files[hab_1km]
-  cat_msg('Processing ', basename(hab_1km), ' to: ', out_file)
   if(!file.exists(out_file)) {
+    cat_msg('Processing ', basename(hab_1km), ' to: ', out_file)
     rast <- raster(hab_1km)
     rast_10km <- raster::aggregate(rast, fact = 10, fun = sum, na.rm = TRUE)
     writeRaster(rast_10km, out_file)
@@ -100,10 +98,16 @@ plot(z)
 ```
 
 
-``` {r set up meow and values dataframe}
+``` {r set up habs and values dataframe}
 
-mean_rast       <- raster(file.path(dir_git, 'output', 
-                                    'mean_risk_raster_comp.tif'))
+mean_rast   <- raster(file.path(dir_git, 'output', 
+                                'mean_risk_raster_comp.tif'))
+mean_rr_rast   <- raster(file.path(dir_git, 'output', 
+                                'mean_rr_risk_raster_comp.tif'))
+pct_th_rast <- raster(file.path(dir_git, 'output', 
+                                'pct_threat_raster_comp.tif'))
+pct_th_rr_rast <- raster(file.path(dir_git, 'output', 
+                                'sr_rr_pct_threat_raster_comp.tif'))
 ocean_area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
 habs_rasts <- stack(habs_10km_files)
 
@@ -115,32 +119,39 @@ for(i in 2:nlayers(habs_rasts)) {
 risk_df <- habs_df %>%
   setNames(basename(habs_10km_files)) %>%
   mutate(risk = values(mean_rast),
+         rr_risk = values(mean_rr_rast),
+         pct_th = values(pct_th_rast),
+         rr_pct_th = values(pct_th_rr_rast),
          area = values(ocean_area_rast)) %>%
-  gather(hab, cells, -risk, -area) %>%
+  gather(hab, cells, -contains('risk'), -contains('pct_th'), -area) %>%
   filter(!is.na(cells) & cells != 0 & !is.na(risk))
 
 # x <- risk_df %>% select(hab) %>% distinct()
 # write_csv(x, file.path(dir_git, 'data_setup/raw/hab_names_raw.csv'))
-habs_lookup <- read_csv(file.path(dir_git, 'data_setup/raw', 
+habs_lookup <- read_csv(file.path(dir_git, 'setup/raw', 
                                   'hab_names_lookup.csv'))
 
 risk_df <- risk_df %>%
-  left_join(habs_lookup, by = 'hab')
+  left_join(habs_lookup, by = 'hab') %>%
+  filter(!is.na(order)) %>%
+  arrange(order) %>%
+  mutate(hab_desc = fct_inorder(hab_desc))
 
 means_df <- risk_df %>%
   group_by(hab_desc) %>%
   summarize(mean_risk = mean(risk, na.rm = TRUE),
+            mean_pct  = mean(pct_th, na.rm = TRUE),
+            mean_rr_risk = mean(rr_risk, na.rm = TRUE),
+            mean_rr_pct  = mean(rr_pct_th, na.rm = TRUE),
             area_km2 = round(sum(area) / 1e6, 2),
-            area_lbl = paste0('(', area_km2, 'e6 km^2)')) %>%
-  mutate(hab_desc = fct_inorder(hab_desc),
-         hab_num = as.integer(hab_desc),
+            area_lbl = paste0('(', area_km2, 'e6 km²)')) %>%
+  mutate(hab_num = as.integer(hab_desc),
          hab_num_next = hab_num + 1)
+
 ```
 
 
-``` {r ridgeline plot by hab}
-
-library(ggridges)
+``` {r ridgeline risk plot by hab, eval = FALSE}
 
 colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
 
@@ -148,7 +159,8 @@ x <- ggplot(risk_df, aes(x = risk, y = hab_desc)) +
   ggtheme_plot() +
   theme(strip.text.y = element_text(angle = 0, hjust = 0),
         axis.title   = element_blank(),
-        panel.grid.major.y = element_blank()) +
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(vjust = 0)) +
   geom_segment(data = colorbar_df, 
                aes(x = x, xend = x, color = x), 
                y = 0, yend = 1, size = 1,
@@ -162,20 +174,100 @@ x <- ggplot(risk_df, aes(x = risk, y = hab_desc)) +
             hjust = 1, color = 'grey20', size = 2, nudge_y = .3) +
   scale_x_continuous(expand = c(0, 0),
                      limits = c(0, .6),
-                     labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
-                     breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
-  scale_color_gradientn(colors = c('green4', viridis::inferno(6, direction = -1)),
-                          ### use viridis scheme but add green on the bottom for LC
-                        values = c(0, .2, .3, .4, .5, .7, 1.0))
-  # +
-  # scale_fill_gradientn(colors = c('green4', viridis::inferno(6, direction = -1)),
-  #                               ### use viridis scheme but add green on the bottom for LC
-  #                      values = c(0, .2, .3, .4, .5, .7, 1.0),
-  #                      labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
-  #                      breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0))
-
-ggsave(file.path(dir_git, 'ms_figures', 'fig4_by_habitat.png'),
+                     labels = risk_lbls,
+                     breaks = risk_brks) +
+  scale_color_gradientn(colors = risk_cols,
+                        values = risk_vals)
+ggsave(file.path(dir_git, 'ms_figures', 'fig4_risk_by_habitat_rr_ridgelines.png'),
        height = 4, width = 6, dpi = 300)
 ```
 
-![](ms_figures/fig4_by_habitat.png)
+![](ms_figures/fig4_risk_by_habitat_rr_ridgelines.png)
+
+``` {r ridgeline pct threat plot by hab, eval = FALSE}
+
+
+colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
+
+x <- ggplot(risk_df, aes(x = pct_th, y = hab_desc)) +
+  ggtheme_plot() +
+  theme(strip.text.y = element_text(angle = 0, hjust = 0),
+        axis.title   = element_blank(),
+        panel.grid.major.y = element_blank()) +
+  geom_segment(data = colorbar_df, 
+               aes(x = x, xend = x, color = x), 
+               y = 0, yend = 1, size = 1,
+               show.legend = FALSE) +
+  geom_density_ridges(alpha = .5, size = .25, rel_min_height = 0,
+                      show.legend = FALSE) +
+  geom_linerange(data = means_df,
+                 aes(x = mean_pct, ymin = hab_num, ymax = hab_num_next),
+             color = 'red3', alpha = .8) +
+  geom_text(data = means_df, aes(x = .6, label = area_lbl),
+            hjust = 1, color = 'grey20', size = 2, nudge_y = .3) +
+  scale_x_continuous(expand = c(0, 0),
+                     limits = c(0, .6),
+                     breaks = c(0, .25, .50, .75, 1),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) +
+  scale_color_gradientn(colors = viridis::viridis(6, direction = +1),
+                                values = c(0, .25, .33, .42, .50, 1))
+
+ggsave(file.path(dir_git, 'ms_figures', 'fig4_pct_by_habitat_rr_ridgelines.png'),
+       height = 4, width = 6, dpi = 300)
+```
+
+![](ms_figures/fig4_pct_by_habitat_rr_ridgelines.png)
+
+## using facets instead of ridgelines
+
+``` {r plot_function}
+
+plot_dist <- function(risk_df, means_df, x_lims = c(0, 0.6)) {
+
+  x <- ggplot(risk_df, aes(x = risk)) +
+    ggtheme_plot() +
+    theme(strip.text.y = element_text(angle = 0, hjust = 0),
+          axis.text.y  = element_blank(),
+          axis.title   = element_blank(),
+          panel.grid.major.y = element_blank(),
+          plot.margin = unit(c(.1, .25, .1, .3), 'cm')) +
+    geom_density(aes(weight = area, x = risk, ..scaled..),
+                 fill = 'grey50', color = 'grey20',
+                 alpha = .5, size = .25) +
+    geom_vline(data = means_df, 
+               aes(xintercept = mean_risk),
+               color = 'red3', alpha = .8) +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = x_lims,
+                       labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                       breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    facet_grid( hab_desc ~ ., scales = 'free_y')
+  
+  return(x)
+}
+
+```
+
+``` {r generate figure}
+
+mpa_plot_unweighted <- plot_dist(risk_df, means_df) +
+  theme(strip.text.y = element_blank())
+
+mpa_plot_rrweighted <- plot_dist(risk_df %>% select(-risk, risk = rr_risk), 
+                                 means_df %>% 
+                                   select(-mean_risk, mean_risk = mean_rr_risk)) +
+  geom_text(data = means_df, aes(x = .6, y = .25, label = area_lbl),
+            hjust = 1, vjust = 0, color = 'grey20', size = 2.5)
+
+plot_combined <- cowplot::plot_grid(mpa_plot_unweighted, 
+                                    mpa_plot_rrweighted, 
+                                    labels = c('A', 'B'),
+                                    hjust = 0,
+                                    rel_widths = c(2, 3))
+
+ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
+       height = 4, width = 6, dpi = 300, units = 'in')
+```
+
+![](ms_figures/fig3_bd_risk_vs_mpas.png)

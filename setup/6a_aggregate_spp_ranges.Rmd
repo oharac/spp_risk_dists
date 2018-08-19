@@ -1,0 +1,373 @@
+---
+title: 'Aggregate IUCN spp ranges'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+library(sf)
+library(data.table)
+
+dir_git <- '~/github/spp_risk_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_setup <- file.path(dir_git, 'setup')
+
+source(file.path(dir_setup, 'common_fxns.R'))
+
+### goal specific folders and info
+
+dir_data <- file.path(dir_git, 'data')
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+```
+
+# Summary
+
+Using individual species range data (csv outputs from `5_process_spp_shps.Rmd`), collect into species groups.  In each species group, process range and risk information to get mean risk, variance of risk, species richness, and threatened species count per cell.  These will then be analyzed in the context of species range rarity weighting as well in a sister script.
+
+# Methods
+
+## Generate species group maps - equal weighting per cell
+
+From species maps data.frame, identify the IDs of species within each taxon.  For each taxon:
+
+* Collect all taxon species into a single data.frame.
+* Join species extinction risk and trend data.frame to species-cell data.frame, including regional assessments.
+* By cell, calculate mean extinction risk, variance of extinction risk, trend, threatened species count, n_spp, n_spp_trend
+    * When aggregating further, use n_spp to weight values.
+    
+__NOTE:__ Because the summary files are likely to be very large for globe-spanning taxa (e.g. MARINE_MAMMALS is 275 MB), save these outputs outside of GitHub.
+
+``` {r aggregate species maps to taxa}
+
+### Read in lots of data
+spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
+                     col_types = 'ddcicccl')
+
+spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)),
+                     col_types = 'dccicccdc')
+
+spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
+                         col_types = 'dcccdc')
+
+spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)),
+                      col_types = 'dccdc') %>%
+  select(iucn_sid, trend_score, iucn_rgn)
+
+### make a dataframe of species risk, trend, and regional risk
+spp_risk_trend <- spp_risk %>%
+  mutate(iucn_rgn = 'global') %>%
+  bind_rows(spp_risk_rgn) %>%
+  select(iucn_sid, iucn_rgn, cat_score) %>%
+  left_join(spp_trend, by = c('iucn_sid', 'iucn_rgn'))
+
+### raster for cell IDs
+rast_cell_ids <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+
+### Make a dataframe of cell ID to MEOW for regional assessments... also 
+### make a lookup of MEOW to region
+meow_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'meow_rast.tif'))
+meow_cells_all <- data.frame(cell_id = values(rast_cell_ids),
+                             meow_id = values(meow_rgns_rast)) %>%
+  filter(!is.na(meow_id))
+meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
+
+```
+
+``` {r loop comprehensively assessed}
+### Make a list of taxonomic groups to loop over:
+taxa <- spp_maps %>%
+  filter(comp_assessed) %>%
+  .$dbf_file %>%
+  basename() %>%
+  unique() %>%
+  str_replace('\\.dbf$', '')
+
+##########################################################.
+### Looping over taxonomic groups -----
+##########################################################.
+for(taxon in taxa) {
+  ### taxon <- taxa[16]
+  
+  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+                                   sprintf('%s_cell_sum_comp_%s.csv', tolower(taxon), api_version))
+  
+  reload <- FALSE
+  if(!file.exists(taxon_sum_file) | reload == TRUE) {
+    
+    ### Filter to just this taxon, and only assessed within this taxon
+    taxon_maps <- spp_maps %>%
+      filter(str_detect(dbf_file, taxon)) %>%
+      filter(comp_assessed == TRUE)
+    
+    taxon_risk_trend <- spp_risk_trend %>%
+      filter(iucn_sid %in% taxon_maps$iucn_sid) %>%
+      filter(!is.na(cat_score)) %>%
+      arrange(iucn_sid)
+    
+    ### Using the iucn_sid field, generate a vector of all species range files for
+    ### this taxon.
+    taxon_ids <- taxon_risk_trend$iucn_sid %>%
+      unique()
+    
+    cat_msg('Processing ', length(taxon_ids),
+            ' comp-assessed species maps in ', taxon, '...')
+
+    ##########################################################.
+    ### Looping over species within group -----
+    ##########################################################.
+    ### Collect all species ranges for this taxon into a single data.frame.
+    ### Use mclapply since we're reading many large-ish files.  For MARINE_MAMMALS (85 assessed spp)
+    ### this takes about 30-40 seconds
+    taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
+                                        FUN = function(x) {
+        ### x <- taxon_ids[16]
+        ### x <- 6336                            
+        csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+                              sprintf('iucn_sid_%s.csv', x))
+        
+        spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
+          mutate(iucn_sid = x) %>%
+          left_join(taxon_risk_trend, by = 'iucn_sid') 
+        
+        ### Identify regional assessments if any
+        meow_rgns <- meow_to_rgn %>%
+          filter(iucn_rgn %in% spp_risk_map$iucn_rgn)
+        
+        non_global_rgns <- meow_rgns %>%
+          filter(iucn_rgn != 'global')
+  
+        if(nrow(non_global_rgns) > 0) {
+          ### If any regional assessments, clip the MEOW cells down to the appropriate region...
+          meow_cells <- meow_cells_all %>%
+            inner_join(meow_rgns, by = 'meow_id') %>%
+            rename(rgn_name = iucn_rgn)
+          ### ... then filter out non-matching overlapped cells
+          spp_risk_map <- spp_risk_map %>%
+            left_join(meow_cells, by = 'cell_id') %>%
+            mutate(rgn_name = ifelse(is.na(meow_id), 'global', rgn_name),
+                   priority = ifelse(rgn_name == 'global', 100, priority)) %>%
+            filter(iucn_rgn == rgn_name) %>%
+            group_by(cell_id) %>%
+            filter(priority == min(priority)) %>%
+            ungroup()
+          ### NOTE: at this point, still possible to have multiple regional
+          ### assessments, if priorities are the same (e.g. Europe and Pan Africa,
+          ### or overlaps around Africa).  Those values will be averaged in
+          ### the group_by() below.
+        }
+        
+        ### select down to main columns; also, if presence == 5 (extinct), 
+        ### adjust category and trend scores.
+        spp_risk_sum <- spp_risk_map %>%
+          select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
+          distinct() %>%
+          mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
+                   ### fix local extinctions
+                 trend_score = ifelse(presence == 5, NA, trend_score)) %>% 
+                   ### fix local extinctions
+          group_by(cell_id, iucn_sid) %>%
+          summarize(cat_score   = mean(cat_score, na.rm = TRUE),
+                    trend_score = mean(trend_score, na.rm = TRUE)) %>%
+          ungroup() %>%
+          mutate(trend_score = ifelse(is.nan(trend_score), NA, trend_score))
+        
+        return(spp_risk_sum)
+      }) ### end of mclapply over all species in taxonomic group
+  
+    ##########################################################.
+    ### Processing cell calculations for group -----
+    ##########################################################.
+  
+    ### Set up for keyed data.table merging: key for iucn_sid, cell_id
+    cat_msg('...binding rows to data.frame...')
+
+    taxon_risk_map <- bind_rows(taxon_cells_list) ### this is pretty fast!
+    
+    cat_msg('...summarizing...')
+    taxon_risk_summary <- taxon_risk_map %>%
+      group_by(cell_id) %>%
+      summarize(mean_risk   = mean(cat_score), 
+                  ### NA categories already filtered out
+                var_risk    = var(cat_score),
+                n_spp_threatened = sum(cat_score >= 0.4 & cat_score < 1),  
+                n_spp_risk  = n(),
+                mean_trend  = mean(trend_score, na.rm = TRUE), 
+                  ### not every species has a trend; na.rm = TRUE
+                mean_trend  = ifelse(is.nan(mean_trend), NA, mean_trend),
+                n_spp_trend = sum(!is.na(trend_score)))
+    
+    cat_msg('...writing file', taxon_sum_file, '...')
+    write_csv(taxon_risk_summary, taxon_sum_file)
+
+  } else { ### end of if statement checking whether file exists for this taxon
+    cat_msg('Found file ', taxon_sum_file, '... skipping process...')
+  }
+  
+} ### end of taxonomic group loop
+  
+```
+
+``` {r loop non-comprehensively assessed}
+### Make a list of taxonomic groups to loop over:
+taxa <- spp_maps %>%
+  filter(!comp_assessed) %>%
+  .$dbf_file %>%
+  basename() %>%
+  unique() %>%
+  str_replace('\\.dbf$', '')
+
+##########################################################.
+### Looping over taxonomic groups -----
+##########################################################.
+for(taxon in taxa) {
+  ### taxon <- taxa[16]
+  
+  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+                                   sprintf('%s_cell_sum_noncomp_%s.csv', tolower(taxon), api_version))
+  
+  reload <- FALSE
+  if(!file.exists(taxon_sum_file) | reload == TRUE) {
+    
+    ### Filter to just this taxon, and only non-assessed within this taxon
+    taxon_maps <- spp_maps %>%
+      filter(str_detect(dbf_file, taxon)) %>%
+      filter(comp_assessed == FALSE)
+    
+    taxon_risk_trend <- spp_risk_trend %>%
+      filter(iucn_sid %in% taxon_maps$iucn_sid) %>%
+      filter(!is.na(cat_score)) %>%
+      arrange(iucn_sid)
+    
+    if(nrow(taxon_risk_trend) == 0) {
+      ### if empty set, create a dummy data frame so there
+      ### will at least be a file...
+      cat_msg('Creating dummy data frame for empty spp set ', taxon)
+      taxon_risk_summary <- data.frame(
+        cell_id = -1,
+        mean_risk = NA)
+    } else {
+        
+      ### Using the iucn_sid field, generate a vector of all species range files for
+      ### this taxon.
+      taxon_ids <- taxon_risk_trend$iucn_sid %>%
+        unique()
+      
+      cat_msg('Processing ', length(taxon_ids), 
+              ' non-comp-assessed species maps in ', taxon, '...')
+  
+      ##########################################################.
+      ### Looping over species within group -----
+      ##########################################################.
+      ### Collect all species ranges for this taxon into a single data.frame.
+      ### Use mclapply since we're reading many large-ish files.  For MARINE_MAMMALS (85 assessed spp)
+      ### this takes about 30-40 seconds
+      taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
+                                          FUN = function(x) {
+          ### x <- taxon_ids[16]
+          ### x <- 6336                            
+          csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+                                sprintf('iucn_sid_%s.csv', x))
+          
+          spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
+            mutate(iucn_sid = x) %>%
+            left_join(taxon_risk_trend, by = 'iucn_sid') 
+          
+          ### Identify regional assessments if any
+          meow_rgns <- meow_to_rgn %>%
+            filter(iucn_rgn %in% spp_risk_map$iucn_rgn)
+          
+          non_global_rgns <- meow_rgns %>%
+            filter(iucn_rgn != 'global')
+    
+          if(nrow(non_global_rgns) > 0) {
+            ### If any regional assessments, clip the MEOW cells down to the appropriate region...
+            meow_cells <- meow_cells_all %>%
+              inner_join(meow_rgns, by = 'meow_id') %>%
+              rename(rgn_name = iucn_rgn)
+            ### ... then filter out non-matching overlapped cells
+            spp_risk_map <- spp_risk_map %>%
+              left_join(meow_cells, by = 'cell_id') %>%
+              mutate(rgn_name = ifelse(is.na(meow_id), 'global', rgn_name),
+                     priority = ifelse(rgn_name == 'global', 100, priority)) %>%
+              filter(iucn_rgn == rgn_name) %>%
+              group_by(cell_id) %>%
+              filter(priority == min(priority)) %>%
+              ungroup()
+            ### NOTE: at this point, still possible to have multiple regional
+            ### assessments, if priorities are the same (e.g. Europe and Pan Africa,
+            ### or overlaps around Africa).  Those values will be averaged in
+            ### the group_by() below.
+          }
+          
+          ### select down to main columns; also, if presence == 5 (extinct), 
+          ### adjust category and trend scores.
+          spp_risk_sum <- spp_risk_map %>%
+            select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
+            distinct() %>%
+            mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
+                     ### fix local extinctions
+                   trend_score = ifelse(presence == 5, NA, trend_score)) %>% 
+                     ### fix local extinctions
+            group_by(cell_id, iucn_sid) %>%
+            summarize(cat_score   = mean(cat_score, na.rm = TRUE),
+                      trend_score = mean(trend_score, na.rm = TRUE)) %>%
+            ungroup() %>%
+            mutate(trend_score = ifelse(is.nan(trend_score), NA, trend_score))
+          
+          return(spp_risk_sum)
+        }) ### end of mclapply over all species in taxonomic group
+    
+      ##########################################################.
+      ### Processing cell calculations for group -----
+      ##########################################################.
+    
+      ### Set up for keyed data.table merging: key for iucn_sid, cell_id
+      cat_msg('...binding rows to data.frame...')
+  
+      taxon_risk_map <- bind_rows(taxon_cells_list) ### this is pretty fast!
+      
+      cat_msg('...summarizing...')
+      taxon_risk_summary <- taxon_risk_map %>%
+        group_by(cell_id) %>%
+        summarize(mean_risk   = mean(cat_score), 
+                    ### NA categories already filtered out
+                  var_risk    = var(cat_score),
+                  n_spp_threatened = sum(cat_score >= 0.4 & cat_score < 1),  
+                  n_spp_risk  = n(),
+                  mean_trend  = mean(trend_score, na.rm = TRUE), 
+                    ### not every species has a trend; na.rm = TRUE
+                  mean_trend  = ifelse(is.nan(mean_trend), NA, mean_trend),
+                  n_spp_trend = sum(!is.na(trend_score)))
+    } ### end of empty set check
+    cat_msg('...writing file', taxon_sum_file, '...')
+    write_csv(taxon_risk_summary, taxon_sum_file)
+
+  } else { ### end of if statement checking whether file exists for this taxon
+    cat_msg('Found file ', taxon_sum_file, '... skipping process...')
+  }
+  
+} ### end of taxonomic group loop
+  
+```

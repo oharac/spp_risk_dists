@@ -1,0 +1,345 @@
+---
+title: 'Process IUCN spp shapes'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(rgeos)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+library(sf)
+
+dir_git <- '~/github/spp_risk_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_setup <- file.path(dir_git, 'setup')
+
+### project specific folders and info
+source(file.path(dir_setup, 'common_fxns.R'))
+
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2017-3')
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
+dir_shp2 <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
+  ### These are shapefiles directly from IUCN as individual species map files
+  ### (in the unzipped folder).
+  ### in this folder are shapefiles at a taxonomic level.
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+```
+
+# Summary
+
+* Subpopulation polygons must be identified and rasterized separately from the parent polygon; this must be done by sciname and subpop fields since the polygon IDs are based upon the parent ID.
+* Regional assessments need not be determined at this stage - the ID numbers match the global ID numbers (including subpops).
+
+# Data source
+
+IUCN Red List: Spatial Data Download
+IUCN: Gina Ralph direct communication
+
+# Methods
+
+## Generate species map list with subpops
+
+### Create subpopulation lookup to match maps with IUCN SIDs for subpops
+
+From available shapefiles, reclassify subpopulation polygons into subpop ID numbers for matching to risk and trend. 
+
+``` {r convert BLI to shp-dbf-etc}
+
+### convert BirdLife Int'l .gdb to shapefile, after filtering to species in the "marine" list.
+### Here we also standardize the column names to match the IUCN column names.
+
+bli_marine_shp <- file.path(dir_bli, 'bli_marine_v2017.shp')
+
+if(!file.exists(bli_marine_shp)) {
+  
+  bli_sf <- st_read(file.path(dir_bli, 'BOTW.gdb'))
+  
+  marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)),
+                         col_types = 'dcc')
+  
+  bli_marine_sf <- bli_sf %>%
+    clean_df_names() %>%
+    filter(sisid %in% marine_spp$iucn_sid)
+  
+  st_write(bli_marine_sf, bli_marine_shp)
+  
+  ### clean column names
+  bli_marine_dbf <- str_replace(bli_marine_shp, '\\.shp$', '\\.dbf')
+  
+  att_table <- foreign::read.dbf(bli_marine_dbf) %>%
+    setNames(names(bli_marine_sf)[1:(ncol(bli_marine_sf) - 1)]) %>%
+    rename(iucn_sid = sisid, binomial = sciname, year = date, tax_comm = tax_com) %>%
+    mutate(year = as.integer(as.character(year)))
+    #  [1] "sisid"        "sciname"      "date"         "source"       "presence"     "origin"       "seasonal"    
+    #  [8] "data_sens"    "sens_comm"    "compiler"     "tax_com"      "dist_com"     "reviewers"    "citation"    
+    # [15] "version"      "shape_length" "shape_area"  
+  ### from IUCN shapefiles:
+    #  [1] "id_no"      "binomial"   "presence"   "origin"     "seasonal"   "compiler"   "year"       "citation"  
+    #  [9] "source"     "dist_comm"  "island"     "subspecies" "subpop"     "legend"     "tax_comm"   "kingdom"   
+    # [17] "phylum"     "class"      "order_"     "family"     "genus"      "code"       "marine"     "terrestial"
+    # [25] "freshwater" "shape_Leng" "shape_Area"
+  foreign::write.dbf(att_table, bli_marine_dbf)
+}
+
+```
+
+Note that there appear to be no subpopulation polygons within the BirdLife International map set; there is no "subpop" column in that attribute table.  It appears that the individual files may not have "subpop" column either.
+
+``` {r create_subpop_lookup}
+
+iucn_dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+iucn2_dbfs <- list.files(dir_shp2, pattern = '\\.dbf$', recursive = FALSE,
+                         full.names = TRUE)
+bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
+shps_dbfs <- c(iucn_dbfs, bli_dbfs, iucn2_dbfs)
+
+### This is all "marine" species by habitat:
+marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)),
+                       col_types = 'dcc')
+
+### This is *all* spp from the API, filtered down to those in marine_spp: 
+api_spp <- read_csv(file.path(dir_o_anx, 'iucn', 
+                              sprintf('spp_info_from_api_%s.csv', api_version)),
+                    col_types = 'dccccccccc') %>%
+  filter(iucn_sid %in% marine_spp$iucn_sid)
+
+### Define helper function to cleanly get the info from DBF files,
+### including colname checks
+get_dbf <- function(x) { ### x <- shps_dbfs[1]
+  spp_dbf_info <- foreign::read.dbf(x, as.is = TRUE) %>%
+    clean_df_names()
+  
+  ### Individual files call the id number 'iucn_sid'; bli has been fixed to
+  ### 'iucn_sid' as well; Red List Data Download files are 'id_no'... So:
+  ### fix that here!
+  names(spp_dbf_info)[names(spp_dbf_info) == 'id_no'] <- 'iucn_sid'
+
+  ### if 'binomial', set to 'sciname'
+  if(!'sciname' %in% names(spp_dbf_info)) {
+    names(spp_dbf_info)[names(spp_dbf_info) == 'binomial'] <- 'sciname'
+  }
+  
+  ### Some files (e.g. bli and individual files) don't have 'subpop':
+  ### add it in as NAs.
+  if(!'subpop' %in% names(spp_dbf_info)) spp_dbf_info$subpop <- NA
+  
+  ### some files don't have 'presence' field: if not present or NA,
+  ### set to presence = 1.  Some have presence = 0?
+  if(!'presence' %in% names(spp_dbf_info)) spp_dbf_info$presence <- 1
+  
+  spp_dbf_info <- spp_dbf_info %>%
+    mutate(presence = ifelse(presence == 0, 1, presence))
+  
+  return(spp_dbf_info)
+}
+
+shps_df <- lapply(shps_dbfs, get_dbf) %>%
+  setNames(shps_dbfs) %>%
+  bind_rows(.id = 'dbf_file') %>%
+  select(dbf_file, iucn_sid, sciname, presence, subpop) %>%
+  filter(iucn_sid %in% marine_spp$iucn_sid)
+
+shp_subpops <- shps_df %>%
+  select(shp_iucn_sid = iucn_sid, sciname, shp_subpop = subpop) %>%
+  filter(!is.na(shp_subpop)) %>%
+  distinct() %>%
+  mutate(shp_subpop_clean = str_replace(tolower(shp_subpop), ' subpopulation| ocean', ''),
+         shp_subpop_clean = str_replace_all(shp_subpop_clean, '[^a-z]', ' ') %>% str_trim,
+         shp_subpop_clean = str_replace(shp_subpop_clean, 'noth', 'north'), 
+           ### fix typo
+         shp_subpop_clean = ifelse(str_detect(shp_subpop_clean, 'svalbard barents sea'),
+                                   'east greenland svalbard barents sea', shp_subpop_clean))
+           ### fix mismatch between 2018-1 api subpop and 2017-3 shp subpop
+
+api_subpops <- api_spp %>%
+  select(api_iucn_sid = iucn_sid, sciname, api_subpop = population) %>%
+  filter(!is.na(api_subpop)) %>%
+  filter(sciname %in% shp_subpops$sciname) %>%
+  distinct() %>%
+  mutate(api_subpop_clean = str_replace_all(tolower(api_subpop), ' subpopulation| ocean', ''),
+         api_subpop_clean = str_replace_all(api_subpop_clean, '[^a-z]', ' ') %>% str_trim)
+
+subpops_match_raw <- shp_subpops %>%
+  full_join(api_subpops, by = 'sciname') %>%
+  group_by(api_iucn_sid) %>%
+  mutate(subpop_match = str_detect(shp_subpop_clean, api_subpop_clean),
+         n_match = sum(subpop_match)) %>%
+  filter(subpop_match | sum(subpop_match) == 0) %>%
+  ungroup()
+
+caretta_subpops <- subpops_match_raw %>%
+  filter(shp_iucn_sid == 3897) %>%
+  mutate(api_subpop_single = str_split(api_subpop_clean, ' ')) %>%
+  unnest(api_subpop_single) %>%
+  group_by(api_subpop_clean, shp_subpop_clean) %>%
+  mutate(match = str_detect(shp_subpop_clean, api_subpop_single),
+         n_match = sum(match),
+         n_words = n()) %>%
+  filter(sum(match) == n()) %>%
+  ungroup() %>%
+  select(shp_iucn_sid, sciname, shp_subpop, api_iucn_sid, api_subpop) %>%
+  distinct()
+
+subpops_match <- subpops_match_raw %>%
+  filter(shp_iucn_sid != 3897 & subpop_match == TRUE) %>%
+  select(shp_iucn_sid, sciname, shp_subpop, api_iucn_sid, api_subpop) %>%
+  bind_rows(caretta_subpops)
+
+### Check for missed matches:
+
+# api_subpops$api_iucn_sid[!api_subpops$api_iucn_sid %in% subpops_match$api_iucn_sid]
+### API subpop, not matched: 16369383 Tursiops truncatus Mediterranean subpopulation
+### OK - no polygon for this subpopulation.  Make sure it gets picked up by regional assessment!
+### API subpop, not matched: 2472 Balaena mysticetus East Greenland-Svalbard-Barents Sea subpopulation
+### NOOO! This is called something slightly different between shp and api.
+### * Code above is fixed for this special case.  Note, if/when 2018-1 shapefiles are
+###   added in, this code may need to come out or be adjusted.
+
+# shp_subpops[!shp_subpops$shp_subpop %in% subpops_match$shp_subpop, ]
+### Shapefile subpop, not matched: 16285718 Chelonia mydas Hawaiian subpopulation
+### OK - the shapefile ID matches the API ID so this will match automatically
+
+write_csv(subpops_match, 
+          file.path(dir_git, sprintf('setup/int/subpops_match_api_to_shp_%s.csv', 
+                                     api_version)))
+
+```
+
+### get info on comprehensive assessments
+
+Not all maps are for species that are included in comprehensively assessed taxonomic groups.  Get info on comprehensive assessment status for species from the API.
+
+``` {r get comp assess status}
+comp_file <- file.path(dir_git, 'data', 
+                       sprintf('iucn_comp_assessed_%s.csv', api_version))
+if(!file.exists(comp_file)) {
+  comp_gps_url <- 'http://apiv3.iucnredlist.org/api/v3/comp-group/list?token=%s'
+  comp_gps <- fromJSON(sprintf(comp_gps_url, api_key)) %>%
+    .$result
+  
+  comp_spp_url <- 'http://apiv3.iucnredlist.org/api/v3/comp-group/getspecies/%s?token=%s'
+  comp_spp <- mc_get_from_api(comp_spp_url, comp_gps$group_name, api_key) %>%
+    select(iucn_sid = taxonid, sciname = scientific_name)
+  
+  write_csv(comp_spp, comp_file)
+} else {
+  comp_spp <- read_csv(comp_file,
+                       col_types = 'dc')
+}
+```
+
+### Join map list to subpop corrected list; remove duplicated spp IDs
+
+From the species range map shapefiles, pull map info from the .dbf files.  For species listed in multiple files (e.g. sea snakes and reptiles), remove duplicates.  For species with polygons differentiated by subpopulation, adjust the iucn_sid to match the subpop info.
+
+Add a flag for comprehensively-assessed spp - fix BONEFISH_TARPONS to all be assessed - either it's comprehensive or not - and add sea turtle species (6 of 7 assessed).
+
+``` {r generate map list from dbfs}
+
+iucn_dbfs  <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+iucn2_dbfs <- list.files(dir_shp2, pattern = '\\.dbf$', recursive = FALSE,
+                         full.names = TRUE)
+bli_dbfs   <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
+
+map_files  <- c(iucn_dbfs, bli_dbfs, iucn2_dbfs)
+
+
+# spp_group_names <- map_files %>%
+#   basename() %>%
+#   str_replace_all('\\.dbf$|_PART_.+', '') %>%
+#   unique()
+
+map_info_raw <- lapply(map_files, get_dbf) %>%
+  setNames(shps_dbfs) %>%
+  bind_rows(.id = 'dbf_file') %>%
+  select(shp_iucn_sid = iucn_sid, sciname, presence, subpop, dbf_file)
+
+### Notes on presence, origin, seasonal fields:
+### * presence = 5 is extinct; 4 = probably extinct; others are extant-ish or 
+###   uncertain. We will drop field and include all polygons for now.
+### * origin is native, introduced, etc.  We will drop this field and not
+###   worry about origin.
+### * seasonal is breeding/non-breeding/passage.  We will drop this field
+###   and not worry about seasonality.
+
+# subspp <- map_info %>%
+#   filter(!is.na(subspecies)) %>%
+#   select(id_no, code) %>%
+#   distinct()
+### No subspecies vary by IUCN code; drop field for simplicity
+### and include all at species level
+
+map_info_sans_dupes <- map_info_raw %>%
+  group_by(shp_iucn_sid) %>%
+  filter(!(str_detect(dbf_file, 'MARINEFISH|REPTILE|CORALS_PART_2_1|MANGROVES') & 
+             length(unique(dbf_file)) > 1)) %>%
+  filter(!(shp_iucn_sid == 196026 & str_detect(dbf_file, 'SEASNAKE'))) %>%
+    ### in REPTILES, SEASNAKES, and HAGFISH - ditch any dupes
+  mutate(n_shp = n()) %>%
+  ungroup() %>%
+  distinct()
+
+subpops_match <- read_csv(file.path(dir_setup, 'int',
+                                    sprintf('subpops_match_api_to_shp_%s.csv', 
+                                            api_version)),
+                          col_types = 'dccdc')
+
+map_info_add_subpops <- map_info_sans_dupes %>%
+  full_join(subpops_match, by = c('shp_iucn_sid', 'sciname', 'subpop' = 'shp_subpop')) %>%
+  mutate(iucn_sid = ifelse(is.na(api_iucn_sid), shp_iucn_sid, api_iucn_sid)) %>%
+  select(shp_iucn_sid, iucn_sid, sciname, presence, subpop, dbf_file) %>%
+  distinct()
+
+### filter to marine habitat species (to drop terrestrial reptiles e.g.)
+marine_spp_ids <- read_csv(file.path(dir_git, 'data',
+                                     sprintf('spp_marine_from_api_%s.csv', 
+                                             api_version)),
+                           col_types = 'dcc') %>%
+  select(iucn_sid, max_depth)
+
+marine_map_info <- map_info_add_subpops %>%
+  inner_join(marine_spp_ids, by = 'iucn_sid') %>%
+  mutate(comp_assessed = iucn_sid %in% comp_spp$iucn_sid)
+
+### at this point, fix a few "comprehensively assessed" issues:
+### * add turtles as comprehensive
+### * some species from Spatial Data Download groups do not
+###   show up as comprehensively assessed despite text on the IUCN site
+turtles <- c('Dermochelys', 'Caretta', 'Lepidochelys', 
+             'Natator', 'Chelonia', 'Eretmochelys') %>%
+  paste0(collapse = '|')
+assessed_gps <- c('BONEFISH', 'CORALS', 'DAMSELFISH', 'SEACUCUMBERS') %>%
+  paste0(collapse = '|')
+
+marine_map_info <- marine_map_info %>%
+  mutate(comp_assessed = ifelse(str_detect(dbf_file, assessed_gps), 
+                                TRUE, comp_assessed),
+         comp_assessed = ifelse(str_detect(sciname, turtles), 
+                                TRUE, comp_assessed))
+
+write_csv(marine_map_info, 
+          file.path(dir_git, 'data',
+                    sprintf('spp_marine_maps_%s.csv', api_version)))
+
+```

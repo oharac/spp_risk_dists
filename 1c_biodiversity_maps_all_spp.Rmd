@@ -32,11 +32,10 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -107,17 +106,20 @@ reload <- TRUE
 if(!file.exists(cell_summary_file) | reload == TRUE) {
   dir_taxa_summaries <- file.path(dir_o_anx, 'taxa_summaries')
   sum_files <- list.files(dir_taxa_summaries,
-                          pattern = sprintf('cell_sum_%s.csv', api_version),
+                          pattern = sprintf('cell_sum_(non)?comp_%s.csv', 
+                                            api_version),
                           full.names = TRUE)
   
   message('going into the first mclapply...')
   
   ptm <- system.time({
     cell_values_all <- parallel::mclapply(sum_files, mc.cores = 32,
-                                          FUN = function(x) {
-                                            read_csv(x, col_types = 'dddiidi')
-                                            }) %>%
-      bind_rows()
+      FUN = function(x) {
+        read_csv(x, col_types = 'dddiidi')
+        }) %>%
+      bind_rows() %>%
+      filter(cell_id > 0) 
+        ### ditch a few empty sets with dummy df, cell_id = -1
   }) ### end of system.time
   message('... processing time ', ptm[3], ' sec')
     
@@ -207,7 +209,8 @@ reload <- TRUE
 
 rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+land_poly <- sf::read_sf(file.path(dir_git, 'spatial', 
+                                   'ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 
