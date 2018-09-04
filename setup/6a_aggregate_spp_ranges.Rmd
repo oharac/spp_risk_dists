@@ -95,6 +95,8 @@ meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
 
 ```
 
+### Loop over comprehensively assessed species
+
 ``` {r loop comprehensively assessed}
 ### Make a list of taxonomic groups to loop over:
 taxa <- spp_maps %>%
@@ -229,7 +231,49 @@ for(taxon in taxa) {
   
 ```
 
-``` {r loop non-comprehensively assessed}
+### Loop over non-comprehensively-assessed species
+
+``` {r examine non-comprehensively assessed, eval = FALSE}
+
+x <- spp_maps %>%
+  filter(!comp_assessed)
+table(x$max_depth)
+
+area <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2018-1.csv')) %>%
+  select(iucn_sid, range_km2)
+
+y <- x %>%
+  left_join(area, by = 'iucn_sid') %>%
+  left_join(spp_risk_trend, by = 'iucn_sid') %>%
+  filter(!is.na(cat_score))
+
+y_q <- quantile(y$range_km2, c(.25, .5, .75, 1.0), na.rm = TRUE)
+
+y <- y %>%
+  mutate(range_cat = case_when(is.na(range_km2) ~ NA_real_,
+                               range_km2 < y_q[1] ~ y_q[1],
+                               range_km2 < y_q[2] ~ y_q[2],
+                               range_km2 < y_q[3] ~ y_q[3],
+                               TRUE ~ y_q[4]))
+
+table(y$cat_score, y$range_cat)
+table(y$max_depth, y$range_cat)
+table(y$max_depth, y$cat_score)
+
+ggplot(y, aes(x = range_km2)) +
+  geom_histogram() +
+  facet_wrap(~ max_depth, scales = 'free')
+
+ggplot(y, aes(x = max_depth, y = range_km2)) +
+  geom_boxplot() +
+  geom_jitter(aes(color = cat_score), alpha = .3) +
+  scale_color_distiller(palette = 'Spectral')
+
+
+```
+
+``` {r loop non-comprehensively assessed}}
+
 ### Make a list of taxonomic groups to loop over:
 taxa <- spp_maps %>%
   filter(!comp_assessed) %>%

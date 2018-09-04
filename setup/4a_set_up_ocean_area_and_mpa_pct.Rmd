@@ -36,7 +36,7 @@ dir_spatial <- file.path(dir_git, 'spatial')
 dir_anx     <- file.path(dir_M, 'git-annex')
 dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
 # ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 ### support scripts
 source('~/github/src/R/rast_tools.R') 
@@ -160,7 +160,9 @@ if(!file.exists(wdpa_marine_file)) {
       ### no paper parks!
     filter(!str_detect(tolower(MANG_PLAN), 'non-mpa')) %>%
       ### omit non-MPA fisheries or species management plans!
-    mutate(no_take = (NO_TAKE == 'All') | (NO_TAKE == 'Part' & NO_TK_AREA > 0.75 * GIS_M_AREA),
+    mutate(NO_TAKE = ifelse(WDPAID == 309888, TRUE, NO_TAKE),
+             ### patch PIPA to be no take - currently "not reported"
+           no_take = (NO_TAKE == 'All') | (NO_TAKE == 'Part' & NO_TK_AREA > 0.75 * GIS_M_AREA),
              ### if NO_TK_AREA is 75% or more of GIS area, count it...
            cat = iucn_cats[IUCN_CAT],
            cat = ifelse(no_take & !cat %in% 1:2, -1, cat), ### use -1 as a "no take" flag
@@ -184,8 +186,8 @@ if(!file.exists(wdpa_marine_file)) {
   
 }
   
-git_prov(wdpa_poly_file, 'input')
-git_prov(wdpa_marine_file, 'output') ### even in "if", mask() won't prov-register it.
+# git_prov(wdpa_poly_file, 'input')
+# git_prov(wdpa_marine_file, 'output') ### even in "if", mask() won't prov-register it.
 
 ```
 
@@ -194,7 +196,8 @@ git_prov(wdpa_marine_file, 'output') ### even in "if", mask() won't prov-registe
 rast_cell_id    <- raster(cell_id_file)
 rast_ocean_1km  <- raster(ocean_1km_file)
 
-wdpa_prot_yr_file <- file.path(dir_o_anx, 'wdpa/wdpa_mar_by_prot_yr_jun2018_1km2.tif')
+wdpa_prot_yr_file <- file.path(dir_o_anx, 'wdpa', 
+                               'wdpa_mar_by_prot_yr_jun2018_1km2.tif')
 
 if(!file.exists(wdpa_prot_yr_file)) {
   
@@ -220,7 +223,9 @@ if(!file.exists(wdpa_prot_yr_file)) {
       ### no paper parks!
     filter(!str_detect(tolower(MANG_PLAN), 'non-mpa')) %>%
       ### omit non-MPA fisheries or species management plans!
-    mutate(no_take = (NO_TAKE == 'All') | (NO_TAKE == 'Part' & NO_TK_AREA > 0.75 * GIS_M_AREA),
+    mutate(NO_TAKE = ifelse(WDPAID == 309888, TRUE, NO_TAKE),
+             ### patch PIPA to be no take - currently "not reported"
+           no_take = (NO_TAKE == 'All') | (NO_TAKE == 'Part' & NO_TK_AREA > 0.75 * GIS_M_AREA),
              ### if NO_TK_AREA is 75% or more of GIS area, count it...
            cat = iucn_cats[IUCN_CAT],
            cat = ifelse(no_take & !cat %in% 1:2, -1, cat), ### use -1 as a "no take" flag
@@ -246,8 +251,8 @@ if(!file.exists(wdpa_prot_yr_file)) {
   
 }
   
-git_prov(wdpa_poly_file, 'input')
-git_prov(wdpa_prot_yr_file, 'output') 
+# git_prov(wdpa_poly_file, 'input')
+# git_prov(wdpa_prot_yr_file, 'output') 
 
 ```
 
@@ -334,7 +339,7 @@ if(!file.exists(wdpa_cell_area_file)) {
   write_csv(wdpa_area_df, wdpa_cell_area_file)
   
 } else {
-  git_prov(wdpa_cell_area_file, 'output')
+  # git_prov(wdpa_cell_area_file, 'output')
 }
 
 ```
@@ -347,18 +352,8 @@ rast_ocean_1km  <- raster(ocean_1km_file)  ### ocean presence at 1 km^2
 rast_ocean_area <- raster(ocean_area_file) ### ocean proportional area at 10 km^2
 
 cell_id_1km_file <- file.path(dir_o_anx, 'spatial/cell_id_1km.tif')
+rast_cell_id_1km <- raster(cell_id_1km_file)
 
-### Need a 1 km raster of cell IDs for crosstabbing...
-if(!file.exists(cell_id_1km_file)) {
-  rast_cell_id_1km <- resample(rast_cell_id, rast_ocean_1km,
-                             progress = 'text',
-                             filename = cell_id_1km_file,
-                             method = 'ngb',
-                             overwrite = TRUE)
-} else {
-  rast_cell_id_1km <- raster(cell_id_1km_file)
-}
-  
 wdpa_cell_year_file <- file.path(dir_spatial, 'wdpa_mpa_year.csv')
 
 ### now break into chunks and mclapply across them to crosstab WDPA categories to cell IDs
@@ -416,7 +411,7 @@ if(!file.exists(wdpa_cell_year_file)) {
   write_csv(wdpa_year_df, wdpa_cell_year_file)
   
 } else {
-  git_prov(wdpa_cell_year_file, 'output')
+  # git_prov(wdpa_cell_year_file, 'output')
 }
 
 ```
@@ -437,7 +432,6 @@ Note: these are not saved as separate rasters at this point... they are easily c
 ``` {r}
 
 wdpa_area_df <- read_csv(wdpa_cell_area_file)
-
 
 notake_df <- wdpa_area_df %>%
   filter(wdpa_category <= 2) %>%
@@ -466,6 +460,6 @@ plot(all_prot_raster, main = 'All protection (any category)')
 -----
 
 ``` {r prov_footer, results = 'asis'}
-prov_wrapup(commit_outputs = FALSE)
+# prov_wrapup(commit_outputs = FALSE)
 ```
 

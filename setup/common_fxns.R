@@ -33,6 +33,8 @@ cat_msg <- function(x, ...) {
 }
 
 ### Simple Features functions
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
 
 clip_to_globe <- function(x) {
   ### for SF features, transform to wgs84, clip to +-180 and +-90

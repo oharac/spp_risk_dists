@@ -1,22 +1,22 @@
 hab,hab_desc_raw,hab_desc,order
 beach_10km.tif,beach,intertidal habitats,1
-coral_reef_10km.tif,coral reef,coral reef,2
+coral_reef_10km.tif,coral reef,coral reef,5
 deep_waters_10km.tif,deep waters,deep waters,NA
 d_h_bottom_10km.tif,deep hard bottom,deep hard bottom,NA
 d_s_benthic_10km.tif,deep soft benthic,deep soft benthic,NA
-hard_shelf_10km.tif,hard shelf,hard shelf,3
-hard_slope_10km.tif,hard slope,hard slope,3
-ice_10km.tif,sea ice edge,sea ice edge, 4
+hard_shelf_10km.tif,hard shelf,hard shelf,9
+hard_slope_10km.tif,hard slope,hard slope,12
+ice_10km.tif,sea ice edge,sea ice edge,10
 inttidalmud_10km.tif,intertidal mud,intertidal habitats,NA
-kelp_10km.tif,kelp,kelp,5
-mangroves_10km.tif,mangroves,mangroves,5
+kelp_10km.tif,kelp,kelp,4
+mangroves_10km.tif,mangroves,mangroves,3
 rky_intidal_10km.tif,rocky intertidal,intertidal habitats,NA
 rocky_reef_10km.tif,rocky reef,rocky reef,6
 salt_marsh_10km.tif,salt marsh,intertidal habitats,NA
-seagrass_10km.tif,seagrass,seagrass,7
-seamounts_10km.tif,seamounts,seamounts,8
-soft_shelf_10km.tif,soft shelf,soft shelf,9
-soft_slope_10km.tif,soft slope,soft slope,9
-s_t_s_bottom_10km.tif,shallow sandy bottom,shallow sandy bottom,10
-surface_waters_10km.tif,surface waters,oceanic waters,11
+seagrass_10km.tif,seagrass,seagrass,2
+seamounts_10km.tif,seamounts,seamounts,13
+soft_shelf_10km.tif,soft shelf,soft shelf,8
+soft_slope_10km.tif,soft slope,soft slope,11
+s_t_s_bottom_10km.tif,shallow sandy bottom,shallow sandy bottom,7
+surface_waters_10km.tif,surface waters,oceanic waters,14
 suspension_reef_10km.tif,suspension reef,intertidal habitats,NA

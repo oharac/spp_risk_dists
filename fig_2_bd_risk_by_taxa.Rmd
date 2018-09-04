@@ -214,13 +214,15 @@ spp_ranges <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv',
   distinct()
 
 taxa_ranges <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv', api_version)),
-                     col_types = 'ddciccc') %>%
+                     col_types = 'ddcicccl') %>%
+  filter(comp_assessed) %>%
   mutate(shp_basename = str_replace_all(basename(tolower(dbf_file)), '.dbf|_part.+', '')) %>%
   left_join(spp_ranges, by = 'iucn_sid') %>%
   left_join(shp_to_taxa, by = 'shp_basename') %>%
+  filter(comp_assessed &!is.na(taxon)) %>%
   mutate(log_range = log10(range_km2))
 
-ggplot(taxa_ranges, aes(x = log_range, ..scaled..)) +
+x <- ggplot(taxa_ranges, aes(x = log_range, ..scaled..)) +
   ggtheme_plot() +
   theme(panel.grid.major = element_blank(),
         axis.text.y      = element_blank(),
