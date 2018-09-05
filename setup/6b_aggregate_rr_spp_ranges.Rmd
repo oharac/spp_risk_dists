@@ -404,7 +404,8 @@ for(taxon in taxa) {
     
     taxon_maps <- spp_maps %>%
       filter(str_detect(dbf_file, taxon)) %>%
-      filter(comp_assessed == FALSE)
+      filter(comp_assessed == FALSE) %>%
+      filter(max_depth != 'deep oceanic')
     
     taxon_risk_trend <- spp_risk_trend %>%
       filter(iucn_sid %in% taxon_maps$iucn_sid) %>%

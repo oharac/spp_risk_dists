@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 5 07:35:29 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Sep 5 13:00:58 2018 by ohara" />
 
 
 <title>Biodiversity risk maps - range-rarity weighting</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - range-rarity weighting</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 5 07:35:29 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Sep 5 13:00:58 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -292,7 +292,7 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
-<p>Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN. These maps are generated at 10 km<sup>2</sup> resolution on a Gall-Peters projection. All values are calculated based on range rarity, i.e. a cell’s value depends on the status and relative proportion of range of each species present in the cell. These maps will be generated using all available species:</p>
+<p>Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN, with the exception of deep oceanic species as these are unlikely to suffer direct human impact or to benefit from typical conservation efforts. These maps are generated at 10 km<sup>2</sup> resolution on a Gall-Peters projection. All values are calculated based on range rarity, i.e. a cell’s value depends on the status and relative proportion of range of each species present in the cell.</p>
 <ul>
 <li>Mean risk</li>
 <li>Variance of risk</li>
@@ -626,9 +626,9 @@ map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(di
   <span class="kw">message</span>(<span class="st">'Map exists: '</span>, map_rast_file)
 }</code></pre></div>
 <pre><code>##          1%          5%         10%         20%         30%         40% 
-## 0.006149854 0.019824632 0.031237684 0.052243275 0.080962461 0.116901058 
+## 0.006704815 0.021000915 0.035032195 0.059850291 0.090183358 0.126761400 
 ##         50%         60%         70%         80%         90%        100% 
-## 0.148657249 0.174712512 0.203134722 0.237009855 0.297603097 1.000000000</code></pre>
+## 0.158648091 0.185819472 0.214146120 0.248381845 0.312708545 1.000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'output'</span>, <span class="st">'trend_rr_raster_all.tif'</span>)
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
