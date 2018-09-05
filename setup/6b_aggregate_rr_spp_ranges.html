@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sun Aug 19 06:42:17 2018 by ohara" />
+<meta name="author" content="Compiled on Tue Sep 4 21:45:40 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges, range-rarity weighted</title>
@@ -277,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges, range-rarity weighted</h1>
-<h4 class="author"><em><em>Compiled on Sun Aug 19 06:42:17 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Tue Sep 4 21:45:40 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -298,10 +298,7 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 
 ### goal specific folders and info
 
-dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
-
-### Gall-Peters doesn't have an EPSG?
-gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
+dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Using individual species range data (csv outputs from <code>5_process_spp_shps.Rmd</code>), collect into species groups. In each species group, process range and risk information to get mean risk, variance of risk, species richness, and threatened species count per cell. These are all weighted by species range rarity as a metric of endemism.</p>

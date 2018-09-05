@@ -269,7 +269,6 @@ ggplot(y, aes(x = max_depth, y = range_km2)) +
   geom_jitter(aes(color = cat_score), alpha = .3) +
   scale_color_distiller(palette = 'Spectral')
 
-
 ```
 
 ``` {r loop non-comprehensively assessed}}

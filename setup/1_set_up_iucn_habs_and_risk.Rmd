@@ -100,7 +100,8 @@ From the full IUCN species list, send each IUCN species ID into the API to get t
 ### For each species ID on the total list, get a dataframe of habitats.
 ### This is slow.  Skip if possible.
 
-spp_habs_from_api_file <- file.path(dir_o_anx, sprintf('iucn/spp_habs_from_api_%s.csv', api_version))
+spp_habs_from_api_file <- file.path(dir_o_anx, 
+  sprintf('iucn/spp_habs_from_api_%s.csv', api_version))
 reload <- FALSE
 
 if(!file.exists(spp_habs_from_api_file) | reload) {
@@ -183,7 +184,8 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
 ### For each species ID on the total list, get species information, which
 ### includes "system" of marine, terrestrial, or both.
 
-spp_sys_from_api_file <- file.path(dir_o_anx, sprintf('iucn/spp_systems_from_api_%s.csv', api_version))
+spp_sys_from_api_file <- file.path(dir_o_anx, 
+  sprintf('iucn/spp_systems_from_api_%s.csv', api_version))
 reload <- FALSE
 
 if(!file.exists(spp_sys_from_api_file) | reload) {

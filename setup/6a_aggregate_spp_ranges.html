@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sun Aug 19 06:42:02 2018 by ohara" />
+<meta name="author" content="Compiled on Tue Sep 4 14:54:12 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -277,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Sun Aug 19 06:42:02 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Tue Sep 4 14:54:12 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -352,6 +352,8 @@ meow_cells_all &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
                              <span class="dt">meow_id =</span> <span class="kw">values</span>(meow_rgns_rast)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(meow_id))
 meow_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/iucn_rgn_to_meow.csv'</span>))</code></pre></div>
+<div id="loop-over-comprehensively-assessed-species" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> Loop over comprehensively assessed species</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Make a list of taxonomic groups to loop over:
 taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(comp_assessed) <span class="op">%&gt;%</span>
@@ -482,6 +484,42 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
   }
   
 } ### end of taxonomic group loop</code></pre></div>
+</div>
+<div id="loop-over-non-comprehensively-assessed-species" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> Loop over non-comprehensively-assessed species</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>comp_assessed)
+<span class="kw">table</span>(x<span class="op">$</span>max_depth)
+
+area &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="st">'iucn_spp_range_area_2018-1.csv'</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(iucn_sid, range_km2)
+
+y &lt;-<span class="st"> </span>x <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(area, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(spp_risk_trend, <span class="dt">by =</span> <span class="st">'iucn_sid'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(cat_score))
+
+y_q &lt;-<span class="st"> </span><span class="kw">quantile</span>(y<span class="op">$</span>range_km2, <span class="kw">c</span>(.<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, <span class="fl">1.0</span>), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+
+y &lt;-<span class="st"> </span>y <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">range_cat =</span> <span class="kw">case_when</span>(<span class="kw">is.na</span>(range_km2) <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>,
+                               range_km2 <span class="op">&lt;</span><span class="st"> </span>y_q[<span class="dv">1</span>] <span class="op">~</span><span class="st"> </span>y_q[<span class="dv">1</span>],
+                               range_km2 <span class="op">&lt;</span><span class="st"> </span>y_q[<span class="dv">2</span>] <span class="op">~</span><span class="st"> </span>y_q[<span class="dv">2</span>],
+                               range_km2 <span class="op">&lt;</span><span class="st"> </span>y_q[<span class="dv">3</span>] <span class="op">~</span><span class="st"> </span>y_q[<span class="dv">3</span>],
+                               <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>y_q[<span class="dv">4</span>]))
+
+<span class="kw">table</span>(y<span class="op">$</span>cat_score, y<span class="op">$</span>range_cat)
+<span class="kw">table</span>(y<span class="op">$</span>max_depth, y<span class="op">$</span>range_cat)
+<span class="kw">table</span>(y<span class="op">$</span>max_depth, y<span class="op">$</span>cat_score)
+
+<span class="kw">ggplot</span>(y, <span class="kw">aes</span>(<span class="dt">x =</span> range_km2)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>max_depth, <span class="dt">scales =</span> <span class="st">'free'</span>)
+
+<span class="kw">ggplot</span>(y, <span class="kw">aes</span>(<span class="dt">x =</span> max_depth, <span class="dt">y =</span> range_km2)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_boxplot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>(<span class="kw">aes</span>(<span class="dt">color =</span> cat_score), <span class="dt">alpha =</span> .<span class="dv">3</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_distiller</span>(<span class="dt">palette =</span> <span class="st">'Spectral'</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Make a list of taxonomic groups to loop over:
 taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>comp_assessed) <span class="op">%&gt;%</span>
@@ -621,6 +659,7 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
   }
   
 } ### end of taxonomic group loop</code></pre></div>
+</div>
 </div>
 </div>
 
