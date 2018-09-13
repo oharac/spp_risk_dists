@@ -32,11 +32,10 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -45,21 +44,12 @@ gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +
 
 # Summary
 
-Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN.  These maps are generated at 10 km^2^ resolution in a Gall-Peters projection.  These maps will be generated using all available species:
+Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN.  These maps are generated at 10 km^2^ resolution in a Gall-Peters projection.  These maps will be generated using all comprehensively-assessed species, for both uniform-weighted and range-rarity weighted:
 
 * Mean risk
-* Variance of risk
-* Number of species for mean/var calculations
 * Number of species categorized as "threatened" (i.e. VU, EN, CR)
-* Mean trend
-* Number of species for trend calculations
-    
+
 A selection of these maps will be generated for taxonomic groups and range sizes in a separate Rmd.
-
-Future iterations may include:
-
-* Range-rarity-weighted mean and variance of risk
-* Range rarity-weighted species richness
 
 # Data Sources
 
@@ -69,7 +59,7 @@ Gina Ralph (IUCN)
 
 # Methods
 
-## Spatial distribution of current extinction risk
+## Spatial distribution of risk: comprehensively assessed spp
 
 From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps:
 
@@ -198,11 +188,10 @@ four_panel <- function(map1_rast, map2_rast,
 # risk_rr_rast <- risk_rr_rast %>% aggregate(10)
 
 mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
-                              colors = c('green4', viridis::inferno(6, direction = -1)),
-                                ### use viridis scheme but add green on the bottom for LC
-                              values = c(0, .2, .3, .4, .5, .7, 1.0),
-                              labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
-                              breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0),
+                              colors = risk_cols,
+                              values = risk_vals,
+                              labels = risk_lbls,
+                              breaks = risk_brks,
                               plot_labs = c('A', 'B'))
 
 ```
@@ -213,11 +202,10 @@ mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
 # threat_rr_rast <- threat_rr_rast %>% aggregate(10)
 
 threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
-                                colors = viridis::viridis(6, direction = +1),
-                                values = c(0, .25, .33, .42, .50, 1), 
-                                  ### much of the density between .25 and .50
-                                breaks = c(0, .25, .50, .75, 1),
-                                labels = c('0%', '25%', '50%', '75%', '100%'),
+                                colors = thr_cols,
+                                values = thr_vals, 
+                                breaks = thr_brks,
+                                labels = thr_lbls,
                                 plot_labs = c('C', 'D'))
 
 ```
@@ -227,13 +215,82 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
 four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel, 
                                 nrow = 1, ncol = 2, align = 'v')
 
-fig1_path <- file.path(dir_git, 'ms_figures/fig1_mean_and_threat_maps_with_dens.png')
+fig1_path <- file.path(dir_git, 'ms_figures/fig1_comp_assessed.png')
 ggsave(plot = four_maps,
        filename = fig1_path,
        width = 10, height = 5, units = 'in', dpi = 300)
 
 ```
 
-### Fig 1: Biodiversity risk and threatened species
+### Fig 1: Biodiversity risk and threatened species: comprehensively assessed spp
 
 `r knitr::include_graphics(path.expand(fig1_path))`
+
+
+## Spatial distribution of risk: ALL spp
+
+From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps:
+
+* Mean risk (unweighted and range-rarity-weighted)
+* Pct threatened (unweighted and range-rarity-weighted)
+
+``` {r get_rasts - all spp}
+
+risk_un_rast    <- raster(file.path(dir_git, 'output', 
+                                    'mean_risk_raster_all.tif'))
+risk_rr_rast    <- raster(file.path(dir_git, 'output', 
+                                    'mean_rr_risk_raster_all.tif'))
+threat_un_rast  <- raster(file.path(dir_git, 'output', 
+                                    'pct_threat_raster_all.tif'))
+threat_rr_rast  <- raster(file.path(dir_git, 'output', 
+                                    'sr_rr_pct_threat_raster_all.tif'))
+n_spp_rast <- raster(file.path(dir_git, 'output', 
+                               'n_spp_risk_raster_all.tif'))
+n_rr_rast  <- raster(file.path(dir_git, 'output', 
+                               'sr_rr_risk_raster_all.tif'))
+
+```
+
+``` {r figs 1 a b mean maps - all spp}
+### aggregate rasters for faster testing:
+# risk_un_rast <- risk_un_rast %>% aggregate(10)
+# risk_rr_rast <- risk_rr_rast %>% aggregate(10)
+
+mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
+                              colors = risk_cols,
+                              values = risk_vals,
+                              labels = risk_lbls,
+                              breaks = risk_brks,
+                              plot_labs = c('A', 'B'))
+
+```
+
+``` {r fig 1 c d pct threatened maps - all spp}
+### aggregate rasters for faster testing:
+# threat_un_rast <- threat_un_rast %>% aggregate(10)
+# threat_rr_rast <- threat_rr_rast %>% aggregate(10)
+
+threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
+                                colors = thr_cols,
+                                values = thr_vals, 
+                                breaks = thr_brks,
+                                labels = thr_lbls,
+                                plot_labs = c('C', 'D'))
+
+```
+
+``` {r combine into a single four-map plot - all spp}
+
+four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel, 
+                                nrow = 1, ncol = 2, align = 'v')
+
+fig1all_path <- file.path(dir_git, 'ms_figures/figSI_all_species.png')
+ggsave(plot = four_maps,
+       filename = fig1all_path,
+       width = 10, height = 5, units = 'in', dpi = 300)
+
+```
+
+### Fig 1: Biodiversity risk and threatened species: all spp
+
+`r knitr::include_graphics(path.expand(fig1all_path))`

@@ -1,0 +1,137 @@
+---
+title: 'MEOWs and biodiversity risk'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, 'data_setup')
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, 'data_setup/common_fxns.R'))
+
+```
+
+# Summary
+
+Compare biodiversity risk within MEOWs
+
+# Methods
+
+## Compare biodiversity risk to MEOW
+
+For each MEOW realm (should MPAs be by this?), show distribution by province, or maybe by province and ecoregion... tree it out? show north to south?
+
+``` {r set up meow and values dataframe}
+
+mean_rast       <- raster(file.path(dir_git, 'output', 
+                                    'mean_risk_raster_comp.tif'))
+meow_rast       <- raster(file.path(dir_git, 'spatial', 'meow_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
+
+meow_rgns <- foreign::read.dbf(file.path(dir_o_anx, 'meow', 'meow_ecos.dbf')) %>%
+  clean_df_names() %>%
+  select(meow = eco_code_x, ecoregion,
+         prov = prov_code, province,
+         rlm = rlm_code, realm, lat_zone) %>%
+  arrange(meow, prov, rlm) %>%
+  mutate(ecoregion = fct_rev(fct_inorder(ecoregion)),
+         province  = fct_rev(fct_inorder(province)),
+         realm     = fct_inorder(realm))
+# prov_basins_raw <- meow_rgns %>%
+#   select(prov, province, rlm, realm, lat_zone) %>%
+#   distinct()
+# write_csv(prov_basins_raw, file.path(dir_setup, 'raw', 'meow_basins_raw.csv'))
+# meow_basins <- read_csv(file.path(dir_setup, 'raw', 'meow_basins_lookup.csv'))
+
+
+risk_df <- data.frame(cell_id    = 1:length(values(mean_rast)),
+                      ocean_area = values(ocean_area_rast),
+                      meow       = values(meow_rast),
+                      mean_risk  = values(mean_rast)) %>%
+  filter(!is.na(meow)) %>% 
+  filter(!is.na(mean_risk)) %>%
+  left_join(meow_rgns, by = c('meow'))
+
+means_df <- risk_df %>%
+  group_by(province) %>%
+  summarize(prov_mean_risk = mean(mean_risk, na.rm = TRUE)) %>%
+  mutate(pr_num = as.integer(province),
+         pr_next = pr_num + 1)
+
+```
+
+To capture area of partially protected cells, use `geom_density(aes(weight = area, x = mean_risk, ..scaled..))`
+
+``` {r ridgeline plot by rgn}
+
+library(ggridges)
+
+colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
+
+labs_df <- meow_rgns %>%
+  group_by(realm) %>%
+  summarize(y = mean(as.integer(province)))
+
+x <- ggplot(risk_df, aes(x = mean_risk, y = province)) +
+  ggtheme_plot() +
+  theme(strip.text.y = element_text(angle = 0, hjust = 0),
+        axis.title   = element_blank(),
+        panel.grid.major.y = element_blank()) +
+        # panel.grid.major.y = element_line(color = 'grey60')) +
+  # geom_hline(aes(yintercept = province), 
+  #            color = 'grey60', alpha = .5, size = .25) +
+  geom_segment(data = colorbar_df, 
+               aes(x = x, xend = x, color = x), 
+               y = 0, yend = 1, size = 1,
+               show.legend = FALSE) +
+  geom_density_ridges(alpha = .5, size = .25, rel_min_height = 0,
+                      show.legend = FALSE) +
+  geom_linerange(data = means_df,
+                 aes(x = prov_mean_risk, ymin = pr_num, ymax = pr_next),
+                 color = 'red3', alpha = .8) +
+  # geom_vline(data = means_df, 
+  #            aes(xintercept = mu, linetype = mpa_status),
+  #            alpha = .8) +
+  geom_text(data = labs_df, aes(y = y, label = realm),
+            x = .6, hjust = 1, color = 'grey20', size = 2) +
+  scale_x_continuous(expand = c(0, 0),
+                     limits = c(0, .6),
+                     labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX'),
+                     breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)) +
+  scale_color_gradientn(colors = c('green4', viridis::inferno(6, direction = -1)),
+                          ### use viridis scheme but add green on the bottom for LC
+                        values = c(0, .2, .3, .4, .5, .7, 1.0))
+
+ggsave(file.path(dir_git, 'ms_figures', 'fig4_by_meow.png'),
+       height = 7, width = 6, dpi = 300)
+```
+
+![](ms_figures/fig4_by_meow.png)

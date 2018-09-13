@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Aug 13 13:24:50 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Sep 5 12:57:49 2018 by ohara" />
 
 
 <title>Biodiversity risk maps - all available maps</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - all available maps</h1>
-<h4 class="author"><em><em>Compiled on Mon Aug 13 13:24:50 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Sep 5 12:57:49 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -283,17 +283,16 @@ div.tocify {
 dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
 
 ### goal specific folders and info
-dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data_setup'</span>)
 dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
 dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
-<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'data_setup/common_fxns.R'</span>))
+<span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'setup/common_fxns.R'</span>))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
-<p>Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN. These maps are generated at 10 km<sup>2</sup> resolution in a Gall-Peters projection. These maps will be generated using all available species:</p>
+<p>Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN, with the exception of deep oceanic species as these are unlikely to suffer direct human impact or to benefit from typical conservation efforts. These maps are generated at 10 km<sup>2</sup> resolution in a Gall-Peters projection.</p>
 <ul>
 <li>Mean risk</li>
 <li>Variance of risk</li>
@@ -340,24 +339,27 @@ Note: reconstructing the total mean per cell from the group means is straightfor
                n_{gp} \bar x_{gp}^2 \right] - \frac{ n_T}{n_T - 1} \bar x_T^2 
 \end{align*}\]</span>
 <p>Because of file sizes, the intermediate files will be stored outside of GitHub.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'cell_summary_unweighted.csv'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'cell_summary_unweighted_all.csv'</span>)
 ### unlink(cell_summary_file)
-reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
   dir_taxa_summaries &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>)
   sum_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_taxa_summaries,
-                          <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_%s.csv'</span>, api_version),
+                          <span class="dt">pattern =</span> <span class="kw">sprintf</span>(<span class="st">'cell_sum_(non)?comp_%s.csv'</span>, 
+                                            api_version),
                           <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
   
   <span class="kw">message</span>(<span class="st">'going into the first mclapply...'</span>)
   
   ptm &lt;-<span class="st"> </span><span class="kw">system.time</span>({
     cell_values_all &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(sum_files, <span class="dt">mc.cores =</span> <span class="dv">32</span>,
-                                          <span class="dt">FUN =</span> <span class="cf">function</span>(x) {
-                                            <span class="kw">read_csv</span>(x, <span class="dt">col_types =</span> <span class="st">'dddiidi'</span>)
-                                            }) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">bind_rows</span>()
+      <span class="dt">FUN =</span> <span class="cf">function</span>(x) {
+        <span class="kw">read_csv</span>(x, <span class="dt">col_types =</span> <span class="st">'dddiidi'</span>)
+        }) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">bind_rows</span>() <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">filter</span>(cell_id <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) 
+        ### ditch a few empty sets with dummy df, cell_id = -1
   }) ### end of system.time
   <span class="kw">message</span>(<span class="st">'... processing time '</span>, ptm[<span class="dv">3</span>], <span class="st">' sec'</span>)
     
@@ -443,7 +445,8 @@ reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
 
 rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, <span class="st">'cell_id_rast.tif'</span>))
 
-land_poly &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial/ne_10m_land/ne_10m_land.shp'</span>)) <span class="op">%&gt;%</span>
+land_poly &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'spatial'</span>, 
+                                   <span class="st">'ne_10m_land/ne_10m_land.shp'</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">st_transform</span>(gp_proj4)
 
 

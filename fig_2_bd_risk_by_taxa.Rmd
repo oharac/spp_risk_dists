@@ -32,11 +32,11 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'data_setup')
+dir_setup <- file.path(dir_git, 'setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/common_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ### Gall-Peters doesn't have an EPSG?
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
@@ -45,7 +45,7 @@ gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +
 
 # Summary
 
-Compare MPAs to biodiversity intactness: 
+Examine biodiversity risk by taxonomic group.
 
 # Methods
 
@@ -53,22 +53,25 @@ Compare MPAs to biodiversity intactness:
 
 ``` {r set up taxa groupings}
 
-shp_to_taxa <- read_csv(file.path(dir_git, 'data_setup/raw', 'shps_to_taxa.csv'))
+shp_to_taxa <- read_csv(file.path(dir_setup, 'raw', 'shps_to_taxa.csv'))
 
-taxa_sums <- data.frame(unweighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
-                                                pattern = sprintf('cell_sum_%s.csv', api_version),
-                                                full.names = TRUE),
-                        rr_weighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
-                                                pattern = sprintf('cell_sum_rrweight_%s.csv', api_version),
-                                                full.names = TRUE)) %>%
+taxa_sums <- data.frame(
+  unweighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
+                          pattern = sprintf('cell_sum_comp_%s.csv', api_version),
+                          full.names = TRUE),
+  rr_weighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
+                           pattern = sprintf('cell_sum_comp_rrweight_%s.csv', 
+                                             api_version),
+                           full.names = TRUE)) %>%
   mutate(shp_basename = str_replace_all(basename(unweighted), '_cell_sum.+|_part.+', '')) %>%
   left_join(shp_to_taxa, by = 'shp_basename')
 
 # write_csv(taxa_sums %>% select(shp_basename, taxon) %>% distinct(),
 #           file.path(dir_setup, 'raw', 'shps_to_taxa_raw.csv'))
 
-spp_maps <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv', api_version)),
-                     col_types = 'ddciccc') %>%
+spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
+                     col_types = 'ddcicccl') %>%
+  filter(comp_assessed == TRUE) %>%
   mutate(shp_basename = tolower(dbf_file) %>%
            basename() %>%
            str_replace_all(., '_part.+|.dbf', '')) %>%
@@ -89,11 +92,12 @@ spp_maps <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv'
 
 ``` {r mean_risk_raster, results = 'asis', eval = TRUE}
 
-reload <- FALSE
+reload <- FALSE ### reload applies to building rasters, not the plot
 
 rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+land_poly <- sf::read_sf(file.path(dir_git, 'spatial', 
+                                   'ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 taxa_gps <- c("Cnidaria",
@@ -110,7 +114,7 @@ map_list <- vector('list', length = length(taxa_gps)) %>%
 
 taxa_map_file <- file.path(dir_git, 'ms_figures/fig2_taxa_maps.png')
 
-for(i in seq_along(taxa_gps)) { ### i <- 3
+for(i in seq_along(taxa_gps)) { ### i <- 1
     
   taxon_gp <- taxa_gps[i]
   taxon_txt <- taxon_gp %>% tolower() %>% str_replace_all('chordata: |[^a-z]+', '')
@@ -154,15 +158,13 @@ for(i in seq_along(taxa_gps)) { ### i <- 3
     as.data.frame() %>%
     setNames(c('long', 'lat', 'value'))
 
-  ### This color scheme and label scheme matches the mean risk maps
-  colors = c('green4', viridis::inferno(6, direction = -1))
-  values = c(0, .2, .3, .4, .5, .7, 1.0)
-  labels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')
-  breaks = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0)
-
   cat_msg('Building plot for ', taxon_gp)
+  ### using geom_tile so I can add a size to pixels, thought it is
+  ### significantly slower...
   x <- ggplot(mean_rr_df) +
-    geom_raster(aes(long, lat, fill = value), show.legend = FALSE) +
+    geom_tile(aes(long, lat, fill = value, color = value), 
+              size = .5,
+              show.legend = FALSE) +
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
@@ -171,10 +173,16 @@ for(i in seq_along(taxa_gps)) { ### i <- 3
           axis.title = element_text(face = 'bold', hjust = 1),
           axis.title.x = element_blank()) +
     coord_sf(datum = NA) + ### ditch graticules
-    scale_fill_gradientn(colors = colors, values = values, limits = c(0, 1),
-                         labels = labels, breaks = breaks,
-                         guide  = guide_colourbar(label.position = 'left',
-                                                  label.hjust = 1)) +
+    scale_fill_gradientn(colors = risk_cols, 
+                         values = risk_vals, 
+                         limits = c(0, 1),
+                         labels = risk_lbls, 
+                         breaks = risk_brks) +
+    scale_color_gradientn(colors = risk_cols, 
+                         values = risk_vals, 
+                         limits = c(0, 1),
+                         labels = risk_lbls, 
+                         breaks = risk_brks) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     labs(y = taxon_gp)
@@ -199,20 +207,22 @@ ggsave(plot = y,
 
 ## Plots of ranges by taxonomic group
 
-``` {r, eval = FALSE}
+``` {r, eval = TRUE}
 
 spp_ranges <- read_csv(file.path(dir_data, sprintf('iucn_spp_range_area_%s.csv', api_version)),
                          col_types = 'dd__') %>%
   distinct()
 
 taxa_ranges <- read_csv(file.path(dir_git, 'data', sprintf('spp_marine_maps_%s.csv', api_version)),
-                     col_types = 'ddciccc') %>%
+                     col_types = 'ddcicccl') %>%
+  filter(comp_assessed) %>%
   mutate(shp_basename = str_replace_all(basename(tolower(dbf_file)), '.dbf|_part.+', '')) %>%
   left_join(spp_ranges, by = 'iucn_sid') %>%
   left_join(shp_to_taxa, by = 'shp_basename') %>%
+  filter(comp_assessed &!is.na(taxon)) %>%
   mutate(log_range = log10(range_km2))
 
-ggplot(taxa_ranges, aes(x = log_range, ..scaled..)) +
+x <- ggplot(taxa_ranges, aes(x = log_range, ..scaled..)) +
   ggtheme_plot() +
   theme(panel.grid.major = element_blank(),
         axis.text.y      = element_blank(),

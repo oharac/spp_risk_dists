@@ -1,0 +1,101 @@
+---
+title: 'Protection in open ocean vs high seas - why the diff'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, 'setup/common_fxns.R'))
+
+```
+
+## Wherefore the big difference between oceanic waters and high seas in terms of protected coverage?
+
+Examine where MPAs in open ocean and MPAs in EEZs overlap.
+
+``` {r}
+
+cell_id_rast <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+mean_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
+
+surf_10km_file <- list.files(file.path(dir_o_anx, 'habs'), 
+                             pattern = 'surface_waters_10km.tif$',
+                             full.names = TRUE)
+surf_rast <- raster(surf_10km_file)
+eez_rast  <- raster(file.path(dir_git, 'spatial', 'eez_rast.tif'))
+mpa_df    <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area.csv'),
+                          col_types = 'dddd') %>%
+  filter(wdpa_category <= 2) %>%
+  select(-wdpa_category) %>%
+  group_by(cell_id) %>%
+  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
+
+df <- data.frame(cell_id = values(cell_id_rast),
+                 risk   = values(mean_rast),
+                 ocean  = values(surf_rast),
+                 eez    = values(eez_rast)) %>%
+  filter(!is.na(risk)) %>%
+  left_join(mpa_df, by = 'cell_id')
+
+ocean_prot_sum <- df %>%
+  filter(!is.na(ocean)) %>%
+  group_by(eez) %>%
+  summarize(prot = sum(mpa, na.rm = TRUE),
+            total = n()) %>%
+  filter(prot > 0)
+
+ocean_prot <- df %>%
+  filter(!is.na(ocean)) %>%
+  filter(!is.na(mpa)) %>%
+  mutate(abnj = ifelse((eez == 213 | eez > 255), 1, -1))
+
+ocean_prot_rast <- subs(cell_id_rast, ocean_prot, by = 'cell_id', which = 'abnj')
+
+### print map
+library(sf)
+land_poly <- read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+  st_transform(gp_proj4)
+
+map_df <- rasterToPoints(ocean_prot_rast) %>%
+  as.data.frame() %>%
+  setNames(c('long', 'lat', 'abnj'))
+
+map1 <- ggplot(map_df) +
+  geom_raster(aes(long, lat, fill = abnj), show.legend = TRUE) +
+  geom_sf(data = land_poly, aes(geometry = geometry), 
+          fill = 'grey96', color = 'grey40', size = .10) +
+  ggtheme_map() +
+  theme(plot.margin = unit(c(.2, 0, .1, .5), units = 'cm')) +
+  coord_sf(datum = NA) + ### ditch graticules
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0))
+  
+print(map1)
+
+```
