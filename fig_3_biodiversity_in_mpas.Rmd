@@ -294,11 +294,13 @@ plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
                                             legend.position = c(1, 1)), 
                                     mpa_plot_rrweighted +
                                       theme(legend.position = 'none'), 
-                                    labels = c('A', 'B'), hjust = 0,
+                                    labels = c('A', 'B'), 
+                                    label_size = 9,
+                                    hjust = 0,
                                     rel_widths = c(2, 3))
 
 ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
-       height = 4, width = 6, dpi = 300, units = 'in')
+       height = 3, width = 4.75, dpi = 300, units = 'in')
 ```
 
 ![](ms_figures/fig3_bd_risk_vs_mpas.png)

@@ -1,4 +1,4 @@
-shp_basename,taxon
+shp_base,taxon
 acipenseriformes,Chordata: Actinopterygii
 angelfish,Chordata: Actinopterygii
 atheriniformes,Chordata: Actinopterygii
@@ -15,6 +15,7 @@ clupeiformes,Chordata: Actinopterygii
 combtoothblennies,Chordata: Actinopterygii
 conus,Mollusca
 corals,Cnidaria
+crocodiles,Chordata: Reptilia
 cyprinodontiformes,Chordata: Actinopterygii
 damselfish,Chordata: Actinopterygii
 gadiformes,Chordata: Actinopterygii

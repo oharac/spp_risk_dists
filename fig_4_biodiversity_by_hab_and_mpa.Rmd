@@ -93,8 +93,8 @@ for(hab_1km in habs_1km_files) {
   }
 }
 
-z <- stack(habs_10km_files)
-plot(z)
+# z <- stack(habs_10km_files)
+# plot(z)
 ```
 
 
@@ -243,10 +243,11 @@ plot_combined <- cowplot::plot_grid(hab_plot_unweighted +
                                     hab_plot_rrweighted +
                                       theme(legend.position = 'none'), 
                                     labels = c('A', 'B'), hjust = 0,
+                                    label_size = 9,
                                     rel_widths = c(2, 3))
 
 ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
-       height = 4.5, width = 6, dpi = 300, units = 'in')
+       height = 3, width = 4.75, dpi = 300, units = 'in')
 
 ```
 

@@ -355,14 +355,22 @@ write_csv(marine_map_info,
 ``` {r generate table of species}
 
 marine_map_info <- read_csv(file.path(dir_git, 'data',
-  sprintf('spp_marine_maps_%s.csv', api_version)))
+  sprintf('spp_marine_maps_%s.csv', api_version))) %>%
+  select(-presence) %>%
+  distinct()
 
 taxa_info <- read_csv(file.path(dir_o_anx, 'iucn', 
                                 'spp_info_from_api_2018-1.csv')) %>%
   select(iucn_sid, kingdom:family)
 
+cat_info <- read_csv(file.path(dir_git, 'data', 
+                               'iucn_risk_current_2018-1.csv')) %>%
+  select(iucn_sid, cat_score) %>%
+  filter(!is.na(cat_score))
+
 included_maps <- marine_map_info %>%
   filter(comp_assessed) %>%
+  filter(iucn_sid %in% cat_info$iucn_sid) %>%
   select(iucn_sid, shp_iucn_sid, subpop, sciname, dbf_file) %>%
   left_join(taxa_info, by = 'iucn_sid') %>%
   mutate(spp_gp = basename(dbf_file),

@@ -35,7 +35,7 @@ dir_setup <- file.path(dir_git, 'data_setup')
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'data_setup/api_fxns.R'))
+source(file.path(dir_git, 'setup/common_fxns.R'))
 
 ```
 
@@ -52,8 +52,9 @@ Then get the processed rasters to get values for n_spp, risk, variance, and rr-w
 
 ``` {r compare_sum_files_to_interest_cells}
 
-cells_of_interest <- readxl::read_excel(file.path(dir_git, 'data_explore', 'cells_to_explore.xlsx'))
-
+cells_of_interest <- readxl::read_excel(file.path(dir_git, 'data_explore', 
+                                                  'cells_to_explore.xlsx'))
+# cells_of_interest <- c(813754, 810936, 705904, 870576, 1018189)
 cell_summary_file <- file.path(dir_git, 'data_explore', 'cell_sums_of_interest.csv')
 
 reload <- FALSE
@@ -61,7 +62,7 @@ reload <- FALSE
 if(!file.exists(cell_summary_file) | reload == TRUE) {
   dir_taxa_summaries <- file.path(dir_o_anx, 'taxa_summaries')
   sum_files <- list.files(dir_taxa_summaries,
-                          pattern = sprintf('cell_sum_%s.csv', api_version),
+                          pattern = sprintf('cell_sum_comp_%s.csv', api_version),
                           full.names = TRUE)
   message('reading summary files')
   ptm <- system.time({
@@ -76,7 +77,7 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
   message('... processing time ', ptm[3], ' sec')
   
   cells_of_interest_sum <- cell_values_all %>%
-    filter(cell_id %in% cells_of_interest$cell_id) %>%
+    filter(cell_id %in% cells_of_interest) %>% #$cell_id) %>%
     select(cell_id, n_spp_gp = n_spp_risk, spp_gp) %>%
     left_join(cells_of_interest, by = 'cell_id') %>%
     arrange(cell_group, cell_id)

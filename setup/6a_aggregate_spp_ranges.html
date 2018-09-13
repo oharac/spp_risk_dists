@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Sep 4 14:54:12 2018 by ohara" />
+<meta name="author" content="Compiled on Thu Sep 13 05:49:18 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -277,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em><em>Compiled on Tue Sep 4 14:54:12 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Sep 13 05:49:18 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -299,10 +299,7 @@ dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_gi
 
 ### goal specific folders and info
 
-dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
-
-### Gall-Peters doesn't have an EPSG?
-gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span></code></pre></div>
+dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)</code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Using individual species range data (csv outputs from <code>5_process_spp_shps.Rmd</code>), collect into species groups. In each species group, process range and risk information to get mean risk, variance of risk, species richness, and threatened species count per cell. These will then be analyzed in the context of species range rarity weighting as well in a sister script.</p>
@@ -322,13 +319,16 @@ gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +el
 </ul>
 <p><strong>NOTE:</strong> Because the summary files are likely to be very large for globe-spanning taxa (e.g. MARINE_MAMMALS is 275 MB), save these outputs outside of GitHub.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Read in lots of data
-spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
+spp_maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, 
+                               <span class="kw">sprintf</span>(<span class="st">'spp_marine_maps_%s.csv'</span>, api_version)),
                      <span class="dt">col_types =</span> <span class="st">'ddcicccl'</span>)
 
-spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)),
+spp_risk &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, 
+                               <span class="kw">sprintf</span>(<span class="st">'iucn_risk_current_%s.csv'</span>, api_version)),
                      <span class="dt">col_types =</span> <span class="st">'dccicccdc'</span>)
 
-spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)),
+spp_risk_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, 
+                                   <span class="kw">sprintf</span>(<span class="st">'iucn_risk_rgn_current_%s.csv'</span>, api_version)),
                          <span class="dt">col_types =</span> <span class="st">'dcccdc'</span>)
 
 spp_trend &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data, <span class="kw">sprintf</span>(<span class="st">'iucn_trend_by_spp_%s.csv'</span>, api_version)),
@@ -362,6 +362,9 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="st">''</span>)
 
+<span class="co"># taxa &lt;- taxa[str_detect(taxa, 'SEAGRASS')]</span>
+reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+
 ##########################################################.
 ### Looping over taxonomic groups -----
 ##########################################################.
@@ -371,7 +374,6 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
   taxon_sum_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>,
                                    <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_comp_%s.csv'</span>, <span class="kw">tolower</span>(taxon), api_version))
   
-  reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
     
     ### Filter to just this taxon, and only assessed within this taxon
@@ -532,10 +534,11 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 ### Looping over taxonomic groups -----
 ##########################################################.
 <span class="cf">for</span>(taxon <span class="cf">in</span> taxa) {
-  ### taxon &lt;- taxa[16]
+  ### taxon &lt;- taxa[71]
   
   taxon_sum_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'taxa_summaries'</span>,
-                                   <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_noncomp_%s.csv'</span>, <span class="kw">tolower</span>(taxon), api_version))
+                                   <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_noncomp_%s.csv'</span>, 
+                                           <span class="kw">tolower</span>(taxon), api_version))
   
   reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
@@ -543,7 +546,8 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
     ### Filter to just this taxon, and only non-assessed within this taxon
     taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(dbf_file, taxon)) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(comp_assessed <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+<span class="st">      </span><span class="kw">filter</span>(comp_assessed <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">filter</span>(max_depth <span class="op">!=</span><span class="st"> 'deep oceanic'</span>)
     
     taxon_risk_trend &lt;-<span class="st"> </span>spp_risk_trend <span class="op">%&gt;%</span>
 <span class="st">      </span><span class="kw">filter</span>(iucn_sid <span class="op">%in%</span><span class="st"> </span>taxon_maps<span class="op">$</span>iucn_sid) <span class="op">%&gt;%</span>

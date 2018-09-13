@@ -92,6 +92,19 @@ if(reload == FALSE) {
     filter(!iucn_sid %in% maps_already_rasterized)
 }
 
+### for selectively rerunning taxonomic groups
+# maps_to_rasterize <- maps_to_rasterize %>%
+#   filter(str_detect(dbf_file, 'CHONDR'))
+# 
+# asdf <- paste0('iucn_sid_', maps_to_rasterize$iucn_sid, '.csv')
+# zxcv <- list.files(file.path(dir_o_anx, 'spp_rasters'), 
+#                    full.names = TRUE, 
+#                    pattern = paste0(asdf, collapse = '|'))
+# zzz <- file.mtime(zxcv)
+# tmp_df <- data.frame(f = zxcv,
+#                      t = zzz)
+# 2018-09-12 12:38:31 check to make sure they're all later than this!
+
 if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
   
   cat_msg('reload == ', reload, '... No maps to process...')

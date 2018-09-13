@@ -18,7 +18,7 @@ output:
 
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
 
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+knitr::opts_chunk$set(fig.path = 'figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
@@ -68,12 +68,12 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-risk_un_rast    <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
-risk_rr_rast    <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_comp.tif'))
-threat_un_rast  <- raster(file.path(dir_git, 'output', 'pct_threat_raster_comp.tif'))
-threat_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_comp.tif'))
-n_spp_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_comp.tif'))
-n_rr_rast  <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_comp.tif'))
+risk_un_rast   <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
+risk_rr_rast   <- raster(file.path(dir_git, 'output', 'mean_rr_risk_raster_comp.tif'))
+threat_un_rast <- raster(file.path(dir_git, 'output', 'pct_threat_raster_comp.tif'))
+threat_rr_rast <- raster(file.path(dir_git, 'output', 'sr_rr_pct_threat_raster_comp.tif'))
+n_spp_rast     <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_comp.tif'))
+n_rr_rast      <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_comp.tif'))
 
 ```
 
@@ -87,8 +87,9 @@ four_panel <- function(map1_rast, map2_rast,
                        labels, breaks,
                        plot_labs = c('A', 'B')) {
 
-  land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
-    st_transform(gp_proj4)
+  land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land', 
+                                     'ne_10m_land_no_casp.shp')) %>%
+    st_transform(gp_proj4) 
   
   map_df <- data.frame(val_1 = values(map1_rast),
                        val_2 = values(map2_rast)) %>%
@@ -100,7 +101,7 @@ four_panel <- function(map1_rast, map2_rast,
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
-    theme(plot.margin = unit(c(.2, 0, .1, .5), units = 'cm')) +
+    theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm')) +
     coord_sf(datum = NA) + ### ditch graticules
     scale_fill_gradientn(colors = colors, values = values, limits = limits,
                          labels = labels, breaks = breaks,
@@ -114,7 +115,7 @@ four_panel <- function(map1_rast, map2_rast,
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
-    theme(plot.margin = unit(c(.1, 0, .2, .5), units = 'cm')) +
+    theme(plot.margin = unit(c(.05, 0, .05, .4), units = 'cm')) +
     coord_sf(datum = NA) + ### ditch graticules
     scale_fill_gradientn(colors = colors, values = values, limits = limits,
                          labels = labels, breaks = breaks,
@@ -129,7 +130,7 @@ four_panel <- function(map1_rast, map2_rast,
   colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
 
   dens1 <- ggplot(map_df) +
-    ggtheme_plot() +
+    ggtheme_plot(base_size = 7) +
     geom_vline(xintercept = mean(map_df$val_1, na.rm = TRUE)) +
     geom_segment(data = colorbar_df, 
                  aes(x = x, xend = x, color = x), 
@@ -141,7 +142,7 @@ four_panel <- function(map1_rast, map2_rast,
     theme(axis.text.x  = element_blank(), 
           axis.title = element_blank(),
           panel.grid.major.x = element_blank(),
-          plot.margin = unit(c(1, 0, 1, 0), units = 'cm')) +
+          plot.margin = unit(c(.5, .25, .5, .1), units = 'cm')) +
     scale_x_continuous(labels = labels, breaks = breaks, limits = limits,
                        expand = c(0, 0)) +
     scale_y_continuous(limits = c(-.4, 1)) +
@@ -149,7 +150,7 @@ four_panel <- function(map1_rast, map2_rast,
     
 
   dens2 <- ggplot(map_df) +
-    ggtheme_plot() +
+    ggtheme_plot(base_size = 7) +
     geom_vline(xintercept = mean(map_df$val_2, na.rm = TRUE)) +
     geom_segment(data = colorbar_df, 
                  aes(x = x, xend = x, color = x), 
@@ -161,7 +162,7 @@ four_panel <- function(map1_rast, map2_rast,
     theme(axis.text.x  = element_blank(), 
           axis.title = element_blank(),
           panel.grid.major.x = element_blank(),
-          plot.margin = unit(c(1, 0, 1, 0), units = 'cm')) +
+          plot.margin = unit(c(.5, .25, .5, .1), units = 'cm')) +
     scale_x_continuous(labels = labels, breaks = breaks, limits = limits,
                        expand = c(0, 0)) +
     scale_y_continuous(limits = c(-.4, 1)) +
@@ -176,13 +177,14 @@ four_panel <- function(map1_rast, map2_rast,
   
   four_panel <- cowplot::plot_grid(panel_top, panel_btm, 
                                    labels = plot_labs,
+                                   label_size = 9,
                                    nrow = 2, ncol = 1, align = 'v')
 
 }
 
 ```
 
-``` {r figs 1 a b mean maps}
+``` {r figs 1 a c mean maps}
 ### aggregate rasters for faster testing:
 # risk_un_rast <- risk_un_rast %>% aggregate(10)
 # risk_rr_rast <- risk_rr_rast %>% aggregate(10)
@@ -192,11 +194,11 @@ mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
                               values = risk_vals,
                               labels = risk_lbls,
                               breaks = risk_brks,
-                              plot_labs = c('A', 'B'))
+                              plot_labs = c('A', 'C'))
 
 ```
 
-``` {r fig 1 c d pct threatened maps}
+``` {r fig 1 b d pct threatened maps}
 ### aggregate rasters for faster testing:
 # threat_un_rast <- threat_un_rast %>% aggregate(10)
 # threat_rr_rast <- threat_rr_rast %>% aggregate(10)
@@ -206,7 +208,7 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
                                 values = thr_vals, 
                                 breaks = thr_brks,
                                 labels = thr_lbls,
-                                plot_labs = c('C', 'D'))
+                                plot_labs = c('B', 'D'))
 
 ```
 
@@ -218,7 +220,7 @@ four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel,
 fig1_path <- file.path(dir_git, 'ms_figures/fig1_comp_assessed.png')
 ggsave(plot = four_maps,
        filename = fig1_path,
-       width = 10, height = 5, units = 'in', dpi = 300)
+       width = 7.25, height = 3.7, units = 'in', dpi = 300)
 
 ```
 
@@ -227,14 +229,14 @@ ggsave(plot = four_maps,
 `r knitr::include_graphics(path.expand(fig1_path))`
 
 
-## Spatial distribution of risk: ALL spp
+<!-- ## Spatial distribution of risk: ALL spp -->
 
-From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps:
+<!-- From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps: -->
 
-* Mean risk (unweighted and range-rarity-weighted)
-* Pct threatened (unweighted and range-rarity-weighted)
+<!-- * Mean risk (unweighted and range-rarity-weighted) -->
+<!-- * Pct threatened (unweighted and range-rarity-weighted) -->
 
-``` {r get_rasts - all spp}
+``` {r get_rasts - all spp, eval = FALSE}
 
 risk_un_rast    <- raster(file.path(dir_git, 'output', 
                                     'mean_risk_raster_all.tif'))
@@ -251,7 +253,7 @@ n_rr_rast  <- raster(file.path(dir_git, 'output',
 
 ```
 
-``` {r figs 1 a b mean maps - all spp}
+``` {r figs 1 a b mean maps - all spp, eval = FALSE}
 ### aggregate rasters for faster testing:
 # risk_un_rast <- risk_un_rast %>% aggregate(10)
 # risk_rr_rast <- risk_rr_rast %>% aggregate(10)
@@ -261,11 +263,12 @@ mean_four_panel <- four_panel(risk_un_rast, risk_rr_rast,
                               values = risk_vals,
                               labels = risk_lbls,
                               breaks = risk_brks,
-                              plot_labs = c('A', 'B'))
+                              plot_labs = c('A', 'C'),
+                              label_size = 9)
 
 ```
 
-``` {r fig 1 c d pct threatened maps - all spp}
+``` {r fig 1 c d pct threatened maps - all spp, eval = FALSE}
 ### aggregate rasters for faster testing:
 # threat_un_rast <- threat_un_rast %>% aggregate(10)
 # threat_rr_rast <- threat_rr_rast %>% aggregate(10)
@@ -275,22 +278,8 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
                                 values = thr_vals, 
                                 breaks = thr_brks,
                                 labels = thr_lbls,
-                                plot_labs = c('C', 'D'))
+                                plot_labs = c('B', 'D'),
+                                label_size = 9)
 
 ```
 
-``` {r combine into a single four-map plot - all spp}
-
-four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel, 
-                                nrow = 1, ncol = 2, align = 'v')
-
-fig1all_path <- file.path(dir_git, 'ms_figures/figSI_all_species.png')
-ggsave(plot = four_maps,
-       filename = fig1all_path,
-       width = 10, height = 5, units = 'in', dpi = 300)
-
-```
-
-### Fig 1: Biodiversity risk and threatened species: all spp
-
-`r knitr::include_graphics(path.expand(fig1all_path))`

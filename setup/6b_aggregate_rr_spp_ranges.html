@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 5 08:22:38 2018 by ohara" />
+<meta name="author" content="Compiled on Thu Sep 13 06:14:07 2018 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges, range-rarity weighted</title>
@@ -277,7 +277,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges, range-rarity weighted</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 5 08:22:38 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Sep 13 06:14:07 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -488,7 +488,10 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">  </span>.<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">basename</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="st">''</span>)
-<span class="co"># taxa &lt;- taxa[c(5, 22, 13, 25)]</span>
+
+<span class="co"># taxa &lt;- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')]</span>
+
+reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 <span class="cf">for</span>(taxon <span class="cf">in</span> taxa) {
   ### taxon &lt;- 'SEAGRASSES'
@@ -498,7 +501,6 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
                                    <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_comp_rrweight_%s.csv'</span>, 
                                            <span class="kw">tolower</span>(taxon), api_version))
   
-  reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_risk_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
     
     taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
@@ -623,7 +625,6 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Make a list of taxonomic groups to loop over:
 taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(comp_assessed <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(max_depth <span class="op">==</span><span class="st"> 'deep oceanic'</span>) <span class="op">%&gt;%</span><span class="st"> </span>### DELETE THIS AFTER
 <span class="st">  </span>.<span class="op">$</span>dbf_file <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">basename</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unique</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">'</span><span class="ch">\\</span><span class="st">.dbf$'</span>, <span class="st">''</span>)
@@ -637,7 +638,7 @@ taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>
                                    <span class="kw">sprintf</span>(<span class="st">'%s_cell_sum_noncomp_rrweight_%s.csv'</span>, 
                                            <span class="kw">tolower</span>(taxon), api_version))
   
-  reload &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+  reload &lt;-<span class="st"> </span><span class="ot">FALSE</span>
   <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(taxon_risk_sum_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {
     
     taxon_maps &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span>

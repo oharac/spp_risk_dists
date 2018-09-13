@@ -59,13 +59,16 @@ __NOTE:__ Because the summary files are likely to be very large for globe-spanni
 ``` {r aggregate species maps to taxa}
 
 ### Read in lots of data
-spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
+spp_maps <- read_csv(file.path(dir_data, 
+                               sprintf('spp_marine_maps_%s.csv', api_version)),
                      col_types = 'ddcicccl')
 
-spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_current_%s.csv', api_version)),
+spp_risk <- read_csv(file.path(dir_data, 
+                               sprintf('iucn_risk_current_%s.csv', api_version)),
                      col_types = 'dccicccdc')
 
-spp_risk_rgn <- read_csv(file.path(dir_data, sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
+spp_risk_rgn <- read_csv(file.path(dir_data, 
+                                   sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
                          col_types = 'dcccdc')
 
 spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)),
@@ -103,6 +106,9 @@ taxa <- spp_maps %>%
   unique() %>%
   str_replace('\\.dbf$', '')
 
+# taxa <- taxa[str_detect(taxa, 'SEAGRASS')]
+reload <- FALSE
+
 ##########################################################.
 ### Looping over taxonomic groups -----
 ##########################################################.
@@ -112,7 +118,6 @@ for(taxon in taxa) {
   taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_comp_%s.csv', tolower(taxon), api_version))
   
-  reload <- FALSE
   if(!file.exists(taxon_sum_file) | reload == TRUE) {
     
     ### Filter to just this taxon, and only assessed within this taxon

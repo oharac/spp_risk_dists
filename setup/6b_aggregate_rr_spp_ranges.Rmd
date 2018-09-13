@@ -246,7 +246,10 @@ taxa <- spp_maps %>%
   .$dbf_file %>%
   basename() %>% unique() %>%
   str_replace('\\.dbf$', '')
-# taxa <- taxa[c(5, 22, 13, 25)]
+
+# taxa <- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')]
+
+reload <- FALSE
 
 for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'
@@ -256,7 +259,6 @@ for(taxon in taxa) {
                                    sprintf('%s_cell_sum_comp_rrweight_%s.csv', 
                                            tolower(taxon), api_version))
   
-  reload <- FALSE
   if(!file.exists(taxon_risk_sum_file) | reload == TRUE) {
     
     taxon_maps <- spp_maps %>%

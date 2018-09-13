@@ -864,6 +864,1090 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 60483083,60483083,Pseudoscopelus altipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/chiasmodontidae.dbf,deep oceanic,FALSE
 190433,190433,Pseudoscopelus scriptus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/chiasmodontidae.dbf,deep oceanic,FALSE
 60483092,60483092,Pseudoscopelus scutatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/chiasmodontidae.dbf,200 m +,FALSE
+2636,2636,Bathyraja abyssicola,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+3851,3851,Carcharhinus limbatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+3852,3852,Carcharhinus obscurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+3853,3853,Carcharhinus plumbeus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+3854,3854,Carcharias taurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+3855,3855,Carcharodon carcharias,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+4292,4292,Cetorhinus maximus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+6229,6229,Dalatias licha,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+9281,9281,Glyphis gangeticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+10030,10030,Hexanchus griseus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+11200,11200,Lamna nasus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+18175,43398244,Pristis pectinata,1,Pristis pectinata Eastern Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+18175,43398250,Pristis pectinata,1,Pristis pectinata Western Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+18175,43398244,Pristis pectinata,4,Pristis pectinata Eastern Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+18175,43398250,Pristis pectinata,4,Pristis pectinata Western Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+18175,43398244,Pristis pectinata,6,Pristis pectinata Eastern Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+18175,43398250,Pristis pectinata,6,Pristis pectinata Western Atlantic,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+19488,19488,Rhincodon typus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39324,39324,Notorynchus cepedianus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39327,39327,Pristiophorus cirratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39328,39328,Squatina californica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39329,39329,Squatina argentina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39330,39330,Squatina guggenheim,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39332,39332,Squatina squatina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39333,39333,Heterodontus francisci,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39334,39334,Heterodontus portusjacksoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39335,39335,Brachaelurus colcloughi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39336,39336,Odontaspis noronhai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39337,39337,Pseudocarcharias kamoharai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39338,39338,Megachasma pelagios,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39339,39339,Alopias vulpinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39341,39341,Isurus oxyrinchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39342,39342,Lamna ditropis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39345,39345,Haploblepharus edwardsii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39346,39346,Haploblepharus fuscus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39347,39347,Schroederichthys bivius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39348,39348,Poroderma africanum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39349,39349,Scyliorhinus capensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39350,39350,Leptocharias smithii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39351,39351,Furgaleus macki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39352,39352,Galeorhinus galeus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39353,39353,Hemitriakis leucoperiptera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39354,39354,Hypogaleus hyugaensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39355,39355,Mustelus antarcticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39356,39356,Mustelus lenticulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39357,39357,Mustelus asterias,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39358,39358,Mustelus mustelus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39359,39359,Mustelus canis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39360,39360,Scylliogaleus quecketti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39361,39361,Triakis acutipinna,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39362,39362,Triakis megalopterus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39363,39363,Triakis semifasciata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39365,39365,Carcharhinus amblyrhynchos,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39366,39366,Carcharhinus amboinensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39367,39367,Carcharhinus borneensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39368,39368,Carcharhinus brevipinna,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39369,39369,Carcharhinus hemiodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39370,39370,Carcharhinus falciformis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39371,39371,Carcharhinus leiodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39372,39372,Carcharhinus leucas,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39374,39374,Carcharhinus longimanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39375,39375,Carcharhinus melanopterus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39378,39378,Galeocerdo cuvier,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39379,39379,Glyphis glyphis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39380,39380,Negaprion brevirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39381,39381,Prionace glauca,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39382,39382,Rhizoprionodon terraenovae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39383,39383,Scoliodon laticaudus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+39384,39384,Triaenodon obesus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39385,39385,Sphyrna lewini,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39386,39386,Sphyrna mokarran,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39387,39387,Sphyrna tiburo,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39388,39388,Sphyrna zygaena,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39389,39389,Anoxypristis cuspidata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39389,39389,Anoxypristis cuspidata,4,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39390,39390,Pristis clavata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39390,39390,Pristis clavata,4,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39393,39393,Pristis zijsron,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39393,39393,Pristis zijsron,4,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39393,39393,Pristis zijsron,6,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39394,39394,Rhynchobatus djiddensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39396,39396,Tetronarce californica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39397,39397,Dipturus batis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39399,39399,Raja clavata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39400,39400,Raja microocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39412,39412,Taeniura lymma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39413,39413,Urogymnus asperrimus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39415,39415,Aetobatus narinari,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39416,39416,Myliobatis californicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+39418,39418,Mobula mobular,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+39771,39771,Dipturus laevis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+40797,40797,Carcharhinus amblyrhynchoides,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41064,41064,Pseudobatos horkelii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41718,41718,Apristurus albisoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41719,41719,Apristurus exsanguis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41720,41720,Asymbolus analis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41721,41721,Asymbolus funebris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41722,41722,Asymbolus occiduus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41723,41723,Asymbolus pallidus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41724,41724,Asymbolus parvus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41725,41725,Asymbolus rubiginosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41726,41726,Asymbolus submaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41727,41727,Asymbolus vincenti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41728,41728,Atelomycterus fasciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41729,41729,Atelomycterus macleayi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41730,41730,Atelomycterus marmoratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+41731,41731,Aulohalaelurus labiosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41732,41732,Brachaelurus waddi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41733,41733,Carcharhinus cautus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41734,41734,Carcharhinus dussumieri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41735,41735,Carcharhinus fitzroyensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41736,41736,Carcharhinus galapagensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41737,41737,Carcharhinus macloti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41738,41738,Carcharhinus sealei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41739,41739,Carcharhinus tilstoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41740,41740,Centrophorus harrissoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41741,41741,Carcharhinus brachyurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41743,41743,Callorhinchus milii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41746,41746,Centroscyllium kamoharai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41747,41747,Centroscymnus coelolepis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41749,41749,Centroscymnus owstonii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41752,41752,Cephaloscyllium isabellum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41753,41753,Cephaloscyllium laticeps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41791,41791,Chiloscyllium indicum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41792,41792,Chiloscyllium griseum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41793,41793,Chimaera panthera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41794,41794,Chlamydoselachus anguineus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41795,41795,Cirrhigaleus barbifer,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41796,41796,Bathytoshia brevicaudata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41797,41797,Hemitrygon fluviorum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41798,41798,Deania calcea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41799,41799,Dipturus innominatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41800,41800,Zearaja nasutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41801,41801,Echinorhinus brucus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41802,41802,Echinorhinus cookei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41804,41804,Etmopterus caudistigmus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41805,41805,Etmopterus dianthus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41806,41806,Etmopterus dislineatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41807,41807,Etmopterus evansi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41808,41808,Etmopterus fusus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41809,41809,Etmopterus pseudosqualiolus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41810,41810,Eusphyra blochii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41811,41811,Figaro boardmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41812,41812,Galeus gracilis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41813,41813,Gogolia filewoodi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41814,41814,Gollum attenuatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41816,41816,Hemigaleus microstoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+41818,41818,Hemiscyllium ocellatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41819,41819,Hemiscyllium strahani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+41820,41820,Hemiscyllium trispeculare,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41821,41821,Hemitriakis abdita,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41822,41822,Hemitriakis falcata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41823,41823,Heptranchias perlo,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41824,41824,Heterodontus galeatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41825,41825,Heterodontus zebra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41826,41826,Hydrolagus bemisi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41827,41827,Hydrolagus novaezealandiae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41828,41828,Hypnos monopterygius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41829,41829,Iago garricki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41830,41830,Isistius brasiliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41831,41831,Loxodon macrorhinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41832,41832,Mobula eregoodootenkee,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41833,41833,Mobula japanica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41835,41835,Nebrius ferrugineus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41836,41836,Negaprion acutidens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41837,41837,Orectolobus maculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41838,41838,Orectolobus ornatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41839,41839,Orectolobus wardi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41840,41840,Oxynotus bruniensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41841,41841,Parascyllium collare,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41842,41842,Parascyllium ferrugineum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41843,41843,Parascyllium sparsimaculatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41844,41844,Parascyllium variolatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41845,41845,Parmaturus macmillani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41846,41846,Pristiophorus nudipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41848,41848,Rhina ancylostoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41849,41849,Glaucostegus typus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41850,41850,Rhizoprionodon acutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41851,41851,Rhizoprionodon oligolinx,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41852,41852,Rhizoprionodon taylori,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41853,41853,Rhynchobatus australiae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41854,41854,Rhynchobatus laevis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41855,41855,Scymnodalatias albicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41856,41856,Scymnodalatias sherwoodi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41857,41857,Somniosus antarcticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41858,41858,Squaliolus aliae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41859,41859,Squalus megalops,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41860,41860,Squalus melanurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41861,41861,Squalus rancureli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41862,41862,Squatina australis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41863,41863,Squatina tergocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+41864,41864,Sutorectus tentaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41866,41866,Trygonorrhina fasciata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41870,41870,Aulohalaelurus kanakorum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+41871,41871,Centrophorus squamosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41872,41872,Chiloscyllium punctatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41873,41873,Eucrossorhinus dasypogon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41874,41874,Hemipristis elongata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41875,41875,Hemiscyllium hallstromi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41876,41876,Odontaspis ferox,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41877,41877,Squalus mitsukurii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+41878,71711344,Stegostoma fasciatum,1,Eastern Indonesian-Oceania subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+41878,71711476,Stegostoma fasciatum,1,Indian Ocean-Southeast Asian subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42700,42700,Apristurus melanoasper,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42701,42701,Apristurus ampliceps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42703,42703,Apristurus bucephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42704,42704,Apristurus australis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42706,42706,Cephaloscyllium albipinnum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42707,42707,Cephaloscyllium variegatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42709,42709,Cephaloscyllium zebrum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42710,42710,Cephaloscyllium speccum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42711,42711,Figaro striatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42712,42712,Glyphis garricki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42713,42713,Halaelurus sellus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42716,42716,Mustelus stevensi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42717,42717,Orectolobus hutchinsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42718,42718,Parmaturus bigus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+42720,42720,Pristiophorus delicatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42721,42721,Rhinobatos sainsburyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42722,42722,Squalus notocaudatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42723,42723,Squalus albifrons,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42725,42725,Squalus crassispinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42726,42726,Squalus nasutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42727,42727,Squalus grahami,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42728,42728,Squatina pseudocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42729,42729,Squatina albipunctata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42730,42730,Urolophus kapalensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+42838,42838,Centrophorus moluccensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42838,16727327,Centrophorus moluccensis,1,Centrophorus moluccensis (Eastern Australian),/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42838,16727330,Centrophorus moluccensis,1,Centrophorus moluccensis (Western Australian),/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+42838,42838,Centrophorus moluccensis,6,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44170,44170,Bythaelurus dawsoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44171,44171,Bythaelurus incanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44183,44183,Beringraja binoculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44186,44186,Aptychotrema vincentiana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44205,44205,Trigonognathus kabeyai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44206,44206,Oxynotus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44207,44207,Apristurus aphyodes,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44209,44209,Apristurus brunneus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44210,44210,Apristurus fedorovi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44211,44211,Apristurus gibbosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44212,44212,Apristurus herklotsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44213,44213,Apristurus internatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44214,44214,Apristurus investigatoris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44215,44215,Apristurus kampae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44216,44216,Apristurus laurussonii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44217,44217,Apristurus longicephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44218,44218,Apristurus macrorhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44219,44219,Apristurus macrostomus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44220,44220,Apristurus micropterygeus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44221,44221,Apristurus parvipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44222,44222,Apristurus pinguis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44223,44223,Apristurus platyrhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44224,44224,Apristurus profundorum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44225,44225,Apristurus sinensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44226,44226,Apristurus spongiceps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44227,44227,Bythaelurus alcockii,6,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44228,44228,Bythaelurus hispidus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44229,44229,Bythaelurus immaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44496,44496,Pliotrema warreni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44514,44514,Centroscyllium nigrum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44515,44515,Mollisquama parini,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44563,44563,Centrophorus isodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44564,44564,Miroscyllium sheikoi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44565,44565,Mitsukurina owstoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44566,44566,Pseudotriakis microdon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+44567,44567,Centroscyllium granulatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44568,44568,Oxynotus caribbaeus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44569,44569,Proscymnodon macracanthus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44570,44570,Scymnodalatias oligodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44571,44571,Squatina armata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44572,44572,Apristurus canutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44573,44573,Apristurus nasutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44574,44574,Apristurus stenseni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44575,44575,Atlantoraja castelnaui,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44576,44576,Bathyraja longicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44577,44577,Benthobatis kreffti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44578,44578,Galeus mincaronei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44579,44579,Heterodontus quoyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44580,44580,Mustelus dorsalis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44581,44581,Mustelus fasciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44582,44582,Psammobatis bergi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44583,44583,Psammobatis extenta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44584,44584,Pseudobatos planiceps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44585,44585,Schroederichthys chilensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44586,44586,Schroederichthys saurisqualus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44587,44587,Schroederichthys tenuis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44588,44588,Scyliorhinus besnardi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44589,44589,Scyliorhinus haeckelii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44590,44590,Scyliorhinus hesperius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44591,44591,Sphyrna corona,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44592,44592,Hypanus guttatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44595,44595,Rhinoptera brasiliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44596,44596,Sympterygia brevicaudata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+44597,44597,Sympterygia bonapartii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44598,44598,Urotrygon microphthalmum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44599,44599,Apristurus manis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44600,44600,Anacanthobatis marmoratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44601,44601,Anacanthobatis ori,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44602,44602,Apristurus saldanha,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44603,44603,Euprotomicroides zantedeschia,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44604,44604,Bythaelurus clevai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44605,44605,Bythaelurus lutarius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44606,44606,Cephaloscyllium sufflans,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44607,44607,Dipturus campbelli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44608,44608,Dipturus lanceorostratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44609,44609,Dipturus pullopunctatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44610,44610,Dipturus stenorhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44611,44611,Eridacnis sinuans,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44612,44612,Halaelurus lineatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44613,44613,Halaelurus natalensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44614,44614,Heterodontus ramalheira,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44615,44615,Neoraja stehmanni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44617,44617,Pseudoginglymostoma brevicaudatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+44618,44618,Rajella caudaspinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44619,44619,Rajella leoparda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44620,44620,Rajella ravidula,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44621,44621,Torpedo fuscomaculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44639,44639,Apristurus riveri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+44640,44640,Psammobatis normani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44641,44641,Psammobatis rudis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44642,44642,Sympterygia acuta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44643,44643,Sympterygia lima,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44644,44644,Dipturus leptocaudus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44645,44645,Rajella sadowskii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44646,44646,Urobatis marmoratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44647,44647,Urotrygon chilensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44649,44649,Galeus polli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44650,44650,Rajella barnardi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44651,44651,Rajella dissimilis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44652,44652,Amblyraja frerichsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44653,44653,Aculeola nigra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44654,44654,Gurgesiella furvescens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44655,44655,Rajella nigerrima,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44656,44656,Gurgesiella dorsalifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44657,44657,Apristurus microps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44666,44666,Rhizoprionodon lalandii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44993,44993,Discopyge tschudii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+44996,44996,Squatina africana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+45925,45925,Hypanus marianae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+46864,46864,Centroselachus crepidater,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+46865,46865,Scymnodon plunketi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60080,60080,Trygonoptera galba,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60081,60081,Trygonoptera imitata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60082,60082,Trygonoptera mucosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60083,60083,Trygonoptera ovalis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60084,60084,Trygonoptera personata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60085,60085,Trygonoptera testacea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60086,60086,Urolophus armatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60087,60087,Urolophus aurantiacus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60088,60088,Urolophus bucculentus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60089,60089,Urolophus circularis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60090,60090,Urolophus cruciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60091,60091,Urolophus deforgesi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60092,60092,Urolophus expansus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60093,60093,Urolophus flavomosaicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60094,60094,Urolophus gigas,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60095,60095,Urolophus javanicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60096,60096,Urolophus kaianus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60097,60097,Urolophus lobatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60098,60098,Urolophus mitosis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60099,60099,Urolophus neocaledoniensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60100,60100,Urolophus orarius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60101,60101,Urolophus papilio,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60102,60102,Urolophus paucimaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60103,60103,Urolophus piperatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60104,60104,Urolophus sufflavus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60105,60105,Urolophus viridis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60106,60106,Urolophus westraliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60107,60107,Urobatis concentricus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60108,60108,Urobatis halleri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60109,60109,Urobatis jamaicensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60110,60110,Urobatis maculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60111,60111,Plesiobatis daviesi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60112,60112,Platyrhinoidis triseriata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60113,60113,Gymnura zonura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60115,60115,Gymnura micrura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60116,60116,Gymnura natalensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60117,60117,Gymnura poecilura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60118,60118,Dipturus crosnieri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60119,60119,Aetobatus flagellum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60120,60120,Aetomylaeus maculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60121,60121,Aetomylaeus vespertilio,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60123,60123,Myliobatis chilensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60124,60124,Myliobatis hamlyni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60125,60125,Myliobatis longirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60126,60126,Myliobatis peruvianus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60127,60127,Aetomylaeus bovinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60128,60128,Rhinoptera bonasus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60129,60129,Rhinoptera javanica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60130,60130,Rhinoptera steindachneri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60131,60131,Torpedo adenensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60132,60132,Torpedo andersoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60133,60133,Torpedo microdiscus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60134,60134,Torpedo panthera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60135,60135,Tetronarce puelcha,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60136,60136,Torpedo sinuspersici,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60137,60137,Tetronarce tremens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60138,60138,Callorhinchus capensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60139,60139,Harriotta haeckeli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60140,60140,Harriotta raleighana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60141,60141,Neoharriotta carri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60142,60142,Neoharriotta pinnata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60143,60143,Neoharriotta pumila,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60144,60144,Rhinochimaera africana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60145,60145,Rhinochimaera atlantica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60146,60146,Rhinochimaera pacifica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60147,60147,Telatrygon acutirostra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60148,60148,Hemitrygon akajei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60149,60149,Hypanus americanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60150,60150,Neotrygon annotata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60151,60151,Fontitrygon colarensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60152,60152,Hypanus dipterurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60153,60153,Fontitrygon geijskesi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60154,60154,Dasyatis hypostigma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60155,60155,Hemitrygon izuensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60156,60156,Neotrygon leylandi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60157,60157,Hypanus longus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60158,60158,Hypanus sabinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60159,60159,Hypanus say,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60160,60160,Telatrygon zugei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60161,60161,Himantura schmardae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60162,60162,Taeniurops meyeni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60163,60163,Acroteriobatus annulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60164,60164,Acroteriobatus blochii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60166,60166,Glaucostegus granulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60167,60167,Rhinobatos hynnicephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60168,60168,Pseudobatos leucorhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60169,60169,Rhinobatos nudidorsalis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60170,60170,Glaucostegus obtusus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60171,60171,Pseudobatos productus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60172,60172,Acroteriobatus salalah,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60175,60175,Glaucostegus thouin,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60176,60176,Acroteriobatus zanzibarensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60177,60177,Zapteryx exasperata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60178,60178,Zapteryx xyster,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60179,60179,Aptychotrema timorensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60180,60180,Rhynchobatus luebberti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60181,60181,Rhynchobatus cooki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60182,60182,Rhynchobatus springeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60183,60183,Chimaera cubana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60184,60184,Chimaera jordani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60185,60185,Chimaera lignaria,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60186,60186,Chimaera owstoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60187,60187,Chimaera phantasma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60188,60188,Hydrolagus africanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60189,60189,Hydrolagus alberti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60190,60190,Hydrolagus barbouri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60191,60191,Hydrolagus colliei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60192,60192,Hydrolagus lemures,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60193,60193,Hydrolagus macrophthalmus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60194,60194,Hydrolagus mitsukurii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60195,60195,Hydrolagus ogilbyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60196,60196,Hydrolagus purpurescens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60197,60197,Hydrolagus trolli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+60198,60198,Mobula munkiana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60199,60199,Mobula tarapacana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60200,60200,Mobula thurstoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60201,60201,Sphyrna media,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60202,60202,Sphyrna tudes,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60203,60203,Mustelus schmitti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60204,60204,Mustelus higmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60205,60205,Mustelus minicanis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60206,60206,Mustelus sinusmexicanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60208,60208,Centrophorus tessellatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60209,60209,Cirrhigaleus asper,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60210,60210,Euprotomicrus bispinatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60211,60211,Heteroscymnoides marleyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60212,60212,Isistius plutodus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60213,60213,Somniosus microcephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60214,60214,Squaliolus laticaudus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60215,60215,Zameus squamulosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60217,60217,Carcharhinus perezi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60218,60218,Isogomphodon oxyrhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60219,60219,Carcharhinus signatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60220,60220,Carcharhinus porosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60222,60222,Chiloscyllium plagiosum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+60223,60223,Ginglymostoma cirratum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60225,60225,Isurus paucus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60226,60226,Pristiophorus schroederi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60227,60227,Cephaloscyllium ventriosum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+60228,60228,Galeus piperatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60229,60229,Holohalaelurus melanostigma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60230,60230,Parmaturus campechiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60231,60231,Parmaturus xaniurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60232,60232,Scyliorhinus meadi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60233,60233,Scyliorhinus retifer,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60234,60234,Scyliorhinus cervigoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60235,60235,Heterodontus mexicanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60236,60236,Etmopterus bigelowi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60237,60237,Etmopterus bullisi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60238,60238,Etmopterus carteri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60239,60239,Etmopterus hillianus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60240,60240,Etmopterus perryi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60241,60241,Etmopterus polli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60242,60242,Etmopterus princeps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60243,60243,Etmopterus robinsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60244,60244,Etmopterus sentosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60245,60245,Etmopterus virens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60246,60246,Etmopterus schultzi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60247,60247,Mustelus palumbes,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+60248,60248,Squatina dumeril,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61398,61398,Atlantoraja cyclophora,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61399,61399,Bathyraja aguja,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61400,61400,Bythaelurus canescens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61401,61401,Diplobatis colombiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61402,61402,Diplobatis guamachensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61403,61403,Diplobatis ommata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61404,61404,Diplobatis pictus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61405,61405,Leucoraja melitensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61406,61406,Narcine brevilabiata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61407,61407,Rhizoprionodon porosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61408,61408,Rostroraja alba,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61416,61416,Squalus cubensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61417,61417,Squatina aculeata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61418,61418,Squatina oculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+61419,61419,Zapteryx brevirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63100,63100,Dipturus oxyrinchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63101,63101,Psammobatis rutrum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63102,63102,Rhinoraja albomaculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63103,63103,Hydrolagus pallidus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63104,63104,Hydrolagus mirabilis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63106,63106,Bathyraja cousseauae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63107,63107,Callorhinchus callorynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63108,63108,Etmopterus gracilispinis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63109,63109,Rioraja agassizii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63110,63110,Atlantoraja platana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63111,63111,Bathyraja brachyurops,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63112,63112,Bathyraja papilonifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63113,63113,Bathyraja griseocauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63114,63114,Chimaera monstrosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63115,63115,Bathyraja pallida,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63116,63116,Dipturus trachydermus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63117,63117,Rhinoraja macloviana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63119,63119,Amblyraja hyperborea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63120,63120,Raja asterias,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63121,63121,Psammobatis lentiginosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63122,63122,Amblyraja doellojuradoi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63123,63123,Hydrolagus affinis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63124,63124,Dipturus mennii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63125,63125,Malacoraja kreffti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63126,63126,Malacoraja spinacidermis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63127,63127,Bathyraja richardsoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63128,63128,Mustelus mento,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63129,63129,Mustelus whitneyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63130,63130,Triakis maculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63131,63131,Rhinobatos rhinobatos,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63132,63132,Glaucostegus cemiculus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63133,63133,Malacoraja obscura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+63134,63134,Psammobatis parvacauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63135,63135,Urobatis tumbesensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63136,63136,Dipturus ecuadoriensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+63137,63137,Bathyraja schroederi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63140,63140,Psammobatis scobina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63141,63141,Oxynotus centrina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63142,63142,Narcine bancroftii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63143,63143,Rhinoraja magellanica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63144,63144,Rhinoraja multispinis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63145,63145,Bathyraja scaphiops,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63146,63146,Raja montagui,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63147,63147,Zearaja chilensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63148,63148,Bathyraja peruana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63149,63149,Galeus atlanticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63150,63150,Squatina punctata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63151,63151,Hydrolagus matallanasi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63152,63152,Bathytoshia centroura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63153,63153,Gymnura altavela,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63154,63154,Narcine leoparda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63155,63155,Raja cervigoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63156,63156,Urotrygon venezuelae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+63157,63157,Narcine brasiliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63158,63158,Pseudobatos prahli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+63159,63159,Etmopterus litvinovi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63160,63160,Etmopterus pycnolepis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63161,63161,Gurgesiella atlantica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63162,63162,Rajella eisenhardti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63164,63164,Hydrolagus mccoskeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+63165,63165,Mustelus ravidus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63166,63166,Rhinobatos penggali,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+63167,63167,Rhinobatos jimbaranensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+64442,64442,Zearaja maugeana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+158616,158616,Squalus altipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+158617,158617,Squalus edmundsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161317,161317,Benthobatis marcida,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161318,161318,Leucoraja lentiginosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161319,161319,Bathyraja mariposa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161320,161320,Rhinobatos albomaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161321,161321,Cirrhigaleus australis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161322,161322,Amblyraja robertsi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161324,161324,Hydrolagus alphus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161325,161325,Squatina nebulosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161326,161326,Crassinarke dormitor,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161327,161327,Etmopterus burgessi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161328,161328,Torpedo marmorata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161329,161329,Dipturus cerva,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161330,161330,Eridacnis barbouri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161331,161331,Dactylobatus clarkii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161333,161333,Galeus schultzi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161334,161334,Mustelus californicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161335,161335,Urotrygon rogersi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161336,161336,Scyliorhinus boa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161337,161337,Pavoraja alleni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161338,161338,Raja cortezensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161339,161339,Raja radula,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161340,161340,Amblyraja reversa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161341,161341,Cruriraja durbanensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161342,161342,Gymnura australis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161343,161343,Raja herwigi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161344,161344,Raja velezi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161345,161345,Rajella bathyphila,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161346,161346,Narcine westraliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161347,161347,Neoraja africana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161348,161348,Fenestraja sibogae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161349,161349,Benthobatis moresbyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161350,161350,Bathyraja maculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161351,161351,Cirrhoscyllium expolitum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161352,161352,Hexanchus nakamurai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161354,161354,Dipturus tengu,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161355,161355,Nasolamia velox,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161356,161356,Anacanthobatis donghaiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161357,161357,Myliobatis tobijei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161358,161358,Sinobatis melanosoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161359,161359,Fenestraja ishiyamai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161360,161360,Squalus chloroculus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161361,161361,Oxynotus paradoxus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161363,161363,Zameus ichiharai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161364,161364,Galeus eastmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161366,161366,Bathyraja spinicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161367,161367,Apristurus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161368,161368,Hemitriakis complicofasciata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161370,161370,Pavoraja nitida,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161371,161371,Rajella bigelowi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161372,161372,Bathyraja andriashevi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161373,161373,Pseudobatos percellens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161374,161374,Cruriraja cadenati,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161375,161375,Bathyraja trachura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161376,161376,Carcharhinus sorrah,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161377,161377,Rajella lintea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161378,161378,Carcharhinus acronotus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161379,161379,Sinobatis borneensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161380,161380,Cephaloscyllium sarawakensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161381,161381,Bathyraja minispinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161382,161382,Bathyraja shuntovi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161383,161383,Neoraja iberica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161384,161384,Centrophorus atromarginatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161386,161386,Bathytoshia lata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161387,161387,Bathyraja ishiharai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161388,161388,Etmopterus spinax,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161390,161390,Insentiraja laxipella,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161391,161391,Rhinoraja murrayi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161392,161392,Amblyraja taaf,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161393,161393,Dipturus gigas,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161394,161394,Urotrygon simulatrix,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161395,161395,Triakis scyllium,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161396,161396,Aetomylaeus asperrimus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161397,161397,Torpedo torpedo,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161398,161398,Galeus melastomus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161399,161399,Scyliorhinus canicula,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161400,161400,Dipturus kwangtungensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161402,161402,Bathyraja interrupta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161403,161403,Somniosus pacificus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161404,161404,Squalus montalbani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161405,161405,Rhinobatos holcorhynchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161406,161406,Galeus sauteri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161407,161407,Etmopterus molleri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161408,161408,Glaucostegus halavi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161409,161409,Rhinobatos irvinei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161410,161410,Squalus hemipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161411,161411,Torpedo mackayana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161412,161412,Scyliorhinus tokubee,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161413,161413,Isistius labialis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161414,161414,Brochiraja leviveneta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161416,161416,Breviraja claramaculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161417,161417,Centrophorus seychellorum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161418,161418,Leucoraja erinacea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161419,161419,Leucoraja garmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161420,161420,Brochiraja spinifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161421,161421,Okamejei heemstrai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161422,161422,Breviraja nigriventralis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161423,161423,Narcine vermiculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161424,161424,Bathyraja matsubarai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161425,161425,Raja undulata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161426,161426,Chiloscyllium arabicum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161427,161427,Dipturus bullisi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161428,161428,Electrolux addisoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161429,161429,Scyliorhinus comoroensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161430,161430,Bathyraja lindbergi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161431,161431,Urogymnus granulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161432,161432,Somniosus rostratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161433,161433,Squalus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161434,161434,Atelomycterus marnkalha,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161435,161435,Scyliorhinus torazame,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161436,161436,Myliobatis goodei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161437,161437,Pentanchus profundicolus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161438,161438,Squalus brevirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161439,161439,Mobula kuhlii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161440,161440,Pseudoraja fischeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161441,161441,Etmopterus villosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161442,161442,Centrophorus lusitanicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161443,161443,Etmopterus pusillus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161444,161444,Bathyraja tzinovskii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161445,161445,Narcine timlei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161446,161446,Raja ackleyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161447,161447,Rhinobatos punctifer,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161448,161448,Etmopterus splendidus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161449,161449,Scyliorhinus torrei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161450,161450,Parmaturus lanatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161451,161451,Mustelus albipinnis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161452,161452,Amblyraja badia,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161453,161453,Dasyatis pastinaca,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161454,161454,Bathyraja isotrachys,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161455,161455,Cephalurus cephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161456,161456,Squatina formosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161457,161457,Pseudobatos glaucostigmus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161458,161458,Scyliorhinus garmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161459,161459,Raja maderensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161460,161460,Galeus cadenati,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161461,161461,Leucoraja fullonica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161462,161462,Bathyraja diplotaenia,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161463,161463,Rhinoptera marginata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161464,161464,Leucoraja circularis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161465,161465,Pastinachus solocirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161466,161466,Raja inornata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161468,161468,Eridacnis radcliffei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161469,161469,Squalus raoulensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161470,161470,Apristurus indicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161471,161471,Bathyraja parmifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161473,161473,Galeus longirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161475,161475,Hydrolagus lusitanicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161476,161476,Acroteriobatus variegatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161477,161477,Malacoraja senta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161478,161478,Rhinobatos annandalei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161479,161479,Galeus arae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161480,161480,Mustelus mosis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161481,161481,Anacanthobatis americanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161483,161483,Hongeo koreana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161484,161484,Scyliorhinus stellaris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161485,161485,Mustelus punctulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161486,161486,Bathyraja spinosissima,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161487,161487,Okamejei meerdervoortii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161488,161488,Halaelurus boesemani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161489,161489,Dentiraja lemprieri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161490,161490,Amblyraja georgiana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161491,161491,Amblyraja jenseni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161492,161492,Leucoraja wallacei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161493,161493,Okamejei philipi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161494,161494,Anacanthobatis longirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161495,161495,Fontitrygon margarita,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161496,161496,Spiniraja whitleyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161497,161497,Parmaturus melanobranchus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161498,161498,Galeus springeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161499,161499,Ctenacis fehlmanni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161500,161500,Brochiraja microspinifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161501,161501,Iago omanensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161502,161502,Fenestraja maceachrani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161504,161504,Bathyraja tunae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161505,161505,Maculabatis toshi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161506,161506,Paragaleus randalli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161507,161507,Hemitriakis japanica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161508,161508,Centroscyllium ritteri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161509,161509,Parmaturus albimarginatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161510,161510,Mobula rochebrunei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161512,161512,Rajella fuliginea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161513,161513,Taeniurops grabata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161514,161514,Dipturus oregoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161515,161515,Poroderma pantherinum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161516,161516,Gymnura tentaculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161517,161517,Etmopterus lucifer,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161518,161518,Mustelus norrisi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161519,161519,Zanobatus schoenleinii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161520,161520,Fontitrygon margaritella,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161521,161521,Centroscyllium fabricii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161522,161522,Neoraja carolinensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161523,161523,Narcine lingula,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161524,161524,Carcharhinus isodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161525,161525,Squatina tergocellatoides,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161526,161526,Carcharhinus albimarginatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161527,161527,Breviraja colesi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161528,161528,Raja bahamensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161529,161529,Bathyraja maccaini,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161530,161530,Rhinoptera neglecta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161531,161531,Holohalaelurus grennian,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161532,161532,Okamejei hollandi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161533,161533,Hemitrygon bennetti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161534,161534,Rhinoraja kujiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161535,161535,Dipturus gudgeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161536,161536,Squalus blainville,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161537,161537,Okamejei mengae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161539,161539,Hemigaleus australiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161540,161540,Maculabatis pastinacoides,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161541,161541,Urotrygon reticulata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161542,161542,Amblyraja radiata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161543,161543,Paragaleus tengi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161544,161544,Schroederichthys maculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161545,161545,Narcine prodorsalis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161546,161546,Urogymnus lobistomus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161547,161547,Pateobatis uarnacoides,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161548,161548,Orbiraja powelli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161549,161549,Deania hystricosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161550,161550,Brochiraja albilabiata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161551,161551,Deania profundorum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161552,161552,Somniosus longus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161553,161553,Insentiraja subtilispinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161554,161554,Narcine insolita,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161555,161555,Acroteriobatus leucospilus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161556,161556,Dactylobatus armatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161557,161557,Chiloscyllium hasselti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161558,161558,Squatina japonica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161559,161559,Notoraja ochroderma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161560,161560,Narcine maculata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161561,161561,Bathyraja smithii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161562,161562,Torpedo bauchotae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161563,161563,Orectolobus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161564,161564,Carcharhinus altimus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161565,161565,Dipturus garricki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161566,161566,Maculabatis gerrardi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161567,161567,Galeus nipponensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161568,161568,Myliobatis freminvillii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161569,161569,Myliobatis aquila,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161570,161570,Lamiopsis temminckii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161571,161571,Mustelus widodoi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161574,161574,Holohalaelurus regani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161575,161575,Rhinoraja longicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161576,161576,Hemitrygon sinensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161577,161577,Arhynchobatis asperrimus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161578,161578,Centroscyllium ornatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161580,161580,Tetronarce nobiliana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161581,161581,Parmaturus pilosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161582,161582,Megatrygon microps,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161583,161583,Scymnodalatias garricki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161584,161584,Fenestraja atripinna,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161585,161585,Etmopterus decacuspidatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161586,161586,Raja straeleni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161587,161587,Rajella fyllae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161589,161589,Platyrhina sinensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161591,161591,Cephaloscyllium silasi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161592,161592,Fenestraja mamillidens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161593,161593,Heteronarce prabhui,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161594,161594,Bathyraja violacea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161595,161595,Raja rhina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161596,161596,Aptychotrema rostrata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161597,161597,Alopias pelagicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161598,161598,Pateobatis hortlei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161599,161599,Raja miraletus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161600,161600,Rhinoraja taranetzi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161601,161601,Dipturus doutrei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161602,161602,Brochiraja asperula,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161603,161603,Anacanthobatis nanhaiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161604,161604,Leucoraja yucatanensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161605,161605,Notoraja tobitukai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161606,161606,Cirrhoscyllium japonicum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161607,161607,Narke dipterygia,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161608,161608,Tetronarce formosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161610,161610,Dipturus teevani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161611,161611,Glyphis siamensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161612,161612,Bathyraja smirnovi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161613,161613,Torpedo suessii,4,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161614,161614,Narke capensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161615,161615,Pateobatis fai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161616,161616,Chiloscyllium burmensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161617,161617,Dipturus johannisdavesi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161618,161618,Hemitrygon laevigata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161619,161619,Bathyraja meridionalis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161620,161620,Hypanus rudis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161621,161621,Himantura undulata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161622,161622,Rajella kukujevi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161623,161623,Bathyraja fedorovi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161624,161624,Benthobatis yangi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161625,161625,Halaelurus quagga,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161626,161626,Leucoraja naevus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161628,161628,Narcine tasmaniensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161629,161629,Raja stellulata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161630,161630,Gymnura japonica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161631,161631,Leucoraja ocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161632,161632,Heteronarce bentuviai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161633,161633,Mustelus manazo,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161634,161634,Pristiophorus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161635,161635,Deania quadrispinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161636,161636,Okamejei acutispina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161637,161637,Dipturus australis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161638,161638,Squatina legnota,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161639,161639,Paragaleus leucolomatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161640,161640,Mustelus lunulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161641,161641,Bathyraja hesperafricana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161642,161642,Fenestraja plutonia,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161643,161643,Dasyatis chrysonota,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161644,161644,Halaelurus maculosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161645,161645,Okamejei kenojei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161646,161646,Narcine rierai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161647,161647,Notoraja hirticauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161648,161648,Mustelus henlei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161649,161649,Etmopterus brachyurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161650,161650,Haploblepharus pictus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161651,161651,Orectolobus parvimaculatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161652,161652,Holohalaelurus favus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161653,161653,Dipturus springeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161655,161655,Irolita waitii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161656,161656,Fenestraja sinusmexicanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161658,161658,Raja eglanteria,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161659,161659,Bathyraja irrasa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161660,161660,Narcine atzi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161661,161661,Bathyraja aleutica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161662,161662,Rhizoprionodon longurio,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161663,161663,Heteronarce mollis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161664,161664,Orectolobus floridus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161665,161665,Narke japonica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161666,161666,Neoraja caerulea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161667,161667,Haploblepharus kistnasamyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161668,161668,Squalus lalannei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161669,161669,Beringraja pulchra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161670,161670,Anacanthobatis stenosoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161672,161672,Apristurus sibogae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161673,161673,Raja polystigma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161674,161674,Hexatrygon bickelli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161675,161675,Holohalaelurus punctatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161676,161676,Tetronarce tokionis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161677,161677,Rhinobatos lionotus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161679,161679,Cirrhoscyllium formosanum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161680,161680,Halaelurus buergeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161681,161681,Anacanthobatis folirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161682,161682,Cruriraja rugosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161683,161683,Bathyraja microtrachys,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161685,161685,Leucoraja leucosticta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161686,161686,Raja texana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161688,161688,Brochiraja aenigma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161689,161689,Urotrygon aspidura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161690,161690,Narcine oculifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161691,161691,Raja brachyura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161692,161692,Himantura uarnak,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161693,161693,Fenestraja cubensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161694,161694,Raja equatorialis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161695,161695,Chaenogaleus macrostoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161696,161696,Alopias superciliosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161697,161697,Acroteriobatus ocellatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161700,161700,Narcine lasti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161701,161701,Bathyraja trachouros,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161702,161702,Rajella purpuriventralis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161703,161703,Squalus bucephalus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161704,161704,Leucoraja compagnoi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161705,161705,Galeus murinus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161706,161706,Bathyraja kincaidii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161707,161707,Paragaleus pectoralis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161708,161708,Breviraja spinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161709,161709,Orectolobus halei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161710,161710,Cruriraja andamanica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161711,161711,Cruriraja poeyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161712,161712,Cruriraja atlantis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161713,161713,Rhinobatos schlegelii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161714,161714,Heterodontus japonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161715,161715,Mustelus griseus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161716,161716,Narcine entemedor,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161717,161717,Scymnodon ringens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161718,161718,Dipturus olseni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161720,161720,Heterodontus omanensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161721,161721,Rajella annandalei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161722,161722,Bathyraja bergi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161723,161723,Raja pita,6,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161724,161724,Cephaloscyllium umbratile,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161725,161725,Okamejei schmidti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161726,161726,Parmaturus albipenis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161728,161728,Brevitrygon imbricata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161729,161729,Dipturus nidarosiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161730,161730,Urotrygon munda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161731,161731,Pteroplatytrygon violacea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161732,161732,Galeus antillensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161733,161733,Proscyllium habereri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161735,161735,Okamejei boesemani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161736,161736,Atelomycterus baliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161737,161737,Mobula hypostoma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161738,161738,Dipturus macrocauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161739,161739,Bathyraja eatonii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161740,161740,Centroscyllium excelsum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+161741,161741,Hemitrygon navarrae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161742,161742,Rhinoraja odai,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161743,161743,Pseudobatos lentiginosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161744,161744,Pateobatis jenkinsii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+161745,161745,Temera hardwickii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+161746,161746,Heteronarce garmani,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+161747,161747,Urotrygon nana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 20 m,TRUE
+161748,161748,Dasyatis marmorata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+165290,165290,Himantura marginata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+174145,174145,Cephaloscyllium cooki,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+181361,181361,Cephaloscyllium signourum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195319,195319,Urogymnus dalyensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195320,195320,Urogymnus polylepis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195320,195320,Urogymnus polylepis,2,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195421,195421,Asymbolus galacticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195422,195422,Cephaloscyllium hiscosellum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195423,195423,Cephaloscyllium maculatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195424,195424,Cephaloscyllium pardelotum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195425,195425,Galeus priapus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195426,195426,Mustelus walkeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195427,195427,Chimaera argiloba,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195428,195428,Chimaera bahamaensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195429,195429,Chimaera fulva,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195430,195430,Chimaera macrospina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195431,195431,Chimaera notafricana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195432,195432,Chimaera obscura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195433,195433,Hydrolagus homonycteris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195434,195434,Hydrolagus marmoratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195435,195435,Hydrolagus melanophasma,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195436,195436,Hemiscyllium galei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195437,195437,Hemiscyllium henryi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195438,195438,Hemiscyllium michaeli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195439,195439,Orectolobus reticulatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195440,195440,Parascyllium elongatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195442,195442,Hemitrygon parvonigra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195443,195443,Dentiraja flindersi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195444,195444,Dipturus acrobelus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195445,195445,Dipturus apricus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195446,195446,Dipturus endeavouri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195447,195447,Dipturus falloargus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195448,195448,Dipturus grahami,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195449,195449,Dipturus healdi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195450,195450,Dipturus melanospilus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195451,195451,Dipturus oculus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195452,195452,Dipturus queenslandicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195453,195453,Dipturus wengi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195454,195454,Dipturus wuhanlingi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195455,195455,Maculabatis astra,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195456,195456,Himantura leoparda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195457,195457,Irolita westraliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195458,195458,Leucoraja pristispina,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195459,195459,Mobula alfredi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195460,195460,Narcine nelsoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195462,195462,Narcine ornata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195463,195463,Neotrygon ningalooensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195464,195464,Neotrygon picta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+195465,195465,Notoraja azurea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195466,195466,Notoraja lira,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195467,195467,Notoraja sapphira,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195468,195468,Notoraja sticta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195469,195469,Okamejei arafurensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195470,195470,Okamejei leptoura,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195471,195471,Pavoraja arenaria,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195472,195472,Pavoraja mosaica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195473,195473,Pavoraja pseudonitida,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195477,195477,Sinobatis bulbicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195478,195478,Sinobatis caerulea,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195479,195479,Sinobatis filicauda,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+195485,195485,Centrophorus westraliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+195486,195486,Squalus acutirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195487,195487,Squalus griffini,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+195488,195488,Squalus suckleyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+198921,198921,Mobula birostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+199932,199932,Hemiscyllium freycineti,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+200014,200014,Cephaloscyllium fasciatum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+202053,202053,Dipturus polyommata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,unknown,TRUE
+14134315,14134315,Dipturus canutus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+14134429,14134429,Gymnura marmorata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+14134431,14134431,Gymnura crebripunctata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508842,Pristis pristis,1,Pristis pristis Eastern Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508949,Pristis pristis,1,Pristis pristis Eastern Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508905,Pristis pristis,1,Pristis pristis Indo-west Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508845,Pristis pristis,1,Pristis pristis Western Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,18584848,Pristis pristis,2,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508842,Pristis pristis,4,Pristis pristis Eastern Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508949,Pristis pristis,4,Pristis pristis Eastern Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508905,Pristis pristis,4,Pristis pristis Indo-west Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508845,Pristis pristis,4,Pristis pristis Western Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508842,Pristis pristis,6,Pristis pristis Eastern Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508949,Pristis pristis,6,Pristis pristis Eastern Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508905,Pristis pristis,6,Pristis pristis Indo-west Pacific subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+18584848,43508845,Pristis pristis,6,Pristis pristis Western Atlantic subpopulation,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+42566169,42566169,Aetobatus ocellatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+43270317,43270317,Trygonorrhina dumerilii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+47407786,47407786,Maculabatis randalli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+70681387,70681387,Pavoraja umbrosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+70682232,70682232,Pastinachus ater,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+70682503,70682503,Pastinachus sephen,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+70686656,70686656,Myliobatis tenuicaudatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+70688138,70688138,Dipturus confusus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+70688333,70688333,Rajella challengeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+80671020,80671020,Bathyraja panthera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+84784918,84784918,Aetomylaeus nichofii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+84785231,84785231,Aetomylaeus caeruleofasciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+91209505,91209505,Squalus acanthias,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,200 m +,TRUE
+103055306,103055306,Planonasus parini,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+103055459,103055459,Apristurus breviventralis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+104023514,104023514,Aetomylaeus milvus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+104176764,104176764,Brevitrygon walga,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+107604242,107604242,Acroteriobatus omanensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
+107604828,107604828,Okamejei ornata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,deep oceanic,TRUE
+107604987,107604987,Maculabatis arabica,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf,< 200 m,TRUE
 60469196,60469196,Amblycirrhitus earnshawi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/cirrhitidae.dbf,< 200 m,FALSE
 190418,190418,Amblycirrhitus pinos,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/cirrhitidae.dbf,unknown,FALSE
 21114995,21114995,Cirrhitus atlanticus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/cirrhitidae.dbf,< 200 m,FALSE

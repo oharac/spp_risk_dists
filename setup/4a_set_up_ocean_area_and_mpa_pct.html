@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Fri Aug 31 20:21:36 2018 by ohara" />
+<meta name="author" content="Compiled on Wed Sep 12 10:12:45 2018 by ohara" />
 
 
 <title>Set up ocean area raster and MPA pct rasters</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Set up ocean area raster and MPA pct rasters</h1>
-<h4 class="author"><em><em>Compiled on Fri Aug 31 20:21:36 2018 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Sep 12 10:12:45 2018 by ohara</em></em></h4>
 
 </div>
 
@@ -320,15 +320,21 @@ dir_o_anx   &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_
 cell_id_file    &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_spatial, <span class="st">'cell_id_rast.tif'</span>)
 ocean_1km_file  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">'spatial'</span>, <span class="st">'ocean_1km.tif'</span>)
 
-### Gall-Peters doesn't have an EPSG?
-gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'</span>
-
 <span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(ocean_area_file)) {
   
   ocean_sf_wgs84 &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">'ne_10m_ocean'</span>, <span class="st">'ne_10m_ocean.shp'</span>))
   
+  ### Annoyingly, this counts the Caspian Sea as ocean... so make a block,
+  ### cut it out, and go from there.
+  caspian_block &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">48</span>, <span class="dv">56</span>, <span class="dv">48</span>, <span class="dv">56</span>, <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">35</span>), 
+                          <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+  caspian_sf &lt;-<span class="st"> </span><span class="kw">st_polygon</span>(<span class="kw">list</span>(caspian_block)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">st_sfc</span>(<span class="dt">crs =</span> <span class="dv">4326</span>)
+  
   ocean_sf &lt;-<span class="st"> </span>ocean_sf_wgs84 <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">st_difference</span>(caspian_sf) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">st_transform</span>(gp_proj4)
+
   
   bbox_ocean &lt;-<span class="st"> </span><span class="kw">st_bbox</span>(ocean_sf)
   ext_r  &lt;-<span class="st"> </span><span class="kw">extent</span>(bbox_ocean<span class="op">$</span>xmin, bbox_ocean<span class="op">$</span>xmax, bbox_ocean<span class="op">$</span>ymin, bbox_ocean<span class="op">$</span>ymax)
@@ -572,6 +578,7 @@ wdpa_cell_area_file &lt;-<span class="st"> </span><span class="kw">file.path</sp
 } <span class="cf">else</span> {
   <span class="co"># git_prov(wdpa_cell_area_file, 'output')</span>
 }</code></pre></div>
+<pre><code>## NULL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wdpa_yr_rast_1km &lt;-<span class="st"> </span><span class="kw">raster</span>(wdpa_prot_yr_file)
 rast_cell_id    &lt;-<span class="st"> </span><span class="kw">raster</span>(cell_id_file)    ### cell IDs at 10 km^2
 rast_ocean_1km  &lt;-<span class="st"> </span><span class="kw">raster</span>(ocean_1km_file)  ### ocean presence at 1 km^2
@@ -639,6 +646,7 @@ wdpa_cell_year_file &lt;-<span class="st"> </span><span class="kw">file.path</sp
 } <span class="cf">else</span> {
   <span class="co"># git_prov(wdpa_cell_year_file, 'output')</span>
 }</code></pre></div>
+<pre><code>## NULL</code></pre>
 </div>
 <div id="view-wdpa-protected-area-proportions-as-raster" class="section level3">
 <h3><span class="header-section-number">3.2.3</span> View WDPA protected area proportions as raster</h3>
