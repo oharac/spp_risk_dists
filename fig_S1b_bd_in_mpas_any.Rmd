@@ -1,5 +1,5 @@
 ---
-title: 'MPAs and biodiversity intactness'
+title: 'MPAs and biodiversity intactness - any MPAs'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -62,11 +62,11 @@ risk_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
 
 ```
 
-``` {r set up no take vs risk df}
+``` {r set up any mpa vs risk df}
 
 mpa_df   <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
-  filter(wdpa_category <= 2) %>%
+  filter(wdpa_category <= 8) %>%
   select(-wdpa_category) %>%
   group_by(cell_id) %>%
   summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
@@ -107,9 +107,9 @@ risk_mpa_recent_df <- risk_df %>%
 
 To capture area of partially protected cells, use `geom_density(aes(weight = area, x = mean_risk, ..scaled..))`
 
-``` {r no take mpas, eval = TRUE}
+``` {r any mpas, eval = TRUE}
 
-global_no_take <- risk_mpa_df %>%
+global_any <- risk_mpa_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -117,7 +117,7 @@ global_no_take <- risk_mpa_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-global_no_take_recent <- risk_mpa_recent_df %>%
+global_any_recent <- risk_mpa_recent_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ post-Aichi') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -125,7 +125,7 @@ global_no_take_recent <- risk_mpa_recent_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-highseas_no_take <- risk_mpa_df %>%
+highseas_any <- risk_mpa_df %>%
   filter(eez > 255 | eez == 213) %>%
   mutate(lbl = 'High seas') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -133,7 +133,7 @@ highseas_no_take <- risk_mpa_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-rgn_no_take <- risk_mpa_df %>%
+rgn_any <- risk_mpa_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = r1_label) %>%
   arrange(lbl) %>%
@@ -142,17 +142,17 @@ rgn_no_take <- risk_mpa_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-no_take_df <- bind_rows(global_no_take, global_no_take_recent, 
-                        rgn_no_take, highseas_no_take) %>%
+any_df <- bind_rows(global_any, global_any_recent, 
+                        rgn_any, highseas_any) %>%
   mutate(lbl = forcats::fct_inorder(lbl))
 
-prot_pct <- no_take_df %>%
+prot_pct <- any_df %>%
   group_by(lbl) %>%
   summarize(pct_prot = sum(area * mpa_status) / sum(area) * 100,
             tot_area = sum(area))
 ### this is independent of range-rarity weighting
 
-no_take_means <- no_take_df %>%
+any_means <- any_df %>%
   group_by(mpa_status, lbl) %>%
   summarize(mu = sum(mean_risk * prop_area)) %>%
   ungroup()
@@ -171,7 +171,7 @@ risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
 
 ```
 
-``` {r set up no take vs risk rr df}
+``` {r set up any vs risk rr df}
 
 risk_mpa_rr_df <- risk_rr_df %>%
   left_join(mpa_df, by = 'cell_id') %>%
@@ -195,7 +195,7 @@ risk_mpa_rr_recent_df <- risk_rr_df %>%
 
 ``` {r rr-weighted protection level dataframes}
 
-global_no_take_rr <- risk_mpa_rr_df %>%
+global_any_rr <- risk_mpa_rr_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -203,7 +203,7 @@ global_no_take_rr <- risk_mpa_rr_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-global_no_take_rr_recent <- risk_mpa_rr_recent_df %>%
+global_any_rr_recent <- risk_mpa_rr_recent_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ post-Aichi') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -211,7 +211,7 @@ global_no_take_rr_recent <- risk_mpa_rr_recent_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-highseas_no_take_rr <- risk_mpa_rr_df %>%
+highseas_any_rr <- risk_mpa_rr_df %>%
   filter(eez > 255 | eez == 213) %>%
   mutate(lbl = 'High seas') %>%
   select(cell_id, mean_risk, mpa_status, area, lbl) %>%
@@ -219,7 +219,7 @@ highseas_no_take_rr <- risk_mpa_rr_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-rgn_no_take_rr <- risk_mpa_rr_df %>%
+rgn_any_rr <- risk_mpa_rr_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = r1_label) %>%
   arrange(lbl) %>%
@@ -228,11 +228,11 @@ rgn_no_take_rr <- risk_mpa_rr_df %>%
   mutate(prop_area = area / sum(area)) %>%
   ungroup()
 
-no_take_rr_df <- bind_rows(global_no_take_rr, global_no_take_rr_recent, 
-                           rgn_no_take_rr, highseas_no_take_rr) %>%
+any_rr_df <- bind_rows(global_any_rr, global_any_rr_recent, 
+                           rgn_any_rr, highseas_any_rr) %>%
   mutate(lbl = forcats::fct_inorder(lbl))
 
-no_take_rr_means <- no_take_rr_df %>%
+any_rr_means <- any_rr_df %>%
   group_by(mpa_status, lbl) %>%
   summarize(mu = sum(mean_risk * prop_area)) %>%
   ungroup()
@@ -246,7 +246,7 @@ There seem to be two philosophies of MPA priority: place MPAs in impacted areas 
 ``` {r plot_function}
 plot_dist <- function(df, means_df, var_name, x_lims = c(0, .6)) {
   x <- ggplot(df, aes(x = mean_risk)) +
-    ggtheme_plot() +
+    ggtheme_plot(base_size = 7) +
     theme(strip.text.y = element_text(angle = 0, hjust = 0),
           axis.text.y  = element_blank(),
           axis.title   = element_blank(),
@@ -277,15 +277,15 @@ plot_dist <- function(df, means_df, var_name, x_lims = c(0, .6)) {
 
 prot_pct_lbls <- prot_pct %>%
   mutate(area_lbl = sprintf('%.1f x 10⁶ km²', tot_area/1e6),
-         prot_lbl = sprintf('%.1f%% marine reserve', pct_prot))
+         prot_lbl = sprintf('%.1f%% MPA', pct_prot))
   
-mpa_plot_unweighted <- plot_dist(no_take_df, no_take_means, 'Marine reserve')
+mpa_plot_unweighted <- plot_dist(any_df, any_means, 'MPA (any)')
 
-mpa_plot_rrweighted <- plot_dist(no_take_rr_df, no_take_rr_means, 'Marine reserve') +
-  geom_text(data = prot_pct_lbls, aes(x = .58, y = .9, label = area_lbl), 
-            hjust = 1, size = 2.2, vjust = 1) +
-  geom_text(data = prot_pct_lbls, aes(x = .58, y = .5, label = prot_lbl), 
-          hjust = 1, size = 2.2, vjust = 1)
+mpa_plot_rrweighted <- plot_dist(any_rr_df, any_rr_means, 'MPA (any)') +
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .95, label = area_lbl), 
+            hjust = 1, size = 2.1, vjust = 1, color = 'grey20') +
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .45, label = prot_lbl), 
+          hjust = 1, size = 2.1, vjust = 1, color = 'grey20')
 
 
 plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
@@ -294,28 +294,28 @@ plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
                                             legend.position = c(1, 1)), 
                                     mpa_plot_rrweighted +
                                       theme(legend.position = 'none'), 
-                                    labels = c('A', 'B'), 
+                                    labels = c('C', 'D'), 
                                     label_size = 9,
                                     hjust = 0,
                                     rel_widths = c(2, 3))
 
-ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
+ggsave(file.path(dir_git, 'ms_figures/fig_S1b_bd_risk_vs_mpas_any.png'),
        height = 3, width = 4.75, dpi = 300, units = 'in')
 ```
 
-![](ms_figures/fig3_bd_risk_vs_mpas.png)
+![](ms_figures/fig_S1b_bd_risk_vs_mpas_any.png)
 
 ### unweighted means
 
-`r knitr::kable(no_take_means)`
+`r knitr::kable(any_means)`
 
 ### rr-weighted means
 
-`r knitr::kable(no_take_rr_means)`
+`r knitr::kable(any_rr_means)`
 
 ``` {r save means}
-means_to_save <- no_take_means %>%
-  left_join(no_take_rr_means %>% rename(mu_rr = mu),
+means_to_save <- any_means %>%
+  left_join(any_rr_means %>% rename(mu_rr = mu),
             by = c('lbl', 'mpa_status'))
-write_csv(means_to_save, file.path(dir_git, 'setup/int/mpa_mean_risks.csv'))
+write_csv(means_to_save, file.path(dir_git, 'setup/int/mpa_mean_risks_any.csv'))
 ```

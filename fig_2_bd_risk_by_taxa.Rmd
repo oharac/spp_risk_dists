@@ -190,9 +190,12 @@ for(i in seq_along(taxa_gps)) { ### i <- 5
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map(base_size = 9) +
-    theme(plot.margin = unit(c(.05, .2, .2, .2), units = 'cm'),
+    theme(plot.margin = unit(c(.05, .10, .05, .05), units = 'cm'),
           panel.background = element_rect(fill = 'grey80', color = NA),
-          axis.title = element_text(face = 'bold', hjust = 1),
+          axis.title = element_text(face = 'bold', hjust = 1, 
+                                    vjust = 0, size = 7,
+                                    margin = margin(t = 0, r = 0, 
+                                                    b = 0, l = .1, unit = 'cm')),
           axis.title.x = element_blank()) +
     coord_sf(datum = NA) + ### ditch graticules
     scale_fill_gradientn(colors = risk_cols, 
@@ -218,7 +221,7 @@ cat_msg('done, putting together the cowplot')
 y <- cowplot::plot_grid(plotlist = map_list, align = 'hv', ncol = 2)
 
 plot_w <- 4.75
-plot_h <- plot_w / (2 * 1.6) * ceiling(length(map_list) / 2)
+plot_h <- plot_w / (2 * 1.65) * ceiling(length(map_list) / 2)
 
 ggsave(plot = y,
        filename = taxa_map_file,
@@ -260,9 +263,8 @@ x <- ggplot(taxa_ranges, aes(x = log_range, ..scaled..)) +
   labs(x = 'Range, km^2') +
   facet_grid(taxon ~ .)
 
-ggsave(filename = file.path(dir_git, 'ms_figures', 'fig_SI_taxa_ranges.png'), 
-           width = 4.75, height = 3, units = 'in', dpi = 300)
+# ggsave(filename = file.path(dir_git, 'ms_figures', 'fig_SI_taxa_ranges.png'), 
+#            width = 4.75, height = 3, units = 'in', dpi = 300)
 
+print(x)
 ```
-
-![](ms_figures/fig_SI_taxa_ranges.png)

@@ -193,7 +193,7 @@ rm('habs_df', 'risk_df')
 plot_dist <- function(df, means_df, x_lims = c(0, 0.6)) {
 
   x <- ggplot(df, aes(x = risk)) +
-    ggtheme_plot() +
+    ggtheme_plot(base_size = 7) +
     theme(strip.text.y = element_text(angle = 0, hjust = 0),
           axis.text.y  = element_blank(),
           axis.title   = element_blank(),
@@ -223,7 +223,7 @@ plot_dist <- function(df, means_df, x_lims = c(0, 0.6)) {
 ``` {r generate figure}
 prot_pct_lbls <- prot_pct %>%
   mutate(area_lbl = sprintf('%.1f x 10⁶ km²', tot_area/1e6),
-         prot_lbl = sprintf('%.1f%% marine reserve', pct_prot))
+         prot_lbl = sprintf('%.1f%% no take', pct_prot))
 
 hab_plot_unweighted <- plot_dist(risk_mpa_df, no_take_means) +
   theme(strip.text.y = element_blank())
@@ -231,10 +231,10 @@ hab_plot_unweighted <- plot_dist(risk_mpa_df, no_take_means) +
 hab_plot_rrweighted <- plot_dist(risk_mpa_df %>% select(-risk, risk = rr_risk), 
                                  no_take_means %>% 
                                    select(-mu, mu = mu_rr)) +
-  geom_text(data = prot_pct_lbls, aes(x = .58, y = .9, label = area_lbl), 
-            hjust = 1, size = 2.2, vjust = 1) +
-  geom_text(data = prot_pct_lbls, aes(x = .58, y = .5, label = prot_lbl), 
-            hjust = 1, size = 2.2, vjust = 1)
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .95, label = area_lbl), 
+            hjust = 1, size = 2.1, vjust = 1, color = 'grey20') +
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .45, label = prot_lbl), 
+          hjust = 1, size = 2.1, vjust = 1, color = 'grey20')
 
 plot_combined <- cowplot::plot_grid(hab_plot_unweighted +
                                       theme(strip.text.y = element_blank(),
@@ -247,7 +247,7 @@ plot_combined <- cowplot::plot_grid(hab_plot_unweighted +
                                     rel_widths = c(2, 3))
 
 ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
-       height = 3, width = 4.75, dpi = 300, units = 'in')
+       height = 2.8, width = 4.75, dpi = 300, units = 'in')
 
 ```
 
@@ -309,7 +309,7 @@ map1 <- ggplot(map_df) +
   geom_raster(aes(long, lat, fill = abnj), show.legend = TRUE) +
   geom_sf(data = land_poly, aes(geometry = geometry), 
           fill = 'grey96', color = 'grey40', size = .10) +
-  ggtheme_map() +
+  ggtheme_map(base_size = 7) +
   theme(plot.margin = unit(c(.2, 0, .1, .5), units = 'cm')) +
   coord_sf(datum = NA) + ### ditch graticules
   scale_x_continuous(expand = c(0, 0)) +
