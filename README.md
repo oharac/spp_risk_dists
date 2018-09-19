@@ -29,7 +29,7 @@ Welcome to the repository for code and data related to __Mapping status and cons
     1. Pull information from the IUCN Red List API to determine an overall species list, habitat information, and current risk (conservation status).
     2. Pull information from API on risk from regional assessments; also recode the regions according to Marine Ecoregions (Spalding et al, 2007) for later spatialization.
     3. Pull historical assessment information from API for possible trend analysis.  Note that this did not make it into the final draft of the manuscript.
-    4. Set up spatial layers in Gall-Peters, 100 km<sup>2<sup/> cells.  Layers include:
+    4. Set up spatial layers in Gall-Peters, 100 km<sup>2</sup> cells.  Layers include:
         * cell ID (cells are sequentially numbered for combining with tabular data)
         * ocean area
         * marine protected area (classification, year of protection, proportion of protection)
