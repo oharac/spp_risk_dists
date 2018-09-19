@@ -1,0 +1,229 @@
+---
+title: 'Rasterize EEZs, MEOWs, and Bathymetry'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+
+dir_git <- '~/github/spp_risk_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+### project specific folders and info
+source(file.path(dir_git, 'setup/common_fxns.R'))
+
+```
+
+# Summary
+
+Set up analysis rasters for EEZs, MEOWs, and bathymetry at Gall-Peters 10 km^2 resolution.
+
+* EEZs will include all EEZs as well as FAO regions and CCAMLR regions, based on the global OHI EEZ map.
+* MEOWs will include all MEOW provinces, though only some are appropriate for IUCN regional assessments (see `2a_set_up_regional_codes.Rmd`).
+* Bathymetry will include regions for 200m+, 20-200m, and <20m.  
+* All will be clipped to the same ocean presence using the area raster.
+
+# Methods
+
+## EEZ raster
+
+Using the OHI global EEZ shapefile, we will include all EEZs by OHI region code, as well as FAO regions and Antarctica, using unique identifiers.  This will allow for separation by high seas vs. EEZ, or different takes on IUCN regional assessments using FAO or EEZ identifiers.
+
+EEZ is rasterized for both land and sea, and then clipped to cells with non-NA values in the ocean_area raster.  This ensures presence of more coastal cells with fractional ocean area coverage.
+
+``` {r set up EEZ raster}
+
+eez_rast_file <- file.path(dir_git, 'spatial', 'eez_rast.tif')
+eez_shp_file  <- file.path(dir_M, 'git-annex/globalprep/spatial/v2017/regions_2017_update.shp')
+
+area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
+values(area_rast)[values(area_rast) <= .005] <- NA
+
+
+if(!file.exists(eez_rast_file)) {
+  eez_sf <- read_sf(eez_shp_file)
+  
+  eez_df <- eez_sf %>%
+    as.data.frame() %>%
+    dplyr::select(-geometry)
+  eez_ids <- eez_df %>%
+    select(rgn_id, rgn_name, rgn_ant_id) %>%
+    distinct()
+  ### rgn_ant_id is same as rgn_id except for Antarctica.  We don't really
+  ### need to chunk out Antarctica at this point so just use rgn_id.
+  ### Filter out all land polygons and project to Gall-Peters
+  ### EDIT: don't filter out land; leave it in, then later mask using the 
+  ### area raster.  This should ensure more partial-ocean coastal cells are included.
+  
+  eez_sf_reclass <- eez_sf %>%
+    clip_to_globe() %>%
+    ### in common_fxn.R: ensures no coordinates outside +-180, +-90
+    select(rgn_id, geometry) %>%
+    st_transform(gp_proj4)
+  
+  # plot(eez_sf_reclass)
+  
+  rast_base <- area_rast
+  
+  eez_rast <- fasterize::fasterize(eez_sf_reclass, rast_base, 
+                                   field = 'rgn_id', fun = 'min')
+  
+  eez_rast_ocean <- eez_rast %>%
+    mask(area_rast)
+  
+  writeRaster(eez_rast_ocean, eez_rast_file, overwrite = TRUE)
+  
+} else {
+  # git_prov(eez_shp_file, 'input')
+  # git_prov(eez_rast_file, 'output')
+  eez_rast_ocean <- raster::raster(eez_rast_file)
+}
+
+plot(eez_rast_ocean, main = 'EEZ raster 10 km^2 Gall-Peters projection')
+
+```
+
+## MEOW raster
+
+Using the MEOW shapefile, we will include all the shapes at the province level and then mask out land using the area raster (for consistency).
+
+``` {r set up MEOW raster}
+
+meow_rast_file <- file.path(dir_git, 'spatial', 'meow_rast.tif')
+meow_shp_file  <- file.path(dir_o_anx, 'meow/meow_ecos.shp')
+
+if(!file.exists(meow_rast_file)) {
+  meow_sf <- read_sf(meow_shp_file) %>%
+    clip_to_globe()
+    ### in common_fxn.R: ensures no coordinates outside +-180, +-90
+  
+  
+  meow_sf_reclass <- meow_sf %>%
+    select(ECO_CODE_X, geometry) %>%
+    st_transform(gp_proj4)
+  
+  # plot(meow_sf_reclass)
+  
+  rast_base <- area_rast
+  
+  meow_rast <- fasterize::fasterize(meow_sf_reclass, rast_base, 
+                                   field = 'ECO_CODE_X', fun = 'min')
+  
+  meow_rast <- meow_rast %>%
+    mask(area_rast)
+    
+  ### check whether there are shoreline gaps between MEOW maps and EEZ maps
+  # x <- eez_rast
+  # x[!is.na(values(meow_rast))] <- NA
+  # plot(x)
+  ### MEOWs seem to go inland to prevent shoreline gaps! yay
+  
+  writeRaster(meow_rast, meow_rast_file, overwrite = TRUE)
+} else {
+  # git_prov(meow_shp_file, 'input')
+  # git_prov(meow_rast_file, 'output')
+  meow_rast <- raster::raster(meow_rast_file)
+}
+
+plot(meow_rast, main = 'MEOW raster 10 km^2 Gall-Peters')
+
+```
+
+
+## Bathymetry raster
+
+Using [General Bathymetric Chart of the Oceans (GEBCO) bathymetry raster](https://www.bodc.ac.uk/data/hosted_data_systems/gebco_gridded_bathymetry_data/), identify min depth of ocean cells.  For neritic and coastal cells, leaving as min depth allows for changing depth thresholds if desired.  We will not clip based on anything below 200 m, so can classify these more coarsely.
+
+NOTE: 1 arcmin and 30 arcsec are available; 30 arcsec is more recent but one arcmin should be sufficient for our purposes.  Resample to 6 arc-minute (0.10°) using min depth in each cell.
+
+Bathymetry is masked to the ocean area raster.
+
+### Create and view minimum depth raster
+
+``` {r set up bathymetry raster}
+
+bathy_rast_file <- file.path(dir_git, 'spatial', 'bathy_rast.tif')
+
+gebco_rast_file <- file.path(dir_o_anx, 'gebco', 'GRIDONE_1D.nc')
+gebco_rast_raw  <- raster(gebco_rast_file)
+
+if(!file.exists(bathy_rast_file)) {
+  ### The GEBCO raster is elevation, so depth is neg... for min depth, 
+  ### aggregate by max (and vice versa)
+  bathy_rast_min <- gebco_rast_raw %>%
+    raster::aggregate(fact = 6, fun = max)
+  
+  bathy_rast_min <- -1 * bathy_rast_min ### depth is positive
+    
+  rast_base <- area_rast
+  
+  bathy_rast_raw <- bathy_rast_min %>%
+    projectRaster(rast_base, 
+                  progress = 'text',
+                  method = 'ngb')
+  
+  ### reclassify:
+  ### compress cells above zero to sea level;
+  ### compress cells below 200 m to rough depth clips
+  bathy_rast <- bathy_rast_raw
+  values(bathy_rast)[values(bathy_rast_raw) < 0] <- 0
+  values(bathy_rast)[values(bathy_rast_raw) > 200] <- 1000
+  values(bathy_rast)[values(bathy_rast_raw) > 1000] <- 2000
+  values(bathy_rast)[values(bathy_rast_raw) > 2000] <- 3000
+  values(bathy_rast)[values(bathy_rast_raw) > 3000] <- 4000
+  values(bathy_rast)[values(bathy_rast_raw) > 4000] <- 5000
+  values(bathy_rast)[values(bathy_rast_raw) > 5000] <- 6000
+  values(bathy_rast)[values(bathy_rast_raw) > 6000] <- 7000
+  values(bathy_rast)[values(bathy_rast_raw) > 7000] <- 8000
+  
+  bathy_rast <- bathy_rast %>%
+    mask(area_rast)
+    
+  writeRaster(bathy_rast, bathy_rast_file, overwrite = TRUE)
+
+  rast_neritic <- rast_shallow <- bathy_rast
+  values(rast_neritic) <- ifelse(values(bathy_rast) <= 200, 1, NA)
+  values(rast_shallow) <- ifelse(values(bathy_rast) <=  60, 1, NA)
+  
+  writeRaster(rast_neritic, file.path(dir_git, 'spatial', 'bathy_rast_neritic.tif'),
+              overwrite = TRUE)
+  writeRaster(rast_shallow, file.path(dir_git, 'spatial', 'bathy_rast_shallow.tif'),
+              overwrite = TRUE)
+  
+} else {
+  # git_prov(bathy_rast_file, 'output')
+  bathy_rast <- raster::raster(bathy_rast_file)
+}
+
+plot(bathy_rast, main = 'Bathymetry (minimum depth) raster 10 km^2 Gall-Peters')
+
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+
+# prov_wrapup(commit_outputs = FALSE)
+
+```
+

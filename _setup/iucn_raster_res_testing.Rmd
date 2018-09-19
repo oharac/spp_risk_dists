@@ -1,0 +1,573 @@
+---
+title: 'Test raster resolution options for IUCN maps'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+library(sf)
+
+dir_git <- '~/github/spp_health_dists'
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_health_dists')
+
+### goal specific folders and info
+dir_check   <- file.path(dir_git, 'data/iucn/map_check')
+
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2017-3')
+
+```
+
+# Summary
+
+Using a set of IUCN species range maps, test several options for rasterization.  If we can get most maps via IUCN then we are not tied to AquaMaps half-degree cell resolution.  The concern, however, is file size and convenience.  As well, the finer resolution is only valuable to a point - since it is still just presence/absence on a polygon, that resolution only matters on the boundaries.
+
+Options to examine, both in raster format and dataframe/csv format:
+
+* half degree cells, using AquaMaps/LOICZID cells as baseline
+* finer resolutions in lat-long: e.g. .25 degree or .10 degree; these would allow the new data to play well with AquaMaps.
+* equal area projection e.g. cylindrical equal area projection or Mollweide.  These would require a transformation step.  Mollweide reprojection can have issues with polygons on the +/- 180 degree line, creating artifacts that streak horizontally across the globe.  Cylindrical seems less likely to have this issue, though then does not play well with Cumulative Human Impact-style data.
+
+Likely solution: quarter degree (or smaller) remaining in lat-long to avoid reprojection.  Aggregated maps can be reprojected to CHI projection/resolution afterward for subsequent analysis.
+
+# Methods
+
+Select several IUCN shapefile collections of maps for species with a variety of ranges. First, examine the mean ranges, variance, and number of species by using the shape area from the dbfs. 
+
+``` {r}
+
+dbfs <- list.files(dir_shp, pattern = '\\.dbf$', full.names = TRUE)
+
+marine_spp <- read_csv(file.path(dir_git, 'data/iucn/spp_marine_from_api_2017-3.csv'))
+
+area_df <- lapply(dbfs, foreign::read.dbf) %>%
+  setNames(basename(dbfs)) %>%
+  bind_rows(.id = 'dbf_file') %>%
+  select(dbf_file, iucn_sid = id_no, sciname = binomial, code, presence, subpop, shape_Area) %>%
+  filter(iucn_sid %in% marine_spp$iucn_sid)
+
+write_csv(area_df, file.path(dir_check, 'poly_areas.csv'))
+area_gp_df <- area_df %>%
+  group_by(dbf_file) %>%
+  summarize(mean_area = mean(shape_Area, na.rm = TRUE),
+            var_area = var(shape_Area, na.rm = TRUE),
+            coef_area = sqrt(var_area) / mean_area,
+            n_spp = n()) %>%
+  mutate(group = tolower(dbf_file) %>% str_replace_all('_part.+|\\.dbf', ''),
+         log_mean = log(mean_area),
+         label = ifelse(log_mean > 8 | log_mean < 4 | coef_area > 3.5, dbf_file, NA))
+
+ggplot(area_gp_df, aes(x = log_mean, y = coef_area, color = group, size = n_spp)) +
+  ggtheme_plot() +
+  geom_point(alpha = .5, show.legend = FALSE) +
+  geom_text(aes(label = label), size = 2, color = 'grey20', nudge_y = .1) +
+  labs(x = 'Log (mean area)',
+       y = 'Coefficient of variation of area')
+```
+
+Seems like marine mammals represent large-ranged critters, so may represent the largest of rasters; chondrichthyes seem to represent highly variable critters in terms of range, so will provide a good range of raster sizes for comparison.  Let's also include Marine Fishes for fun.
+
+## Process at half-degree cells
+
+Retrieve AquaMaps LOICZID raster and sequentially rasterize each species map in the collection as well as performing raster::extract on the map set. Time both methods for comparison.
+
+### Rasterize with `fasterize()`
+
+We will loop over each species in each shapefile and rasterize separately, using `sf` and `fasterize` packages.
+
+``` {r, eval = FALSE}
+
+shp_files_all <- list.files(dir_shp, pattern = '\\.shp$', full.names = TRUE)
+shp_info  <- file.info(shp_files_all) %>%
+  mutate(shp = shp_files_all)
+
+keepers <- c('CHOND', 'MAMM', 'MARINEFISH_PART_1') %>% paste0(collapse = '|')
+
+shp_files <- shp_info %>%
+  filter(size < 200e6 | str_detect(shp, keepers)) %>%
+  .$shp
+
+verbose <- FALSE
+
+dir_rast <- file.path(dir_o_anx, 'rasters')
+
+rast_base <- raster::raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[1]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  shp_sf <- st_read(shp)
+  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
+    spp_shp <- shp_sf %>%
+      filter(id_no == id)
+    
+    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_050deg.tif', id))
+    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
+    
+    spp_rast <- fasterize::fasterize(spp_shp, rast_base, field = 'presence', fun = 'min')
+    
+    
+    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+  }
+  
+  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  tmp_df <- data.frame('group' = basename(shp),
+                       'n_spp' = nrow(shp_sf),
+                       'time'  = (proc.time() - ptm_shp)[3])
+  spp_vs_time_df <- spp_vs_time_df %>%
+    bind_rows(tmp_df)
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_050deg.csv'))
+
+```
+
+### Extract with `raster::extract()`
+
+From v2017 and earlier Species goal data prep.
+
+``` {r setup_paths_and_functions}
+
+cache_dir <- (file.path(dir_o_anx, 'rasters'))
+
+extract_from_shp <- function(shp, cache_dir, rast, 
+                             fn_tag   = NULL,
+                             reload   = FALSE) {
+  ### will extract a shapefile to a raster, and save the .csv as a
+  ### file in cache_dir with a matching name (e.g. BOTW.shp -> BOTW.csv).
+  ### NOTE: any filtering of shapefiles should be done before passing them
+  ### to this function; e.g. filter TERRESTRIAL_MAMMALS.shp to just those
+  ### that occur in marine habitats.
+  ### * shp must include .shp extension and must include full path name.
+  
+  if(!file.exists(shp)) {
+    message('Shapefile ', shp, ' does not exist.  shp argument must contain ',
+            'the full path name, including .shp extension.')
+    
+    return(data.frame(msg = 'pathname error'))
+  }
+
+  ### determine species group (the shapefile base name without extension)
+  spp_gp <- basename(shp) %>% str_replace('.shp', '')
+  
+  cache_file <- file.path(cache_dir, 
+                          paste0(spp_gp, 
+                                 ifelse(is.null(fn_tag), '', fn_tag),
+                                 '.csv'))
+  
+  ### if reload == FALSE, and the file exists, don't waste your friggin' time here, move on to next group.
+  if(file.exists(cache_file) & reload == FALSE) {
+    message(sprintf('IUCN <-< LOICZID lookup file already exists for species group %s;',
+                    ' file location:\n  %s', spp_gp, cache_file))
+    return(data.frame(msg = paste(cache_file, ' already exists, not reprocessed')))
+  } else {
+    ptm <- proc.time()
+    fsize <- round(file.size(shp)/1e6, 2)
+    message(sprintf('Reading species group shapefile %s, %.2f MB\n  %s', spp_gp, fsize, shp))
+
+    ### Because the IUCN metadata states that shapefiles are unprojected lat-long with WGS84,
+    ### use readShapePoly (rather than readOGR) and manually tell it the projection...
+    spp_shp <- maptools::readShapePoly(fn = shp,
+                                       proj4string = CRS('+init=epsg:4326'),
+                                       delete_null_obj = TRUE)
+    # spp_shp <- rgdal::readOGR(dsn = dirname(shp),
+    #                           layer = basename(shp) %>% str_replace('.shp', ''),
+    #                           stringsAsFactors = FALSE)
+    message(sprintf('Elapsed read time: %.2f seconds', (proc.time() - ptm)[3]))
+
+
+    message(sprintf('... processing %s species',
+                    length(unique(spp_shp@data$id_no))))
+
+    message('Extracting polygons to LOICZID cells...')
+    ptm <- proc.time()
+    spp_shp_prop <- raster::extract(rast, spp_shp, 
+                                    weights = TRUE, normalizeWeights = FALSE, 
+                                    progress = 'text')
+    message(sprintf('Elapsed process time: %.2f minutes', (proc.time() - ptm)[3]/60))
+
+    
+    ### combine sciname, iucn_sid, presence, and subpop code for a single unique identifier
+    shp_id <- data.frame('sciname'  = spp_shp@data$binomial,
+                         'iucn_sid' = spp_shp@data$id_no,
+                         'presence' = spp_shp@data$presence,
+                         'subpop'   = spp_shp@data$subpop) %>%
+      unite(name_id, sciname, iucn_sid, presence, subpop, sep = '_')
+
+    names(spp_shp_prop) <- shp_id$name_id
+
+    ### convert list to data frame.
+    spp_shp_prop_df <- plyr::ldply(spp_shp_prop, rbind)
+    spp_shp_prop_df <- spp_shp_prop_df %>%
+      rename(name_id   = .id,
+             LOICZID   = value,
+             prop_area = weight) %>%
+      separate(name_id, c('sciname', 'iucn_sid', 'presence', 'subpop'), sep = '_') %>%
+      distinct()
+
+    ### save .csv for this species group
+    message(sprintf('%s: %s species maps, %s total cells in output file',
+                    spp_gp, length(unique(spp_shp_prop_df$iucn_sid)),
+                    nrow(spp_shp_prop_df)))
+    message(sprintf('Writing IUCN<->LOICZID intersection file for %s to:\n  %s', spp_gp, cache_file))
+    write_csv(spp_shp_prop_df, cache_file)
+  }
+  
+  return(invisible(spp_shp_prop_df))
+}
+
+```
+
+``` {r, eval = FALSE}
+
+verbose <- TRUE
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[3]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  
+  if(!file.exists(sprintf('%s/%s.csv', cache_dir, str_replace(basename(shp), '.shp', '')))) {
+  
+    shp_csv <- extract_from_shp (shp,
+                                 cache_dir = cache_dir,
+                                 rast = rast_base,
+                                 reload = TRUE)
+  
+    tmp_df <- data.frame('group' = basename(shp),
+                         'time'  = (proc.time() - ptm_shp)[3])
+    spp_vs_time_df <- spp_vs_time_df %>%
+      bind_rows(tmp_df)
+  } else  if(verbose) cat('Skipping', basename(shp), '...\n')
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_extract_050deg.csv'))
+
+```
+
+#### plot size relationships
+
+* Examine relationship between range size (polygon area) to raster file size and dataframe/csv size.  LZW compression in `writeRaster()` should help the raster file size substantially.
+
+``` {r} 
+
+poly_areas <- read_csv(file.path(dir_check, 'poly_areas.csv')) %>%
+  mutate(group = str_replace_all(dbf_file, '\\.dbf$', '')) %>%
+  group_by(iucn_sid, group, sciname) %>%
+  summarize(poly_area = sum(shape_Area))
+### note, this is for ALL species groups.  
+### Summing polys for spp with subpops; this may overestimate due to overlaps
+
+### Get raster file sizes
+rast_files <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '050deg.tif$',
+                         full.names = TRUE)
+rast_sizes <- data.frame(rast = basename(rast_files),
+                         rast_size = file.size(rast_files)) %>%
+  mutate(iucn_sid = str_extract(rast, '[0-9]+'),
+         iucn_sid = as.integer(iucn_sid))
+
+### Get extracted cell file sizes
+extract_files <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '\\.csv$',
+                         full.names = TRUE)
+extract_sizes <- data.frame(csv = basename(extract_files),
+                            csv_size = file.size(extract_files)) %>%
+  mutate(group = str_replace_all(csv, '\\.csv$', ''))
+
+
+area_vs_size <- poly_areas %>%
+  inner_join(rast_sizes, by = 'iucn_sid') %>%
+  full_join(extract_sizes, by = 'group') %>%
+  filter(!is.na(csv)) ### these are dupes between MARINEFISH and other groups
+  
+ggplot(area_vs_size, aes(x = poly_area, y = rast_size)) +
+  ggtheme_plot() +
+  geom_point() +
+  stat_smooth(formula = poly(rast_size, 2) ~ poly_area)
+
+# range(area_vs_size$rast_size)
+# 128120 165757
+```
+
+Looks like the raster size is ~ square root of polygon size (more or less).  This must be due to compression; otherwise the raster size should be proportional to polygon area (double the polygon area, double the number of included raster cells).  But in any case, the range is very narrow: 128120 to 165757 bytes.
+
+``` {r}
+tot_area_vs_size <- area_vs_size %>%
+  group_by(group, csv_size) %>%
+  summarize(tot_poly_area = sum(poly_area),
+            tot_rast_size = sum(rast_size)) %>%
+  mutate(log_poly_area = log(tot_poly_area),
+         log_rast_size = log(tot_rast_size),
+         log_csv_size = log(csv_size))
+  
+ggplot(tot_area_vs_size, aes(x = log_poly_area, y = log_rast_size, color = group)) +
+  ggtheme_plot() +
+  xlim(c(0, NA)) +
+  ylim(c(0, NA)) +
+  geom_point()
+
+ggplot(tot_area_vs_size, aes(x = log_csv_size, y = log_rast_size, color = group)) +
+  ggtheme_plot() +
+  xlim(c(0, NA)) +
+  ylim(c(0, NA)) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point()
+
+```
+
+The csv file size should be linear with total polygon size; as the polygon includes more cells, the csv gets longer; assuming no compression on the saved file.  
+
+Note that Marine Mammals seems to be an odd outlier, perhaps due to subpopulations; in the real data prep, these would be calculated separately, but they bear some checking.
+
+## Rasterize at quarter degree for comparison
+
+``` {r, eval = FALSE}
+
+verbose <- FALSE
+
+rast_base_halfdeg    <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+rast_base_quarterdeg <- raster(resolution = .25, ext = extent(rast_base_halfdeg))
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[1]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  shp_sf <- st_read(shp)
+  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
+    spp_shp <- shp_sf %>%
+      filter(id_no == id)
+    
+    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_025deg.tif', id))
+    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
+    
+    spp_rast <- fasterize::fasterize(spp_shp, rast_base_quarterdeg, field = 'presence', fun = 'min')
+    
+    
+    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+  }
+  
+  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  tmp_df <- data.frame('group' = basename(shp),
+                       'n_spp' = nrow(shp_sf),
+                       'time'  = (proc.time() - ptm_shp)[3])
+  spp_vs_time_df <- spp_vs_time_df %>%
+    bind_rows(tmp_df)
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_025deg.csv'))
+
+```
+
+## Rasterize at tenth degree for comparison
+
+``` {r, eval = FALSE}
+
+verbose <- FALSE
+
+rast_base_halfdeg    <- raster(file.path(dir_git, 'spatial/loiczid_raster.tif'))
+rast_base_tenthdeg <- raster(resolution = .10, ext = extent(rast_base_halfdeg))
+
+spp_vs_time_df <- data.frame()
+
+for(shp in shp_files) { ### shp <- shp_files[1]
+  ptm_shp <- proc.time()
+  if(verbose) cat('Processing', basename(shp), '...\n')
+  shp_sf <- st_read(shp)
+  if(verbose) cat('  Time to read shp:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  for(id in shp_sf$id_no) { ### id <- shp_sf$id_no[1]
+    spp_shp <- shp_sf %>%
+      filter(id_no == id)
+    
+    rast_file <- file.path(dir_o_anx, sprintf('rasters/iucn_sid_%s_010deg.tif', id))
+    # if(verbose) cat('  Rasterizing', id, ':', spp_shp$binomial, 'to: ', basename(rast_file), '...\n')
+    
+    spp_rast <- fasterize::fasterize(spp_shp, rast_base_tenthdeg, field = 'presence', fun = 'min')
+    
+    
+    raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
+  }
+  
+  if(verbose) cat('  Elapsed time for', nrow(shp_sf), 'species:', (proc.time() - ptm_shp)[3], 's...\n')
+  
+  tmp_df <- data.frame('group' = basename(shp),
+                       'n_spp' = nrow(shp_sf),
+                       'time'  = (proc.time() - ptm_shp)[3])
+  spp_vs_time_df <- spp_vs_time_df %>%
+    bind_rows(tmp_df)
+
+}
+
+write_csv(spp_vs_time_df, file.path(dir_check, 'spp_time_to_rast_010deg.csv'))
+
+```
+
+``` {r}
+
+rast_time_050 <- read_csv(file.path(dir_check, 'spp_time_to_rast_050deg.csv')) %>%
+  rename(time_050 = time)
+rast_time_025 <- read_csv(file.path(dir_check, 'spp_time_to_rast_025deg.csv')) %>%
+  rename(time_025 = time)
+rast_time_010 <- read_csv(file.path(dir_check, 'spp_time_to_rast_010deg.csv')) %>%
+  rename(time_010 = time)
+
+df <- full_join(rast_time_050, rast_time_025) %>%
+  full_join(rast_time_010) %>%
+  mutate(ratio_025 = time_025 / time_050,
+         ratio_010 = time_010 / time_050)
+
+### twice the resolution only takes twice as much time; 5 x resolution is about 10.5 x time.
+# sum(df$time_025)
+# 545.466    ### about 9 minutes for 2600 spp.  Less than an hour for 10k spp
+# sum(df$time_010)
+# 2621.743   ### about 43 minutes for 2600 spp.  About 3 hours for 10k spp
+
+
+rasts_050 <- list.files(cache_dir, pattern = '050deg.tif$', full.names = TRUE)
+rasts_025 <- list.files(cache_dir, pattern = '025deg.tif$', full.names = TRUE)
+rasts_010 <- list.files(cache_dir, pattern = '010deg.tif$', full.names = TRUE)
+
+df2 <- data.frame(rast_050 = basename(rasts_050),
+                  size_050 = file.size(rasts_050),
+                  rast_025 = basename(rasts_025),
+                  size_025 = file.size(rasts_025),
+                  rast_010 = basename(rasts_010),
+                  size_010 = file.size(rasts_010)) %>%
+  mutate(ratio_025 = size_025 / size_050,
+         ratio_010 = size_010 / size_050)
+### twice the resolution is about 2.9 times the size, not 4 times the size;
+### five times resolution is about 11.6 times the size, not 25 times.
+
+# sum(df2$size_025)
+# 987989445    ### about 1 GB for 2600 spp... figure 4 gb total for 10k spp
+# sum(df2$size_010)
+# 3972184058   ### about 4 GB for 2600 spp... figure 16 gb total for 10k spp
+
+ggplot(df2, aes(x = size_050, y = size_025)) +
+  ggtheme_plot() +
+  geom_point() +
+  geom_point(aes(y = size_010), color = 'blue')
+
+```
+
+Based on these tests, it looks like rasterizing with `fasterize()` is FAR faster than `raster::extract()` method.  At half-degree cells, the csv from `extract()` is similar in size to the total rasters from `fasterize()`; at finer resolutions the file size increases in a power around 1.5 (rather than quadratic as might be expected, prob due to compression).
+
+Quarter degree cells give a resolution of about 27.5 kilometer square cells at the equator rather than 55 km for half-degree cells.  Tenth-degree cells give a resolution of about 11.1 km square cells.
+
+``` {r} 
+
+rast_files_050 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '050deg.tif$',
+                         full.names = TRUE)
+
+rast_files_025 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '025deg.tif$',
+                         full.names = TRUE)
+
+rast_files_010 <- list.files(file.path(dir_o_anx, 'rasters'),
+                         pattern = '010deg.tif$',
+                         full.names = TRUE)
+
+system.time({
+  stack_050 <- raster::stack(rast_files_050)
+})
+system.time({
+  stack_025 <- raster::stack(rast_files_025)
+  ### about 17.5 s for 2626 layers
+})
+system.time({
+  stack_010 <- raster::stack(rast_files_010)
+})
+
+# object.size(stack_050)
+# 1210832 bytes
+# object.size(stack_025)
+# 1210832 bytes
+# object.size(stack_010)
+# 1210832 bytes
+system.time({
+  sum_050 <- calc(stack_050, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_050.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #     user  system elapsed 
+  #   36.160   0.248  36.393 
+  ### for 2626 files:
+  #       user   system  elapsed 
+  #   3497.480  192.792 3688.781 
+})
+system.time({
+  sum_025 <- calc(stack_025, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_025.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #     user  system elapsed 
+  #   50.016   0.936  50.987 
+  ### for 2626 files:
+  #       user   system  elapsed 
+  #   3603.252 1596.552 5197.673 
+})
+system.time({
+  sum_010 <- calc(stack_010, fun = sum, na.rm = TRUE,
+                  filename = file.path(dir_o_anx, 'rasters/summed/sum_010.tif'),
+                  progress = 'text')
+  ### for 100 files:
+  #      user  system elapsed 
+  #   137.052 103.480 240.440 
+  #      user    system   elapsed 
+  #  4147.164 10089.116 14230.614 
+
+})
+object.size(sum_050)
+object.size(sum_025)
+object.size(sum_010)
+
+### The amount of time required to process these may make it more effective 
+### to chop into subgroups (e.g. taxa) and sum within groups, tracking all 
+### relevant info, then combining groups at the end in the same process.
+```
+
+
+``` {r stack times vector}
+x <- stack_050[[1:5]]
+
+y <- x * c(1:5)
+
+plot(y)
+### you can take a stack and multiply it element-wise with a vector!
+### this will be helpful for multiplying presence by range rarity:
+###   (presence( = 1) (as a raster) * cell_area (as a raster)) * 1/total area (as a vector)
+### and then summing
+```

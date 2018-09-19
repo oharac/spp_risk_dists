@@ -1,0 +1,53 @@
+spp_gp,kingdom,phylum,class,order,family,species,subpops
+acipenseriformes,Animalia,Chordata,Actinopterygii,Acipenseriformes,Acipenseridae,9,NA
+angelfish,Animalia,Chordata,Actinopterygii,Perciformes,Pomacanthidae,84,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Accipitriformes,NA,18,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Anseriformes,NA,69,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Caprimulgiformes,NA,4,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Charadriiformes,NA,248,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Ciconiiformes,NA,6,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Coraciiformes,NA,28,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Cuculiformes,NA,1,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Falconiformes,NA,6,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Galliformes,NA,5,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Gaviiformes,NA,5,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Gruiformes,NA,17,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Passeriformes,NA,71,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Pelecaniformes,NA,46,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Phaethontiformes,NA,3,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Phoenicopteriformes,NA,3,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Podicipediformes,NA,8,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Procellariiformes,NA,138,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Psittaciformes,NA,1,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Sphenisciformes,NA,18,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Strigiformes,NA,2,NA
+bli_marine_v2017,Animalia,Chordata,Aves,Suliformes,NA,51,NA
+bonefish_tarpons,Animalia,Chordata,Actinopterygii,Albuliformes,Albulidae,3,NA
+bonefish_tarpons,Animalia,Chordata,Actinopterygii,Elopiformes,"Elopidae, Megalopidae",4,NA
+butterflyfish,Animalia,Chordata,Actinopterygii,Perciformes,Chaetodontidae,120,NA
+chondrichthyes,Animalia,Chordata,Chondrichthyes,NA,NA,624,10
+combtoothblennies,Animalia,Chordata,Actinopterygii,Perciformes,"Blenniidae, Chaenopsidae, Clinidae, Dactyloscopidae, Labrisomidae, Tripterygiidae",831,NA
+conus,Animalia,Mollusca,Gastropoda,NA,NA,545,NA
+corals,Animalia,Cnidaria,Anthozoa,NA,NA,691,NA
+corals,Animalia,Cnidaria,Hydrozoa,NA,NA,14,NA
+crocodiles,Animalia,Chordata,Reptilia,Crocodylia,NA,2,NA
+groupers,Animalia,Chordata,Actinopterygii,Perciformes,Epinephelidae,113,NA
+hagfish,Animalia,Chordata,Myxini,NA,NA,46,NA
+lobsters,Animalia,Arthropoda,Malacostraca,NA,NA,157,NA
+mangroves,Plantae,Tracheophyta,Liliopsida,NA,NA,2,NA
+mangroves,Plantae,Tracheophyta,Magnoliopsida,NA,NA,59,NA
+mangroves,Plantae,Tracheophyta,Polypodiopsida,NA,NA,3,NA
+marine_mammals,Animalia,Chordata,Mammalia,Carnivora,NA,32,2
+marine_mammals,Animalia,Chordata,Mammalia,Cetartiodactyla,NA,44,12
+marine_mammals,Animalia,Chordata,Mammalia,Sirenia,NA,3,NA
+pufferfish,Animalia,Chordata,Actinopterygii,Tetraodontiformes,Tetraodontidae,132,NA
+reptiles,Animalia,Chordata,Reptilia,Squamata,NA,11,NA
+reptiles,Animalia,Chordata,Reptilia,Testudines,NA,6,17
+seabreams_porgies,Animalia,Chordata,Actinopterygii,Perciformes,"Centracanthidae, Sparidae",123,NA
+seacucumbers,Animalia,Echinodermata,Holothuroidea,NA,NA,127,NA
+seagrasses,Plantae,Tracheophyta,Liliopsida,NA,NA,61,NA
+seasnakes,Animalia,Chordata,Reptilia,Squamata,NA,40,NA
+surgeonfish_tangs_unicornfish,Animalia,Chordata,Actinopterygii,Perciformes,Acanthuridae,73,NA
+terrestrial_mammals,Animalia,Chordata,Mammalia,Carnivora,NA,10,NA
+tunas_billfishes,Animalia,Chordata,Actinopterygii,Perciformes,"Istiophoridae, Scombridae, Xiphiidae",50,NA
+wrasse,Animalia,Chordata,Actinopterygii,Perciformes,Labridae,519,NA

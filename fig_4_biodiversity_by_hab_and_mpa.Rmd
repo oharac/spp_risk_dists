@@ -258,7 +258,7 @@ ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
 
 Examine where MPAs in open ocean and MPAs in EEZs overlap.
 
-```{r}
+``` {r, eval = FALSE}
 cell_id_rast <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
 mean_rast    <- raster(file.path(dir_git, 'output', 
                      'mean_risk_raster_comp.tif'))
