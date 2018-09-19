@@ -1,6 +1,6 @@
 # Mapping status and conservation of global at-risk marine biodiversity
 
-__Authors:__ Casey C. O'Hara^1,2^, Juan Carlos Villaseñor-Derbez^1^, Gina M. Ralph^3^, Benjamin S. Halpern^1,2,4^
+__Authors:__ Casey C. O'Hara<sup>1,2</sup>, Juan Carlos Villaseñor-Derbez<sup>1</sup>, Gina M. Ralph<sup>3</sup>, Benjamin S. Halpern<sup>1,2,4</sup>
 
 1. Bren School of Environmental Science and Management, University of California, Santa Barbara CA 93106
 2. National Center for Ecological Analysis and Synthesis, University of California, 735 State Street Suite 300, Santa Barbara CA 93101
@@ -11,9 +11,8 @@ __Authors:__ Casey C. O'Hara^1,2^, Juan Carlos Villaseñor-Derbez^1^, Gina M. Ra
 
 ## Abstract: 
 
-To conserve marine biodiversity we must first understand the spatial distribution and status of at-risk biodiversity.
-We combined range maps and conservation status for `r fnum(n_spp)` marine species to map the global distribution of extinction risk of marine biodiversity.
-We find that for `r fnum(pct_threat_quarter, 0)`% of the ocean, >25% of assessed species are considered threatened, and `r fnum(pct_rr_threat_half, 0)`% of the ocean shows >50% of assesed species threatened when weighting for range-limited species.
+To conserve marine biodiversity we must first understand the spatial distribution and status of at-risk biodiversity. We combined range maps and conservation status for 5,291 marine species to map the global distribution of extinction risk of marine biodiversity.
+We find that for 83% of the ocean, >25% of assessed species are considered threatened, and 15% of the ocean shows >50% of assesed species threatened when weighting for range-limited species.
 Comparing marine biodiversity risk to locations of no-take marine reserves, we identify regions where reserves preferentially afford proactive protection (i.e., preserving low-risk areas) or reactive protection (i.e., mitigating high-risk areas).
 In particular, elevated risk to high seas biodiversity indicates a need for credible protection and reduction of fishing effort in international waters.
 
@@ -30,7 +29,7 @@ Welcome to the repository for code and data related to __Mapping status and cons
     1. Pull information from the IUCN Red List API to determine an overall species list, habitat information, and current risk (conservation status).
     2. Pull information from API on risk from regional assessments; also recode the regions according to Marine Ecoregions (Spalding et al, 2007) for later spatialization.
     3. Pull historical assessment information from API for possible trend analysis.  Note that this did not make it into the final draft of the manuscript.
-    4. Set up spatial layers in Gall-Peters, 100 km^2^ cells.  Layers include:
+    4. Set up spatial layers in Gall-Peters, 100 km<sup>2<sup/> cells.  Layers include:
         * cell ID (cells are sequentially numbered for combining with tabular data)
         * ocean area
         * marine protected area (classification, year of protection, proportion of protection)
