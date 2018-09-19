@@ -51,12 +51,12 @@ In this directory are a sequence of files used to generate the bits and pieces t
 
 At this level there are several scripts, prefixed `1x_biodiversity_maps`, that collate the various taxonomic group level files (generated in `setup` part 6) and summarize to the global level.  
 
-    * Note each creates a specific aggregation - comprehensively assessed species vs all available species; uniform vs range-rarity weighting.
-    * The rasters generated in these scripts are saved in the `_output` folder.
+* Note each creates a specific aggregation - comprehensively assessed species vs all available species; uniform vs range-rarity weighting.
+* The rasters generated in these scripts are saved in the `_output` folder.
 
 At this level are also all scripts used to generate figures for the manuscript, based on the data from the setup scripts and the rasters.
 
-    * The figures are saved in `spp_risk_dists/ms_figures` directory.
+* The figures are saved in `spp_risk_dists/ms_figures` directory.
   
 ### Data and output files
 
@@ -64,10 +64,10 @@ The `spp_risk_dists/_data` folder contains tabular data about IUCN species used 
 
 The `spp_risk_dists/_spatial` folder contains general spatial data generated and/or used in the `setup` scripts.  These include:
 
-    * rasters for cell ID, EEZ ID, marine ecoregion ID, ocean area, and bathymetry masks.   
-    * tabular data of region names and lookups for IUCN regional assessment to marine ecoregion.
-    * tabular data of marine protected area level/year/coverage to cell ID.
-    * shapefiles used for map plotting from Natural Earth.
+* rasters for cell ID, EEZ ID, marine ecoregion ID, ocean area, and bathymetry masks.   
+* tabular data of region names and lookups for IUCN regional assessment to marine ecoregion.
+* tabular data of marine protected area level/year/coverage to cell ID.
+* shapefiles used for map plotting from Natural Earth.
 
 The `spp_risk_dists/_output` folder contains the rasters of biodiversity risk, species richness, variance of risk, etc generated from the scripts in the base directory.
 
