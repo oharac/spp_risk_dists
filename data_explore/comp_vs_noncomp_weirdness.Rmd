@@ -1,0 +1,97 @@
+---
+title: 'Biodiversity risk maps - comp vs non-comp odd distribution'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_setup <- file.path(dir_git, '_setup')
+dir_data  <- file.path(dir_git, '_data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, '_setup/common_fxns.R'))
+
+```
+
+``` {r map function}
+
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+                                   'ne_10m_land_no_casp.shp')) %>%
+  st_transform(gp_proj4) 
+
+map_rast <- function(rast, min_val = NA, max_val = NA) {
+  df <- rasterToPoints(rast) %>%
+    as.data.frame() %>%
+    setNames(c('x', 'y', 'value'))
+  
+  if(!is.na(min_val)) {
+    df <- df %>%
+      mutate(value = ifelse(value < min_val, min_val, value))
+  }
+  if(!is.na(max_val)) {
+    df <- df %>%
+      mutate(value = ifelse(value > max_val, max_val, value))
+  }
+
+  
+  rast_map <- ggplot(df) +
+    geom_raster(aes(x, y, fill = value)) +
+    geom_sf(data = land_poly, aes(geometry = geometry), 
+            fill = 'grey96', color = 'grey40', size = .10) +
+    ggtheme_map() +
+    coord_sf(datum = NA) + ### ditch graticules
+    scale_fill_viridis_c() +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0))
+
+  return(rast_map)
+}
+```
+
+``` {r}
+
+nspp_comp <- raster(file.path(dir_git, '_output', 'n_spp_risk_raster_comp.tif'))
+nspp_all  <- raster(file.path(dir_git, '_output', 'n_spp_risk_raster_all.tif'))
+
+nspp_noncomp <- nspp_all - nspp_comp
+
+comp_log    <- log10(nspp_comp)
+noncomp_log <- log10(nspp_noncomp)
+all_log     <- log10(nspp_all)
+
+comp_pct <- nspp_comp / nspp_all
+noncomp_pct <- nspp_noncomp / nspp_all
+
+map_rast(comp_log, 1.5, 2.8)
+map_rast(noncomp_log, 1.5, 2.8)
+map_rast(all_log, 2, 2.8)
+
+# map_rast(comp_pct)
+# map_rast(noncomp_pct)
+
+```

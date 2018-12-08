@@ -1,0 +1,107 @@
+---
+title: 'Set up IUCN marine species threats'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+
+dir_git <- '~/github/spp_risk_dists'
+
+### provenance tracking
+library(provRmd); prov_setup()
+
+### goal specific folders and info
+dir_setup   <- file.path(dir_git, '_setup')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_setup, 'common_fxns.R'))
+
+```
+
+# Summary
+
+Get IUCN current risk assessments and historical assessments over time, for all IUCN marine species.  This method is not reliant on any information from AquaMaps.
+
+# Data Sources
+
+### IUCN Red List
+
+# Methods
+
+## Get IUCN threat lists for all available IUCN marine spp
+
+``` {r determine_marine_spp_from_api}
+
+spp_threats_file <- file.path(dir_git, '_data/iucn_spp_threats_2018-1.csv')
+
+spp_info <- read_csv(file.path(dir_git, '_data', 'iucn_risk_current_2018-1.csv'))
+
+if(!file.exists(spp_threats_file)) {
+  
+  spp_ids <- spp_info$iucn_sid
+  
+  threat_url <- 'http://apiv3.iucnredlist.org/api/v3/threats/species/id/%s?token=%s'
+  
+  ptm <- system.time({
+    spp_threats <- mc_get_from_api(threat_url, spp_ids, api_key, cores = 12)
+  })
+  ptm[3]
+  
+  spp_threats <- spp_threats %>%
+    mutate(#id = ifelse(!is.na(api_error), param_id, id),
+           score_num = as.integer(str_extract(score, '[0-9]+'))) %>%
+    select(-param_id, -api_error, iucn_sid = id)
+  
+  write_csv(spp_threats, spp_threats_file)
+}
+```
+
+``` {r}
+
+spp_threats <- read_csv(file.path(spp_threats_file)) %>%
+  distinct()
+spp_sum_threats <- spp_threats %>%
+  group_by(iucn_sid) %>%
+  summarize(tot_threat_score = sum(score_num, na.rm = TRUE),
+            threat_count    = n(),
+            mean_threat_score = tot_threat_score / threat_count)
+
+thr_vs_cat <- spp_sum_threats %>%
+  left_join(spp_info, by = 'iucn_sid')
+
+ggplot(thr_vs_cat, aes(x = tot_threat_score, y = cat_score)) +
+  geom_jitter() +
+  geom_smooth(method = 'auto')
+
+ggplot(thr_vs_cat, aes(x = mean_threat_score, y = cat_score)) +
+  geom_jitter() +
+  geom_smooth(method = 'auto')
+```
+
+-----
+
+``` {r prov_footer, results = 'asis'}
+
+prov_wrapup(commit_outputs = FALSE)
+
+```
+
