@@ -1,0 +1,271 @@
+---
+title: 'MPAs and biodiversity intactness by EEZ'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, '_setup/common_fxns.R'))
+
+```
+
+# Summary
+
+Compare MPAs to biodiversity risk in table format.
+
+# Methods
+
+## Compare MPA coverage to biodiversity risk
+
+MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs as their numeric IUCN category (i.e. Ia = Ib = 1, II = 2, ..., VI = 6); areas that are specifically designated as no-take (that are not already in categories Ia, Ib, and II) are coded as -1; areas that are designated in the WDPA database but do not fall into one of these categories are coded as 8.
+
+``` {r set up mpa and values dataframe}
+
+mean_rast     <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
+eez_rast      <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+
+rgn_labels <- read_csv(file.path(dir_git, '_spatial/rgn_names.csv')) %>%
+  mutate(r1_label = str_replace(r1_label, 'Americas', 'N. America'),
+         r1_label = str_replace(r1_label, 'Latin Am.+', 'S. America'),
+         r1_label = ifelse(str_detect(r2_label, 'Central America|Caribbean'), 
+                           'C. America/Caribbean', r1_label),
+         r1_label = ifelse(rgn_id == 135, 'N. America', r1_label)) %>%
+  mutate(rgn_label = str_replace_all(rgn_label, 'Islands?', 'Is.'),
+         rgn_label = str_replace_all(rgn_label, ' and ', ' & '),
+         rgn_label = str_replace_all(rgn_label, ' the ', ' '),
+         rgn_label = str_replace(rgn_label, 'R.union', 'Reunion'),
+         rgn_label = str_replace_all(rgn_label, 'Saint', 'St.'),
+         rgn_label = str_replace_all(rgn_label, 'North(ern)?', 'N.'),
+         rgn_label = str_replace_all(rgn_label, 'South(ern)?', 'S.'),
+         rgn_label = str_replace(rgn_label, 'Virgin Is. of United States', 'US Virgin Is.'),
+         rgn_label = str_replace(rgn_label, 'Democratic Republic', 'Dem. Rep.'),
+         rgn_label = str_replace(rgn_label, 'Territory', 'Terr.'))
+
+risk_df <- data.frame(cell_id    = 1:length(values(mean_rast)),
+                      ocean_area = values(ocean_area_rast),
+                      eez        = values(eez_rast),
+                      mean_risk  = values(mean_rast)) %>%
+  left_join(rgn_labels, by = c('eez' = 'rgn_id')) %>%
+  filter(!is.na(mean_risk))
+
+```
+
+``` {r set up no take vs risk df}
+
+calc_mpa_areas <- function(df) {
+  ### ensure MPA area is no larger than ocean area of the cell; and
+  ### code NA as zero for means and weights calculations
+  df %>%
+    mutate(mpa = ifelse(is.na(mpa), 0, mpa),
+           mpa = ifelse(mpa > ocean_area, ocean_area, mpa),
+           non_mpa = ocean_area - mpa) %>%
+    gather(mpa_status, area, mpa, non_mpa) %>%
+    mutate(mpa_status = (mpa_status == 'mpa'))
+}
+
+mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+                          col_types = 'dddd') %>%
+  filter(wdpa_category <= 2) %>%
+  select(-wdpa_category) %>%
+  group_by(cell_id) %>%
+  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
+
+risk_mpa_df <- risk_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+```
+
+``` {r no take mpas, eval = TRUE}
+
+rgn_no_take <- risk_mpa_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = rgn_label, rgn = r1_label) %>%
+  arrange(rgn, lbl) %>%
+  mutate(lbl = forcats::fct_inorder(lbl))
+
+prot_pct <- rgn_no_take %>%
+  group_by(lbl) %>%
+  summarize(pct_prot = sum(area * mpa_status) / sum(area) * 100,
+            tot_area = sum(area))
+### this is independent of range-rarity weighting
+
+no_take_means <- rgn_no_take %>%
+  group_by(mpa_status, lbl) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+  
+```
+
+``` {r set up overall rr-weighted dataframe}
+
+mean_rr_rast      <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+
+risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
+                         ocean_area = values(ocean_area_rast),
+                         eez        = values(eez_rast),
+                         mean_risk  = values(mean_rr_rast)) %>%
+  left_join(rgn_labels, by = c('eez' = 'rgn_id')) %>%
+  filter(!is.na(mean_risk))
+
+```
+
+``` {r set up no take vs risk rr df}
+
+risk_mpa_rr_df <- risk_rr_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+```
+
+``` {r rr-weighted protection level dataframes}
+
+rgn_no_take_rr <- risk_mpa_rr_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = rgn_label, rgn = r1_label) %>%
+  arrange(rgn, lbl) %>%
+  mutate(lbl = forcats::fct_inorder(lbl))
+
+no_take_rr_means <- rgn_no_take_rr %>%
+  group_by(mpa_status, lbl) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+
+rgn_no_take_rr <- risk_mpa_rr_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = rgn_label, rgn = r1_label) %>%
+  arrange(rgn, lbl) %>%
+  mutate(lbl = forcats::fct_inorder(lbl))
+
+no_take_rr_means <- rgn_no_take_rr %>%
+  group_by(mpa_status, lbl) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+  
+```
+
+There seem to be two philosophies of MPA priority: place MPAs in impacted areas to reduce pressure and prevent further degradation, or place MPAs to protect pristine places to maintain their pristine state.  This suggests that we may see a bimodal distribution of mean risk within MPA cells relative to the distribution of mean risk in general.
+
+### Mean risk
+
+For the EEZ-level analysis, generate a table with total area, pct protected area, mean protected/unprotected, 
+
+```{r}
+
+library(sf)
+rgn_shp <- read_sf(file.path(dir_M, 'git-annex', 'globalprep/spatial/v2017', 
+                             'regions_2017_update.shp'))
+ocean_area_from_shp <- rgn_shp %>%
+  as.data.frame() %>%
+  filter(rgn_type == 'eez') %>%
+  select(rgn_id, rgn_name, area_km2) %>%
+  left_join(rgn_labels, by = c('rgn_id')) %>%
+  select(rgn_label, area_km2)
+
+rgn_no_take_sum <- rgn_no_take %>%
+  mutate(mpa_status = ifelse(mpa_status, 'mpa', 'nonmpa')) %>%
+  group_by(lbl, rgn, mpa_status) %>%
+  summarize(mean_risk = sum(mean_risk * area) / sum(area)) %>%
+  ungroup() %>%
+  spread(mpa_status, mean_risk)
+
+table_sum <- rgn_no_take_sum %>%
+  full_join(prot_pct, by = 'lbl') %>%
+  mutate(mpa = ifelse(is.na(mpa), 0, mpa)) %>%
+  full_join(ocean_area_from_shp, by = c('lbl' = 'rgn_label')) %>%
+  mutate(risk_diff = mpa - nonmpa) %>%
+  arrange(risk_diff)
+
+table_format <- table_sum %>%
+  filter(pct_prot > 0.5 & tot_area > 1000) %>%
+  mutate(pct_prot  = round(pct_prot, 1),
+         area_1000km2 = formatC(area_km2 / 1000, big.mark = ',', format = 'f', digits = 1),
+         mpa       = round(mpa, 3), 
+         nonmpa    = round(nonmpa, 3), 
+         risk_diff = round(risk_diff, 3)) %>%
+  select(`Region` = lbl,
+         `Georegion` = rgn,
+         `Area (x10^3^ km^2^)` = area_1000km2,
+         `% marine<br>reserve` = pct_prot,
+         `μ<sub>reserve</sub>` = mpa,
+         `μ<sub>non-reserve</sub>` = nonmpa,
+         `Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)` = risk_diff)
+
+write_csv(table_format, 'ms_figures/table_s2_risk_diff_by_eez.csv')
+knitr::kable(table_format, 
+             caption = 'Mean risk inside and outside marine reserves, for EEZs greater than 
+                        1000 km^2^ and reserves totalling more than 0.5% of EEZ.  Negative 
+                        risk differential indicates preference for protecting areas of 
+                        low biodiversity risk within EEZ.')
+```
+
+```{r}
+
+rgn_no_take_rr_sum <- rgn_no_take_rr %>%
+  mutate(mpa_status = ifelse(mpa_status, 'mpa', 'nonmpa')) %>%
+  group_by(lbl, rgn, mpa_status) %>%
+  summarize(mean_risk = sum(mean_risk * area) / sum(area)) %>%
+  ungroup() %>%
+  spread(mpa_status, mean_risk)
+
+table_rr_sum <- rgn_no_take_rr_sum %>%
+  full_join(prot_pct, by = 'lbl') %>%
+  mutate(mpa = ifelse(is.na(mpa), 0, mpa)) %>%
+  full_join(ocean_area_from_shp, by = c('lbl' = 'rgn_label')) %>%
+  mutate(risk_diff = mpa - nonmpa) %>%
+  arrange(risk_diff)
+
+table_rr_format <- table_rr_sum %>%
+  filter(pct_prot > 0.5 & tot_area > 1000) %>%
+  mutate(pct_prot  = round(pct_prot, 1),
+         area_1000km2 = formatC(area_km2 / 1000, big.mark = ',', format = 'f', digits = 1),
+         mpa       = round(mpa, 3), 
+         nonmpa    = round(nonmpa, 3), 
+         risk_diff = round(risk_diff, 3)) %>%
+  select(`Region` = lbl,
+         `Georegion` = rgn,
+         `Area (x10^3^ km^2^)` = area_1000km2,
+         `% marine<br>reserve` = pct_prot,
+         `μ<sub>reserve</sub>` = mpa,
+         `μ<sub>non-reserve</sub>` = nonmpa,
+         `Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)` = risk_diff)
+
+write_csv(table_rr_format, 'ms_figures/table_s3_risk_diff_rr_by_eez.csv')
+knitr::kable(table_rr_format, 
+             caption = 'Mean risk inside and outside marine reserves, for EEZs greater than 
+                        1000 km^2^ and reserves totalling more than 0.5% of EEZ.  Negative 
+                        risk differential indicates preference for protecting areas of 
+                        low biodiversity risk within EEZ.')
+```
+
+

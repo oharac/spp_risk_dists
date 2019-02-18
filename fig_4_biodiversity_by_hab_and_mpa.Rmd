@@ -25,7 +25,6 @@ library(raster)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
   ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
-library(ggridges)
 
 dir_git <- '~/github/spp_risk_dists'
 
@@ -33,7 +32,7 @@ dir_git <- '~/github/spp_risk_dists'
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -80,7 +79,7 @@ habs_1km_files <- list.files(dir_habs_reproj,
                              full.names = TRUE)
 habs_10km_files <- str_replace(habs_1km_files, '_1km.tif$', '_10km.tif') %>%
   setNames(habs_1km_files)
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_base <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
 
 for(hab_1km in habs_1km_files) {
   ### hab_1km <- habs_1km_files[1]
@@ -100,16 +99,16 @@ for(hab_1km in habs_1km_files) {
 
 ``` {r set up habs and values dataframe}
 
-cell_id_rast    <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
-mean_rast       <- raster(file.path(dir_git, 'output', 
+cell_id_rast    <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
+mean_rast       <- raster(file.path(dir_git, '_output', 
                      'mean_risk_raster_comp.tif'))
-mean_rr_rast    <- raster(file.path(dir_git, 'output', 
+mean_rr_rast    <- raster(file.path(dir_git, '_output', 
                      'mean_rr_risk_raster_comp.tif'))
-pct_th_rast     <- raster(file.path(dir_git, 'output', 
+pct_th_rast     <- raster(file.path(dir_git, '_output', 
                      'pct_threat_raster_comp.tif'))
-pct_th_rr_rast  <- raster(file.path(dir_git, 'output', 
+pct_th_rr_rast  <- raster(file.path(dir_git, '_output', 
                      'sr_rr_pct_threat_raster_comp.tif'))
-ocean_area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
 
 
 habs_10km_files <- list.files(file.path(dir_o_anx, 'habs'), 
@@ -125,7 +124,7 @@ for(i in 1:nlayers(habs_rasts)) {
 habs_df <- habs_df %>%
   setNames(c('cell_id', basename(habs_10km_files)))
 
-mpa_df   <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area.csv'),
+mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 2) %>%
   select(-wdpa_category) %>%
@@ -152,7 +151,7 @@ risk_mpa_df <- risk_df %>%
 
 # x <- risk_df %>% select(hab) %>% distinct()
 # write_csv(x, file.path(dir_git, 'data_setup/raw/hab_names_raw.csv'))
-habs_lookup <- read_csv(file.path(dir_git, 'setup/raw', 
+habs_lookup <- read_csv(file.path(dir_git, '_setup/raw', 
                                   'hab_names_lookup.csv'))
 
 risk_mpa_df <- risk_mpa_df %>%
@@ -180,7 +179,7 @@ no_take_means <- risk_mpa_df %>%
             mu_rr = sum(rr_risk * prop_area)) %>%
   ungroup()
 
-write_csv(no_take_means, file.path(dir_git, 'setup/int/mpa_mean_risks_by_hab.csv'))
+write_csv(no_take_means, file.path(dir_git, '_setup/int/mpa_mean_risks_by_hab.csv'))
 
 rm('habs_df', 'risk_df')
 
@@ -259,16 +258,16 @@ ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
 Examine where MPAs in open ocean and MPAs in EEZs overlap.
 
 ``` {r, eval = FALSE}
-cell_id_rast <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
-mean_rast    <- raster(file.path(dir_git, 'output', 
+cell_id_rast <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
+mean_rast    <- raster(file.path(dir_git, '_output', 
                      'mean_risk_raster_comp.tif'))
 
 surf_10km_file <- list.files(file.path(dir_o_anx, 'habs'), 
                              pattern = 'surface_waters_10km.tif$',
                              full.names = TRUE)
 surf_rast <- raster(surf_10km_file)
-eez_rast  <- raster(file.path(dir_git, 'spatial', 'eez_rast.tif'))
-mpa_df    <- read_csv(file.path(dir_git, 'spatial', 'wdpa_mpa_area.csv'),
+eez_rast  <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
+mpa_df    <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 2) %>%
   select(-wdpa_category) %>%
@@ -298,7 +297,7 @@ ocean_prot_rast <- subs(cell_id_rast, ocean_prot, by = 'cell_id', which = 'abnj'
 
 ### print map
 library(sf)
-land_poly <- read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+land_poly <- read_sf(file.path(dir_git, '_spatial/ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 map_df <- rasterToPoints(ocean_prot_rast) %>%

@@ -30,8 +30,8 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup <- file.path(dir_git, 'setup')
-dir_data  <- file.path(dir_git, 'data')
+dir_setup <- file.path(dir_git, '_setup')
+dir_data  <- file.path(dir_git, '_data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 source(file.path(dir_setup, 'common_fxns.R'))
@@ -114,9 +114,9 @@ spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_v
 
 reload <- FALSE ### reload applies to building rasters, not the plot
 
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_base <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land', 
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
   st_transform(gp_proj4)
 
@@ -239,7 +239,7 @@ spp_ranges <- read_csv(file.path(dir_data,
                        col_types = 'dd__') %>%
   distinct()
 
-taxa_ranges <- read_csv(file.path(dir_git, 'data', 
+taxa_ranges <- read_csv(file.path(dir_git, '_data', 
                                   sprintf('spp_marine_maps_%s.csv', api_version)),
                         col_types = 'ddcicccl') %>%
   filter(comp_assessed) %>%

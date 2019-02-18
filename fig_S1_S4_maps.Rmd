@@ -35,7 +35,7 @@ dir_git <- '~/github/spp_risk_dists'
 dir_data  <- file.path(dir_git, 'data')
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -63,10 +63,10 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-nspp_un_rast <- raster(file.path(dir_git, 'output', 'n_spp_risk_raster_comp.tif'))
-nspp_rr_rast <- raster(file.path(dir_git, 'output', 'sr_rr_risk_raster_comp.tif'))
-var_un_rast  <- raster(file.path(dir_git, 'output', 'var_risk_raster_comp.tif'))
-var_rr_rast  <- raster(file.path(dir_git, 'output', 'var_rr_risk_raster_comp.tif'))
+nspp_un_rast <- raster(file.path(dir_git, '_output', 'n_spp_risk_raster_comp.tif'))
+nspp_rr_rast <- raster(file.path(dir_git, '_output', 'sr_rr_risk_raster_comp.tif'))
+var_un_rast  <- raster(file.path(dir_git, '_output', 'var_risk_raster_comp.tif'))
+var_rr_rast  <- raster(file.path(dir_git, '_output', 'var_rr_risk_raster_comp.tif'))
 
 ```
 
@@ -110,7 +110,7 @@ brks2 <- c(-8, -6, -4, -2, 0)
 lims2 <- c(min(nspp_map_df$val_2), max(nspp_map_df$val_2))
 
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land', 
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
   st_transform(gp_proj4)
 
@@ -215,7 +215,7 @@ brks = c(0, .1, .2, .3, .4, .5)
 lims = c(0, .5)
 
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land', 
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
   st_transform(gp_proj4)
 
