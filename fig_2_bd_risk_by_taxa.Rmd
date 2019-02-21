@@ -215,15 +215,41 @@ for(i in seq_along(taxa_gps)) { ### i <- 5
   map_list[[i]] <- x
   
 }
+```
 
+```{r colorbar}
+  ### set up a dataframe of values to craft a color bar using geom_segment
+  colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
+
+  colorbar <- ggplot(colorbar_df) +
+    ggtheme_plot(base_size = 7) +
+    geom_segment(aes(x = x, xend = x, color = x), 
+                 y = 0, yend = 1, size = 1,
+                 show.legend = FALSE) +
+    scale_color_gradientn(colors = risk_cols, values = risk_vals, 
+                          limits = c(0, 1),
+                          labels = risk_lbls, breaks = risk_brks) +
+    theme(axis.text.y = element_blank(), 
+          axis.title  = element_blank(),
+          panel.grid.major.y = element_blank(),
+          plot.margin = unit(c(.05, 0, .05, 0), units = 'cm')) +
+    scale_x_continuous(labels = risk_lbls, breaks = risk_brks, limits = c(0, 1),
+                       expand = expand_scale(.25)) +
+    scale_y_continuous(limits = c(0, 1))
+```
+
+``` {r assemble cowplot}
 cat_msg('done, putting together the cowplot')
 
 y <- cowplot::plot_grid(plotlist = map_list, align = 'hv', ncol = 2)
 
+z <- cowplot::plot_grid(y, colorbar, 
+                        rel_heights = c(20, 1),
+                        align = 'v', ncol = 1)
 plot_w <- 4.75
-plot_h <- plot_w / (2 * 1.65) * ceiling(length(map_list) / 2)
+plot_h <- 6.1
 
-ggsave(plot = y,
+ggsave(plot = z,
        filename = taxa_map_file,
        width = plot_w, height = plot_h, units = 'in', dpi = 300)
 ```
