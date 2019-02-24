@@ -1,0 +1,285 @@
+---
+title: 'MPAs and biodiversity intactness'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, '_setup/common_fxns.R'))
+
+```
+
+# Summary
+
+Compare MPAs to biodiversity intactness: 
+
+# Methods
+
+## Compare MPA coverage to biodiversity risk
+
+MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs as their numeric IUCN category (i.e. Ia = Ib = 1, II = 2, ..., VI = 6); areas that are specifically designated as no-take (that are not already in categories Ia, Ib, and II) are coded as -1; areas that are designated in the WDPA database but do not fall into one of these categories are coded as 8.
+
+``` {r set up mpa and values dataframe}
+
+mean_rast     <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
+eez_rast      <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+
+rgn_labels <- read_csv(file.path(dir_git, '_spatial/rgn_names.csv')) %>%
+  mutate(r1_label = str_replace(r1_label, 'Americas', 'N. America'),
+         r1_label = str_replace(r1_label, 'Latin Am.+', 'S. America'),
+         r1_label = ifelse(str_detect(r2_label, 'Central America|Caribbean'), 
+                           'C. America/Caribbean', r1_label),
+         r1_label = ifelse(rgn_id == 135, 'N. America', r1_label))
+
+risk_df <- data.frame(cell_id   = 1:length(values(mean_rast)),
+                      ocean_area = values(ocean_area_rast),
+                      eez       = values(eez_rast),
+                      mean_risk = values(mean_rast)) %>%
+  left_join(rgn_labels, by = c('eez' = 'rgn_id')) %>%
+  filter(!is.na(mean_risk))
+
+```
+
+``` {r set up no take vs risk df}
+
+calc_mpa_areas <- function(df) {
+  ### ensure MPA area is no larger than ocean area of the cell; and
+  ### code NA as zero for means and weights calculations
+  df %>%
+    mutate(mpa = ifelse(is.na(mpa), 0, mpa),
+           mpa = ifelse(mpa > ocean_area, ocean_area, mpa),
+           non_mpa = ocean_area - mpa) %>%
+    gather(mpa_status, area, mpa, non_mpa) %>%
+    mutate(mpa_status = (mpa_status == 'mpa'))
+}
+
+mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+                          col_types = 'dddd') %>%
+  filter(wdpa_category <= 2) %>%
+  select(-wdpa_category) %>%
+  group_by(cell_id) %>%
+  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
+
+risk_mpa_df <- risk_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+yr_cut <- 2011 ### year after passage of AICHI
+mpa_recent_df <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_year.csv'),
+                           col_types = 'dddd') %>%
+  filter(mpa_year >= yr_cut) %>%
+  group_by(cell_id) %>%
+  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
+
+risk_mpa_recent_df <- risk_df %>%
+  left_join(mpa_recent_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+```
+
+
+``` {r no take mpas, eval = TRUE}
+
+global_no_take <- risk_mpa_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = 'Global EEZ')
+
+global_no_take_recent <- risk_mpa_recent_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = 'Global EEZ post-Aichi')
+
+highseas_no_take <- risk_mpa_df %>%
+  filter(eez > 255 | eez == 213) %>%
+  mutate(lbl = 'High seas')
+
+rgn_no_take <- risk_mpa_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = r1_label) %>%
+  arrange(lbl)
+
+no_take_df <- bind_rows(global_no_take, global_no_take_recent, 
+                        rgn_no_take, highseas_no_take) %>%
+  mutate(lbl = forcats::fct_inorder(lbl))
+
+prot_pct <- no_take_df %>%
+  group_by(lbl) %>%
+  summarize(pct_prot = sum(area * mpa_status) / sum(area) * 100,
+            tot_area = sum(area))
+### this is independent of range-rarity weighting; since `area` includes only
+### ocean area this calculation accounts for percent of _marine_ area protected
+### by MPAs.
+
+no_take_means <- no_take_df %>%
+  group_by(mpa_status, lbl) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+  
+```
+
+``` {r set up overall rr-weighted dataframe}
+
+mean_rr_rast      <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+
+risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
+                         ocean_area = values(ocean_area_rast),
+                         eez        = values(eez_rast),
+                         mean_risk  = values(mean_rr_rast)) %>%
+  left_join(rgn_labels, by = c('eez' = 'rgn_id')) %>%
+  filter(!is.na(mean_risk))
+
+```
+
+``` {r set up no take vs risk rr df}
+
+risk_mpa_rr_df <- risk_rr_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+risk_mpa_rr_recent_df <- risk_rr_df %>%
+  left_join(mpa_recent_df, by = 'cell_id') %>%
+  calc_mpa_areas()
+
+```
+
+``` {r rr-weighted protection level dataframes}
+
+global_no_take_rr <- risk_mpa_rr_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = 'Global EEZ')
+
+global_no_take_rr_recent <- risk_mpa_rr_recent_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = 'Global EEZ post-Aichi')
+
+highseas_no_take_rr <- risk_mpa_rr_df %>%
+  filter(eez > 255 | eez == 213) %>%
+  mutate(lbl = 'High seas')
+
+rgn_no_take_rr <- risk_mpa_rr_df %>%
+  filter(eez < 255 & eez != 213) %>%
+  mutate(lbl = r1_label) %>%
+  arrange(lbl)
+
+no_take_rr_df <- bind_rows(global_no_take_rr, global_no_take_rr_recent, 
+                           rgn_no_take_rr, highseas_no_take_rr) %>%
+  mutate(lbl = forcats::fct_inorder(lbl))
+
+no_take_rr_means <- no_take_rr_df %>%
+  group_by(mpa_status, lbl) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+
+```
+
+There seem to be two philosophies of MPA priority: place MPAs in impacted areas to reduce pressure and prevent further degradation, or place MPAs to protect pristine places to maintain their pristine state.  This suggests that we may see a bimodal distribution of mean risk within MPA cells relative to the distribution of mean risk in general.
+
+## Plotting Mean risk
+
+To capture area of partially protected cells, use `geom_density(aes(weight = area, x = mean_risk, ..scaled..))`
+
+``` {r plot_function}
+plot_dist <- function(df, means_df, var_name, x_lims = c(0, .6)) {
+  x <- ggplot(df, aes(x = mean_risk)) +
+    ggtheme_plot(base_size = 7) +
+    theme(strip.text.y = element_text(angle = 0, hjust = 0),
+          axis.text.y  = element_blank(),
+          axis.title   = element_blank(),
+          panel.grid.major.y = element_blank(),
+          plot.margin = unit(c(.1, .25, .1, .35), 'cm')) +
+    geom_density(aes(x = mean_risk, weight = area, ..scaled..,
+                     fill = mpa_status, color = mpa_status), 
+                 alpha = .5, size = .25) +
+    geom_vline(data = means_df, 
+               aes(xintercept = mu, linetype = mpa_status),
+               color = 'grey20', alpha = .8) +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = x_lims,
+                       labels = risk_lbls,
+                       breaks = risk_brks) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values  = c('red4', 'cadetblue2')) +
+    scale_color_manual(values = c('red3', 'cadetblue4')) +
+    facet_grid( lbl ~ ., scales = 'free_y') +
+    labs(fill = var_name, color = var_name, linetype = var_name)
+  
+  return(x)
+}
+
+```
+
+``` {r generate figure}
+
+prot_pct_lbls <- prot_pct %>%
+  mutate(area_lbl = sprintf('%.1f x 10⁶ km²', tot_area/1e6),
+         prot_lbl = sprintf('%.1f%% no take', pct_prot))
+  
+mpa_plot_unweighted <- plot_dist(no_take_df, no_take_means, 'Marine reserve')
+
+mpa_plot_rrweighted <- plot_dist(no_take_rr_df, no_take_rr_means, 'Marine reserve') +
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .95, label = area_lbl), 
+            hjust = 1, size = 2.1, vjust = 1, color = 'grey20') +
+  geom_text(data = prot_pct_lbls, aes(x = .59, y = .45, label = prot_lbl), 
+          hjust = 1, size = 2.1, vjust = 1, color = 'grey20')
+
+
+plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
+                                      theme(strip.text.y = element_blank(),
+                                            legend.justification = c(1, 1), 
+                                            legend.position = c(1, 1)), 
+                                    mpa_plot_rrweighted +
+                                      theme(legend.position = 'none'), 
+                                    labels = c('A', 'B'), 
+                                    label_size = 9,
+                                    hjust = 0,
+                                    rel_widths = c(2, 3))
+
+ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
+       height = 3, width = 4.75, dpi = 300, units = 'in')
+```
+
+![](ms_figures/fig3_bd_risk_vs_mpas.png)
+
+### unweighted means
+
+`r knitr::kable(no_take_means)`
+
+### rr-weighted means
+
+`r knitr::kable(no_take_rr_means)`
+
+``` {r save means}
+means_to_save <- no_take_means %>%
+  left_join(no_take_rr_means %>% rename(mu_rr = mu),
+            by = c('lbl', 'mpa_status'))
+write_csv(means_to_save, file.path(dir_git, '_setup/int/mpa_mean_risks.csv'))
+```
