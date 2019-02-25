@@ -1,0 +1,163 @@
+---
+title: 'Biodiversity risk maps'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.path = 'figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(data.table)
+library(sf)
+
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_risk_dists'
+
+### goal specific folders and info
+dir_data  <- file.path(dir_git, 'data')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
+source(file.path(dir_git, '_setup/common_fxns.R'))
+
+### Gall-Peters doesn't have an EPSG?
+gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
+
+```
+
+## Spatial distribution of risk: comprehensively assessed spp
+
+From the 1a and 1b biodiversity risk map scripts, gather the rasters for the various maps:
+
+* Mean risk (unweighted and range-rarity-weighted)
+
+
+``` {r two panel map function - map and density}
+
+two_panel <- function(map1_rast,
+                       limits = c(0, 1),
+                       colors, values,
+                       labels, breaks,
+                       plot_labs = c('A', 'B')) {
+
+  land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+                                     'ne_10m_land_no_casp.shp')) %>%
+    st_transform(gp_proj4) 
+  
+  map_df <- data.frame(val_1 = values(map1_rast)) %>%
+    cbind(coordinates(map1_rast)) %>% 
+    filter(!is.na(val_1))
+  
+  map1 <- ggplot(map_df) +
+    geom_raster(aes(x, y, fill = val_1), show.legend = FALSE) +
+    geom_sf(data = land_poly, aes(geometry = geometry), 
+            fill = 'grey96', color = 'grey40', size = .10) +
+    ggtheme_map() +
+    theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm')) +
+    coord_sf(datum = NA) + ### ditch graticules
+    scale_fill_gradientn(colors = colors, values = values, limits = limits,
+                         labels = labels, breaks = breaks,
+                         guide  = guide_colourbar(label.position = 'left',
+                                                  label.hjust = 1)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0))
+  
+  ### set up a dataframe of values to craft a color bar using geom_segment
+  colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
+
+  dens1 <- ggplot(map_df) +
+    ggtheme_plot(base_size = 7) +
+    geom_vline(xintercept = mean(map_df$val_1, na.rm = TRUE)) +
+    geom_segment(data = colorbar_df, 
+                 aes(x = x, xend = x, color = x), 
+                 y = 0, yend = -10, size = 1,
+                 show.legend = FALSE) +
+    geom_density(aes(x = val_1, ..scaled..), alpha = .3, size = .25, fill = 'grey30') +
+    scale_color_gradientn(colors = colors, values = values, limits = limits,
+                          labels = labels, breaks = breaks) +
+    theme(axis.text.x  = element_blank(), 
+          axis.title = element_blank(),
+          panel.grid.major.x = element_blank(),
+          plot.margin = unit(c(.5, .25, .5, .1), units = 'cm')) +
+    scale_x_continuous(labels = labels, breaks = breaks, limits = limits,
+                       expand = c(0, 0)) +
+    scale_y_continuous(limits = c(-.4, 1)) +
+    coord_flip()
+ 
+  panel_top <- cowplot::plot_grid(map1, dens1, 
+                                  axis = 'b',
+                                  rel_widths = c(5, 1))
+}
+
+```
+
+``` {r get_rasts}
+
+rasts <- list.files(file.path(dir_git, 'pres_figs/rast'), pattern = 'tif$', full.names = TRUE)
+
+for(rast in rasts) { ### rast <- rasts[1]
+  spp_rast <- raster(rast)
+  spp_png <- rast %>%
+    str_replace('rast', 'fig') %>%
+    str_replace('.tif', '.png')
+  mean_map <- two_panel(spp_rast,
+                        colors = risk_cols,
+                        values = risk_vals,
+                        labels = risk_lbls,
+                        breaks = risk_brks)
+  ggsave(spp_png, width = 7.25, height = 3.7, units = 'in', dpi = 300)
+}
+
+lb_rast <- raster(file.path(dir_git, 'pres_figs/rast/dermochelys_coriacea_risk.tif'))
+### normalize and set all values to 0.4 (global = vulnerable)
+lb_rast <- lb_rast/lb_rast * 0.4
+
+lb_global_map <- two_panel(lb_rast,
+                      colors = risk_cols,
+                      values = risk_vals,
+                      labels = risk_lbls,
+                      breaks = risk_brks)
+ggsave(file.path(dir_git, 'pres_figs/fig/dermochelys_coriacea_global.png'), 
+       width = 7.25, height = 3.7, units = 'in', dpi = 300)
+
+```
+
+``` {r draw global map}
+
+global_risk_rast   <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
+global_risk_rr_rast   <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+
+mean_map <- two_panel(global_risk_rast,
+                      colors = risk_cols,
+                      values = risk_vals,
+                      labels = risk_lbls,
+                      breaks = risk_brks)
+ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_risk_raster_comp.png'),
+       width = 7.25, height = 3.7, units = 'in', dpi = 300)
+
+mean_map <- two_panel(global_risk_rr_rast,
+                      colors = risk_cols,
+                      values = risk_vals,
+                      labels = risk_lbls,
+                      breaks = risk_brks)
+ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_rr_risk_raster_comp.png'),
+       width = 7.25, height = 3.7, units = 'in', dpi = 300)
+
+```
