@@ -70,14 +70,13 @@ two_panel <- function(map1_rast,
     geom_sf(data = land_poly, aes(geometry = geometry), 
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
-    theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm')) +
-    coord_sf(datum = NA) + ### ditch graticules
+    theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm'),
+          plot.background = element_rect(fill = 'azure3')) +
+    coord_sf(datum = NA, expand = FALSE) + ### ditch graticules
     scale_fill_gradientn(colors = colors, values = values, limits = limits,
                          labels = labels, breaks = breaks,
                          guide  = guide_colourbar(label.position = 'left',
-                                                  label.hjust = 1)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0))
+                                                  label.hjust = 1))
   
   ### set up a dataframe of values to craft a color bar using geom_segment
   colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
@@ -106,36 +105,52 @@ two_panel <- function(map1_rast,
                                   rel_widths = c(5, 1))
 }
 
+one_panel <- function(map1_rast,
+                       limits = c(0, 1),
+                       colors, values,
+                       labels, breaks,
+                       plot_labs = c('A', 'B')) {
+
+  land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+                                     'ne_10m_land_no_casp.shp')) %>%
+    st_transform(gp_proj4) 
+  
+  map_df <- data.frame(val_1 = values(map1_rast)) %>%
+    cbind(coordinates(map1_rast)) %>% 
+    filter(!is.na(val_1))
+  
+  map1 <- ggplot(map_df) +
+    geom_raster(aes(x, y, fill = val_1), show.legend = FALSE) +
+    geom_sf(data = land_poly, aes(geometry = geometry), 
+            fill = 'grey96', color = 'grey40', size = .10) +
+    ggtheme_map() +
+    theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm'),
+          plot.background = element_rect(fill = 'azure3')) +
+    coord_sf(datum = NA, expand = FALSE) + ### ditch graticules
+    scale_fill_gradientn(colors = colors, values = values, limits = limits,
+                         labels = labels, breaks = breaks,
+                         guide  = guide_colourbar(label.position = 'left',
+                                                  label.hjust = 1))
+}
+
 ```
 
 ``` {r get_rasts}
 
 rasts <- list.files(file.path(dir_git, 'pres_figs/rast'), pattern = 'tif$', full.names = TRUE)
 
-for(rast in rasts) { ### rast <- rasts[1]
+for(rast in rasts) { ### rast <- rasts[2]
   spp_rast <- raster(rast)
   spp_png <- rast %>%
     str_replace('rast', 'fig') %>%
     str_replace('.tif', '.png')
-  mean_map <- two_panel(spp_rast,
+  mean_map <- one_panel(spp_rast,
                         colors = risk_cols,
                         values = risk_vals,
                         labels = risk_lbls,
                         breaks = risk_brks)
-  ggsave(spp_png, width = 7.25, height = 3.7, units = 'in', dpi = 300)
+  ggsave(spp_png, width = 6.0, height = 3.7, units = 'in', dpi = 300)
 }
-
-lb_rast <- raster(file.path(dir_git, 'pres_figs/rast/dermochelys_coriacea_risk.tif'))
-### normalize and set all values to 0.4 (global = vulnerable)
-lb_rast <- lb_rast/lb_rast * 0.4
-
-lb_global_map <- two_panel(lb_rast,
-                      colors = risk_cols,
-                      values = risk_vals,
-                      labels = risk_lbls,
-                      breaks = risk_brks)
-ggsave(file.path(dir_git, 'pres_figs/fig/dermochelys_coriacea_global.png'), 
-       width = 7.25, height = 3.7, units = 'in', dpi = 300)
 
 ```
 

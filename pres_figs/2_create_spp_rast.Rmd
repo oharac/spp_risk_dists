@@ -51,6 +51,8 @@ rast_base <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
 land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
+reload <- FALSE
+
 for(spp_map in spp_maps) {
   ### spp_map <- spp_maps[1]
   spp_tif <- basename(spp_map %>% str_replace('.csv', '.tif'))

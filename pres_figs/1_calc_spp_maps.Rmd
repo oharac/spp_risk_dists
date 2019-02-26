@@ -47,15 +47,6 @@ Using individual species range data (csv outputs from `5_process_spp_shps.Rmd`),
 
 ## Generate species group maps - equal weighting per cell
 
-From species maps data.frame, identify the IDs of species within each taxon.  For each taxon:
-
-* Collect all taxon species into a single data.frame.
-* Join species extinction risk and trend data.frame to species-cell data.frame, including regional assessments.
-* By cell, calculate mean extinction risk, variance of extinction risk, trend, threatened species count, n_spp, n_spp_trend
-    * When aggregating further, use n_spp to weight values.
-    
-__NOTE:__ Because the summary files are likely to be very large for globe-spanning taxa (e.g. MARINE_MAMMALS is 275 MB), save these outputs outside of GitHub.
-
 ``` {r aggregate species maps to taxa}
 
 ### Read in lots of data
@@ -95,17 +86,29 @@ meow_to_rgn <- read_csv(file.path(dir_git, '_spatial/iucn_rgn_to_meow.csv'))
 
 ```
 
-### Loop over turtle species
+### Loop over sample species
 
 ``` {r loop comprehensively assessed}
 ### Make a list of species to loop over:
 
-turtle_spp <- c('Caretta', 'Dermochelys', 'Lepidochelys', 'Eretmochelys', 'Chelonia', 'Natator') %>%
-  paste0(collapse = '|')
-turtle_maps <- read_csv(file.path(dir_data, 'spp_marine_maps_2018-1.csv')) %>%
-  filter(str_detect(sciname, turtle_spp))
+spp_ranges <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2018-1.csv')) %>%
+  inner_join(spp_risk) %>%
+  filter(!is.na(cat_score)) %>%
+  filter(range_km2 > quantile(range_km2, .8) & range_km2 < quantile(range_km2, .98)) %>%
+  filter(dbf_file != tolower(dbf_file))
 
-spp_names <- turtle_maps$sciname %>% 
+set.seed(1234)
+sample_maps <- spp_ranges %>%
+  filter(cat_score == 0) %>%
+  sample_n(5) %>%
+  bind_rows(spp_ranges %>%
+    filter(cat_score >= .6) %>%
+    sample_n(5, weight = cat_score)) %>%
+  bind_rows(spp_ranges %>%
+    filter(cat_score < .6 & cat_score > 0) %>%
+    sample_n(5))
+
+spp_names <- sample_maps$sciname %>% 
   unique()
 
 reload <- FALSE
@@ -119,13 +122,12 @@ for(spp_name in spp_names) {
     tolower() %>%
     str_replace_all('[^a-z]', '_')
 
-  spp_sum_file <- file.path(dir_git, 'pres_figs', sprintf('rast/%s_risk.csv', spp_name_clean))
+  spp_sum_file <- file.path(dir_git, 'pres_figs', sprintf('rast/%s.csv', spp_name_clean))
   
   if(!file.exists(spp_sum_file) | reload) {
     ### Filter to just this taxon, and only assessed within this taxon
-    spp_maps <- turtle_maps %>%
-      filter(str_detect(sciname, spp_name)) %>%
-      filter(comp_assessed == TRUE)
+    spp_maps <- sample_maps %>%
+      filter(str_detect(sciname, spp_name))
     
     spp_risk_trend_sum <- spp_risk_trend %>%
       filter(iucn_sid %in% spp_maps$iucn_sid) %>%
