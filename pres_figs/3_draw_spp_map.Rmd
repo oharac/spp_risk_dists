@@ -175,4 +175,21 @@ mean_map <- two_panel(global_risk_rr_rast,
 ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_rr_risk_raster_comp.png'),
        width = 7.25, height = 3.7, units = 'in', dpi = 300)
 
+
+mean_map <- one_panel(global_risk_rast,
+                      colors = risk_cols,
+                      values = risk_vals,
+                      labels = risk_lbls,
+                      breaks = risk_brks)
+ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_risk_raster_comp_no_colorbar.png'),
+       width = 6, height = 3.7, units = 'in', dpi = 300)
+
+mean_map <- one_panel(global_risk_rr_rast,
+                      colors = risk_cols,
+                      values = risk_vals,
+                      labels = risk_lbls,
+                      breaks = risk_brks)
+ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_rr_risk_raster_comp_no_colorbar.png'),
+       width = 6, height = 3.7, units = 'in', dpi = 300)
+
 ```
