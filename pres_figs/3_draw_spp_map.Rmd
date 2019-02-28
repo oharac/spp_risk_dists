@@ -72,7 +72,7 @@ two_panel <- function(map1_rast,
             fill = 'grey96', color = 'grey40', size = .10) +
     ggtheme_map() +
     theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm'),
-          plot.background = element_rect(fill = 'azure3')) +
+          plot.background = element_rect(fill = NA)) +
     coord_sf(datum = NA, expand = FALSE) + ### ditch graticules
     scale_fill_gradientn(colors = colors, values = values, limits = limits,
                          labels = labels, breaks = breaks,
@@ -213,6 +213,13 @@ rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
 
+eez_poly_simple <- read_sf(file.path(dir_spatial, 'eez_simple.shp'))
+
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+                                   'ne_10m_land_no_casp.shp')) %>%
+    st_transform(gp_proj4) 
+  
+
 risk_df <- data.frame(cell_id   = 1:length(values(global_risk_rr_rast)),
                       ocean_area = values(ocean_area_rast),
                       mean_risk = values(global_risk_rr_rast)) %>%
@@ -233,8 +240,6 @@ risk_mpa_df <- risk_df %>%
   gather(mpa_status, area, mpa, non_mpa) %>%
   mutate(mpa_status = (mpa_status == 'mpa'))
 
-eez_poly_simple <- read_sf(file.path(dir_spatial, 'eez_simple.shp'))
-
 mpa_status <- risk_mpa_df %>%
   filter(mpa_status) %>%
   filter(area > 0)
@@ -244,21 +249,19 @@ mpa_rast_df <- data.frame(mpa = values(mpa_rast)) %>%
     cbind(coordinates(mpa_rast)) %>% 
     filter(!is.na(mpa))
 
-land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
-                                   'ne_10m_land_no_casp.shp')) %>%
-    st_transform(gp_proj4) 
-  
 map_df <- data.frame(risk = values(global_risk_rr_rast)) %>%
   cbind(coordinates(global_risk_rr_rast)) %>% 
   filter(!is.na(risk))
 
 map1 <- ggplot(map_df) +
   geom_raster(aes(x, y, fill = risk), show.legend = FALSE) +
+  geom_sf(data = eez_poly_simple, aes(geometry = geometry), 
+          fill = NA, color = 'black', size = .1) +
   geom_sf(data = land_poly, aes(geometry = geometry), 
           fill = 'grey96', color = 'grey40', size = .10) +
   ggtheme_map() +
   theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm'),
-        plot.background = element_rect(fill = 'azure3')) +
+        plot.background = element_rect(fill = NA)) +
   coord_sf(datum = NA, expand = FALSE) + ### ditch graticules
   scale_fill_gradientn(colors = risk_cols, values = risk_vals, limits = c(0, 1),
                        labels = risk_lbls, breaks = risk_brks,

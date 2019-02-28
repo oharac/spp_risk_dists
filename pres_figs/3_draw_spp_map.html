@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Thu Feb 28 08:06:12 2019 by ohara" />
+<meta name="author" content="Compiled on Thu Feb 28 10:40:13 2019 by ohara" />
 
 
 <title>Biodiversity risk maps</title>
@@ -355,7 +355,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps</h1>
-<h4 class="author"><em><em>Compiled on Thu Feb 28 08:06:12 2019 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Feb 28 10:40:13 2019 by ohara</em></em></h4>
 
 </div>
 
@@ -374,8 +374,9 @@ div.tocify {
 dir_git &lt;-<span class="st"> '~/github/spp_risk_dists'</span>
 
 ### goal specific folders and info
-dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'data'</span>)
-dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
+dir_data    &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'_data'</span>)
+dir_spatial &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">'_spatial'</span>)
+dir_o_anx   &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">'git-annex/spp_risk_dists'</span>)
 
 <span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_setup/common_fxns.R'</span>))
 
@@ -407,7 +408,7 @@ gp_proj4 &lt;-<span class="st"> '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +el
             <span class="dt">fill =</span> <span class="st">'grey96'</span>, <span class="dt">color =</span> <span class="st">'grey40'</span>, <span class="dt">size =</span> .<span class="dv">10</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">ggtheme_map</span>() <span class="op">+</span>
 <span class="st">    </span><span class="kw">theme</span>(<span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">c</span>(.<span class="dv">05</span>, <span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">4</span>), <span class="dt">units =</span> <span class="st">'cm'</span>),
-          <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">'azure3'</span>)) <span class="op">+</span>
+          <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="ot">NA</span>)) <span class="op">+</span>
 <span class="st">    </span><span class="kw">coord_sf</span>(<span class="dt">datum =</span> <span class="ot">NA</span>, <span class="dt">expand =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span>### ditch graticules
 <span class="st">    </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> colors, <span class="dt">values =</span> values, <span class="dt">limits =</span> limits,
                          <span class="dt">labels =</span> labels, <span class="dt">breaks =</span> breaks,
@@ -482,8 +483,8 @@ one_panel &lt;-<span class="st"> </span><span class="cf">function</span>(map1_ra
                         <span class="dt">breaks =</span> risk_brks)
   <span class="kw">ggsave</span>(spp_png, <span class="dt">width =</span> <span class="fl">6.0</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">global_risk_rast   &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_output'</span>, <span class="st">'mean_risk_raster_comp.tif'</span>))
-global_risk_rr_rast   &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_output'</span>, <span class="st">'mean_rr_risk_raster_comp.tif'</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">global_risk_rast    &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_output'</span>, <span class="st">'mean_risk_raster_comp.tif'</span>))
+global_risk_rr_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_output'</span>, <span class="st">'mean_rr_risk_raster_comp.tif'</span>))
 
 mean_map &lt;-<span class="st"> </span><span class="kw">two_panel</span>(global_risk_rast,
                       <span class="dt">colors =</span> risk_cols,
@@ -517,6 +518,139 @@ mean_map &lt;-<span class="st"> </span><span class="kw">one_panel</span>(global_
                       <span class="dt">breaks =</span> risk_brks)
 <span class="kw">ggsave</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/fig'</span>, <span class="st">'mean_rr_risk_raster_comp_no_colorbar.png'</span>),
        <span class="dt">width =</span> <span class="dv">6</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">global_risk_rr_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_output'</span>, <span class="st">'mean_rr_risk_raster_comp.tif'</span>))
+
+rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">'cell_id_rast.tif'</span>))
+
+<span class="co"># eez_shp_file &lt;- file.path(dir_M, 'git-annex/globalprep/spatial/v2017/regions_2017_update.shp')</span>
+<span class="co"># </span>
+<span class="co"># eez_poly &lt;- sf::read_sf(eez_shp_file) %&gt;%</span>
+<span class="co">#   st_transform(gp_proj4)</span>
+<span class="co"># eez_poly_simple &lt;- eez_poly %&gt;%</span>
+<span class="co">#   filter(rgn_type == 'eez' &amp; rgn_id != 213) %&gt;%</span>
+<span class="co">#   st_simplify(dTolerance = 1000)</span>
+<span class="co"># </span>
+<span class="co"># write_sf(eez_poly_simple, file.path(dir_spatial, 'eez_simple.shp'))</span>
+
+ocean_area_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_spatial'</span>, <span class="st">'ocean_area_rast.tif'</span>))
+
+eez_poly_simple &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">'eez_simple.shp'</span>))
+
+land_poly &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">read_sf</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_spatial/ne_10m_land'</span>, 
+                                   <span class="st">'ne_10m_land_no_casp.shp'</span>)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">st_transform</span>(gp_proj4) 
+  
+
+risk_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id   =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(<span class="kw">values</span>(global_risk_rr_rast)),
+                      <span class="dt">ocean_area =</span> <span class="kw">values</span>(ocean_area_rast),
+                      <span class="dt">mean_risk =</span> <span class="kw">values</span>(global_risk_rr_rast)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(mean_risk))
+
+mpa_df   &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_spatial'</span>, <span class="st">'wdpa_mpa_area.csv'</span>),
+                          <span class="dt">col_types =</span> <span class="st">'dddd'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(wdpa_category <span class="op">&lt;=</span><span class="st"> </span><span class="dv">2</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>wdpa_category) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(cell_id) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mpa =</span> <span class="kw">sum</span>(prot_area_km2, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+
+risk_mpa_df &lt;-<span class="st"> </span>risk_df <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(mpa_df, <span class="dt">by =</span> <span class="st">'cell_id'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mpa =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(mpa), <span class="dv">0</span>, mpa),
+         <span class="dt">mpa =</span> <span class="kw">ifelse</span>(mpa <span class="op">&gt;</span><span class="st"> </span>ocean_area, ocean_area, mpa),
+         <span class="dt">non_mpa =</span> ocean_area <span class="op">-</span><span class="st"> </span>mpa) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">gather</span>(mpa_status, area, mpa, non_mpa) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mpa_status =</span> (mpa_status <span class="op">==</span><span class="st"> 'mpa'</span>))
+
+mpa_status &lt;-<span class="st"> </span>risk_mpa_df <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(mpa_status) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(area <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)
+
+mpa_rast &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">subs</span>(rast_base, mpa_status, <span class="dt">by =</span> <span class="st">'cell_id'</span>, <span class="dt">which =</span> <span class="st">'area'</span>)
+mpa_rast_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">mpa =</span> <span class="kw">values</span>(mpa_rast)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">cbind</span>(<span class="kw">coordinates</span>(mpa_rast)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(mpa))
+
+map_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">risk =</span> <span class="kw">values</span>(global_risk_rr_rast)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">cbind</span>(<span class="kw">coordinates</span>(global_risk_rr_rast)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(risk))
+
+map1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(map_df) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(x, y, <span class="dt">fill =</span> risk), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> eez_poly_simple, <span class="kw">aes</span>(<span class="dt">geometry =</span> geometry), 
+          <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">color =</span> <span class="st">'black'</span>, <span class="dt">size =</span> .<span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> land_poly, <span class="kw">aes</span>(<span class="dt">geometry =</span> geometry), 
+          <span class="dt">fill =</span> <span class="st">'grey96'</span>, <span class="dt">color =</span> <span class="st">'grey40'</span>, <span class="dt">size =</span> .<span class="dv">10</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtheme_map</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">c</span>(.<span class="dv">05</span>, <span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">4</span>), <span class="dt">units =</span> <span class="st">'cm'</span>),
+        <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="ot">NA</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_sf</span>(<span class="dt">datum =</span> <span class="ot">NA</span>, <span class="dt">expand =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span>### ditch graticules
+<span class="st">  </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> risk_cols, <span class="dt">values =</span> risk_vals, <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),
+                       <span class="dt">labels =</span> risk_lbls, <span class="dt">breaks =</span> risk_brks,
+                       <span class="dt">guide  =</span> <span class="kw">guide_colourbar</span>(<span class="dt">label.position =</span> <span class="st">'left'</span>,
+                                                <span class="dt">label.hjust =</span> <span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_raster</span>(<span class="dt">data =</span> mpa_rast_df, <span class="kw">aes</span>(x, y), <span class="dt">fill =</span> <span class="st">'blue'</span>, <span class="dt">alpha =</span> .<span class="dv">5</span>)  
+
+### set up a dataframe of values to craft a color bar using geom_segment
+colorbar_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, .<span class="dv">001</span>), <span class="dt">y =</span> <span class="op">-</span><span class="dv">1</span>)
+
+means_df &lt;-<span class="st"> </span>risk_mpa_df <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(mpa_status) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mu =</span> <span class="kw">sum</span>(mean_risk <span class="op">*</span><span class="st"> </span>area) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(area)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ungroup</span>()
+
+dens1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(risk_mpa_df, <span class="kw">aes</span>(<span class="dt">x =</span> mean_risk)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtheme_plot</span>(<span class="dt">base_size =</span> <span class="dv">7</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">strip.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">0</span>, <span class="dt">hjust =</span> <span class="dv">0</span>),
+        <span class="dt">axis.text.x  =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">axis.title   =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">panel.grid.major.x =</span> <span class="kw">element_blank</span>(),
+        <span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">c</span>(.<span class="dv">5</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">1</span>), <span class="dt">units =</span> <span class="st">'cm'</span>),
+        <span class="dt">legend.position =</span> <span class="kw">c</span>(.<span class="dv">75</span>, .<span class="dv">55</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data =</span> colorbar_df,
+               <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">xend =</span> x, <span class="dt">color =</span> x),
+               <span class="dt">y =</span> <span class="dv">0</span>, <span class="dt">yend =</span> <span class="op">-</span><span class="dv">10</span>, <span class="dt">size =</span> <span class="dv">1</span>,
+               <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_density</span>(<span class="kw">aes</span>(<span class="dt">x =</span> mean_risk, <span class="dt">weight =</span> area, ..scaled..,
+                   <span class="dt">fill =</span> mpa_status), <span class="dt">color =</span> <span class="st">'grey60'</span>,
+               <span class="dt">alpha =</span> .<span class="dv">5</span>, <span class="dt">size =</span> .<span class="dv">25</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">data =</span> means_df, 
+             <span class="kw">aes</span>(<span class="dt">xintercept =</span> mu, <span class="dt">linetype =</span> mpa_status),
+             <span class="dt">color =</span> <span class="st">'grey20'</span>, <span class="dt">alpha =</span> .<span class="dv">8</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), 
+                     <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),
+                     <span class="dt">labels =</span> risk_lbls,
+                     <span class="dt">breaks =</span> risk_brks) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span>.<span class="dv">4</span>, <span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values  =</span> <span class="kw">c</span>(<span class="st">'red4'</span>, <span class="st">'cadetblue2'</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_gradientn</span>(<span class="dt">colors =</span> risk_cols, <span class="dt">values =</span> risk_vals, <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),
+                        <span class="dt">labels =</span> risk_lbls, <span class="dt">breaks =</span> risk_brks) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_flip</span>()
+
+<span class="co"># dens1 &lt;- ggplot(map_df) +</span>
+<span class="co">#   ggtheme_plot(base_size = 7) +</span>
+<span class="co">#   geom_vline(xintercept = mean(map_df$risk, na.rm = TRUE)) +</span>
+<span class="co">#   geom_segment(data = colorbar_df, </span>
+<span class="co">#                aes(x = x, xend = x, color = x), </span>
+<span class="co">#                y = 0, yend = -10, size = 1,</span>
+<span class="co">#                show.legend = FALSE) +</span>
+<span class="co">#   geom_density(aes(x = risk, ..scaled.., fill = mpa, weight = mpa), alpha = .3, size = .25) +</span>
+<span class="co">#   scale_color_gradientn(colors = risk_cols, values = risk_vals, limits = c(0, 1),</span>
+<span class="co">#                         labels = risk_lbls, breaks = risk_brks) +</span>
+<span class="co">#   theme(axis.text.x  = element_blank(), </span>
+<span class="co">#         axis.title = element_blank(),</span>
+<span class="co">#         panel.grid.major.x = element_blank(),</span>
+<span class="co">#         plot.margin = unit(c(.5, .25, .5, .1), units = 'cm')) +</span>
+<span class="co">#   scale_x_continuous(labels = risk_lbls, breaks = risk_brks, limits = c(0, 1),</span>
+<span class="co">#                      expand = c(0, 0)) +</span>
+<span class="co">#   scale_y_continuous(limits = c(-.4, 1)) +</span>
+<span class="co">#   coord_flip()</span>
+
+panel_top &lt;-<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(map1, dens1, 
+                                <span class="dt">axis =</span> <span class="st">'b'</span>,
+                                <span class="dt">rel_widths =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">1</span>))
+
+<span class="kw">ggsave</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/fig'</span>, <span class="st">'mean_rr_risk_raster_comp_mpa.png'</span>),
+       <span class="dt">width =</span> <span class="fl">7.25</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)</code></pre></div>
 </div>
 
 
