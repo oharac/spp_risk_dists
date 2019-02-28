@@ -32,8 +32,9 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_data    <- file.path(dir_git, '_data')
+dir_spatial <- file.path(dir_git, '_spatial')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -156,8 +157,8 @@ for(rast in rasts) { ### rast <- rasts[2]
 
 ``` {r draw global map}
 
-global_risk_rast   <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
-global_risk_rr_rast   <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+global_risk_rast    <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
+global_risk_rr_rast <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
 
 mean_map <- two_panel(global_risk_rast,
                       colors = risk_cols,
@@ -191,5 +192,140 @@ mean_map <- one_panel(global_risk_rr_rast,
                       breaks = risk_brks)
 ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_rr_risk_raster_comp_no_colorbar.png'),
        width = 6, height = 3.7, units = 'in', dpi = 300)
+
+```
+
+``` {r draw global map with mpas}
+
+global_risk_rr_rast <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+
+rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
+
+# eez_shp_file <- file.path(dir_M, 'git-annex/globalprep/spatial/v2017/regions_2017_update.shp')
+# 
+# eez_poly <- sf::read_sf(eez_shp_file) %>%
+#   st_transform(gp_proj4)
+# eez_poly_simple <- eez_poly %>%
+#   filter(rgn_type == 'eez' & rgn_id != 213) %>%
+#   st_simplify(dTolerance = 1000)
+# 
+# write_sf(eez_poly_simple, file.path(dir_spatial, 'eez_simple.shp'))
+
+ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+
+risk_df <- data.frame(cell_id   = 1:length(values(global_risk_rr_rast)),
+                      ocean_area = values(ocean_area_rast),
+                      mean_risk = values(global_risk_rr_rast)) %>%
+  filter(!is.na(mean_risk))
+
+mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+                          col_types = 'dddd') %>%
+  filter(wdpa_category <= 2) %>%
+  select(-wdpa_category) %>%
+  group_by(cell_id) %>%
+  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
+
+risk_mpa_df <- risk_df %>%
+  left_join(mpa_df, by = 'cell_id') %>%
+  mutate(mpa = ifelse(is.na(mpa), 0, mpa),
+         mpa = ifelse(mpa > ocean_area, ocean_area, mpa),
+         non_mpa = ocean_area - mpa) %>%
+  gather(mpa_status, area, mpa, non_mpa) %>%
+  mutate(mpa_status = (mpa_status == 'mpa'))
+
+eez_poly_simple <- read_sf(file.path(dir_spatial, 'eez_simple.shp'))
+
+mpa_status <- risk_mpa_df %>%
+  filter(mpa_status) %>%
+  filter(area > 0)
+
+mpa_rast <- raster::subs(rast_base, mpa_status, by = 'cell_id', which = 'area')
+mpa_rast_df <- data.frame(mpa = values(mpa_rast)) %>%
+    cbind(coordinates(mpa_rast)) %>% 
+    filter(!is.na(mpa))
+
+land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+                                   'ne_10m_land_no_casp.shp')) %>%
+    st_transform(gp_proj4) 
+  
+map_df <- data.frame(risk = values(global_risk_rr_rast)) %>%
+  cbind(coordinates(global_risk_rr_rast)) %>% 
+  filter(!is.na(risk))
+
+map1 <- ggplot(map_df) +
+  geom_raster(aes(x, y, fill = risk), show.legend = FALSE) +
+  geom_sf(data = land_poly, aes(geometry = geometry), 
+          fill = 'grey96', color = 'grey40', size = .10) +
+  ggtheme_map() +
+  theme(plot.margin = unit(c(.05, 0, .1, .4), units = 'cm'),
+        plot.background = element_rect(fill = 'azure3')) +
+  coord_sf(datum = NA, expand = FALSE) + ### ditch graticules
+  scale_fill_gradientn(colors = risk_cols, values = risk_vals, limits = c(0, 1),
+                       labels = risk_lbls, breaks = risk_brks,
+                       guide  = guide_colourbar(label.position = 'left',
+                                                label.hjust = 1)) +
+  geom_raster(data = mpa_rast_df, aes(x, y), fill = 'blue', alpha = .5)  
+
+### set up a dataframe of values to craft a color bar using geom_segment
+colorbar_df <- data.frame(x = seq(0, 1, .001), y = -1)
+
+means_df <- risk_mpa_df %>%
+  group_by(mpa_status) %>%
+  summarize(mu = sum(mean_risk * area) / sum(area)) %>%
+  ungroup()
+
+dens1 <- ggplot(risk_mpa_df, aes(x = mean_risk)) +
+  ggtheme_plot(base_size = 7) +
+  theme(strip.text.x = element_text(angle = 0, hjust = 0),
+        axis.text.x  = element_blank(),
+        axis.title   = element_blank(),
+        panel.grid.major.x = element_blank(),
+        plot.margin = unit(c(.5, .25, .5, .1), units = 'cm'),
+        legend.position = c(.75, .55)) +
+  geom_segment(data = colorbar_df,
+               aes(x = x, xend = x, color = x),
+               y = 0, yend = -10, size = 1,
+               show.legend = FALSE) +
+  geom_density(aes(x = mean_risk, weight = area, ..scaled..,
+                   fill = mpa_status), color = 'grey60',
+               alpha = .5, size = .25, show.legend = FALSE) +
+  geom_vline(data = means_df, 
+             aes(xintercept = mu, linetype = mpa_status),
+             color = 'grey20', alpha = .8, show.legend = FALSE) +
+  scale_x_continuous(expand = c(0, 0), 
+                     limits = c(0, 1),
+                     labels = risk_lbls,
+                     breaks = risk_brks) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-.4, 1)) +
+  scale_fill_manual(values  = c('red4', 'cadetblue2')) +
+  scale_color_gradientn(colors = risk_cols, values = risk_vals, limits = c(0, 1),
+                        labels = risk_lbls, breaks = risk_brks) +
+  coord_flip()
+
+# dens1 <- ggplot(map_df) +
+#   ggtheme_plot(base_size = 7) +
+#   geom_vline(xintercept = mean(map_df$risk, na.rm = TRUE)) +
+#   geom_segment(data = colorbar_df, 
+#                aes(x = x, xend = x, color = x), 
+#                y = 0, yend = -10, size = 1,
+#                show.legend = FALSE) +
+#   geom_density(aes(x = risk, ..scaled.., fill = mpa, weight = mpa), alpha = .3, size = .25) +
+#   scale_color_gradientn(colors = risk_cols, values = risk_vals, limits = c(0, 1),
+#                         labels = risk_lbls, breaks = risk_brks) +
+#   theme(axis.text.x  = element_blank(), 
+#         axis.title = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         plot.margin = unit(c(.5, .25, .5, .1), units = 'cm')) +
+#   scale_x_continuous(labels = risk_lbls, breaks = risk_brks, limits = c(0, 1),
+#                      expand = c(0, 0)) +
+#   scale_y_continuous(limits = c(-.4, 1)) +
+#   coord_flip()
+
+panel_top <- cowplot::plot_grid(map1, dens1, 
+                                axis = 'b',
+                                rel_widths = c(5, 1))
+
+ggsave(file.path(dir_git, 'pres_figs/fig', 'mean_rr_risk_raster_comp_mpa.png'),
+       width = 7.25, height = 3.7, units = 'in', dpi = 300)
 
 ```
