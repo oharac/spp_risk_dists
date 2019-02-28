@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Feb 25 17:09:05 2019 by ohara" />
+<meta name="author" content="Compiled on Thu Feb 28 08:06:12 2019 by ohara" />
 
 
 <title>Biodiversity risk maps</title>
@@ -355,7 +355,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps</h1>
-<h4 class="author"><em><em>Compiled on Mon Feb 25 17:09:05 2019 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Feb 28 08:06:12 2019 by ohara</em></em></h4>
 
 </div>
 
@@ -499,7 +499,24 @@ mean_map &lt;-<span class="st"> </span><span class="kw">two_panel</span>(global_
                       <span class="dt">labels =</span> risk_lbls,
                       <span class="dt">breaks =</span> risk_brks)
 <span class="kw">ggsave</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/fig'</span>, <span class="st">'mean_rr_risk_raster_comp.png'</span>),
-       <span class="dt">width =</span> <span class="fl">7.25</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)</code></pre></div>
+       <span class="dt">width =</span> <span class="fl">7.25</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)
+
+
+mean_map &lt;-<span class="st"> </span><span class="kw">one_panel</span>(global_risk_rast,
+                      <span class="dt">colors =</span> risk_cols,
+                      <span class="dt">values =</span> risk_vals,
+                      <span class="dt">labels =</span> risk_lbls,
+                      <span class="dt">breaks =</span> risk_brks)
+<span class="kw">ggsave</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/fig'</span>, <span class="st">'mean_risk_raster_comp_no_colorbar.png'</span>),
+       <span class="dt">width =</span> <span class="dv">6</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)
+
+mean_map &lt;-<span class="st"> </span><span class="kw">one_panel</span>(global_risk_rr_rast,
+                      <span class="dt">colors =</span> risk_cols,
+                      <span class="dt">values =</span> risk_vals,
+                      <span class="dt">labels =</span> risk_lbls,
+                      <span class="dt">breaks =</span> risk_brks)
+<span class="kw">ggsave</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/fig'</span>, <span class="st">'mean_rr_risk_raster_comp_no_colorbar.png'</span>),
+       <span class="dt">width =</span> <span class="dv">6</span>, <span class="dt">height =</span> <span class="fl">3.7</span>, <span class="dt">units =</span> <span class="st">'in'</span>, <span class="dt">dpi =</span> <span class="dv">300</span>)</code></pre></div>
 </div>
 
 

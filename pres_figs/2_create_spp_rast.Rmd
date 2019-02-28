@@ -44,7 +44,7 @@ source(file.path(dir_setup, 'common_fxns.R'))
 
 ``` {r mean_risk_raster}
 
-spp_maps <- list.files(file.path(dir_git, 'pres_figs/rast'), full.names = TRUE)
+spp_maps <- list.files(file.path(dir_git, 'pres_figs/rast'), pattern = 'csv$', full.names = TRUE)
 
 rast_base <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
 

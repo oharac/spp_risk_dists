@@ -91,22 +91,26 @@ meow_to_rgn <- read_csv(file.path(dir_git, '_spatial/iucn_rgn_to_meow.csv'))
 ``` {r loop comprehensively assessed}
 ### Make a list of species to loop over:
 
-spp_ranges <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2018-1.csv')) %>%
-  inner_join(spp_risk) %>%
+spp_ranges_all <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2018-1.csv')) %>%
+  inner_join(spp_risk) 
+
+spp_ranges_lim <- spp_ranges_all %>%
   filter(!is.na(cat_score)) %>%
   filter(range_km2 > quantile(range_km2, .8) & range_km2 < quantile(range_km2, .98)) %>%
   filter(dbf_file != tolower(dbf_file))
 
 set.seed(1234)
-sample_maps <- spp_ranges %>%
+sample_maps <- spp_ranges_lim %>%
   filter(cat_score == 0) %>%
   sample_n(5) %>%
-  bind_rows(spp_ranges %>%
+  bind_rows(spp_ranges_lim %>%
     filter(cat_score >= .6) %>%
     sample_n(5, weight = cat_score)) %>%
-  bind_rows(spp_ranges %>%
+  bind_rows(spp_ranges_lim %>%
     filter(cat_score < .6 & cat_score > 0) %>%
-    sample_n(5))
+    sample_n(5)) %>%
+  bind_rows(spp_ranges_all %>%
+              filter(sciname == 'Chelonia mydas'))
 
 spp_names <- sample_maps$sciname %>% 
   unique()

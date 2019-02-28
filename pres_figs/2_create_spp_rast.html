@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Feb 25 16:49:19 2019 by ohara" />
+<meta name="author" content="Compiled on Thu Feb 28 08:05:22 2019 by ohara" />
 
 
 <title>Biodiversity risk maps</title>
@@ -355,7 +355,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps</h1>
-<h4 class="author"><em><em>Compiled on Mon Feb 25 16:49:19 2019 by ohara</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Feb 28 08:05:22 2019 by ohara</em></em></h4>
 
 </div>
 
@@ -381,7 +381,7 @@ dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O,
 <span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">'common_fxns.R'</span>))</code></pre></div>
 <div id="generate-rasters-from-csvs-for-a-few-key-species" class="section level2">
 <h2><span class="header-section-number">0.1</span> generate rasters from csvs for a few key species</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_maps &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/rast'</span>), <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">spp_maps &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'pres_figs/rast'</span>), <span class="dt">pattern =</span> <span class="st">'csv$'</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
 
 rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_git, <span class="st">'_spatial'</span>, <span class="st">'cell_id_rast.tif'</span>))
 
