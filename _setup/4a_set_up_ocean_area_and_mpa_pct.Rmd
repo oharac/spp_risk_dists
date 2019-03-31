@@ -31,8 +31,8 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_setup   <- file.path(dir_git, 'setup')
-dir_spatial <- file.path(dir_git, 'spatial')
+dir_setup   <- file.path(dir_git, '_setup')
+dir_spatial <- file.path(dir_git, '_spatial')
 dir_anx     <- file.path(dir_M, 'git-annex')
 dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
 # ### provenance tracking
@@ -321,11 +321,11 @@ if(!file.exists(wdpa_cell_area_file)) {
 
   ### Use the function in an mclapply call
   system.time({
-    wdpa_cells_list <- parallel::mclapply(1:n_chunks, mc.cores = 16,
+    wdpa_cells_list <- parallel::mclapply(1:n_chunks, mc.cores = 4,
       FUN = function(x) crosstab_chunk(wdpa_marine_rast_1km, 
                                        rast_cell_id_1km, 
                                        chunk = x, n_chunks))
-  #     user   system  elapsed 
+  #     user   system  elapsed  USING 16 CORES...
   # 1184.324  814.096  208.082 
   })
   
@@ -393,7 +393,7 @@ if(!file.exists(wdpa_cell_year_file)) {
 
   ### Use the function in an mclapply call
   system.time({
-    wdpa_cells_list <- parallel::mclapply(1:n_chunks, mc.cores = 16,
+    wdpa_cells_list <- parallel::mclapply(1:n_chunks, mc.cores = 4,
       FUN = function(x) crosstab_chunk2(wdpa_yr_rast_1km, 
                                         rast_cell_id_1km, 
                                         chunk = x, n_chunks))

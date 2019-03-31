@@ -220,3 +220,7 @@ mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) 
                str_replace('result.', ''))
   return(out_df)
 }
+
+drop_geom <- function(sf) {
+  sf %>% as.data.frame() %>% select(-geometry)
+}
