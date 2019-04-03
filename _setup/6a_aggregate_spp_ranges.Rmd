@@ -29,13 +29,14 @@ library(data.table)
 
 dir_git <- '~/github/spp_risk_dists'
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, 'setup')
+dir_setup <- file.path(dir_git, '_setup')
 
 source(file.path(dir_setup, 'common_fxns.R'))
 
 ### goal specific folders and info
 
-dir_data <- file.path(dir_git, 'data')
+dir_data <- file.path(dir_git, '_data')
+dir_spatial <- file.path(dir_git, '_spatial')
 
 ```
 
@@ -83,15 +84,15 @@ spp_risk_trend <- spp_risk %>%
   left_join(spp_trend, by = c('iucn_sid', 'iucn_rgn'))
 
 ### raster for cell IDs
-rast_cell_ids <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_cell_ids <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ### Make a dataframe of cell ID to MEOW for regional assessments... also 
 ### make a lookup of MEOW to region
-meow_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'meow_rast.tif'))
+meow_rgns_rast <- raster::raster(file.path(dir_spatial, 'meow_rast.tif'))
 meow_cells_all <- data.frame(cell_id = values(rast_cell_ids),
                              meow_id = values(meow_rgns_rast)) %>%
   filter(!is.na(meow_id))
-meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
+meow_to_rgn <- read_csv(file.path(dir_spatial, 'iucn_rgn_to_meow.csv'))
 
 ```
 

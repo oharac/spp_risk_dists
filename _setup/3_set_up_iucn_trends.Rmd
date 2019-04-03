@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -27,8 +27,8 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 dir_git <- '~/github/spp_risk_dists'
 
 ### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_setup <- file.path(dir_git, 'setup')
+dir_data  <- file.path(dir_git, '_data')
+dir_setup <- file.path(dir_git, '_setup')
 
 # ### provenance tracking
 library(provRmd); prov_setup()
@@ -360,7 +360,7 @@ trend_df <- read_csv(trends_file) %>%
   select(iucn_sid, iucn_rgn, pop_trend, trend_score, trend_source) %>%
   distinct()
 
-write_csv(trend_df, file.path(dir_git, sprintf('data/iucn_trend_by_spp_%s.csv', api_version)))
+write_csv(trend_df, file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)))
 
 DT::datatable(trend_df)
 ```

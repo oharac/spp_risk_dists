@@ -30,7 +30,7 @@ dir_git <- '~/github/spp_risk_dists'
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 ### project specific folders and info
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -53,10 +53,10 @@ EEZ is rasterized for both land and sea, and then clipped to cells with non-NA v
 
 ``` {r set up EEZ raster}
 
-eez_rast_file <- file.path(dir_git, 'spatial', 'eez_rast.tif')
+eez_rast_file <- file.path(dir_git, '_spatial', 'eez_rast.tif')
 eez_shp_file  <- file.path(dir_M, 'git-annex/globalprep/spatial/v2017/regions_2017_update.shp')
 
-area_rast <- raster(file.path(dir_git, 'spatial', 'ocean_area_rast.tif'))
+area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
 values(area_rast)[values(area_rast) <= .005] <- NA
 
 
@@ -109,7 +109,7 @@ Using the MEOW shapefile, we will include all the shapes at the province level a
 
 ``` {r set up MEOW raster}
 
-meow_rast_file <- file.path(dir_git, 'spatial', 'meow_rast.tif')
+meow_rast_file <- file.path(dir_git, '_spatial', 'meow_rast.tif')
 meow_shp_file  <- file.path(dir_o_anx, 'meow/meow_ecos.shp')
 
 if(!file.exists(meow_rast_file)) {
@@ -162,7 +162,7 @@ Bathymetry is masked to the ocean area raster.
 
 ``` {r set up bathymetry raster}
 
-bathy_rast_file <- file.path(dir_git, 'spatial', 'bathy_rast.tif')
+bathy_rast_file <- file.path(dir_git, '_spatial', 'bathy_rast.tif')
 
 gebco_rast_file <- file.path(dir_o_anx, 'gebco', 'GRIDONE_1D.nc')
 gebco_rast_raw  <- raster(gebco_rast_file)
@@ -205,9 +205,9 @@ if(!file.exists(bathy_rast_file)) {
   values(rast_neritic) <- ifelse(values(bathy_rast) <= 200, 1, NA)
   values(rast_shallow) <- ifelse(values(bathy_rast) <=  60, 1, NA)
   
-  writeRaster(rast_neritic, file.path(dir_git, 'spatial', 'bathy_rast_neritic.tif'),
+  writeRaster(rast_neritic, file.path(dir_git, '_spatial', 'bathy_rast_neritic.tif'),
               overwrite = TRUE)
-  writeRaster(rast_shallow, file.path(dir_git, 'spatial', 'bathy_rast_shallow.tif'),
+  writeRaster(rast_shallow, file.path(dir_git, '_spatial', 'bathy_rast_shallow.tif'),
               overwrite = TRUE)
   
 } else {

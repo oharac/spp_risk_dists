@@ -240,7 +240,7 @@ iucn_sid,range_km2,sciname,dbf_file
 44224,378714.0000038147,Apristurus profundorum,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44225,1083575,Apristurus sinensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44226,532112.0000190735,Apristurus spongiceps,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-44227,9e3,Bythaelurus alcockii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+44227,9000,Bythaelurus alcockii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44228,287741.00001335144,Bythaelurus hispidus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44229,75500,Bythaelurus immaculatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44496,301467.9999923706,Pliotrema warreni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -260,7 +260,7 @@ iucn_sid,range_km2,sciname,dbf_file
 44574,211567.0000038147,Apristurus stenseni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44575,58500,Atlantoraja castelnaui,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44576,8800,Bathyraja longicauda,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-44577,22e3,Benthobatis kreffti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+44577,22000,Benthobatis kreffti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44578,60621,Galeus mincaronei,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44579,105825.99998283386,Heterodontus quoyi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44580,613433.0000114441,Mustelus dorsalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -299,7 +299,7 @@ iucn_sid,range_km2,sciname,dbf_file
 44615,51500,Neoraja stehmanni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44617,573956.9999818802,Pseudoginglymostoma brevicaudatum,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44618,139600,Rajella caudaspinosa,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-44619,676e3,Rajella leoparda,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+44619,676000,Rajella leoparda,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44620,91655.00000190735,Rajella ravidula,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44621,870243.0000038147,Torpedo fuscomaculata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 44639,1698781.000038147,Apristurus riveri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -523,7 +523,7 @@ iucn_sid,range_km2,sciname,dbf_file
 63121,193800,Psammobatis lentiginosa,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63122,1340203.0001039505,Amblyraja doellojuradoi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63123,1916952.9999961853,Hydrolagus affinis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-63124,12e3,Dipturus mennii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+63124,12000,Dipturus mennii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63125,200899,Malacoraja kreffti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63126,64800,Malacoraja spinacidermis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63127,2856861.000022888,Bathyraja richardsoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -556,12 +556,12 @@ iucn_sid,range_km2,sciname,dbf_file
 63156,30130,Urotrygon venezuelae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63157,207654.99999427795,Narcine brasiliensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63158,99990.00000953674,Pseudobatos prahli,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-63159,47e3,Etmopterus litvinovi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-63160,155e3,Etmopterus pycnolepis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+63159,47000,Etmopterus litvinovi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+63160,155000,Etmopterus pycnolepis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63161,229299,Gurgesiella atlantica,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63162,169970.9999961853,Rajella eisenhardti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63164,13435.999996185303,Hydrolagus mccoskeri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-63165,251e3,Mustelus ravidus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+63165,251000,Mustelus ravidus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63166,35787.99998855591,Rhinobatos penggali,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 63167,12474.999992370605,Rhinobatos jimbaranensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 64442,113,Zearaja maugeana,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -908,7 +908,7 @@ iucn_sid,range_km2,sciname,dbf_file
 161683,181172,Bathyraja microtrachys,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 161685,320497.00001716614,Leucoraja leucosticta,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 161686,359564.00002098083,Raja texana,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-161688,12e3,Brochiraja aenigma,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+161688,12000,Brochiraja aenigma,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 161689,152000.00002288818,Urotrygon aspidura,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 161690,14398.999996185303,Narcine oculifera,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 161691,1042946.0000677109,Raja brachyura,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -1024,7 +1024,7 @@ iucn_sid,range_km2,sciname,dbf_file
 195478,67096,Sinobatis caerulea,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 195479,38998,Sinobatis filicauda,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 195485,209174.9999961853,Centrophorus westraliensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
-195486,24e3,Squalus acutirostris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
+195486,24000,Squalus acutirostris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 195487,679016.0000095367,Squalus griffini,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 195488,4543163.000102043,Squalus suckleyi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
 198921,181153859.00030994,Mobula birostris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CHONDRICHTHYES.dbf
@@ -1348,7 +1348,7 @@ iucn_sid,range_km2,sciname,dbf_file
 64401,77445.0000038147,Epinephelus gabriellae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
 64402,34455.999992370605,Epinephelus indistinctus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
 64404,13017.999996185303,Hyporthodus perplexus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
-64405,53e3,Epinephelus suborbitalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
+64405,53000,Epinephelus suborbitalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
 64406,370822.00001335144,Epinephelus timorensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
 64407,1397949,Epinephelus tuamotuensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
 64408,172430.00000572205,Epinephelus undulatostriatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/GROUPERS.dbf
@@ -1606,7 +1606,7 @@ iucn_sid,range_km2,sciname,dbf_file
 132997,6240718.000164032,Montastrea valenciennesi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_2.dbf
 132998,6482422.000181198,Acropora samoensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf
 132999,742939.999994278,Millepora nitida,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_3.dbf
-133e3,1609075.0000200272,Acropora ocellata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf
+133000,1609075.0000200272,Acropora ocellata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf
 133001,5121714.00015831,Goniopora pandoraensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_2.dbf
 133002,3480833.000144005,Seriatopora stellata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_2.dbf
 133003,3749991.0001306534,Leptastrea bewickensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_2.dbf
@@ -2972,7 +2972,7 @@ iucn_sid,range_km2,sciname,dbf_file
 169996,116053.00003242493,Parribacus caledonicus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 169997,60517.99998664856,Scyllarides brasiliensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 169999,98609,Palinurus gilchristi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
-17e4,2823460.0000076294,Acanthacaris caeca,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
+170000,2823460.0000076294,Acanthacaris caeca,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170002,199935,Scyllarides elisabethae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170003,87300,Metanephrops armatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170004,2815359.0000514984,Remiarctus bertholdii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
@@ -3041,7 +3041,7 @@ iucn_sid,range_km2,sciname,dbf_file
 170071,3066791.000100136,Parribacus antarcticus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170072,202346.0000076294,Jasus lalandii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170073,119144.00002861023,Panulirus cygnus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
-170074,4e3,Thaumastochelopsis wardi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
+170074,4000,Thaumastochelopsis wardi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170075,2013299.0000610352,Scyllarides aequinoctialis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170079,338400,Metanephrops thomsoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 170080,1237777.9999961853,Puerulus angulatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
@@ -3435,7 +3435,7 @@ iucn_sid,range_km2,sciname,dbf_file
 177997,1476825.0000400543,Acanthurus tennentii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
 177998,730186.0000553131,Acanthurus tristis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
 177999,24327.000003814697,Acanthurus nigroris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
-178e3,1241316.0000514984,Acanthurus leucosternon,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
+178000,1241316.0000514984,Acanthurus leucosternon,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
 178001,64515.9999961853,Zebrasoma rostratum,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
 178002,4864323.0001478195,Naso hexacanthus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
 178003,435401.99999427795,Naso tuberosus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf
@@ -3664,7 +3664,7 @@ iucn_sid,range_km2,sciname,dbf_file
 178997,112662.9999961853,Clinus cottoides,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 178998,261488.0000190735,Ruanoho decemdigitatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 178999,17523.999996185303,Clinus latipennis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
-179e3,48361.00001144409,Helcogramma novaecaledoniae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
+179000,48361.00001144409,Helcogramma novaecaledoniae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 179001,1064557.0000429153,Enneapterygius nanus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 179002,4839548.0001068115,Enneapterygius fasciatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 179003,132900,Cancelloxus burrelli,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
@@ -4063,7 +4063,7 @@ iucn_sid,range_km2,sciname,dbf_file
 180964,545,Minyclupeoides dentibranchialus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf
 180980,399531.00006103516,Coilia lindmani,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf
 180982,23673.999996185303,Phenablennius heyligeri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
-181e3,205135.00000190735,Mugilogobius mertoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
+181000,205135.00000190735,Mugilogobius mertoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 181023,89371.00001144409,Eugnathogobius kabilia,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 181029,47534.00001525879,Eugnathogobius mindora,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 181116,192881.00035095215,Neopomacentrus taeniurus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/DAMSELFISH.dbf
@@ -4693,7 +4693,7 @@ iucn_sid,range_km2,sciname,dbf_file
 183997,209957.00000953674,Ophioscion imiceps,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/sciaenidae.dbf
 183998,103537.00001335144,Ophidion iris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/ophidiiformes.dbf
 183999,33068.00000953674,Tomicodon prodomus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
-184e3,165385.00000572205,Anchoa starksi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf
+184000,165385.00000572205,Anchoa starksi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf
 184001,0,Labrisomus socorroensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 184002,7235,Lythrypnus solanensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 184003,42654,Trachinotus stilbe,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/carangidae.dbf
@@ -4750,7 +4750,7 @@ iucn_sid,range_km2,sciname,dbf_file
 184997,15347,Eduarctus modestus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 184998,38058,Enoplometopus debelius,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 184999,1559313.0000591278,Scyllarus subarctus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
-185e3,25867936.000530243,Stereomastis nana,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
+185000,25867936.000530243,Stereomastis nana,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 185001,13400,Stereomastis alis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 185002,5852064.000061035,Ibacus pubescens,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
 185003,443948.00000572205,Stereomastis polita,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf
@@ -4942,7 +4942,7 @@ iucn_sid,range_km2,sciname,dbf_file
 185904,1044188,Tigrigobius gemmatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 185905,190659.00000572205,Tigrigobius redimiculus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 185906,1390489.0000190735,Tigrigobius pallens,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
-185909,5e3,Varicus marilynae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
+185909,5000,Varicus marilynae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 185911,53405,Vomerogobius flavus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 185913,130963.00000572205,Evermannichthys bicolor,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 185914,49387,Evermannichthys silus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
@@ -5029,7 +5029,7 @@ iucn_sid,range_km2,sciname,dbf_file
 185997,754878.0000648499,Eugerres plumieri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gerreidae.dbf
 185998,1042707.0000228882,Eugerres brasilianus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gerreidae.dbf
 185999,1910508.0000648499,Evorthodus lyricus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
-186e3,190588.00000953674,Gobiesox lucayanus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
+186000,190588.00000953674,Gobiesox lucayanus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
 186001,96380.00000953674,Gobiesox nigripinnis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
 186003,298858.0000076294,Gobiesox punctulatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
 186004,670121.9999923706,Gobiesox barbatulus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf
@@ -6057,7 +6057,7 @@ iucn_sid,range_km2,sciname,dbf_file
 192322,85479.0000076294,Conus fischoederi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
 192323,987546.0000219345,Conus milneedwardsi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
 192324,3317082.000026703,Conus saecularis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
-192325,3e3,Conus pseudocardinalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
+192325,3000,Conus pseudocardinalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
 192326,1259606.0000162125,Conus lizardensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
 192327,7004520.000079155,Conus muriculatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
 192328,548906.0000476837,Conus coelinae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CONUS.dbf
@@ -6621,7 +6621,7 @@ iucn_sid,range_km2,sciname,dbf_file
 192996,3290753.000123024,Bryaninops loki,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 192997,10732,Eviota pellucida,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 192998,837268.0000343323,Bryaninops erythrops,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
-193e3,2309335.0000915527,Asterropteryx ensifera,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
+193000,2309335.0000915527,Asterropteryx ensifera,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 193002,1246642.0000772476,Ctenogobiops aurocingulus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 193003,3693012.000059128,Cryptocentrus caeruleomaculatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
 193009,4525240.000030518,Pleurosicya fringilla,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf
@@ -6834,7 +6834,7 @@ iucn_sid,range_km2,sciname,dbf_file
 193772,845131.9999847412,Takifugu stictonotus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
 193775,794885.0000514984,Canthigaster solandri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
 193779,337162.99999427795,Takifugu snyderi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
-193780,17e3,Canthigaster punctata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
+193780,17000,Canthigaster punctata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
 193781,41315.000007629395,Takifugu basilevskianus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
 193782,1704447.000032425,Torquigener whitleyi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
 193784,193596.00000572205,Tetractenos hamiltoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/PUFFERFISH.dbf
@@ -7059,11 +7059,11 @@ iucn_sid,range_km2,sciname,dbf_file
 196020,25500,Eptatretus eos,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196021,3395,Eptatretus fernholmi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196022,39329.000000953674,Eptatretus fritzi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
-196023,6e3,Eptatretus goliath,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
+196023,6000,Eptatretus goliath,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196024,26425,Eptatretus gomoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196025,894,Eptatretus grouseri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196026,327232.0000076294,Eptatretus hexatrema,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
-196027,7e3,Eptatretus indrambaryai,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
+196027,7000,Eptatretus indrambaryai,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196028,551,Eptatretus lakeside,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196029,6800,Eptatretus laurahubbsae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196030,8316,Eptatretus longipinnis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
@@ -7081,7 +7081,7 @@ iucn_sid,range_km2,sciname,dbf_file
 196043,38181,Eptatretus sinus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196044,365114.00000572205,Eptatretus stoutii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196045,36080,Eptatretus strahani,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
-196046,42e3,Eptatretus strickrotti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
+196046,42000,Eptatretus strickrotti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196047,1337,Eptatretus wisneri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196049,64296,Myxine affinis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
 196050,976258.0000925064,Myxine australis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/HAGFISH.dbf
@@ -7717,7 +7717,7 @@ iucn_sid,range_km2,sciname,dbf_file
 18125379,663716.0000238419,Ciliata septentrionalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
 18125776,14805907,Coryphaenoides armatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
 18125838,84600,Coryphaenoides profundicolus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
-18126034,53e3,Kumba dentoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
+18126034,53000,Kumba dentoni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
 18127741,257006821.00012302,Ceratias holboelli,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 18127783,3999842.000035286,Chaunax suttkusi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 18127809,48319097.00001335,Bufoceratias wedli,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
@@ -7829,7 +7829,7 @@ iucn_sid,range_km2,sciname,dbf_file
 19715512,105736.00000572205,Bathyplotes crenulata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
 19715612,717636.9999961853,Bathyplotes golden-hindi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
 19715689,4515290.000061989,Bathyplotes phlegmaticus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
-19715765,51e3,Bathyplotes roseus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
+19715765,51000,Bathyplotes roseus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
 19716054,315825.9999885559,Bathyplotes rubicundus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
 19716454,177170.9999961853,Synallactes triplax,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
 19716630,72453.0000076294,Synallactes pellucidus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SEACUCUMBERS.dbf
@@ -8000,7 +8000,7 @@ iucn_sid,range_km2,sciname,dbf_file
 21112889,9643883.00014019,Linophryne arborifera,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 21112898,15402229.000535965,Linophryne pennibarbata,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 21112909,852455.0000286102,Lophiodes kempi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
-21112967,117e3,Dolopichthys dinema,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
+21112967,117000,Dolopichthys dinema,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 21112977,47500,Oneirodes theodoritissieri,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 21112990,47143.000007629395,Draculo shango,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/callionymidae.dbf
 21113041,1049782.0000267029,Caranx senegallus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/carangidae.dbf
@@ -8760,7 +8760,7 @@ iucn_sid,range_km2,sciname,dbf_file
 22728950,1702336.000248909,Phalacrocorax pelagicus,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 22728990,1378770.0000171661,Sula granti,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 22728995,109359.00051784515,Larus thayeri,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
-22729e3,959712.0001144409,Brachyramphus perdix,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
+22729000,959712.0001144409,Brachyramphus perdix,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 22729148,28385567.00005722,Garrodia nereis,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 22729421,14785265.00002098,Calonectris edwardsii,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 22729604,23849024.000003815,Thalassarche cauta,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
@@ -8852,7 +8852,7 @@ iucn_sid,range_km2,sciname,dbf_file
 46086601,2326022.00006485,Parupeneus macronemus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/mullidae.dbf
 46086703,5862911.000109673,Upeneus sundaicus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/mullidae.dbf
 46086775,6034474.00015831,Upeneus tragula,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/mullidae.dbf
-46087e3,6939345.0001297,Nemipterus peronii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf
+46087000,6939345.0001297,Nemipterus peronii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf
 46087798,229297.99998378754,Polydactylus persicus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/polynemidae.dbf
 46087813,1881293.0000915527,Priacanthus blochii,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/priacanthidae.dbf
 46087863,19711814.000178337,Priacanthus hamrur,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/priacanthidae.dbf
@@ -9316,7 +9316,7 @@ iucn_sid,range_km2,sciname,dbf_file
 48342492,201197.0000190735,Salarias obscurus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 48342493,140101.00000953674,Ecsenius axelrodi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 48342496,1347136.000038147,Glyptoparus delicatulus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
-48342498,16e3,Ecsenius alleni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
+48342498,16000,Ecsenius alleni,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 48342499,23027.000003814697,Cirripectes vanderbilti,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 48342501,5150,Ecsenius portenoyi,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 48342502,420332.0000476837,Parablennius intermedius,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
@@ -9453,7 +9453,7 @@ iucn_sid,range_km2,sciname,dbf_file
 60470817,17065367.000003815,Himantolophus brevirostris,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 60470856,1689554,Himantolophus macroceras,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 60470876,28700,Himantolophus macroceratoides,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
-60470908,96e3,Himantolophus multifurcatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
+60470908,96000,Himantolophus multifurcatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 60470918,17575572.999990463,Himantolophus rostratus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 60470977,274100,Holcomycteronus profundissimus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/ophidiiformes.dbf
 60471195,2430125.0001096725,Hymenogadus gracilis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
@@ -9523,7 +9523,7 @@ iucn_sid,range_km2,sciname,dbf_file
 61650582,30664.00005340576,Corythornis cristatus,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 61709141,81761.00029468536,Circus spilonotus,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
 61709172,849.0000019073486,Circus spilothorax,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf
-61934220,43e3,Gigantactis watermani,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
+61934220,43000,Gigantactis watermani,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 61934241,6567363.999996185,Dolopichthys danae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/lophiiformes.dbf
 61935092,61207.9999961853,Praealticus semicrenatus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
 61935587,160776.00000953674,Alticus anjouanae,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf
@@ -9938,7 +9938,7 @@ iucn_sid,range_km2,sciname,dbf_file
 82125026,853768.0000209808,Coelorinchus geronimo,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gadiformes.dbf
 82125080,53700,Lestidiops distans,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/aulopiformes.dbf
 82125112,21085229.00002098,Lestidiops similis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/aulopiformes.dbf
-82125176,29e3,Anthias cyprinoides,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/serranidae.dbf
+82125176,29000,Anthias cyprinoides,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/serranidae.dbf
 82125274,26300,Anthias helenensis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/serranidae.dbf
 82125351,29100,Holanthias caudalis,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/serranidae.dbf
 82125424,34839,Holanthias fronticinctus,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/serranidae.dbf

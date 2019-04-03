@@ -29,7 +29,8 @@ library(sf)
 
 dir_git <- '~/github/spp_risk_dists'
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, 'setup')
+dir_setup <- file.path(dir_git, '_setup')
+dir_data  <- file.path(dir_git, '_data')
 
 ### project specific folders and info
 source(file.path(dir_setup, 'common_fxns.R'))
@@ -71,7 +72,7 @@ if(!file.exists(bli_marine_shp)) {
   
   bli_sf <- st_read(file.path(dir_bli, 'BOTW.gdb'))
   
-  marine_spp <- read_csv(file.path(dir_git, sprintf('data/spp_marine_from_api_%s.csv', api_version)),
+  marine_spp <- read_csv(file.path(dir_data, sprintf('spp_marine_from_api_%s.csv', api_version)),
                          col_types = 'dcc')
   
   bli_marine_sf <- bli_sf %>%
@@ -109,8 +110,8 @@ bli_dbfs  <- list.files(dir_bli, pattern = '\\.dbf$', full.names = TRUE)
 shps_dbfs <- c(iucn_dbfs, bli_dbfs)
 
 ### This is all "marine" species by habitat and system:
-marine_spp <- read_csv(file.path(dir_git, 
-                                 sprintf('data/spp_marine_from_api_%s.csv', 
+marine_spp <- read_csv(file.path(dir_data, 
+                                 sprintf('spp_marine_from_api_%s.csv', 
                                          api_version)),
                        col_types = 'dcc')
 
@@ -221,7 +222,7 @@ subpops_match <- subpops_match_raw %>%
 ### Orcaella brevirostris Chilika Lake, Mekong River, Songkhla Lake
 ### * In shapefile, but not showing up in assessments
 write_csv(subpops_match, 
-          file.path(dir_git, sprintf('setup/int/subpops_match_api_to_shp_%s.csv', 
+          file.path(dir_setup, sprintf('int/subpops_match_api_to_shp_%s.csv', 
                                      api_version)))
 
 ```
@@ -231,7 +232,7 @@ write_csv(subpops_match,
 Not all maps are for species that are included in comprehensively assessed taxonomic groups.  Get info on comprehensive assessment status for species from the API.
 
 ``` {r get comp assess status}
-comp_file <- file.path(dir_git, 'data', 
+comp_file <- file.path(dir_data, 
                        sprintf('iucn_comp_assessed_%s.csv', api_version))
 if(!file.exists(comp_file)) {
   comp_gps_url <- 'http://apiv3.iucnredlist.org/api/v3/comp-group/list?token=%s'
@@ -310,7 +311,7 @@ map_info_add_subpops <- map_info_sans_dupes %>%
   distinct()
 
 ### filter to marine habitat species (to drop terrestrial reptiles e.g.)
-marine_spp_ids <- read_csv(file.path(dir_git, 'data',
+marine_spp_ids <- read_csv(file.path(dir_data,
                                      sprintf('spp_marine_from_api_%s.csv', 
                                              api_version)),
                            col_types = 'dcc') %>%
@@ -347,14 +348,14 @@ marine_map_info <- marine_map_info %>%
                                 TRUE, comp_assessed))
 
 write_csv(marine_map_info, 
-          file.path(dir_git, 'data',
+          file.path(dir_data,
                     sprintf('spp_marine_maps_%s.csv', api_version)))
 
 ```
 
 ``` {r generate table of species}
 
-marine_map_info <- read_csv(file.path(dir_git, 'data',
+marine_map_info <- read_csv(file.path(dir_data,
   sprintf('spp_marine_maps_%s.csv', api_version))) %>%
   select(-presence) %>%
   distinct()
@@ -363,7 +364,7 @@ taxa_info <- read_csv(file.path(dir_o_anx, 'iucn',
                                 'spp_info_from_api_2018-1.csv')) %>%
   select(iucn_sid, kingdom:family)
 
-cat_info <- read_csv(file.path(dir_git, 'data', 
+cat_info <- read_csv(file.path(dir_data, 
                                'iucn_risk_current_2018-1.csv')) %>%
   select(iucn_sid, cat_score) %>%
   filter(!is.na(cat_score))
@@ -413,8 +414,8 @@ all_sum <- bind_rows(fish_sum, nonfish_sum, basic_sum) %>%
   mutate(family = ifelse(family == 'NA', NA, family),
          subpops = ifelse(subpops == 0, NA, subpops))
 
-write_csv(all_sum, file.path(dir_git, 'output', 
+write_csv(all_sum, file.path(dir_git, '_output', 
                              'spp_included_summary.csv'))
-write_csv(all_in_the_fam, file.path(dir_git, 'output', 
+write_csv(all_in_the_fam, file.path(dir_git, '_output', 
                                     'spp_included_by_family.csv'))
 ```

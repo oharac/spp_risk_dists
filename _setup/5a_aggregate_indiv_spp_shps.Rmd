@@ -29,7 +29,7 @@ library(sf)
 
 dir_git <- '~/github/spp_risk_dists'
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, 'setup')
+dir_setup <- file.path(dir_git, '_setup')
 
 ### project specific folders and info
 source(file.path(dir_setup, 'common_fxns.R'))
@@ -263,7 +263,7 @@ maps_from_iucn <- read_csv(file.path(dir_setup, 'int/map_check',
 ###   and not worry about seasonality.
 
 ### filter to marine habitat species (to drop terrestrial reptiles e.g.)
-marine_spp_depths <- read_csv(file.path(dir_git, 'data',
+marine_spp_depths <- read_csv(file.path(dir_git, '_data',
                                      sprintf('spp_marine_from_api_%s.csv', 
                                              api_version)),
                            col_types = 'dcc') %>%

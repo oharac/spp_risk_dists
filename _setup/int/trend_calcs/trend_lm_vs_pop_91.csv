@@ -2,10 +2,8 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 222,global,"1994, 1996, 2004","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
 224,global,"1996, 2010, 2011","VU, CR, CR","0.4, 0.8, 0.8",decreasing,0.02749
 225,global,"1996, 2010","EN, CR","0.6, 0.8",decreasing,0.01429
-228,global,"1994, 1996, 2010","VU, EN, CR","0.4, 0.6, 0.8",decreasing,0.02105
 229,global,"1996, 2010","EN, CR","0.6, 0.8",decreasing,0.01429
 230,global,"1994, 1996, 2010","EN, CR, CR","0.6, 0.8, 0.8",decreasing,0.00789
-231,global,"1996, 2010","CR, CR","0.8, 0.8",decreasing,0
 232,global,"1996, 2010","EN, CR","0.6, 0.8",decreasing,0.01429
 233,global,"1996, 2006","VU, NT","0.4, 0.2",stable,-0.02
 234,global,"1996, 2004","NT, LC","0.2, 0",stable,-0.025
@@ -14,10 +12,8 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 241,global,"1996, 2010","EN, CR","0.6, 0.8",decreasing,0.01429
 242,global,"1996, 2006","NT, VU","0.2, 0.4",decreasing,0.02
 243,global,"1994, 1996, 2006","VU, NT, NT","0.4, 0.2, 0.2",increasing,-0.01129
-244,global,"1996, 2010","VU, EN","0.4, 0.6",decreasing,0.01429
 245,global,"1996, 2006","NT, NT","0.2, 0.2",increasing,0
 1086,global,"1994, 1996, 2004","EN, VU, VU","0.6, 0.4, 0.4",unknown,-0.01429
-1118,global,"1994, 1996, 2016, 2017","EN, CR, EN, EN","0.6, 0.8, 0.6, 0.6",unknown,-0.0042
 1308,global,"1996, 2015","EN, LC","0.6, 0",unknown,-0.03158
 1615,global,"1996, 2015","VU, LC","0.4, 0",unknown,-0.02105
 1793,global,"1996, 2000, 2004, 2008, 2015","LC, LC, LC, LC, NT","0, 0, 0, 0, 0.2",decreasing,0.00967
@@ -44,7 +40,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 2644,global,"1996, 2015","VU, LC","0.4, 0",unknown,-0.02105
 3381,global,"1996, 2010, 2012, 2017","NT, LC, LC, LC","0.2, 0, 0, 0",stable,-0.0105
 3590,global,"1996, 2008, 2015","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
-3755,global,"1996, 2004, 2008, 2014","LC, LC, LC, LC","0, 0, 0, 0",stable,0
 3764,global,"1996, 2014","VU, EN","0.4, 0.6",unknown,0.01111
 3851,global,"1996, 2000, 2009","VU, NT, NT","0.4, 0.2, 0.2",unknown,-0.01278
 3852,global,"1996, 2000, 2009","EN, NT, VU","0.6, 0.2, 0.4",decreasing,-0.00902
@@ -62,23 +57,13 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 4364,global,"1996, 2010","VU, LC","0.4, 0",stable,-0.02857
 4592,global,"1996, 2004","VU, EN","0.4, 0.6",decreasing,0.025
 4615,global,"1994, 1996, 2004","EN, EN, EN","0.6, 0.6, 0.6",decreasing,-0
-4801,global,"1994, 1996, 2018","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
 4805,global,"1996, 2015","VU, LC","0.4, 0",unknown,-0.02105
 4982,global,"1994, 1996, 2014","EN, EN, EN","0.6, 0.6, 0.6",decreasing,-0
 5272,global,"1996, 2012","VU, NT","0.4, 0.2",unknown,-0.0125
 5273,global,"1996, 2013","VU, NT","0.4, 0.2",unknown,-0.01176
 5325,global,"1996, 2015","VU, LC","0.4, 0",unknown,-0.02105
-5360,global,"2008, 2011","LC, LC","0, 0",unknown,0
-5363,global,"1996, 2008","LC, LC","0, 0",unknown,0
 5659,global,"1994, 1996, 2012","VU, VU, VU","0.4, 0.4, 0.4",increasing,-0
-5660,global,"1994, 2014","VU, CR","0.4, 0.8",decreasing,0.02
-5667,global,"1994, 1996, 2013","VU, VU, VU","0.4, 0.4, 0.4",stable,-0
 5675,global,"1996, 2007","NT, LC","0.2, 0",unknown,-0.01818
-6026,global,"1994, 1996, 2004","EN, CR, CR","0.6, 0.8, 0.8",decreasing,0.01429
-6040,global,"1996, 2004","EN, CR","0.6, 0.8",decreasing,0.025
-6041,global,"1996, 2000","EN, EN","0.6, 0.6",stable,0
-6043,global,"1996, 2012","CR, CR","0.8, 0.8",decreasing,0
-6045,global,"1996, 2018","VU, VU","0.4, 0.4",decreasing,0
 6204,global,"1996, 2008, 2016","LC, VU, VU","0, 0.4, 0.4",unknown,0.02105
 6229,global,"1996, 1996, 2009","NT, VU, NT","0.2, 0.4, 0.2",unknown,-0.00769
 6335,global,"1996, 2008, 2012, 2017","VU, NT, NT, LC","0.4, 0.2, 0.2, 0",unknown,-0.01745
@@ -100,7 +85,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 8097,global,"1996, 2008","VU, LC","0.4, 0",stable,-0.03333
 8099,global,"1996, 2000, 2008","EN, CR, CR","0.6, 0.8, 0.8",increasing,0.01429
 8153,global,"1994, 1996, 2008, 2013, 2018","VU, VU, LC, LC, LC","0.4, 0.4, 0, 0, 0",unknown,-0.0196
-8165,global,"1994, 1996, 2014","EN, VU, NT","0.6, 0.4, 0.2",stable,-0.01648
 8239,global,"1994, 1996, 2008, 2012, 2016","VU, EN, EN, NT, NT","0.4, 0.6, 0.6, 0.2, 0.2",increasing,-0.01261
 8817,global,"1996, 2014","VU, VU","0.4, 0.4",decreasing,0
 8951,global,"1996, 2008, 2010, 2013, 2015","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",stable,0
@@ -121,17 +105,10 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 10087,global,"1996, 2003, 2015","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
 10088,global,"1996, 2017","VU, EN","0.4, 0.6",decreasing,0.00952
 10089,global,"1996, 2017","VU, LC","0.4, 0",stable,-0.01905
-10103,global,"1996, 2006, 2008, 2017","LC, VU, VU, VU","0, 0.4, 0.4, 0.4",stable,0.0193
 10268,global,"1994, 1996, 2010","EN, EN, CR","0.6, 0.6, 0.8",decreasing,0.01316
 10269,global,"1996, 2010","EN, CR","0.6, 0.8",decreasing,0.01429
-10276,global,"1994, 1996, 2000, 2008, 2015","VU, LC, NT, NT, NT","0.4, 0, 0.2, 0.2, 0.2",stable,-0.0013
-10310,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",unknown,0
-10329,global,"1994, 1996, 2008, 2015","VU, NT, VU, VU","0.4, 0.2, 0.4, 0.4",decreasing,0.00485
 10340,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",unknown,0
 10708,global,"1996, 2008","VU, LC","0.4, 0",unknown,-0.03333
-10722,global,"1994, 1996, 2014","VU, EN, CR","0.4, 0.6, 0.8",decreasing,0.01648
-10800,global,"1994, 1996, 2010, 2018","VU, VU, EN, CR","0.4, 0.4, 0.6, 0.8",decreasing,0.01646
-10960,global,"1994, 1996, 2014","EN, VU, VU","0.6, 0.4, 0.4",unknown,-0.00604
 11030,global,"1996, 2008, 2011","LC, LC, LC","0, 0, 0",unknown,0
 11060,global,"1996, 2012","LC, LC","0, 0",stable,0
 11130,global,"1996, 2010","VU, VU","0.4, 0.4",decreasing,0
@@ -141,56 +118,45 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 11144,global,"1996, 2008","LC, LC","0, 0",unknown,0
 11145,global,"1996, 2008, 2012","LC, LC, LC","0, 0, 0",unknown,0
 11200,global,"1996, 2000, 2006","VU, NT, VU","0.4, 0.2, 0.4",decreasing,0.00263
-11206,global,"1996, 2008, 2011","NT, LC, LC","0.2, 0, 0",unknown,-0.01429
 11375,global,"1994, 1996, 2000","VU, EN, CR","0.4, 0.6, 0.8",unknown,0.06429
 11534,global,"1994, 1996, 2008","EN, EN, VU","0.6, 0.6, 0.4",decreasing,-0.01512
 11696,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",unknown,0
 11987,global,"1996, 2016","NT, VU","0.2, 0.4",decreasing,0.01
 12125,global,"1996, 2008, 2012","LC, LC, LC","0, 0, 0",unknown,0
 12137,global,"1996, 2014","VU, EN","0.4, 0.6",decreasing,0.01111
-12143,global,"1996, 2002, 2004","NT, VU, VU","0.2, 0.4, 0.4",decreasing,0.02692
 12246,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",unknown,0
 12302,global,"2000, 2004, 2008, 2015","LC, LC, LC, LC","0, 0, 0, 0",stable,0
 12303,global,"1994, 1996, 2000, 2004, 2008, 2015","VU, EN, EN, EN, EN, EN","0.4, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0.00572
-12304,global,"1994, 1996, 2015","VU, LC, NT","0.4, 0, 0.2",decreasing,-0.00149
 12305,global,"1994, 1996, 2000, 2004, 2008, 2015","VU, VU, EN, EN, EN, EN","0.4, 0.4, 0.6, 0.6, 0.6, 0.6",decreasing,0.01015
 12416,global,"1996, 2016","VU, NT","0.4, 0.2",decreasing,-0.01
 12417,global,"1996, 2016","VU, VU","0.4, 0.4",decreasing,0
 12419,global,"1996, 2000, 2004, 2008, 2015","LC, VU, NT, NT, NT","0, 0.4, 0.2, 0.2, 0.2",decreasing,0.0037200000000000002
-12420,global,"1996, 2000, 2004, 2008, 2015","LC, VU, LC, LC, NT","0, 0.4, 0, 0, 0.2",decreasing,0.00112
 12421,global,"1996, 2008, 2015","VU, EN, EN","0.4, 0.6, 0.6",decreasing,0.01119
 12427,global,"1996, 2000, 2004, 2008, 2015","VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
 13006,global,"1994, 1996, 2008","VU, VU, LC","0.4, 0.4, 0",increasing,-0.03023
 13145,global,"1994, 1996, 2015","VU, NT, EN","0.4, 0.2, 0.6",decreasing,0.01414
 13232,global,"2008, 2011","LC, LC","0, 0",unknown,0
-13427,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
 13581,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",increasing,0
 13583,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",stable,0
 13653,global,"1994, 1996, 2008, 2013, 2015","EN, CR, CR, CR, EN","0.6, 0.8, 0.8, 0.8, 0.6",increasing,7.5e-4
 13654,global,"1994, 1996, 2008, 2015","EN, EN, CR, EN","0.6, 0.6, 0.8, 0.6",decreasing,0.00318
 13704,global,"2008, 2012, 2017","NT, NT, LC","0.2, 0.2, 0",unknown,-0.02295
-13891,global,"1994, 1996, 2006, 2011","EN, EN, VU, NT","0.6, 0.6, 0.4, 0.2",unknown,-0.02313
 14049,global,"1996, 2007, 2008","VU, EN, EN","0.4, 0.6, 0.6",decreasing,0.01729
 14050,global,"1996, 2008","VU, LC","0.4, 0",decreasing,-0.03333
 14051,global,"1996, 2007, 2008, 2015","VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4",unknown,0
 14052,global,"1996, 2008","VU, NT","0.4, 0.2",decreasing,-0.01667
 14053,global,"1996, 2007, 2008","VU, VU, VU","0.4, 0.4, 0.4",decreasing,-0
-14128,global,"1996, 2008","LC, LC","0, 0",increasing,0
 14214,global,"1994, 1996, 2008, 2013","VU, LC, LC, LC","0.4, 0, 0, 0",stable,-0.01374
 14264,global,"1994, 1996, 2007","EN, LC, LC","0.6, 0, 0",decreasing,-0.03061
 14549,global,"1994, 1996, 2008, 2015","EN, LC, EN, EN","0.6, 0, 0.6, 0.6",decreasing,0.01456
-14629,global,"1996, 2009, 2010","CR, CR, CR","0.8, 0.8, 0.8",unknown,-0
 15106,global,"1996, 2016","LC, VU","0, 0.4",unknown,0.02
 15108,global,"1996, 2016","LC, NT","0, 0.2",unknown,0.01
 15239,global,"1996, 2010","NT, LC","0.2, 0",unknown,-0.01429
 15269,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",unknown,0
 15419,global,"2008, 2017","VU, EN","0.4, 0.6",decreasing,0.02222
-15549,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
 15873,global,"1996, 2014","EN, LC","0.6, 0",unknown,-0.03333
-15968,global,"1994, 2014","EN, CR","0.6, 0.8",unknown,0.01
 16012,global,"1996, 2017","NT, LC","0.2, 0",unknown,-0.00952
 16238,global,"1996, 2004, 2016","LC, VU, LC","0, 0.4, 0",decreasing,-0.00263
-16559,global,"1994, 1996, 2008, 2016","EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6",decreasing,0
 16564,global,"1996, 2008","LC, LC","0, 0",unknown,0
 16781,global,"1996, 2008, 2013","LC, LC, LC","0, 0, 0",stable,0
 17013,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",unknown,0
@@ -215,17 +181,11 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 18376,global,"1996, 2011, 2014","LC, LC, LC","0, 0, 0",unknown,0
 18383,global,"1994, 1996, 2009","VU, VU, NT","0.4, 0.4, 0.2",decreasing,-0.01407
 18428,global,"1994, 1996, 2010","VU, CR, CR","0.4, 0.8, 0.8",unknown,0.01579
-18460,global,"1996, 2011","NT, NT","0.2, 0.2",unknown,0
-18711,global,"1994, 1996, 2000, 2004, 2008, 2015","VU, VU, EN, EN, EN, EN","0.4, 0.4, 0.6, 0.6, 0.6, 0.6",decreasing,0.01015
 18878,global,"1996, 2008, 2013","LC, LC, LC","0, 0, 0",stable,0
-19330,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
 19387,global,"1994, 1996, 2007, 2016","EN, NT, LC, LC","0.6, 0.2, 0, 0",unknown,-0.02224
 19388,global,"1996, 2012","NT, LC","0.2, 0",stable,-0.0125
-19401,global,"1994, 1996, 2000, 2008, 2018","EN, VU, VU, EN, EN","0.6, 0.4, 0.4, 0.6, 0.6",decreasing,0.00535
 19488,global,"2000, 2005, 2016","VU, VU, EN","0.4, 0.4, 0.6",decreasing,0.01343
 19735,global,"1994, 1996, 2014","EN, LC, LC","0.6, 0, 0",unknown,-0.01813
-19861,global,"1996, 2008, 2011","LC, LC, LC","0, 0, 0",unknown,0
-19877,global,"1996, 2008","LC, LC","0, 0",unknown,0
 19897,global,"1996, 2015","VU, VU","0.4, 0.4",unknown,0
 19950,global,"1996, 2012","VU, NT","0.4, 0.2",decreasing,-0.0125
 20047,global,"1996, 2011","EN, VU","0.6, 0.4",decreasing,-0.01333
@@ -235,33 +195,18 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 20731,global,"1996, 2008","VU, LC","0.4, 0",unknown,-0.03333
 20738,global,"2008, 2012","LC, LC","0, 0",unknown,0
 20795,global,"1996, 2004","CR, CR","0.8, 0.8",unknown,0
-20860,global,"1996, 2008","LC, LC","0, 0",unknown,0
-20862,global,"2008, 2011","LC, LC","0, 0",unknown,0
 21257,global,"2008, 2016","LC, LC","0, 0",unknown,0
 21857,global,"1996, 2011","LC, NT","0, 0.2",decreasing,0.01333
 21858,global,"1996, 2011","CR, CR","0.8, 0.8",decreasing,0
 21859,global,"1996, 2011","VU, VU","0.4, 0.4",decreasing,0
 22003,global,"1994, 1996, 2010","EN, CR, CR","0.6, 0.8, 0.8",decreasing,0.00789
-22102,global,"1994, 1996, 2007, 2008, 2016","VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
 22103,global,"1994, 1996, 2007, 2008","VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4",decreasing,0
 22104,global,"1994, 1996, 2006, 2008, 2015","VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4",unknown,0
 22105,global,"1996, 2007, 2008","VU, EN, EN","0.4, 0.6, 0.6",decreasing,0.01729
-22383,global,"1994, 2012","VU, LC","0.4, 0",stable,-0.02222
 22563,global,"2008, 2012","LC, LC","0, 0",unknown,0
-22781,global,"1994, 1996, 2004, 2008, 2013","EN, VU, CR, CR, NT","0.6, 0.4, 0.8, 0.8, 0.2",increasing,-0.00547
 22823,global,"1994, 1996, 2006, 2008, 2015","VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4",unknown,0
-22979,global,"1996, 2008","LC, LC","0, 0",unknown,0
-23141,global,"1994, 1996, 2008, 2016","EN, VU, VU, VU","0.6, 0.4, 0.4, 0.4",decreasing,-0.00588
 31382,global,"1998, 2010","LC, LC","0, 0",decreasing,0
 33705,global,"1998, 2010","LC, LC","0, 0",decreasing,0
-38559,global,"1998, 1998, 2012","CR, EN, EN","0.8, 0.6, 0.6",decreasing,-0.00714
-39070,global,"2000, 2014","LC, LC","0, 0",stable,0
-39086,global,"2000, 2014","LC, LC","0, 0",stable,0
-39098,global,"2000, 2015","LC, LC","0, 0",stable,0
-39105,global,"2000, 2014","LC, LC","0, 0",stable,0
-39106,global,"2000, 2014","LC, LC","0, 0",stable,0
-39107,global,"2000, 2014","LC, LC","0, 0",stable,0
-39109,global,"2000, 2014","LC, LC","0, 0",stable,0
 39303,global,"1996, 2008","VU, NT","0.4, 0.2",decreasing,-0.01667
 39327,global,"2000, 2003, 2016","NT, LC, LC","0.2, 0, 0",stable,-0.00876
 39328,global,"2000, 2005, 2016","NT, NT, NT","0.2, 0.2, 0.2",decreasing,-0
@@ -320,7 +265,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 39545,global,"2000, 2009","EN, EN","0.6, 0.6",decreasing,0
 39771,global,"2000, 2003","VU, EN","0.4, 0.6",stable,0.06667
 39774,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
-40708,global,"2008, 2011","LC, LC","0, 0",unknown,0
 40710,global,"1996, 2011","VU, NT","0.4, 0.2",unknown,-0.01333
 40711,global,"1996, 2015","VU, LC","0.4, 0",stable,-0.02105
 40797,global,"2000, 2009","NT, NT","0.2, 0.2",unknown,0
@@ -331,10 +275,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 41010,global,"2012, 2017","VU, VU","0.4, 0.4",decreasing,0
 41030,global,"1994, 1996, 2010, 2017","EX, CR, CR, CR","1, 0.8, 0.8, 0.8",decreasing,-0.00556
 41064,global,"2000, 2007, 2016","CR, CR, CR","0.8, 0.8, 0.8",decreasing,-0
-41065,global,"2004, 2009","LC, LC","0, 0",increasing,0
-41303,global,"1996, 2008","LC, LC","0, 0",unknown,0
-41366,global,"1996, 2004, 2008, 2016","LC, LC, LC, LC","0, 0, 0, 0",unknown,0
-41590,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",decreasing,0
 41664,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",increasing,0
 41665,global,"1996, 2008, 2014, 2016","LC, LC, LC, LC","0, 0, 0, 0",stable,0
 41666,global,"1996, 2008, 2015","LC, LC, LC","0, 0, 0",increasing,0
@@ -363,10 +303,7 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 41753,global,"2003, 2016","LC, LC","0, 0",stable,0
 41754,global,"2011, 2012, 2017","VU, VU, EN","0.4, 0.4, 0.6",decreasing,0.03548
 41755,global,"1996, 2008","VU, VU","0.4, 0.4",unknown,0
-41756,global,"1994, 1996, 2004, 2012","VU, EN, EN, EN","0.4, 0.6, 0.6, 0.6",decreasing,0.00739
-41758,global,"2004, 2008, 2012, 2017","EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6",unknown,0
 41761,global,"2003, 2012","VU, VU","0.4, 0.4",decreasing,0
-41772,global,"1996, 2008, 2017","LC, VU, VU","0, 0.4, 0.4",decreasing,0.01982
 41794,global,"2003, 2016","NT, LC","0.2, 0",unknown,-0.01538
 41796,global,"2003, 2016","LC, LC","0, 0",stable,0
 41797,global,"2003, 2016","VU, VU","0.4, 0.4",decreasing,0
@@ -403,13 +340,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 41875,global,"2003, 2016","VU, VU","0.4, 0.4",unknown,0
 41876,global,"2009, 2016","VU, VU","0.4, 0.4",decreasing,0
 41878,global,"2003, 2016","VU, EN","0.4, 0.6",decreasing,0.01538
-42178,global,"1998, 2003, 2010","EN, NT, NT","0.6, 0.2, 0.2",stable,-0.03119
-42248,global,"1998, 2013","LC, LC","0, 0",increasing,0
-42393,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
-42394,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
-42653,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
-42654,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",unknown,0
-42675,global,"1996, 2008, 2016","LC, LC, LC","0, 0, 0",stable,0
 42704,global,"2016, 2017","LC, LC","0, 0",unknown,0
 42713,global,"2003, 2009, 2016","LC, LC, LC","0, 0, 0",unknown,0
 42716,global,"2003, 2011","LC, LC","0, 0",unknown,0
@@ -420,17 +350,10 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 44166,global,"1996, 2000, 2004, 2008, 2015","NT, NT, NT, VU, VU","0.2, 0.2, 0.2, 0.4, 0.4",decreasing,0.01283
 44168,global,"2003, 2006","EN, CR","0.6, 0.8",decreasing,0.06667
 44169,global,"2003, 2006","VU, EN","0.4, 0.6",decreasing,0.06667
-44181,global,"2004, 2011, 2018","CR, CR, CR","0.8, 0.8, 0.8",decreasing,-0
 44183,global,"2000, 2005, 2016","NT, NT, LC","0.2, 0.2, 0",stable,-0.01343
 44186,global,"2004, 2015","LC, LC","0, 0",unknown,0
-44189,global,"2004, 2011, 2012","CR, EN, EN","0.8, 0.6, 0.6",decreasing,-0.02632
-44191,global,"2004, 2010, 2015","CR, EN, EN","0.8, 0.6, 0.6",decreasing,-0.01868
-44275,global,"1996, 2004, 2012","CR, CR, EN","0.8, 0.8, 0.6",increasing,-0.0125
 44478,global,"2004, 2017","LC, LC","0, 0",unknown,0
 44479,global,"2004, 2016","NT, LC","0.2, 0",unknown,-0.01667
-44502,global,"2004, 2016","LC, LC","0, 0",unknown,0
-58542,global,"2004, 2008","LC, LC","0, 0",stable,0
-58705,global,"2004, 2009","LC, LC","0, 0",increasing,0
 60108,global,"2006, 2015","LC, LC","0, 0",stable,0
 60111,global,"2006, 2015","LC, LC","0, 0",unknown,0
 60112,global,"2006, 2016","LC, LC","0, 0",unknown,0
@@ -472,9 +395,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 61417,global,"2006, 2007","EN, CR","0.6, 0.8",decreasing,0.2
 61418,global,"2006, 2007","EN, CR","0.6, 0.8",decreasing,0.2
 61442,global,"2006, 2012","CR, CR","0.8, 0.8",decreasing,0
-61538,global,"2006, 2009","LC, LC","0, 0",decreasing,0
-61617,global,"1998, 2006, 2011","EN, CR, CR","0.6, 0.8, 0.8",stable,0.01628
-61654,global,"1998, 2006, 2011","VU, CR, EN","0.4, 0.8, 0.6",unknown,0.0186
 63100,global,"2007, 2015","NT, NT","0.2, 0.2",decreasing,0
 63119,global,"2007, 2016","LC, LC","0, 0",unknown,0
 63120,global,"2007, 2015","LC, NT","0, 0.2",decreasing,0.025
@@ -483,9 +403,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 63132,global,"2007, 2016","EN, EN","0.6, 0.6",decreasing,0
 63152,global,"2007, 2016","LC, LC","0, 0",unknown,0
 63165,global,"2003, 2011","LC, LC","0, 0",stable,0
-63356,global,"2007, 2016","LC, LC","0, 0",stable,0
-63449,global,"2007, 2010","EN, EN","0.6, 0.6",unknown,0
-63758,global,"2007, 2013","LC, LC","0, 0",stable,0
 64396,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
 64398,global,"2007, 2008","LC, LC","0, 0",stable,0
 64400,global,"2007, 2008","VU, VU","0.4, 0.4",decreasing,0
@@ -757,7 +674,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 133710,global,"2008, 2017","CR, CR","0.8, 0.8",decreasing,0
 133712,global,"2008, 2012","VU, VU","0.4, 0.4",increasing,0
 133714,global,"2008, 2012","EN, EN","0.6, 0.6",unknown,0
-135164,global,"2008, 2016","LC, LC","0, 0",stable,0
 135301,global,"2008, 2011","LC, LC","0, 0",stable,0
 135303,global,"2008, 2011","LC, LC","0, 0",increasing,0
 135309,global,"2008, 2011","CR, CR","0.8, 0.8",decreasing,0
@@ -799,18 +715,12 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 135380,global,"2008, 2011","LC, LC","0, 0",increasing,0
 135381,global,"2008, 2011","EN, EN","0.6, 0.6",decreasing,0
 135525,global,"2008, 2010","LC, LC","0, 0",unknown,0
-135550,global,"2008, 2011","LC, LC","0, 0",unknown,0
 135567,global,"2008, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
-135590,global,"2008, 2011","EN, EN","0.6, 0.6",unknown,0
-135604,global,"2008, 2011","LC, LC","0, 0",unknown,0
-135672,global,"2008, 2011","VU, VU","0.4, 0.4",decreasing,0
 135690,global,"2008, 2014","LC, LC","0, 0",increasing,0
 135717,global,"2008, 2010","LC, LC","0, 0",decreasing,0
 135719,global,"2008, 2013","LC, LC","0, 0",unknown,0
 136315,global,"2008, 2017","NT, VU","0.2, 0.4",decreasing,0.02222
-136472,global,"2008, 2016","EN, EN","0.6, 0.6",decreasing,0
 153534,global,"2010, 2016","LC, LC","0, 0",decreasing,0
-153745,global,"2010, 2016","LC, LC","0, 0",unknown,0
 154644,global,"2010, 2014","LC, LC","0, 0",unknown,0
 154669,global,"2010, 2015","LC, LC","0, 0",unknown,0
 154676,global,"2010, 2012","LC, LC","0, 0",stable,0
@@ -818,7 +728,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 154706,global,"2010, 2012","LC, LC","0, 0",unknown,0
 154712,global,"2010, 2011","LC, LC","0, 0",stable,0
 154717,global,"2010, 2015","LC, EN","0, 0.6",unknown,0.12
-154731,global,"2010, 2013","LC, LC","0, 0",stable,0
 154759,global,"2010, 2017","LC, LC","0, 0",unknown,0
 154780,global,"2010, 2012","LC, LC","0, 0",unknown,0
 154825,global,"2010, 2011","LC, LC","0, 0",unknown,0
@@ -851,7 +760,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 155285,global,"2012, 2017","VU, LC","0.4, 0",unknown,-0.08
 155290,global,"2010, 2012","LC, LC","0, 0",unknown,0
 155292,global,"2010, 2012","LC, LC","0, 0",unknown,0
-155568,global,"2010, 2012, 2014","LC, LC, LC","0, 0, 0",stable,0
 161334,global,"2009, 2015","LC, LC","0, 0",unknown,0
 161339,global,"2015, 2016","EN, EN","0.6, 0.6",decreasing,0
 161342,global,"2009, 2015","LC, LC","0, 0",unknown,0
@@ -898,23 +806,16 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 161709,global,"2009, 2015","NT, LC","0.2, 0",stable,-0.03333
 161743,global,"2009, 2016","NT, NT","0.2, 0.2",unknown,0
 161744,global,"2009, 2016","LC, VU","0, 0.4",decreasing,0.05714
-163435,global,"2010, 2011","LC, LC","0, 0",unknown,0
-163444,global,"2010, 2011","LC, LC","0, 0",unknown,0
-164037,global,"2011, 2013","LC, LC","0, 0",stable,0
-164350,global,"2011, 2017","LC, LC","0, 0",unknown,0
-165773,global,"2011, 2016","LC, LC","0, 0",unknown,0
 166077,global,"2010, 2012, 2017","LC, LC, LC","0, 0, 0",stable,0
 166189,global,"2012, 2014","LC, LC","0, 0",unknown,0
 166263,global,"2010, 2012","LC, LC","0, 0",unknown,0
 166533,global,"2012, 2016","LC, LC","0, 0",unknown,0
 166575,global,"2012, 2017","LC, LC","0, 0",unknown,0
-166639,global,"2010, 2016","LC, LC","0, 0",unknown,0
 166774,global,"2010, 2012","LC, LC","0, 0",unknown,0
 166856,global,"2012, 2018","LC, LC","0, 0",stable,0
 166892,global,"2011, 2017","LC, LC","0, 0",unknown,0
 166894,global,"2010, 2014","LC, NT","0, 0.2",unknown,0.05
 166897,global,"2012, 2017","LC, LC","0, 0",unknown,0
-167949,global,"2009, 2010","LC, LC","0, 0",unknown,0
 168000,global,"2010, 2017","LC, LC","0, 0",decreasing,0
 169358,global,"2009, 2012, 2016, 2017","LC, LC, LC, LC","0, 0, 0, 0",unknown,0
 169361,global,"2009, 2017","LC, LC","0, 0",unknown,0
@@ -922,12 +823,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 169587,global,"2009, 2017","LC, LC","0, 0",unknown,0
 169599,global,"2009, 2014","LC, LC","0, 0",stable,0
 169632,global,"2009, 2017","LC, LC","0, 0",stable,0
-169714,global,"2010, 2017","NT, VU","0.2, 0.4",unknown,0.02857
 169967,global,"2011, 2015","LC, LC","0, 0",stable,0
 170266,global,"2014, 2017","LC, LC","0, 0",unknown,0
 170341,global,"2011, 2014","LC, VU","0, 0.4",decreasing,0.13333
-170598,global,"2011, 2017","LC, LC","0, 0",stable,0
-170601,global,"2011, 2018","LC, LC","0, 0",unknown,0
 172359,global,"2011, 2012","LC, LC","0, 0",unknown,0
 172363,global,"2012, 2016","LC, LC","0, 0",unknown,0
 172393,global,"2011, 2012","LC, LC","0, 0",unknown,0
@@ -936,21 +834,10 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 172450,global,"2011, 2012","LC, LC","0, 0",unknown,0
 172468,global,"2011, 2017","LC, LC","0, 0",unknown,0
 172469,global,"2011, 2017","LC, LC","0, 0",unknown,0
-174480,global,"2010, 2015","LC, LC","0, 0",stable,0
-176676,global,"2010, 2016, 2018","LC, LC, LC","0, 0, 0",stable,0
 176694,global,"2010, 2018","LC, LC","0, 0",unknown,0
 176703,global,"2010, 2018","LC, LC","0, 0",unknown,0
 176718,global,"2010, 2012","LC, LC","0, 0",stable,0
-176764,global,"2010, 2018","LC, LC","0, 0",stable,0
-177111,global,"2011, 2013","LC, LC","0, 0",stable,0
 178111,global,"2010, 2017","LC, LC","0, 0",unknown,0
-178201,global,"2010, 2016","LC, LC","0, 0",unknown,0
-178223,global,"2010, 2016","NT, LC","0.2, 0",unknown,-0.03333
-178301,global,"2010, 2016","LC, LC","0, 0",stable,0
-178311,global,"2010, 2017","LC, LC","0, 0",unknown,0
-178323,global,"2010, 2016","NT, NT","0.2, 0.2",unknown,0
-178451,global,"2010, 2017","NT, NT","0.2, 0.2",unknown,0
-178586,global,"2010, 2016","LC, LC","0, 0",unknown,0
 178851,global,"2010, 2015","LC, LC","0, 0",decreasing,0
 180980,global,"2011, 2017","LC, LC","0, 0",unknown,0
 181547,global,"2013, 2017","LC, LC","0, 0",unknown,0
@@ -986,7 +873,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 188065,global,"2012, 2016","LC, LC","0, 0",unknown,0
 188101,global,"2012, 2017","LC, LC","0, 0",stable,0
 188113,global,"2008, 2011","LC, LC","0, 0",unknown,0
-188115,global,"2008, 2011","LC, LC","0, 0",unknown,0
 190674,global,"2010, 2012","LC, LC","0, 0",unknown,0
 190675,global,"2010, 2012","LC, LC","0, 0",unknown,0
 190676,global,"2010, 2012","LC, LC","0, 0",unknown,0
@@ -1097,7 +983,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 194898,global,"2011, 2014","LC, LC","0, 0",stable,0
 194902,global,"2011, 2014","LC, LC","0, 0",unknown,0
 194910,global,"2014, 2015","EN, LC","0.6, 0",stable,-0.6
-194988,global,"2011, 2012","EN, CR","0.6, 0.8",stable,0.2
 195319,global,"2015, 2016","LC, LC","0, 0",unknown,0
 195320,global,"2011, 2016","EN, EN","0.6, 0.6",decreasing,0
 195427,global,"2011, 2015","LC, LC","0, 0",unknown,0
@@ -1166,7 +1051,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22680170,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680174,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680178,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
-22680203,global,"1994, 1996, 2000, 2004, 2006, 2008, 2009, 2010, 2012, 2013, 2015, 2016","VU, VU, VU, CR, CR, CR, CR, CR, CR, CR, CR, CR","0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8",increasing,0.02162
 22680214,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","NT, VU, VU, VU, VU, VU, VU","0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0.00724
 22680217,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22680221,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
@@ -1175,7 +1059,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22680243,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22680247,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680252,global,"1994, 1996, 2000, 2004, 2006, 2008, 2012, 2013, 2016","EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
-22680280,global,"1996, 2000, 2004, 2006, 2008, 2012, 2013, 2016","VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",stable,0
 22680287,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680301,global,"1994, 2000, 2004, 2008, 2009, 2012, 2013, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680306,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","LC, VU, VU, VU, VU, VU, VU","0, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0.01449
@@ -1200,7 +1083,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22680465,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
 22680472,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22680485,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22680488,global,"1994, 1996, 2000, 2002, 2004, 2006, 2007, 2008, 2009, 2012, 2016, 2017","VU, VU, VU, EN, EN, EN, EN, EN, EN, EN, EN, EN","0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0.00972
 22680492,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22683027,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22683033,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1226,11 +1108,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22683645,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22683649,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22683652,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
-22683658,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22683744,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22683982,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22685200,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
-22685203,global,"1994, 1996, 2000, 2004, 2006, 2008, 2009, 2010, 2011, 2012, 2015, 2016","EN, EN, CR, CR, CR, CR, CR, CR, CR, CR, CR, CR","0.6, 0.6, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8",decreasing,0.00857
 22689032,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",stable,0
 22689535,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",stable,0
 22689714,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1238,7 +1118,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22692146,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",increasing,0
 22692151,global,"1994, 1996, 2000, 2004, 2006, 2007, 2008, 2012, 2016","VU, VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",increasing,0
 22692167,global,"1994, 1996, 2000, 2004, 2008, 2009, 2012, 2013, 2016","VU, VU, EN, EN, EN, EN, EN, EN, EN","0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0.00895
-22692353,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","LC, NT, NT, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0.00724
 22692384,global,"1994, 2000, 2004, 2005, 2006, 2008, 2012, 2016","NT, VU, VU, VU, VU, VU, VU, VU","0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0.00718
 22692425,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22692521,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1247,9 +1126,7 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22692680,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22692705,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22692778,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
-22692880,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22692913,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
-22693097,global,"2000, 2004, 2014, 2016","LC, LC, LC, LC","0, 0, 0, 0",decreasing,0
 22693102,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
 22693133,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22693150,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","LC, LC, LC, NT, NT, NT, NT","0, 0, 0, 0.2, 0.2, 0.2, 0.2",decreasing,0.01184
@@ -1309,12 +1186,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22693556,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0, 0",stable,0
 22693567,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22693584,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
-22693589,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22693604,global,"1994, 2000, 2004, 2008, 2009, 2012, 2013, 2016, 2017","LC, LC, LC, LC, LC, LC, NT, NT, NT","0, 0, 0, 0, 0, 0, 0.2, 0.2, 0.2",decreasing,0.00936
 22693627,global,"1994, 2000, 2004, 2006, 2008, 2012, 2015, 2016, 2017","NT, NT, NT, NT, NT, NT, NT, NT, LC","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0",increasing,-0.00367
 22693644,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22693647,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",unknown,0
-22693651,global,"1994, 2000, 2004, 2008, 2009, 2012, 2013, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",increasing,0
 22693656,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
 22693663,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22693669,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
@@ -1487,10 +1361,7 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22695144,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22695147,global,"1994, 1996, 2000, 2004, 2007, 2008, 2012, 2013, 2016","VU, VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",decreasing,0
 22695163,global,"1994, 2000, 2004, 2008, 2012, 2015, 2016, 2017","NT, NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
-22695293,global,"2002, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0",stable,0
-22695344,global,"1994, 2000, 2004, 2008, 2009, 2012, 2013, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0, 0",increasing,0
 22695363,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22695613,global,"1994, 2000, 2004, 2008, 2012, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
 22695909,global,"1994, 1996, 2000, 2004, 2006, 2008, 2012, 2016","VU, VU, VU, VU, VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4",stable,0
 22696247,global,"1994, 2000, 2004, 2008, 2012, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",stable,0
 22696354,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1579,7 +1450,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22697360,global,"2004, 2008, 2009, 2012, 2015, 2016, 2017","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22697365,global,"1994, 2000, 2004, 2006, 2008, 2012, 2014, 2016","LC, NT, NT, NT, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0.00665
 22697369,global,"1994, 2000, 2004, 2006, 2008, 2012, 2015, 2016","NT, NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
-22697510,global,"2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
 22697516,global,"1994, 2000, 2004, 2006, 2008, 2012, 2016","NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
 22697519,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22697555,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",unknown,0
@@ -1592,7 +1462,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22697608,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22697611,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22697619,global,"1994, 2000, 2004, 2008, 2010, 2012, 2016","LC, LC, LC, NT, NT, NT, NT","0, 0, 0, 0.2, 0.2, 0.2, 0.2",increasing,0.01229
-22697641,global,"1994, 2000, 2004, 2008, 2012, 2016, 2017","LC, NT, NT, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0.00613
 22697648,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22697654,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
 22697702,global,"1994, 2000, 2004, 2006, 2007, 2008, 2012, 2016","LC, NT, NT, NT, NT, NT, NT, NT","0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0.00731
@@ -1730,7 +1599,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22698562,global,"1994, 2000, 2004, 2005, 2007, 2008, 2010, 2012, 2013, 2016","NT, NT, EN, EN, EN, EN, EN, EN, EN, EN","0.2, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0.02068
 22698572,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22700142,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
-22700321,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22702103,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22702107,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22704484,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
@@ -1743,7 +1611,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22705999,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22706016,global,"1994, 2000, 2004, 2008, 2009, 2012, 2014, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",increasing,0
 22706033,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
-22708541,global,"1994, 2000, 2004, 2008, 2012, 2016, 2017","NT, NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2",stable,0
 22709707,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22710333,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22710886,global,"1994, 2000, 2004, 2008, 2009, 2012, 2014, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1763,11 +1630,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22717336,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22717383,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
 22717424,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
-22717428,global,"1994, 1996, 2000, 2004, 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017","EN, EN, CR, CR, CR, CR, CR, CR, CR, CR, CR, CR","0.6, 0.6, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8",stable,0.0081
 22717434,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
 22717629,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22718187,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22718348,global,"2006, 2008, 2009, 2012, 2013, 2014, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22718371,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22718375,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22718379,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",increasing,0
@@ -1783,12 +1648,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22721033,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016, 2017","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",increasing,0
 22721046,global,"1994, 2000, 2004, 2008, 2012, 2014, 2016","LC, NT, NT, NT, NT, LC, LC","0, 0.2, 0.2, 0.2, 0.2, 0, 0",increasing,-0.00179
 22721058,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22721115,global,"1994, 2016","LC, LC","0, 0",unknown,0
 22721123,global,"1994, 2000, 2004, 2008, 2009, 2012, 2015, 2016","LC, LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0, 0",decreasing,0
-22721129,global,"2000, 2004, 2008, 2012, 2016, 2017","NT, VU, VU, VU, VU, EN","0.2, 0.4, 0.4, 0.4, 0.4, 0.6",decreasing,0.01495
 22721836,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22724178,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
-22724271,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22724323,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22724326,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",stable,0
 22724332,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",decreasing,0
@@ -1802,19 +1664,14 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22725856,global,"2014, 2016","LC, LC","0, 0",unknown,0
 22727255,global,"2014, 2016","VU, VU","0.4, 0.4",decreasing,0
 22727265,global,"2014, 2016","LC, LC","0, 0",stable,0
-22727471,global,"2014, 2016","LC, LC","0, 0",unknown,0
-22727481,global,"2014, 2016","LC, LC","0, 0",unknown,0
 22727487,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22727668,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22727677,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22727683,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22727746,global,"2014, 2016","LC, LC","0, 0",stable,0
-22727750,global,"2014, 2016","LC, LC","0, 0",decreasing,0
-22727757,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22727969,global,"2014, 2016","LC, LC","0, 0",increasing,0
 22728011,global,"2014, 2016","NT, NT","0.2, 0.2",unknown,0
 22728182,global,"2014, 2016","LC, LC","0, 0",decreasing,0
-22728303,global,"2000, 2004, 2006, 2007, 2008, 2012, 2015, 2016","EN, EN, EN, EN, EN, EN, NT, NT","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.2, 0.2",increasing,-0.02642
 22728318,global,"2000, 2003, 2004, 2005, 2007, 2008, 2010, 2012, 2016, 2017","VU, VU, VU, VU, VU, VU, VU, VU, VU, EN","0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.6",decreasing,0.00629
 22728323,global,"2000, 2003, 2004, 2005, 2007, 2008, 2010, 2012, 2013, 2016","EN, EN, EN, EN, EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
 22728328,global,"1994, 2000, 2003, 2004, 2005, 2008, 2010, 2012, 2016","NT, VU, VU, VU, VU, NT, NT, NT, NT","0.2, 0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2",stable,-0.00636
@@ -1838,15 +1695,12 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22729609,global,"2007, 2008, 2010, 2012, 2013, 2016","NT, NT, NT, NT, NT, NT","0.2, 0.2, 0.2, 0.2, 0.2, 0.2",decreasing,0
 22729686,global,"2014, 2016","LC, LC","0, 0",unknown,0
 22729692,global,"2014, 2016","LC, LC","0, 0",stable,0
-22729867,global,"2000, 2004, 2014, 2016","LC, LC, LC, LC","0, 0, 0, 0",decreasing,0
 22731577,global,"2014, 2016","NT, NT","0.2, 0.2",decreasing,0
 22731855,global,"2004, 2006, 2008, 2012, 2013, 2016","EN, EN, EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6, 0.6, 0.6",decreasing,0
-22731986,global,"2005, 2008, 2012, 2016","VU, VU, EN, EN","0.4, 0.4, 0.6, 0.6",decreasing,0.02182
 22732244,global,"2014, 2015, 2016","LC, LC, LC","0, 0, 0",unknown,0
 22732425,global,"2012, 2013, 2016","NT, NT, NT","0.2, 0.2, 0.2",decreasing,-0
 22733462,global,"2014, 2015, 2016, 2017","LC, NT, NT, NT","0, 0.2, 0.2, 0.2",decreasing,0.06
 22733705,global,"2014, 2016","LC, LC","0, 0",stable,0
-22733821,global,"2006, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",decreasing,0
 22733979,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 22733989,global,"1994, 2000, 2004, 2008, 2009, 2012, 2016","LC, LC, LC, LC, LC, LC, LC","0, 0, 0, 0, 0, 0, 0",increasing,0
 22734070,global,"2014, 2016","LC, LC","0, 0",stable,0
@@ -1854,7 +1708,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 22734408,global,"2008, 2010, 2012, 2016","EN, EN, EN, EN","0.6, 0.6, 0.6, 0.6",decreasing,0
 22734972,global,"2010, 2012, 2013, 2015, 2016","LC, LC, LC, LC, LC","0, 0, 0, 0, 0",unknown,0
 22735250,global,"2008, 2010, 2012, 2016","VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4",decreasing,0
-22735514,global,"2009, 2012, 2016","LC, LC, LC","0, 0, 0",decreasing,0
 22735624,global,"2010, 2012, 2013, 2016","VU, VU, VU, VU","0.4, 0.4, 0.4, 0.4",stable,0
 22735692,global,"2010, 2012, 2016","EN, EN, EN","0.6, 0.6, 0.6",decreasing,-0
 22735803,global,"2010, 2012, 2013, 2016","LC, LC, LC, LC","0, 0, 0, 0",decreasing,0
@@ -1874,15 +1727,10 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 45959186,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 48342180,global,"2014, 2017","LC, LC","0, 0",stable,0
 48342396,global,"2014, 2015","VU, VU","0.4, 0.4",unknown,0
-50009685,global,"2016, 2017","CR, CR","0.8, 0.8",decreasing,0
-50009857,global,"2016, 2017","LC, LC","0, 0",unknown,0
 61382025,global,"1996, 2016","EN, LC","0.6, 0",increasing,-0.03
-61634591,global,"2014, 2016","LC, LC","0, 0",decreasing,0
-61634940,global,"2014, 2016","LC, LC","0, 0",stable,0
 61650582,global,"2014, 2016","LC, LC","0, 0",stable,0
 61709141,global,"2014, 2015, 2016","LC, LC, LC","0, 0, 0",stable,0
 61709172,global,"2014, 2016","LC, LC","0, 0",stable,0
-61786470,global,"2017, 2018","LC, LC","0, 0",unknown,0
 62015238,global,"2014, 2016","LC, LC","0, 0",unknown,0
 62021891,global,"2014, 2016","LC, LC","0, 0",increasing,0
 62026481,global,"2014, 2015, 2016, 2017","LC, LC, LC, LC","0, 0, 0, 0",decreasing,0
@@ -1892,7 +1740,6 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 62030970,global,"2014, 2016, 2017","LC, LC, LC","0, 0, 0",increasing,0
 62101215,global,"2014, 2016","EN, EN","0.6, 0.6",decreasing,0
 62101249,global,"2014, 2016","VU, VU","0.4, 0.4",decreasing,0
-62114375,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 62154828,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 62155296,global,"2014, 2016","LC, LC","0, 0",decreasing,0
 62169677,global,"2012, 2014, 2016","LC, LC, LC","0, 0, 0",decreasing,0
@@ -1900,11 +1747,9 @@ iucn_sid,iucn_rgn,years,cat_ts,scores,pop_trend_desc,calc_trend
 62289571,global,"2014, 2016","LC, LC","0, 0",stable,0
 62290750,global,"2014, 2016, 2017","EN, EN, CR","0.6, 0.6, 0.8",decreasing,0.05714
 62291168,global,"2014, 2016","NT, NT","0.2, 0.2",increasing,0
-62774969,global,"2014, 2015, 2016","LC, LC, LC","0, 0, 0",increasing,0
 68527310,global,"1996, 2017","VU, LC","0.4, 0",unknown,-0.01905
 84131194,global,"2015, 2017","LC, LC","0, 0",increasing,0
 103727557,global,"2016, 2017","LC, LC","0, 0",increasing,0
-103766143,global,"2016, 2017","LC, LC","0, 0",increasing,0
 103798407,global,"2016, 2017","LC, LC","0, 0",decreasing,0
 104006526,global,"2016, 2017","LC, LC","0, 0",increasing,0
 104007058,global,"2016, 2017","LC, LC","0, 0",decreasing,0

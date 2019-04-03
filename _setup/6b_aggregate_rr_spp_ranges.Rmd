@@ -28,13 +28,15 @@ library(sf)
 library(data.table)
 
 dir_git <- '~/github/spp_risk_dists'
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_setup   <- file.path(dir_git, '_setup')
+dir_data    <- file.path(dir_git, '_data')
+dir_spatial <- file.path(dir_git, '_spatial')
 
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ### goal specific folders and info
 
-dir_data <- file.path(dir_git, 'data')
 
 ```
 
@@ -62,12 +64,12 @@ This calculated range includes ONLY ocean area. For species such as birds whose 
 
 ``` {r calculate_ranges_from_raster_maps}
 
-spp_range_file <- file.path(dir_git, 'data',
+spp_range_file <- file.path(dir_data,
                             sprintf('iucn_spp_range_area_%s.csv', api_version))
 reload <- FALSE
 
 ### load area raster, convert to data frame
-area_rast <- raster(file.path(dir_git, 'spatial/ocean_area_rast.tif'))
+area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
 area_df <- data.frame(cell_id = 1:length(area_rast),
                       area_km2 = values(area_rast))
   
@@ -206,11 +208,11 @@ spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', ap
                       col_types = 'dc_d_')
 
 ### load range info and ocean area info
-spp_range <- read_csv(file.path(dir_git, 'data',
+spp_range <- read_csv(file.path(dir_data,
                                 sprintf('iucn_spp_range_area_%s.csv', api_version)),
                       col_types = 'dd__')
 
-# ocean_area_rast <- raster(file.path(dir_git, 'spatial/ocean_area_rast.tif'))
+# ocean_area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
 # cell_area_df <- data.frame(cell_ocean_area = values(ocean_area_rast),
 #                            cell_id = 1:length(ocean_area_rast))
 
@@ -223,15 +225,15 @@ spp_risk_trend <- spp_risk %>%
   left_join(spp_range, by = 'iucn_sid')
 
 ### raster for cell IDs
-rast_cell_ids <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_cell_ids <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ### Make a dataframe of cell ID to MEOW for regional assessments... also 
 ### make a lookup of MEOW to region
-meow_rgns_rast <- raster::raster(file.path(dir_git, 'spatial', 'meow_rast.tif'))
+meow_rgns_rast <- raster::raster(file.path(dir_spatial, 'meow_rast.tif'))
 meow_cells_all <- data.frame(cell_id = values(rast_cell_ids),
                              meow_id = values(meow_rgns_rast)) %>%
   filter(!is.na(meow_id))
-meow_to_rgn <- read_csv(file.path(dir_git, 'spatial/iucn_rgn_to_meow.csv'))
+meow_to_rgn <- read_csv(file.path(dir_spatial, 'iucn_rgn_to_meow.csv'))
 
 
 ```

@@ -2017,7 +2017,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 98890443,98890443,Anchoa pectoralis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
 183516,183516,Anchoa scofieldi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
 16406554,16406554,Anchoa spinifer,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
-184e3,184e3,Anchoa starksi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
+184000,184000,Anchoa starksi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
 98891120,98891120,Anchoa tricolor,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
 16406635,16406635,Anchoa trinitatis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
 155020,155020,Anchoa walkeri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/clupeiformes.dbf,< 200 m,FALSE
@@ -2442,7 +2442,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 178961,178961,Gilloblennius abditus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
 178962,178962,Clinus venustris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
 178999,178999,Clinus latipennis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
-179e3,179e3,Helcogramma novaecaledoniae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
+179000,179000,Helcogramma novaecaledoniae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
 179001,179001,Enneapterygius nanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
 179002,179002,Enneapterygius fasciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,unknown,TRUE
 179003,179003,Cancelloxus burrelli,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/COMBTOOTHBLENNIES.dbf,< 200 m,TRUE
@@ -4016,7 +4016,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 132990,132990,Acropora multiacuta,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
 132992,132992,Acropora humilis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
 132998,132998,Acropora samoensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
-133e3,133e3,Acropora ocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,unknown,TRUE
+133000,133000,Acropora ocellata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,unknown,TRUE
 133005,133005,Anacropora spumosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
 133006,133006,Acropora palmata,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
 133007,133007,Montipora malampaya,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/CORALS_PART_1.dbf,< 200 m,TRUE
@@ -4994,7 +4994,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 154639,154639,Gobiesox canidens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
 183299,183299,Gobiesox crassicorpus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,unknown,FALSE
 183448,183448,Gobiesox daedaleus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
-186e3,186e3,Gobiesox lucayanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
+186000,186000,Gobiesox lucayanus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
 183338,183338,Gobiesox marijeanae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
 183401,183401,Gobiesox milleri,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
 155210,155210,Gobiesox multitentaculus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiesociformes.dbf,< 200 m,FALSE
@@ -5312,7 +5312,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 181269,181269,Mugilogobius abei,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 20 m,FALSE
 196335,196335,Mugilogobius cavifrons,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 180706,180706,Mugilogobius chulae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,200 m +,FALSE
-181e3,181e3,Mugilogobius mertoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 20 m,FALSE
+181000,181000,Mugilogobius mertoni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 20 m,FALSE
 21130857,21130857,Nematogobius brachynemus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 20 m,FALSE
 185885,185885,Nes longus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 155272,155272,Nesogobius hinsbyi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
@@ -5410,7 +5410,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 68326585,68326585,Ancistrogobius yanoi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 68326872,68326872,Arcygobius baliurus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 68327714,68327714,Arenigobius leftwichi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
-193e3,193e3,Asterropteryx ensifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
+193000,193000,Asterropteryx ensifera,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 193467,193467,Asterropteryx senoui,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 193227,193227,Asterropteryx spinosa,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
 68328081,68328081,Austrolethops wardi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/gobiidae.dbf,< 200 m,FALSE
@@ -6030,7 +6030,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 169996,169996,Parribacus caledonicus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,< 200 m,TRUE
 169997,169997,Scyllarides brasiliensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,200 m +,TRUE
 169999,169999,Palinurus gilchristi,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,< 200 m,TRUE
-17e4,17e4,Acanthacaris caeca,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,unknown,TRUE
+170000,170000,Acanthacaris caeca,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,unknown,TRUE
 170002,170002,Scyllarides elisabethae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,200 m +,TRUE
 170003,170003,Metanephrops armatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,deep oceanic,TRUE
 170004,170004,Remiarctus bertholdii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,< 200 m,TRUE
@@ -6122,7 +6122,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 184997,184997,Eduarctus modestus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,< 200 m,TRUE
 184998,184998,Enoplometopus debelius,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,< 200 m,TRUE
 184999,184999,Scyllarus subarctus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,unknown,TRUE
-185e3,185e3,Stereomastis nana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,deep oceanic,TRUE
+185000,185000,Stereomastis nana,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,deep oceanic,TRUE
 185001,185001,Stereomastis alis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,unknown,TRUE
 185002,185002,Ibacus pubescens,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,200 m +,TRUE
 185004,185004,Thymopides laurentae,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/LOBSTERS.dbf,deep oceanic,TRUE
@@ -6848,7 +6848,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 69539228,69539228,Nemipterus balinensoides,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
 69539262,69539262,Nemipterus furcosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
 69539271,69539271,Nemipterus hexodon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
-46087e3,46087e3,Nemipterus peronii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
+46087000,46087000,Nemipterus peronii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
 69539284,69539284,Nemipterus vitiensis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
 69539293,69539293,Nemipterus zysron,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
 69539322,69539322,Pentapodus aureofasciatus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/nemipteridae.dbf,< 200 m,FALSE
@@ -8613,7 +8613,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 177997,177997,Acanthurus tennentii,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
 177998,177998,Acanthurus tristis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
 177999,177999,Acanthurus nigroris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
-178e3,178e3,Acanthurus leucosternon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
+178000,178000,Acanthurus leucosternon,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
 178001,178001,Zebrasoma rostratum,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
 178002,178002,Naso hexacanthus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
 178003,178003,Naso tuberosus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2018-1/SURGEONFISH_TANGS_UNICORNFISH.dbf,< 200 m,TRUE
@@ -9958,7 +9958,7 @@ shp_iucn_sid,iucn_sid,sciname,presence,subpop,dbf_file,max_depth,comp_assessed
 22727969,22727969,Himantopus himantopus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,< 200 m,TRUE
 22694875,22694875,Brachyramphus brevirostris,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,200 m +,TRUE
 22694870,22694870,Brachyramphus marmoratus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,200 m +,TRUE
-22729e3,22729e3,Brachyramphus perdix,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,200 m +,TRUE
+22729000,22729000,Brachyramphus perdix,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,200 m +,TRUE
 22721046,22721046,Plectrophenax hyperboreus,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,< 20 m,TRUE
 22718770,22718770,Ploceus pelzelni,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,< 20 m,TRUE
 22679943,22679943,Branta leucopsis,1,NA,/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2018/bli_marine_v2017.dbf,< 20 m,TRUE

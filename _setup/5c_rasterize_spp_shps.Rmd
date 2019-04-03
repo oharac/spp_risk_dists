@@ -29,10 +29,12 @@ library(sf)
 
 dir_git <- '~/github/spp_risk_dists'
 dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, 'setup')
+dir_setup   <- file.path(dir_git, '_setup')
+dir_data    <- file.path(dir_git, '_data')
+dir_spatial <- file.path(dir_git, '_spatial')
 
 ### project specific folders and info
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_setup, 'common_fxns.R'))
 
 dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
 dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
@@ -73,13 +75,13 @@ We will loop over each species in each shapefile and rasterize separately, using
 
 reload <- FALSE
 
-maps_to_rasterize <- read_csv(file.path(dir_git, 'data',
+maps_to_rasterize <- read_csv(file.path(dir_data,
                                         sprintf('spp_marine_maps_%s.csv', api_version)),
                               col_types = 'ddcicccl') %>%
   mutate(shp_file = str_replace(dbf_file, 'dbf$', 'shp'))
 
 ### rast_base for cell IDs
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ### If some species already processed, remove from the list to process.
 if(reload == FALSE) {
@@ -114,11 +116,11 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
   cat_msg('reload == ', reload, '... Maps to process: ', nrow(maps_to_rasterize))
 
   ### These will be used as masks
-  rast_bathy <- raster(file.path(dir_git, 'spatial',
+  rast_bathy <- raster(file.path(dir_spatial,
                                  'bathy_rast.tif'))
-  rast_neritic <- raster(file.path(dir_git, 'spatial',
+  rast_neritic <- raster(file.path(dir_spatial,
                                  'bathy_rast_neritic.tif'))
-  rast_shallow <- raster(file.path(dir_git, 'spatial',
+  rast_shallow <- raster(file.path(dir_spatial,
                                  'bathy_rast_shallow.tif'))
   
   ################################################################.
@@ -240,7 +242,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
 
 ``` {r file size testing}
 
-maps <- read_csv(file.path(dir_git, 'data',
+maps <- read_csv(file.path(dir_data,
                            sprintf('spp_marine_maps_%s.csv', api_version)),
                  col_types = 'ddciccc') %>%
   select(spp_group = dbf_file, iucn_sid, sciname, subpop) %>%
