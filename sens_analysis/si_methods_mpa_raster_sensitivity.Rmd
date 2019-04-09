@@ -2,11 +2,6 @@
 title: "Sensitivity of MPA rasters to MPA size"
 author: '*Compiled on `r date()` by `r Sys.info()["user"]`*'
 output:
-  word_document:
-    toc: yes
-    toc_depth: '3'
-  pdf_document:
-    toc: yes
   html_document:
     code_folding: hide
     highlight: haddock
@@ -17,6 +12,11 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+    toc_depth: '3'
 ---
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
@@ -42,13 +42,6 @@ dir_sa   <- file.path(dir_wdpa, 'sensitivity_analysis')
 gp_proj4 <- '+proj=cea +lon_0=0 +lat_ts=45 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs'
 
 ```
-
-To calculate marine protected area global distribution, we rasterized vector spatial data (polygon features) from the World Database on Protected Areas [WDPA, @iucn_2018a] to eliminate double-counting due to overlapping protected areas.  However, while rasterization enables convenient comparison of spatial data, it necessarily loses some information particularly when the resolution of the raster is significantly larger than the scale of polygon features.  Our primary analysis of marine biodiversity risk was assessed at cells of 100 km^2^; however, many marine protected areas are far smaller than this size, so for MPA coverage, we chose a finer resolution, 1 km^2^, to calculate proportional coverage within each larger analysis cell.  To assess the ability of this scale to capture the vast majority of MPAs relevant to the status of global marine biodiversity, we focused on three questions:
-
-* How many small MPAs exist that are at or below the resolution of the 1 km^2^ raster resolution, and to what extent does the total area of these MPAs contribute to the global MPA estate?
-* How significant is the result of small MPAs potentially dropped by the rasterization process, i.e., total number, proportional count, and proportion of total protected area of MPAs not included in the raster output?
-* How closely does the resulting MPA raster output reflect the protected area indicated by the MPA polygons input?
-
 
 ### Small MPA coverage as a proportion of global MPA estate
 
@@ -124,6 +117,8 @@ mpa_poly_small <- mpa_poly_df %>%
   mutate(`% MPA by count` = N / sum(N) * 100,
          `% MPA by area` = `A total, km²` / sum(`A total, km²`) * 100)
 
+write_csv(mpa_poly_small, 'tableSM1_mpa_small.csv')
+
 ```
 
 ``` {r summarize mpas no take}
@@ -144,6 +139,7 @@ marine_notake_small <- marine_notake_df %>%
   mutate(`% MPA by count` = N / sum(N) * 100,
          `% MPA by area` = `A total, km²` / sum(`A total, km²`) * 100)
 
+write_csv(marine_notake_small, 'tableSM2_notake_small.csv')
 ```
 
 ```{r plot area density}
@@ -151,25 +147,27 @@ marine_notake_small <- marine_notake_df %>%
 dens_plot1_all <- ggplot(x <- mpa_poly_df,
        aes(x = area_km2)) +
   ggtheme_plot() +
-  geom_density(fill = 'grey30', alpha = .6) +
+  geom_density(fill = 'grey30', color = NA, alpha = .6) +
   geom_vline(xintercept = 100, color = 'red', size = .25) +
   geom_vline(xintercept = 1, color = 'blue', linetype = 'dashed', size = .25) +
   scale_x_log10(limits = c(.001, NA), breaks = 10^(-3:6)) +
-  labs(x = 'MPA Area, km²')
+  labs(x = 'MPA Area, km²',
+       title = 'Distribution of MPAs by size')
 
 dens_plot1_no_take <- ggplot(x <- marine_notake_df,
        aes(x = area_km2)) +
   ggtheme_plot() +
-  geom_density(fill = 'grey30', alpha = .6) +
+  geom_density(fill = 'grey30', color = NA, alpha = .6) +
   geom_vline(xintercept = 100, color = 'red', size = .25) +
   geom_vline(xintercept = 1, color = 'blue', linetype = 'dashed', size = .25) +
   scale_x_log10(limits = c(.001, NA), breaks = 10^(-3:6)) +
-  labs(x = 'MPA Area, km²')
+  labs(x = 'No-take MPA Area, km²',
+       title = 'Distribution of no-take MPAs by size')
 
 dens_plot1 <- cowplot::plot_grid(dens_plot1_all, dens_plot1_no_take, 
                                  labels = c('A', 'B'), nrow = 2)
 
-ggsave(plot = dens_plot1, filename = 'ms_figures/sm1_area_density.png', 
+ggsave(plot = dens_plot1, filename = 'sm1_area_density.png', 
        height = 4, width = 5, dpi = 300)
 
 ```
@@ -181,7 +179,7 @@ plot1_all <- ggplot(x <- mpa_poly_df %>%
            ### thin the data set a bit to see if those lines go away... doesn't affect cum sum
        aes(x = area_km2, y = cum_area)) +
   ggtheme_plot() +
-  geom_area(fill = 'grey30', alpha = .6) +
+  geom_area(fill = 'grey30', color = NA,  alpha = .6) +
   geom_vline(xintercept = 100, color = 'red', size = .25) +
   geom_vline(xintercept = 1, color = 'blue', linetype = 'dashed', size = .25) +
   scale_x_log10(limits = c(.1, NA), breaks = 10^(-1:6)) +
@@ -191,45 +189,32 @@ plot1_all <- ggplot(x <- mpa_poly_df %>%
 
 plot1_no_take <- ggplot(marine_notake_df, aes(x = area_km2, y = cum_area)) +
   ggtheme_plot() +
-  geom_area(fill = 'grey30', alpha = .6) +
+  geom_area(fill = 'grey30', color = NA, alpha = .6) +
   geom_vline(xintercept = 100, color = 'red', size = .25) +
   geom_vline(xintercept = 1, color = 'blue', linetype = 'dashed', size = .25) +
   scale_x_log10(limits = c(0.1, NA), breaks = 10^(-1:6)) +
-  labs(x = 'MPA Area, km²',
+  labs(x = 'No-take MPA Area, km²',
        y = 'Cum. area, km²',
        title = 'MPA size vs. cumulative protected area, no-take MPAs')
 
 plot1 <- cowplot::plot_grid(plot1_all, plot1_no_take, 
                             labels = c('A', 'B'), nrow = 2)
 
-ggsave(plot = plot1, filename = 'ms_figures/sm2_cum_area.png', 
+ggsave(plot = plot1, filename = 'sm2_cum_area.png', 
        height = 4, width = 5, dpi = 300)
 
 ```
 
-![](ms_figures/sm1_area_density.png)
+![](sm1_area_density.png)
 
-> Figure SM1: Distribution of MPAs by size, based on original WDPA polygon data. A) all protection categories are included.  B) only no-take marine protected areas are included.  The red solid line indicates MPA size 100 km^2^, i.e., the resolution of the biodiversity risk data; the blue dashed line indicates MPA size 1 km^2^.  Note that overlapping polygons are not resolved in this plot, and result in some double-counting.
+![](sm2_cum_area.png)
 
-![](ms_figures/sm2_cum_area.png)
-
-
-
-> Figure SM2: Contribution of protected area of different sizes to the cumulative global MPA estate, based on original WDPA polygon data. A) all protection categories are included.  B) only no-take marine protected areas are included.  The red solid line indicates MPA size 100 km^2^, i.e., the resolution of the biodiversity risk data; the blue dashed line indicates MPA size 1 km^2^.  Note that overlapping polygons are not resolved and result in some double-counting.
-
-Figure SM1 shows that smaller MPAs make up a large proportion of the designated protected areas.  However, Figure SM2 shows that despite the large number of small MPAs, the proportion of MPA coverage from small MPAs (< 1 km^2^ and < 100 km^2^) is miniscule.
 
 `r knitr::kable(mpa_poly_small, caption = 'Table SM1: All protected areas')`
 
-Table SM1 shows that when examining all MPAs ($n$ = 17,935), there are more than 14,000 MPAs smaller than 100 km^2^, comprising 80% of MPAs but a total area of only 0.55% of all marine protection of any category; MPAs smaller than 1 km^2^ (as small as 5.0 m^2^) comprise only 0.005% of all marine protection.  The 3,521 MPAs larger than 100 km^2^ encompass 99.45% of all marine protection.
-
 `r knitr::kable(marine_notake_small, caption = 'Table SM2: No-take protection only')`
 
-The pattern is even more pronounced for no-take MPAs ($n$ = 3,330, Table SM2) than for the entire collection of MPAs regardless of category: no-take MPAs smaller than 100 km^2^ make up 79% by count but contribute only 0.22% of the global no-take MPA estate, while those smaller than 1 km^2^ contribute only 0.003%.
-
 ### Effect of rasterization on inclusion of small MPAs
-
-To facilitate comparison between polygon area calculations and raster area calculations, we created a representative sample polygon dataset.  This dataset included only no-take MPAs (i.e., IUCN category I or II or designated no-take area greater than 75% of the total area).  To eliminate double-counting of protected area, these no-take MPA features were filtered to remove overlapping polygons; since our concern is the effects of rasterization on small MPAs, we removed the larger of any pair of overlapping polygons, resulting in 2,862 distinct no-take MPA features.  While this dataset differs from that used above and in the primary analysis of the manuscript, it is a representative sample for the sake of testing the effects of the rasterization process on inclusion and total area.
 
 ``` {r create_nonoverlapping_poly_set}
 
@@ -485,33 +470,6 @@ notake_areas_df <- bind_rows(notake_areas_500m_df,
 
 ```
 
-```{r}
-
-dens_plot_df <- notake_areas_df %>%
-  filter(area_km2 <= 100) %>%
-  mutate(size_class = 'No take MPAs < 100 km2') %>%
-  bind_rows(notake_areas_df %>% 
-              filter(area_km2 > 100) %>%
-              mutate(size_class = 'No take MPAs > 100 km2')) %>%
-  bind_rows(notake_areas_df %>% mutate(size_class = 'No take MPAs overall')) %>%
-  mutate(error = abs(diff))
-
-error_dists <- dens_plot_df %>%
-  group_by(size_class, res) %>%
-  summarize(mean_error = mean(diff),
-            sd_error = sd(diff),
-            rmse = sqrt(sum(diff^2)) / n())
-
-ggplot(dens_plot_df, aes(x = error, color = res)) +
-  ggtheme_plot() +
-  geom_density() +
-  scale_x_log10(breaks = 10^c(-2, 0, 2, 4, 6)) +
-  geom_vline(xintercept = 100, color = 'red', size = .25) +
-  geom_vline(xintercept = 1, color = 'blue', linetype = 'dashed', size = .25) +
-  facet_wrap( ~ size_class, ncol = 1) +
-  labs(x = TeX('Error = $|A_{polygon} - A_{raster}|$, $km^2$'),
-       title = 'Distribution of error due to rasterization')
-```
 
 ```{r create size class df}
 id_to_class <- notake_areas_1km_df %>%
@@ -592,6 +550,8 @@ pct_rmse_diff_df <- d_area_df %>%
   rename(`Size class` = size_class,
          `Area in class, km² (polygons)` = poly_area_in_class)
 
+write_csv(pct_real_diff_df, 'tableSM3_diff_error.csv')
+write_csv(pct_rmse_diff_df, 'tableSM4_rms_error.csv')
 ```
 
 ### Proportional error by size class
@@ -663,13 +623,15 @@ dropped_area_df <- dropped_by_class %>%
   mutate(res = paste0('% area dropped (', res, ' cells)')) %>%
   spread(res, pct_area_dropped)
 
+write_csv(dropped_pct_df, 'tableSM5_pct_dropped.csv')
+write_csv(dropped_area_df, 'tableSM6_pct_area_dropped.csv')
 ```
 
 MPA presence within a cell is determined by the overlap of the MPA polygon and the center of the cell.  For very small MPAs, or MPAs with narrow aspect ratios, the polygon may not overlap the center, and thus may not be counted.  
 
 `r knitr::kable(dropped_pct_df, caption = 'Table SM5: Percent of MPAs dropped by size class')`
 
-`r knitr::kable(dropped_area_df, caption = 'Table SM5: Percent of MPA area dropped by size class')`
+`r knitr::kable(dropped_area_df, caption = 'Table SM6: Percent of MPA area dropped by size class')`
 
 Table SM5 shows that, indeed, many small MPAs are not included in the final raster depending on the cell resolution.  Unsurprisingly, the smaller the MPA, the more likely to be dropped.  Dropped MPAs will result in a certain underestimate of MPA coverage globally, though this is quite small: even at 5 km x 5 km cell resolution, the total difference due to these dropped MPAs is only 0.067% of the MPA coverage of this sample dataset, and only 0.0007% at 0.5 km x 0.5 km resolution.  These results overestimate the loss, since many of these small MPAs would be overlapped by larger MPAs (and thus accounting for that protection).  Additionally, this sample dataset removes larger MPAs that would obscure smaller MPAs, thus the total area of the sample dataset is biased toward smaller MPAs, inflating the relative proportion of dropped area.
 
