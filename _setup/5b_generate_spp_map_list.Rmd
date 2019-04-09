@@ -23,17 +23,13 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 library(raster)
 library(rgeos)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
-
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 library(sf)
 
-dir_git <- '~/github/spp_risk_dists'
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, '_setup')
-dir_data  <- file.path(dir_git, '_data')
+dir_git <- here()
 
-### project specific folders and info
-source(file.path(dir_setup, 'common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
 dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')

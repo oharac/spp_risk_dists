@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -26,10 +26,7 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
   ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
-
-### goal specific folders and info
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -53,18 +50,21 @@ hab_stack <- stack(habs_files)
 
 # plot(hab_stack)
 
-ocean_1km_file  <- file.path(dir_o_anx, 'spatial', 'ocean_1km.tif')
-ocean_1km_rast <- raster(ocean_1km_file)
+ocean_500m_file  <- file.path(dir_o_anx, 'spatial', 'ocean_500m.tif')
+ocean_500m_rast <- raster(ocean_500m_file)
 
 tmp <- parallel::mclapply(habs_files, mc.cores = 12, FUN = function(x) {
   ### x <- habs_files[1]
   reproj_file <- file.path(dir_habs_reproj, basename(x)) %>%
-    str_replace('.tif$', '_1km.tif')
+    str_replace('.tif$', '_500m.tif')
   if(!file.exists(reproj_file)) {
+    cat_msg('Processing ', reproj_file)
     y <- raster(x)
-    z <- projectRaster(y, ocean_1km_rast, method = 'ngb',
+    z <- projectRaster(y, ocean_500m_rast, method = 'ngb',
                        # progress = 'text',
                        filename = reproj_file)
+  } else {
+      cat_msg(reproj_file, ' exists; skipping it')
   }
 })
 ```
@@ -73,20 +73,21 @@ tmp <- parallel::mclapply(habs_files, mc.cores = 12, FUN = function(x) {
 
 ``` {r aggregate to 10 km g-p}
 
-habs_1km_files <- list.files(dir_habs_reproj, 
-                             pattern = '_1km.tif$',
+habs_500m_files <- list.files(dir_habs_reproj, 
+                             pattern = '_500m.tif$',
                              full.names = TRUE)
-habs_10km_files <- str_replace(habs_1km_files, '_1km.tif$', '_10km.tif') %>%
-  setNames(habs_1km_files)
-rast_base <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
+habs_10km_files <- str_replace(habs_500m_files, '_500m.tif$', '_10km.tif') %>%
+  setNames(habs_500m_files)
+rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
-for(hab_1km in habs_1km_files) {
-  ### hab_1km <- habs_1km_files[1]
-  out_file <- habs_10km_files[hab_1km]
+for(hab_500m in habs_500m_files) {
+  ### hab_500m <- habs_500m_files[1]
+  out_file <- habs_10km_files[hab_500m]
   if(!file.exists(out_file)) {
-    cat_msg('Processing ', basename(hab_1km), ' to: ', out_file)
-    rast <- raster(hab_1km)
-    rast_10km <- raster::aggregate(rast, fact = 10, fun = sum, na.rm = TRUE)
+    cat_msg('Processing ', basename(hab_500m), ' to: ', out_file)
+    rast <- raster(hab_500m)
+    rast_10km <- raster::aggregate(rast, fact = 20, fun = sum, na.rm = TRUE)
+    rast_10km <- rast_10km / 4
     writeRaster(rast_10km, out_file)
   }
 }
@@ -98,16 +99,16 @@ for(hab_1km in habs_1km_files) {
 
 ``` {r set up habs and values dataframe}
 
-cell_id_rast    <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
-mean_rast       <- raster(file.path(dir_git, '_output', 
+cell_id_rast    <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
+mean_rast       <- raster(file.path(dir_output, 
                      'mean_risk_raster_comp.tif'))
-mean_rr_rast    <- raster(file.path(dir_git, '_output', 
+mean_rr_rast    <- raster(file.path(dir_output, 
                      'mean_rr_risk_raster_comp.tif'))
-pct_th_rast     <- raster(file.path(dir_git, '_output', 
+pct_th_rast     <- raster(file.path(dir_output, 
                      'pct_threat_raster_comp.tif'))
-pct_th_rr_rast  <- raster(file.path(dir_git, '_output', 
+pct_th_rr_rast  <- raster(file.path(dir_output, 
                      'sr_rr_pct_threat_raster_comp.tif'))
-ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
 
 
 habs_10km_files <- list.files(file.path(dir_o_anx, 'habs'), 
@@ -123,7 +124,7 @@ for(i in 1:nlayers(habs_rasts)) {
 habs_df <- habs_df %>%
   setNames(c('cell_id', basename(habs_10km_files)))
 
-mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+mpa_df   <- read_csv(file.path(dir_spatial, 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 2) %>%
   select(-wdpa_category) %>%
@@ -137,7 +138,9 @@ risk_df <- habs_df %>%
          rr_pct_th  = values(pct_th_rr_rast),
          ocean_area = values(ocean_area_rast)) %>%
   gather(hab, cells, -cell_id, -(risk:ocean_area)) %>%
-  filter(!is.na(cells) & cells != 0 & !is.na(risk)) 
+  filter(!is.na(cells) & cells != 0) %>%
+  filter(!is.na(risk)) %>%
+  filter(!is.na(ocean_area))
 
 risk_mpa_df <- risk_df %>%
   left_join(mpa_df, by = 'cell_id') %>%
@@ -149,8 +152,8 @@ risk_mpa_df <- risk_df %>%
 
 
 # x <- risk_df %>% select(hab) %>% distinct()
-# write_csv(x, file.path(dir_git, 'data_setup/raw/hab_names_raw.csv'))
-habs_lookup <- read_csv(file.path(dir_git, '_setup/raw', 
+# write_csv(x, file.path(dir_setup, 'raw/hab_names_raw.csv'))
+habs_lookup <- read_csv(file.path(dir_setup, 'raw', 
                                   'hab_names_lookup.csv'))
 
 risk_mpa_df <- risk_mpa_df %>%
@@ -178,7 +181,7 @@ no_take_means <- risk_mpa_df %>%
             mu_rr = sum(rr_risk * prop_area)) %>%
   ungroup()
 
-write_csv(no_take_means, file.path(dir_git, '_setup/int/mpa_mean_risks_by_hab.csv'))
+write_csv(no_take_means, file.path(dir_setup, 'int/mpa_mean_risks_by_hab.csv'))
 
 rm('habs_df', 'risk_df')
 
@@ -257,16 +260,16 @@ ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
 Examine where MPAs in open ocean and MPAs in EEZs overlap.
 
 ``` {r, eval = FALSE}
-cell_id_rast <- raster(file.path(dir_git, '_spatial', 'cell_id_rast.tif'))
-mean_rast    <- raster(file.path(dir_git, '_output', 
+cell_id_rast <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
+mean_rast    <- raster(file.path(dir_output, 
                      'mean_risk_raster_comp.tif'))
 
 surf_10km_file <- list.files(file.path(dir_o_anx, 'habs'), 
                              pattern = 'surface_waters_10km.tif$',
                              full.names = TRUE)
 surf_rast <- raster(surf_10km_file)
-eez_rast  <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
-mpa_df    <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+eez_rast  <- raster(file.path(dir_spatial, 'eez_rast.tif'))
+mpa_df    <- read_csv(file.path(dir_spatial, 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 2) %>%
   select(-wdpa_category) %>%
@@ -296,7 +299,7 @@ ocean_prot_rast <- subs(cell_id_rast, ocean_prot, by = 'cell_id', which = 'abnj'
 
 ### print map
 library(sf)
-land_poly <- read_sf(file.path(dir_git, '_spatial/ne_10m_land/ne_10m_land.shp')) %>%
+land_poly <- read_sf(file.path(dir_spatial, 'ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 map_df <- rasterToPoints(ocean_prot_rast) %>%

@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -29,13 +29,9 @@ library(sf)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
   ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 
-dir_git <- '~/github/spp_risk_dists'
+dir_git <- here()
 
-### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-
-source(file.path(dir_git, 'setup/common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -110,7 +106,7 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
   message('going into the first mclapply...')
   
   ptm <- system.time({
-    cell_values_all <- parallel::mclapply(sum_files, mc.cores = 32,
+    cell_values_all <- parallel::mclapply(sum_files, mc.cores = 24,
       FUN = function(x) {
         read_csv(x, col_types = 'dddiidi')
         }) %>%
@@ -131,7 +127,7 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
     ### standard:  3 sec for 5, 12.5 sec for 20... 32 sec for 50... 479 chunks ~ 6 min.
     ### mclapply: 4 sec for 50, with 32 cores. 52 sec for the whole shebang.
   ptm <- system.time({
-    cell_vals_list <- parallel::mclapply(1:n_chunks, mc.cores = 12,
+    cell_vals_list <- parallel::mclapply(1:n_chunks, mc.cores = 6,
         FUN = function(x) { ### x <- 1
           btm_i <- (x - 1) * chunksize + 1
           top_i <- min(x * chunksize, length(cell_ids))
@@ -146,7 +142,7 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
   message('going into the third mclapply...')
   
   ptm <- system.time({
-    cell_summary_list <- parallel::mclapply(cell_vals_list, mc.cores = 24,
+    cell_summary_list <- parallel::mclapply(cell_vals_list, mc.cores = 12,
                                        FUN = function(x) {
       ### x <- cell_vals_list[[250]]
       y <- x %>%
@@ -204,14 +200,14 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
 
 reload <- TRUE
 
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial', 
+land_poly <- sf::read_sf(file.path(dir_spatial, 
                                    'ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 
-map_rast_file <- file.path(dir_git, 'output', 'mean_risk_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'mean_risk_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
     
@@ -220,7 +216,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(mean_rast, map_rast_file,
               overwrite = TRUE)
   
-  ### mean_rast <- raster(file.path(dir_git, 'output', 'mean_risk_raster_all.tif'))
+  ### mean_rast <- raster(file.path(dir_output, 'mean_risk_raster_all.tif'))
   
 } else {
   message('Map exists: ', map_rast_file)
@@ -230,7 +226,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r var_risk_raster}
 
-map_rast_file <- file.path(dir_git, 'output', 'var_risk_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'var_risk_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -247,7 +243,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_spp_risk}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_spp_risk_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'n_spp_risk_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -263,19 +259,19 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_spp_threatened}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_threat_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'n_threat_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
   n_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'n_spp_threatened')
   writeRaster(n_threat_rast, map_rast_file,
               overwrite = TRUE)
-  ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_all.tif'))
+  ### n_threat_rast <- raster(file.path(dir_output, 'n_threat_raster_all.tif'))
 
   pct_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'pct_threatened')
-  writeRaster(pct_threat_rast, file.path(dir_git, 'output', 'pct_threat_raster_all.tif'),
+  writeRaster(pct_threat_rast, file.path(dir_output, 'pct_threat_raster_all.tif'),
               overwrite = TRUE)
-  ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_all.tif'))
+  ### n_threat_rast <- raster(file.path(dir_output, 'n_threat_raster_all.tif'))
 
 } else {
   message('Map exists: ', map_rast_file)
@@ -287,7 +283,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r trend}
 
-map_rast_file <- file.path(dir_git, 'output', 'trend_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'trend_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -304,7 +300,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_trend}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_trend_raster_all.tif')
+map_rast_file <- file.path(dir_output, 'n_trend_raster_all.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 

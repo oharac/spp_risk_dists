@@ -1,5 +1,12 @@
 ### Support functions for this project
 
+### setup common directories
+dir_setup <- file.path(dir_git, '_setup')
+dir_data  <- file.path(dir_git, '_data')
+dir_spatial  <- file.path(dir_git, '_spatial')
+dir_output  <- file.path(dir_git, '_output')
+dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+
 ### * IUCN API functions
 ### * Simple Features and Raster common functions
 ### * Other random helper functions

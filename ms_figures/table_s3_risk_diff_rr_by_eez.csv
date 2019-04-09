@@ -1,53 +1,53 @@
 Region,Georegion,Area (x10^3^ km^2^),% marine<br>reserve,μ<sub>reserve</sub>,μ<sub>non-reserve</sub>,Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)
-Palmyra Atoll,Oceania,353.2,1.3,0.044,0.235,-0.191
+Palmyra Atoll,Oceania,353.2,1.2,0.044,0.235,-0.191
 Jarvis Is.,Oceania,318.8,0.6,0.059,0.226,-0.167
 Amsterdam Is. & St. Paul Is.,Southern Islands,509.8,0.8,0.094,0.239,-0.145
-Estonia,Europe,36.3,0.8,0.116,0.237,-0.121
+Estonia,Europe,36.3,0.8,0.114,0.237,-0.124
 Howland Is. & Baker Is.,Oceania,437.9,0.8,0.063,0.183,-0.121
 Norfolk Is.,Oceania,432.6,9.7,0.014,0.126,-0.112
-Egypt,Africa,236.6,1,0.073,0.183,-0.11
-Lithuania,Europe,6.1,2.3,0.137,0.245,-0.109
-Albania,Europe,11.2,1,0.146,0.221,-0.075
+Lithuania,Europe,6.1,2.4,0.134,0.246,-0.112
+Egypt,Africa,236.6,1,0.074,0.183,-0.11
+Albania,Europe,11.2,1,0.147,0.221,-0.075
 Turks & Caicos Is.,C. America/Caribbean,154.2,2.2,0.033,0.083,-0.05
-Canada,N. America,"5,698.1",0.6,0.072,0.119,-0.048
+Canada,N. America,"5,698.1",0.6,0.072,0.119,-0.047
 Indonesia,Asia,"5,947.9",1.4,0.086,0.131,-0.045
 Russia,Europe,"7,613.1",0.6,0.1,0.144,-0.043
 Belize,C. America/Caribbean,36.2,4.1,0.026,0.068,-0.042
 Jan Mayen,Europe,291.2,1.5,0.205,0.247,-0.042
-Sweden,Europe,155.0,1.2,0.25,0.283,-0.033
+Sweden,Europe,155.0,1.2,0.251,0.283,-0.032
 Pitcairn,Oceania,839.5,99.5,0.256,0.286,-0.03
-Greenland,Europe,"2,264.5",4.4,0.137,0.157,-0.02
+Greenland,Europe,"2,264.5",4.4,0.138,0.157,-0.02
 Dominican Republic,C. America/Caribbean,270.8,12.4,0.024,0.041,-0.017
-Norway,Europe,"1,716.7",4.6,0.188,0.204,-0.017
+Norway,Europe,"1,716.7",4.6,0.188,0.204,-0.016
 Germany,Europe,56.4,14.4,0.124,0.138,-0.014
 Crozet Is.,Southern Islands,574.4,1.6,0.111,0.123,-0.012
-British Indian Ocean Terr.,Asia,642.7,99.4,0.161,0.172,-0.011
+British Indian Ocean Terr.,Asia,642.7,99.4,0.161,0.172,-0.012
 Azores,Europe,957.3,0.5,0.262,0.27,-0.009
 Australia,Oceania,"6,956.8",15.2,0.083,0.09,-0.007
-Sint Eustatius,C. America/Caribbean,2.2,3.6,0.017,0.024,-0.007
 Guatemala,C. America/Caribbean,118.3,3.2,0.057,0.064,-0.007
-Saba,C. America/Caribbean,9.5,28,0.02,0.022,-0.002
-United Arab Emirates,Asia,54.7,11.1,0.119,0.118,0.001
-Finland,Europe,79.5,2.1,0.29,0.288,0.002
+Sint Eustatius,C. America/Caribbean,2.2,3.6,0.017,0.024,-0.007
+Saba,C. America/Caribbean,9.5,28.1,0.02,0.022,-0.002
+Finland,Europe,79.5,2.1,0.289,0.288,0.001
+United Arab Emirates,Asia,54.7,11,0.119,0.118,0.001
 Cuba,C. America/Caribbean,365.8,1.8,0.05,0.047,0.002
 Costa Rica,C. America/Caribbean,576.1,0.6,0.085,0.079,0.006
 Nicaragua,C. America/Caribbean,223.9,2.3,0.034,0.028,0.006
-Kerguelen Is.,Southern Islands,567.2,19.6,0.131,0.124,0.007
+Kerguelen Is.,Southern Islands,567.2,19.6,0.131,0.124,0.008
 Mauritania,Africa,156.2,4.2,0.121,0.113,0.008
 Taiwan,Asia,343.0,1.1,0.093,0.082,0.011
 Heard & McDonald Is.,Southern Islands,416.1,16.8,0.123,0.11,0.013
-Thailand,Asia,306.9,1.5,0.104,0.085,0.019
+Thailand,Asia,306.9,1.4,0.104,0.085,0.018
 Brazil,S. America,"3,672.6",3.3,0.149,0.127,0.022
-Guinea Bissau,Africa,106.5,1.5,0.145,0.119,0.026
+Guinea Bissau,Africa,106.5,1.5,0.144,0.119,0.025
 Colombia,S. America,730.7,0.5,0.075,0.047,0.028
 Chile,S. America,"3,657.3",12.5,0.205,0.174,0.031
-New Zealand,Oceania,"4,107.0",29.5,0.193,0.156,0.036
-Panama,C. America/Caribbean,332.6,0.7,0.074,0.036,0.038
-Republique du Congo,Africa,39.9,2.9,0.142,0.102,0.041
-United States,N. America,"8,591.2",17.6,0.145,0.101,0.043
-S. Korea,Asia,325.0,1.2,0.17,0.126,0.044
-Mexico,N. America,"3,284.7",13.5,0.192,0.135,0.056
+New Zealand,Oceania,"4,107.0",29.6,0.193,0.156,0.036
+Panama,C. America/Caribbean,332.6,0.7,0.073,0.036,0.038
+Republique du Congo,Africa,39.9,2.9,0.142,0.102,0.04
+United States,N. America,"8,591.2",17.7,0.145,0.101,0.043
+S. Korea,Asia,325.0,1.2,0.171,0.126,0.045
+Mexico,N. America,"3,284.7",13.5,0.192,0.135,0.057
 Venezuela,S. America,473.3,0.7,0.115,0.057,0.058
-Bangladesh,Asia,84.6,1.5,0.23,0.141,0.09
+Bangladesh,Asia,84.6,1.5,0.23,0.141,0.089
 Macquarie Is.,Oceania,475.3,12.1,0.267,0.172,0.095
-Georgia,Asia,22.9,0.6,0.216,0.112,0.104
+Georgia,Asia,22.9,0.7,0.213,0.112,0.101

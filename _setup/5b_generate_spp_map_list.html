@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Apr 2 18:45:59 2019 by ohara" />
+<meta name="author" content="Compiled on Mon Apr 8 06:08:39 2019 by ohara" />
 
 
 <title>Generate IUCN spp map list</title>
@@ -1695,7 +1695,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Generate IUCN spp map list</h1>
-<h4 class="author"><em>Compiled on Tue Apr 2 18:45:59 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Mon Apr 8 06:08:39 2019 by ohara</em></h4>
 
 </div>
 
@@ -1705,23 +1705,19 @@ div.tocify {
 <a class="sourceLine" id="cb1-3" title="3"></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="kw">library</span>(raster)</a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="kw">library</span>(rgeos)</a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="kw">source</span>(<span class="st">&#39;https://raw.githubusercontent.com/oharac/src/master/R/common.R&#39;</span>)</a>
-<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">source</span>(<span class="st">&#39;https://raw.githubusercontent.com/oharac/src/master/R/common.R&#39;</span>)  <span class="co">###</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="co">### includes library(tidyverse); library(stringr); dir_M points to ohi directory</span></a>
 <a class="sourceLine" id="cb1-8" title="8"><span class="kw">library</span>(sf)</a>
 <a class="sourceLine" id="cb1-9" title="9"></a>
-<a class="sourceLine" id="cb1-10" title="10">dir_git &lt;-<span class="st"> &#39;~/github/spp_risk_dists&#39;</span></a>
-<a class="sourceLine" id="cb1-11" title="11">dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">&#39;git-annex/spp_risk_dists&#39;</span>)</a>
-<a class="sourceLine" id="cb1-12" title="12">dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">&#39;_setup&#39;</span>)</a>
-<a class="sourceLine" id="cb1-13" title="13">dir_data  &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">&#39;_data&#39;</span>)</a>
-<a class="sourceLine" id="cb1-14" title="14"></a>
-<a class="sourceLine" id="cb1-15" title="15"><span class="co">### project specific folders and info</span></a>
-<a class="sourceLine" id="cb1-16" title="16"><span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">&#39;common_fxns.R&#39;</span>))</a>
-<a class="sourceLine" id="cb1-17" title="17"></a>
-<a class="sourceLine" id="cb1-18" title="18">dir_bli &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/birdlife_intl/d2018&#39;</span>)</a>
-<a class="sourceLine" id="cb1-19" title="19">dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/iucn_spp/d2018-1&#39;</span>)</a>
-<a class="sourceLine" id="cb1-20" title="20">  <span class="co">### in this folder are shapefiles at a taxonomic level, both from</span></a>
-<a class="sourceLine" id="cb1-21" title="21">  <span class="co">### IUCN spatial data download (version 2018-1) and direct from </span></a>
-<a class="sourceLine" id="cb1-22" title="22">  <span class="co">### IUCN (Gina Ralph)</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-10" title="10">dir_git &lt;-<span class="st"> </span><span class="kw">here</span>()</a>
+<a class="sourceLine" id="cb1-11" title="11"></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">&#39;_setup/common_fxns.R&#39;</span>))</a>
+<a class="sourceLine" id="cb1-13" title="13"></a>
+<a class="sourceLine" id="cb1-14" title="14">dir_bli &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/birdlife_intl/d2018&#39;</span>)</a>
+<a class="sourceLine" id="cb1-15" title="15">dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/iucn_spp/d2018-1&#39;</span>)</a>
+<a class="sourceLine" id="cb1-16" title="16">  <span class="co">### in this folder are shapefiles at a taxonomic level, both from</span></a>
+<a class="sourceLine" id="cb1-17" title="17">  <span class="co">### IUCN spatial data download (version 2018-1) and direct from </span></a>
+<a class="sourceLine" id="cb1-18" title="18">  <span class="co">### IUCN (Gina Ralph)</span></a></code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <ul>

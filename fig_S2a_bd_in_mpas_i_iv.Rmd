@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -28,11 +28,7 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
   ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
-
-### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -50,11 +46,11 @@ MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs
 
 ``` {r set up mpa and values dataframe}
 
-mean_rast     <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
-eez_rast      <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
-ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+mean_rast     <- raster(file.path(dir_output, 'mean_risk_raster_comp.tif'))
+eez_rast      <- raster(file.path(dir_spatial, 'eez_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
 
-rgn_labels <- read_csv(file.path(dir_git, '_spatial/rgn_names.csv')) %>%
+rgn_labels <- read_csv(file.path(dir_spatial, 'rgn_names.csv')) %>%
   mutate(r1_label = str_replace(r1_label, 'Americas', 'N. America'),
          r1_label = str_replace(r1_label, 'Latin Am.+', 'S. America'),
          r1_label = ifelse(str_detect(r2_label, 'Central America|Caribbean'), 
@@ -84,7 +80,7 @@ calc_mpa_areas <- function(df) {
     mutate(mpa_status = (mpa_status == 'mpa'))
 }
 
-mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+mpa_df   <- read_csv(file.path(dir_spatial, 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 4) %>%
   select(-wdpa_category) %>%
@@ -93,17 +89,6 @@ mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
 
 risk_mpa_df <- risk_df %>%
   left_join(mpa_df, by = 'cell_id') %>%
-  calc_mpa_areas()
-
-yr_cut <- 2011 ### year after passage of AICHI
-mpa_recent_df <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_year.csv'),
-                           col_types = 'dddd') %>%
-  filter(mpa_year >= yr_cut) %>%
-  group_by(cell_id) %>%
-  summarize(mpa = sum(prot_area_km2, na.rm = TRUE))
-
-risk_mpa_recent_df <- risk_df %>%
-  left_join(mpa_recent_df, by = 'cell_id') %>%
   calc_mpa_areas()
 
 ```
@@ -115,10 +100,6 @@ global_conserv <- risk_mpa_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ')
 
-global_conserv_recent <- risk_mpa_recent_df %>%
-  filter(eez < 255 & eez != 213) %>%
-  mutate(lbl = 'Global EEZ post-Aichi')
-
 highseas_conserv <- risk_mpa_df %>%
   filter(eez > 255 | eez == 213) %>%
   mutate(lbl = 'High seas')
@@ -128,8 +109,9 @@ rgn_conserv <- risk_mpa_df %>%
   mutate(lbl = r1_label) %>%
   arrange(lbl)
 
-conserv_df <- bind_rows(global_conserv, global_conserv_recent, 
-                        rgn_conserv, highseas_conserv) %>%
+conserv_df <- bind_rows(global_conserv, 
+                        rgn_conserv, 
+                        highseas_conserv) %>%
   mutate(lbl = forcats::fct_inorder(lbl))
 
 prot_pct <- conserv_df %>%
@@ -147,7 +129,7 @@ conserv_means <- conserv_df %>%
 
 ``` {r set up overall rr-weighted dataframe}
 
-mean_rr_rast      <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+mean_rr_rast      <- raster(file.path(dir_output, 'mean_rr_risk_raster_comp.tif'))
 
 risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
                          ocean_area = values(ocean_area_rast),
@@ -164,10 +146,6 @@ risk_mpa_rr_df <- risk_rr_df %>%
   left_join(mpa_df, by = 'cell_id') %>%
   calc_mpa_areas()
 
-risk_mpa_rr_recent_df <- risk_rr_df %>%
-  left_join(mpa_recent_df, by = 'cell_id') %>%
-  calc_mpa_areas()
-
 ```
 
 ``` {r rr-weighted protection level dataframes}
@@ -175,10 +153,6 @@ risk_mpa_rr_recent_df <- risk_rr_df %>%
 global_conserv_rr <- risk_mpa_rr_df %>%
   filter(eez < 255 & eez != 213) %>%
   mutate(lbl = 'Global EEZ')
-
-global_conserv_rr_recent <- risk_mpa_rr_recent_df %>%
-  filter(eez < 255 & eez != 213) %>%
-  mutate(lbl = 'Global EEZ post-Aichi')
 
 highseas_conserv_rr <- risk_mpa_rr_df %>%
   filter(eez > 255 | eez == 213) %>%
@@ -189,8 +163,9 @@ rgn_conserv_rr <- risk_mpa_rr_df %>%
   mutate(lbl = r1_label) %>%
   arrange(lbl)
 
-conserv_rr_df <- bind_rows(global_conserv_rr, global_conserv_rr_recent, 
-                           rgn_conserv_rr, highseas_conserv_rr) %>%
+conserv_rr_df <- bind_rows(global_conserv_rr,
+                           rgn_conserv_rr, 
+                           highseas_conserv_rr) %>%
   mutate(lbl = forcats::fct_inorder(lbl))
 
 conserv_rr_means <- conserv_rr_df %>%
@@ -261,7 +236,7 @@ plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
                                     rel_widths = c(2, 3))
 
 ggsave(file.path(dir_git, 'ms_figures/fig_S2a_bd_risk_vs_mpas_i_iv.png'),
-       height = 3, width = 4.75, dpi = 300, units = 'in')
+       height = 2.75, width = 4.75, dpi = 300, units = 'in')
 ```
 
 ![](ms_figures/fig_S2a_bd_risk_vs_mpas_i_iv.png)
@@ -278,5 +253,5 @@ ggsave(file.path(dir_git, 'ms_figures/fig_S2a_bd_risk_vs_mpas_i_iv.png'),
 means_to_save <- conserv_means %>%
   left_join(conserv_rr_means %>% rename(mu_rr = mu),
             by = c('lbl', 'mpa_status'))
-write_csv(means_to_save, file.path(dir_git, '_setup/int/mpa_mean_risks_i_iv.csv'))
+write_csv(means_to_save, file.path(dir_setup, 'int/mpa_mean_risks_i_iv.csv'))
 ```

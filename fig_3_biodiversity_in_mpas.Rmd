@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -28,11 +28,7 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
   ### includes library(tidyverse); library(stringr); 
   ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
-
-### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -50,11 +46,11 @@ MPA coverage will be compared to non-MPA areas within EEZs.  The .csv codes MPAs
 
 ``` {r set up mpa and values dataframe}
 
-mean_rast     <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
-eez_rast      <- raster(file.path(dir_git, '_spatial', 'eez_rast.tif'))
-ocean_area_rast <- raster(file.path(dir_git, '_spatial', 'ocean_area_rast.tif'))
+mean_rast     <- raster(file.path(dir_output, 'mean_risk_raster_comp.tif'))
+eez_rast      <- raster(file.path(dir_spatial, 'eez_rast.tif'))
+ocean_area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
 
-rgn_labels <- read_csv(file.path(dir_git, '_spatial/rgn_names.csv')) %>%
+rgn_labels <- read_csv(file.path(dir_spatial, 'rgn_names.csv')) %>%
   mutate(r1_label = str_replace(r1_label, 'Americas', 'N. America'),
          r1_label = str_replace(r1_label, 'Latin Am.+', 'S. America'),
          r1_label = ifelse(str_detect(r2_label, 'Central America|Caribbean'), 
@@ -83,7 +79,7 @@ calc_mpa_areas <- function(df) {
     mutate(mpa_status = (mpa_status == 'mpa'))
 }
 
-mpa_df   <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_area.csv'),
+mpa_df   <- read_csv(file.path(dir_spatial, 'wdpa_mpa_area.csv'),
                           col_types = 'dddd') %>%
   filter(wdpa_category <= 2) %>%
   select(-wdpa_category) %>%
@@ -95,7 +91,7 @@ risk_mpa_df <- risk_df %>%
   calc_mpa_areas()
 
 yr_cut <- 2011 ### year after passage of AICHI
-mpa_recent_df <- read_csv(file.path(dir_git, '_spatial', 'wdpa_mpa_year.csv'),
+mpa_recent_df <- read_csv(file.path(dir_spatial, 'wdpa_mpa_year.csv'),
                            col_types = 'dddd') %>%
   filter(mpa_year >= yr_cut) %>%
   group_by(cell_id) %>%
@@ -148,7 +144,7 @@ no_take_means <- no_take_df %>%
 
 ``` {r set up overall rr-weighted dataframe}
 
-mean_rr_rast      <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
+mean_rr_rast      <- raster(file.path(dir_output, 'mean_rr_risk_raster_comp.tif'))
 
 risk_rr_df <- data.frame(cell_id    = 1:length(values(mean_rr_rast)),
                          ocean_area = values(ocean_area_rast),
@@ -281,5 +277,5 @@ ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
 means_to_save <- no_take_means %>%
   left_join(no_take_rr_means %>% rename(mu_rr = mu),
             by = c('lbl', 'mpa_status'))
-write_csv(means_to_save, file.path(dir_git, '_setup/int/mpa_mean_risks.csv'))
+write_csv(means_to_save, file.path(dir_setup, 'int/mpa_mean_risks.csv'))
 ```

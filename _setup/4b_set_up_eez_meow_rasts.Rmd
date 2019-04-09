@@ -27,7 +27,6 @@ source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 
 
 dir_git <- '~/github/spp_risk_dists'
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
 ### project specific folders and info
 source(file.path(dir_git, '_setup/common_fxns.R'))

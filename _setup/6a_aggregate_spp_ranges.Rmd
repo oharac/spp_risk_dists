@@ -22,21 +22,14 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
-
-library(sf)
 library(data.table)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+library(sf)
 
-dir_git <- '~/github/spp_risk_dists'
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup <- file.path(dir_git, '_setup')
+dir_git <- here()
 
-source(file.path(dir_setup, 'common_fxns.R'))
-
-### goal specific folders and info
-
-dir_data <- file.path(dir_git, '_data')
-dir_spatial <- file.path(dir_git, '_spatial')
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 

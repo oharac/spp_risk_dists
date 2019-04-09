@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -29,11 +29,7 @@ library(sf)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
   ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 
-dir_git <- '~/github/spp_risk_dists'
-
-### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -68,12 +64,12 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-risk_un_rast   <- raster(file.path(dir_git, '_output', 'mean_risk_raster_comp.tif'))
-risk_rr_rast   <- raster(file.path(dir_git, '_output', 'mean_rr_risk_raster_comp.tif'))
-threat_un_rast <- raster(file.path(dir_git, '_output', 'pct_threat_raster_comp.tif'))
-threat_rr_rast <- raster(file.path(dir_git, '_output', 'sr_rr_pct_threat_raster_comp.tif'))
-n_spp_rast     <- raster(file.path(dir_git, '_output', 'n_spp_risk_raster_comp.tif'))
-n_rr_rast      <- raster(file.path(dir_git, '_output', 'sr_rr_risk_raster_comp.tif'))
+risk_un_rast   <- raster(file.path(dir_output, 'mean_risk_raster_comp.tif'))
+risk_rr_rast   <- raster(file.path(dir_output, 'mean_rr_risk_raster_comp.tif'))
+threat_un_rast <- raster(file.path(dir_output, 'pct_threat_raster_comp.tif'))
+threat_rr_rast <- raster(file.path(dir_output, 'sr_rr_pct_threat_raster_comp.tif'))
+n_spp_rast     <- raster(file.path(dir_output, 'n_spp_risk_raster_comp.tif'))
+n_rr_rast      <- raster(file.path(dir_output, 'sr_rr_risk_raster_comp.tif'))
 
 ```
 
@@ -87,7 +83,7 @@ four_panel <- function(map1_rast, map2_rast,
                        labels, breaks,
                        plot_labs = c('A', 'B')) {
 
-  land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+  land_poly <- sf::read_sf(file.path(dir_spatial, 'ne_10m_land', 
                                      'ne_10m_land_no_casp.shp')) %>%
     st_transform(gp_proj4) 
   
@@ -238,17 +234,17 @@ ggsave(plot = four_maps,
 
 ``` {r get_rasts - all spp, eval = FALSE}
 
-risk_un_rast    <- raster(file.path(dir_git, '_output', 
+risk_un_rast    <- raster(file.path(dir_output, 
                                     'mean_risk_raster_all.tif'))
-risk_rr_rast    <- raster(file.path(dir_git, '_output', 
+risk_rr_rast    <- raster(file.path(dir_output, 
                                     'mean_rr_risk_raster_all.tif'))
-threat_un_rast  <- raster(file.path(dir_git, '_output', 
+threat_un_rast  <- raster(file.path(dir_output, 
                                     'pct_threat_raster_all.tif'))
-threat_rr_rast  <- raster(file.path(dir_git, '_output', 
+threat_rr_rast  <- raster(file.path(dir_output, 
                                     'sr_rr_pct_threat_raster_all.tif'))
-n_spp_rast <- raster(file.path(dir_git, '_output', 
+n_spp_rast <- raster(file.path(dir_output, 
                                'n_spp_risk_raster_all.tif'))
-n_rr_rast  <- raster(file.path(dir_git, '_output', 
+n_rr_rast  <- raster(file.path(dir_output, 
                                'sr_rr_risk_raster_all.tif'))
 
 ```

@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -29,11 +29,7 @@ library(sf)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
   ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 
-dir_git <- '~/github/spp_risk_dists'
-
-### goal specific folders and info
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -63,16 +59,16 @@ From the 1a and 1b biodiversity risk map scripts, gather the rasters for the var
 
 ``` {r get_rasts}
 
-nspp_un_rast <- raster(file.path(dir_git, '_output', 'n_spp_risk_raster_comp.tif'))
-nspp_rr_rast <- raster(file.path(dir_git, '_output', 'sr_rr_risk_raster_comp.tif'))
-var_un_rast  <- raster(file.path(dir_git, '_output', 'var_risk_raster_comp.tif'))
-var_rr_rast  <- raster(file.path(dir_git, '_output', 'var_rr_risk_raster_comp.tif'))
+nspp_un_rast <- raster(file.path(dir_output, 'n_spp_risk_raster_comp.tif'))
+nspp_rr_rast <- raster(file.path(dir_output, 'sr_rr_risk_raster_comp.tif'))
+var_un_rast  <- raster(file.path(dir_output, 'var_risk_raster_comp.tif'))
+var_rr_rast  <- raster(file.path(dir_output, 'var_rr_risk_raster_comp.tif'))
 
 ```
 
 ### And now, the maps
 
-The four-panel map chunks create two maps, with two density plots as scales; first map is for uniform-weighting, second is for range-rarity weighting.  This is slightly different from that used for Fig 1 in the main text; that put uniform and rr vertically, while this does it side by side.
+The four-panel map chunks create two maps, with two density plots as scales; first map is for uniform-weighting, second is for range-rarity weighting.
 
 ### N spp maps
 
@@ -110,7 +106,7 @@ brks2 <- c(-8, -6, -4, -2, 0)
 lims2 <- c(min(nspp_map_df$val_2), max(nspp_map_df$val_2))
 
 
-land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+land_poly <- sf::read_sf(file.path(dir_spatial, 'ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
   st_transform(gp_proj4)
 
@@ -191,12 +187,12 @@ panel_right <- cowplot::plot_grid(map2, dens2,
 
 four_panel <- cowplot::plot_grid(panel_left, panel_right, 
                                  labels = c('A', 'B'),
-                                 nrow = 1, ncol = 2, align = 'h')
+                                 nrow = 2, ncol = 1, align = 'v')
 
 figS1_path <- file.path(dir_git, 'ms_figures/fig_S1_nspp_maps.png')
 ggsave(plot = four_panel,
        filename = figS1_path,
-       width = 10, height = 2.5, units = 'in', dpi = 300)
+       width = 5, height = 5, units = 'in', dpi = 300)
 
 
 ```
@@ -215,7 +211,7 @@ brks = c(0, .1, .2, .3, .4, .5)
 lims = c(0, .5)
 
 
-land_poly <- sf::read_sf(file.path(dir_git, '_spatial/ne_10m_land', 
+land_poly <- sf::read_sf(file.path(dir_spatial, 'ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
   st_transform(gp_proj4)
 
@@ -304,12 +300,12 @@ panel_right <- cowplot::plot_grid(map2, dens2,
 
 four_panel <- cowplot::plot_grid(panel_left, panel_right, 
                                  labels = c('A', 'B'),
-                                 nrow = 1, ncol = 2, align = 'h')
+                                 nrow = 2, ncol = 1, align = 'v')
 
 figS3_path <- file.path(dir_git, 'ms_figures/fig_S4_var_maps.png')
 ggsave(plot = four_panel,
        filename = figS3_path,
-       width = 10, height = 2.5, units = 'in', dpi = 300)
+       width = 5, height = 5, units = 'in', dpi = 300)
 
 
 ```

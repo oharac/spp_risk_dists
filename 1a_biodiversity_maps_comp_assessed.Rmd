@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohibc/src/templates/ohibc_hdr1.html'
+      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -29,20 +29,15 @@ library(sf)
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
   ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 
-dir_git <- '~/github/spp_risk_dists'
+dir_git <- here()
 
-### goal specific folders and info
-dir_setup <- file.path(dir_git, 'setup')
-dir_data  <- file.path(dir_git, 'data')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-
-source(file.path(dir_setup, 'common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
 # Summary
 
-Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN.  These maps are generated at 10 km^2^ resolution in a Gall-Peters projection.  These maps will be generated using all available species:
+Create a set of maps of the distribution of biodiversity intactness - all species assessed and mapped by IUCN.  These maps are generated at 10 km^2^ resolution in a Gall-Peters projection.  These maps will be generated using all comprehensively assessed species:
 
 * Mean risk
 * Variance of risk
@@ -204,13 +199,13 @@ if(!file.exists(cell_summary_file) | reload == TRUE) {
 
 reload <- TRUE
 
-rast_base <- raster(file.path(dir_git, 'spatial', 'cell_id_rast.tif'))
+rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
-land_poly <- sf::read_sf(file.path(dir_git, 'spatial/ne_10m_land/ne_10m_land.shp')) %>%
+land_poly <- sf::read_sf(file.path(dir_spatial, 'ne_10m_land/ne_10m_land.shp')) %>%
   st_transform(gp_proj4)
 
 
-map_rast_file <- file.path(dir_git, 'output', 'mean_risk_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'mean_risk_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
     
@@ -219,7 +214,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
   writeRaster(mean_rast, map_rast_file,
               overwrite = TRUE)
   
-  ### mean_rast <- raster(file.path(dir_git, 'output', 'mean_risk_raster_comp.tif'))
+  ### mean_rast <- raster(file.path(dir_output, 'mean_risk_raster_comp.tif'))
   
 } else {
   message('Map exists: ', map_rast_file)
@@ -229,7 +224,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r var_risk_raster}
 
-map_rast_file <- file.path(dir_git, 'output', 'var_risk_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'var_risk_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -246,7 +241,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_spp_risk}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_spp_risk_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'n_spp_risk_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -262,19 +257,19 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_spp_threatened}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_threat_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'n_threat_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
   n_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'n_spp_threatened')
   writeRaster(n_threat_rast, map_rast_file,
               overwrite = TRUE)
-  ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_comp.tif'))
+  ### n_threat_rast <- raster(file.path(dir_output, 'n_threat_raster_comp.tif'))
 
   pct_threat_rast <- subs(rast_base, cell_summary, by = 'cell_id', which = 'pct_threatened')
-  writeRaster(pct_threat_rast, file.path(dir_git, 'output', 'pct_threat_raster_comp.tif'),
+  writeRaster(pct_threat_rast, file.path(dir_output, 'pct_threat_raster_comp.tif'),
               overwrite = TRUE)
-  ### n_threat_rast <- raster(file.path(dir_git, 'output', 'n_threat_raster_comp.tif'))
+  ### n_threat_rast <- raster(file.path(dir_output, 'n_threat_raster_comp.tif'))
 
 } else {
   message('Map exists: ', map_rast_file)
@@ -286,7 +281,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r trend}
 
-map_rast_file <- file.path(dir_git, 'output', 'trend_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'trend_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 
@@ -303,7 +298,7 @@ if(!file.exists(map_rast_file) | reload == TRUE) {
 
 ``` {r n_trend}
 
-map_rast_file <- file.path(dir_git, 'output', 'n_trend_raster_comp.tif')
+map_rast_file <- file.path(dir_output, 'n_trend_raster_comp.tif')
 
 if(!file.exists(map_rast_file) | reload == TRUE) {
 

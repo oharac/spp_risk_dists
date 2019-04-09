@@ -22,21 +22,14 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
-
-library(sf)
 library(data.table)
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+library(sf)
 
-dir_git <- '~/github/spp_risk_dists'
-dir_o_anx   <- file.path(dir_O, 'git-annex/spp_risk_dists')
-dir_setup   <- file.path(dir_git, '_setup')
-dir_data    <- file.path(dir_git, '_data')
-dir_spatial <- file.path(dir_git, '_spatial')
+dir_git <- here()
 
-source(file.path(dir_setup, 'common_fxns.R'))
-
-### goal specific folders and info
-
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -86,12 +79,15 @@ if(reload == FALSE & file.exists(spp_range_file)) {
   spp_range_list_done <- read_csv(spp_range_file, col_types = 'ddcc')
   spp_ids <- spp_ids[!spp_ids %in% spp_range_list_done$iucn_sid]
 }
+
+message('Processing ', length(spp_ids), ' species range maps.')
   
 if(length(spp_ids) > 0) { ### any more spp to calculate?
   system.time({
-  spp_range_list <- parallel::mclapply(spp_ids, mc.cores = 12,
-                                       FUN = function(x) {
-    ### x <- spp_ids[1]
+  spp_range_list <- parallel::mclapply(seq_along(spp_ids), mc.cores = 24,
+                                       FUN = function(i) {
+    x <- spp_ids[i]
+    cat_msg(i, ': Processing species ', x)
     spp_map <- read_csv(file.path(dir_o_anx, 'spp_rasters',
                                   sprintf('iucn_sid_%s.csv', x)),
                         col_types = 'di')
@@ -133,7 +129,7 @@ This may *over*predict range for many species whose range is limited by depth,
 due to polyon buffering.  This can be used to sanity-check the 
 raster-calculated ranges.
 
-``` {r calculate range from polygons, eval = FALSE}
+``` {r calculate range from polygons, eval = TRUE}
 
 spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
                      col_types = 'ddcicccl')
@@ -143,27 +139,40 @@ spp_dbfs <- spp_maps$dbf_file %>%
 spp_shps <- spp_dbfs %>%
   str_replace('\\.dbf$', '.shp')
 
-polygon_areas_file <- file.path(dir_git, 'data_setup/int/polygon_areas.csv')
+polygon_areas_file <- file.path(dir_setup, 'int/polygon_areas.csv')
 
 reload <- FALSE
 if(!file.exists(polygon_areas_file) | reload) {
-
-  poly_range_list <- parallel::mclapply(spp_shps, mc.cores = 12,
-                          FUN = function(x) {
-                            ### x <- spp_shps[1]
+  
+  poly_range_list <- parallel::mclapply(seq_along(spp_shps), mc.cores = 36,
+                          FUN = function(i) { ### i <- 5
+                            x <- spp_shps[i]
+                            cat_msg(i, ': Processing ', x)
                             shp <- st_read(x)
-                            shp <- shp %>%
-                              filter(id_no %in% spp_maps$iucn_sid) ### NOTE: this will miss subpops
                             
-                            range_df <- data.frame(iucn_sid = shp$id_no,
+                            if('id_no' %in% names(shp)) {
+                              shp <- shp %>%
+                                rename(iucn_sid = id_no)
+                            }
+                            
+                            shp <- shp %>%
+                              filter(iucn_sid %in% spp_maps$iucn_sid)
+                                ### NOTE: this will miss subpops
+
+                            range_df <- data.frame(iucn_sid = shp$iucn_sid,
                                                    poly_range_km2 = st_area(shp)) %>%
                               mutate(poly_range_km2 = as.numeric(poly_range_km2 / 1e6))
+                            cat_msg(i, ': Finished ', x)
+                            
+                            return(range_df)
                           })
   
   poly_range_df <- poly_range_list %>%
     setNames(basename(spp_shps)) %>%
-    bind_rows(.id = 'shp_file')
-  
+    bind_rows(.id = 'shp_file') %>%
+    group_by(iucn_sid) %>%
+    summarize(poly_range_km2 = round(max(poly_range_km2), 3))
+
   write_csv(poly_range_df, polygon_areas_file)
 }
     
@@ -171,7 +180,7 @@ if(!file.exists(polygon_areas_file) | reload) {
 
 ### plot raster-calculated ranges vs polygon-calculated ranges
 
-``` {r, eval = FALSE}
+``` {r, eval = TRUE}
 
 range_df <- read_csv(polygon_areas_file, col_types = 'dd') %>%
   full_join(read_csv(spp_range_file, col_types = 'ddcc') %>%
@@ -184,8 +193,10 @@ range_compare_scatter <- ggplot(range_df, aes(x = range_km2, y = poly_range_km2)
   geom_abline(slope = 1, intercept = 0, color = 'green4') + 
   geom_point(aes(color = birds, label = shp_file, label2 = iucn_sid), alpha = .6)
 
-plotly::ggplotly(range_compare_scatter)
+print(range_compare_scatter)
 ```
+
+Where dots fall on the line, species ranges by raster and by polygon agree.  Where dots fall above the line, polygon range is larger than raster range - likely due to clipping of land-based ranges, and mostly birds.  Where dots fall below the line, polygon range is smaller than the raster range - in these cases, the polygon range may be a combination of multiple polygons, e.g. subpops or seasonal areas; the code above simply takes the largest polygon per ID as a rough check.
 
 ## Aggregate species maps to taxa level
 
