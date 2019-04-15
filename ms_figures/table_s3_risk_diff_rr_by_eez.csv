@@ -1,4 +1,4 @@
-Region,Georegion,Area (x10^3^ km^2^),% marine<br>reserve,μ<sub>reserve</sub>,μ<sub>non-reserve</sub>,Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)
+Region,Georegion,Area (x10³ km²),Pct marine reserve,μ<sub>rsv</sub>,μ<sub>non-rsv</sub>,Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)
 Palmyra Atoll,Oceania,353.2,1.2,0.044,0.235,-0.191
 Jarvis Is.,Oceania,318.8,0.6,0.059,0.226,-0.167
 Amsterdam Is. & St. Paul Is.,Southern Islands,509.8,0.8,0.094,0.239,-0.145

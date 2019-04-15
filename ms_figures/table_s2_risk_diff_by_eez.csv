@@ -1,4 +1,4 @@
-Region,Georegion,Area (x10^3^ km^2^),% marine<br>reserve,μ<sub>reserve</sub>,μ<sub>non-reserve</sub>,Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)
+Region,Georegion,Area (x10³ km²),Pct marine reserve,μ<sub>rsv</sub>,μ<sub>non-rsv</sub>,Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)
 Egypt,Africa,236.6,1,0.099,0.244,-0.146
 Georgia,Asia,22.9,0.7,0.112,0.207,-0.096
 Colombia,S. America,730.7,0.5,0.089,0.151,-0.062

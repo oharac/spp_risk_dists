@@ -215,16 +215,16 @@ table_format <- table_sum %>%
          risk_diff = round(risk_diff, 3)) %>%
   select(`Region` = lbl,
          `Georegion` = rgn,
-         `Area (x10^3^ km^2^)` = area_1000km2,
-         `% marine<br>reserve` = pct_prot,
-         `μ<sub>reserve</sub>` = mpa,
-         `μ<sub>non-reserve</sub>` = nonmpa,
-         `Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)` = risk_diff)
+         `Area (x10³ km²)` = area_1000km2,
+         `Pct marine reserve` = pct_prot,
+         `μ<sub>rsv</sub>` = mpa,
+         `μ<sub>non-rsv</sub>` = nonmpa,
+         `Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)` = risk_diff)
 
 write_csv(table_format, 'ms_figures/table_s2_risk_diff_by_eez.csv')
 knitr::kable(table_format, 
              caption = 'Mean risk inside and outside marine reserves, for EEZs greater than 
-                        1000 km^2^ and reserves totalling more than 0.5% of EEZ.  Negative 
+                        1000 km² and reserves totalling more than 0.5% of EEZ.  Negative 
                         risk differential indicates preference for protecting areas of 
                         low biodiversity risk within EEZ.')
 ```
@@ -254,16 +254,16 @@ table_rr_format <- table_rr_sum %>%
          risk_diff = round(risk_diff, 3)) %>%
   select(`Region` = lbl,
          `Georegion` = rgn,
-         `Area (x10^3^ km^2^)` = area_1000km2,
-         `% marine<br>reserve` = pct_prot,
-         `μ<sub>reserve</sub>` = mpa,
-         `μ<sub>non-reserve</sub>` = nonmpa,
-         `Risk differential<br>(μ<sub>reserve</sub> - μ<sub>non-reserve</sub>)` = risk_diff)
+         `Area (x10³ km²)` = area_1000km2,
+         `Pct marine reserve` = pct_prot,
+         `μ<sub>rsv</sub>` = mpa,
+         `μ<sub>non-rsv</sub>` = nonmpa,
+         `Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)` = risk_diff)
 
 write_csv(table_rr_format, 'ms_figures/table_s3_risk_diff_rr_by_eez.csv')
 knitr::kable(table_rr_format, 
              caption = 'Mean risk inside and outside marine reserves, for EEZs greater than 
-                        1000 km^2^ and reserves totalling more than 0.5% of EEZ.  Negative 
+                        1000 km² and reserves totalling more than 0.5% of EEZ.  Negative 
                         risk differential indicates preference for protecting areas of 
                         low biodiversity risk within EEZ.')
 ```

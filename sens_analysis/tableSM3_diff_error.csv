@@ -1,4 +1,4 @@
-Size class,"Area in class, km² (polygons)","∆ Area in class, % (.5km cells)","∆ Area in class, % (1km cells)","∆ Area in class, % (2km cells)","∆ Area in class, % (3km cells)","∆ Area in class, % (5km cells)"
+"Size class, km²","Area in class, km² (polygons)",Sum error (.5 km),Sum error (1 km),Sum error (2 km),Sum error (3 km),Sum error (5 km)
 < .001,0.004,100,100,100,100,100
 < .01,0.216,-15.513,100,100,100,100
 < .1,20.137,-8.009,5.647,-58.91,10.613,-24.148

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Apr 9 08:40:37 2019 by ohara" />
+<meta name="author" content="Compiled on Mon Apr 15 09:33:18 2019 by ohara" />
 
 
 <title>Sensitivity of MPA rasters to MPA size</title>
@@ -1600,7 +1600,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Sensitivity of MPA rasters to MPA size</h1>
-<h4 class="author"><em>Compiled on Tue Apr 9 08:40:37 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Mon Apr 15 09:33:18 2019 by ohara</em></h4>
 
 </div>
 
@@ -1622,32 +1622,32 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">&lt; 1 km^2</td>
-<td align="right">1513.703</td>
+<td align="left">&lt; 1 km²</td>
+<td align="right">1513.7</td>
 <td align="right">5677</td>
-<td align="right">31.653192</td>
-<td align="right">0.0050580</td>
+<td align="right">31.65</td>
+<td align="right">0.0051</td>
 </tr>
 <tr class="even">
-<td align="left">&lt; 100 km^2</td>
-<td align="right">162141.387</td>
+<td align="left">&lt; 100 km²</td>
+<td align="right">162141.4</td>
 <td align="right">8737</td>
-<td align="right">48.714804</td>
-<td align="right">0.5417953</td>
+<td align="right">48.71</td>
+<td align="right">0.5418</td>
 </tr>
 <tr class="odd">
-<td align="left">&lt; 1000 km^2</td>
-<td align="right">852239.779</td>
+<td align="left">&lt; 1000 km²</td>
+<td align="right">852239.8</td>
 <td align="right">2447</td>
-<td align="right">13.643713</td>
-<td align="right">2.8477586</td>
+<td align="right">13.64</td>
+<td align="right">2.8478</td>
 </tr>
 <tr class="even">
-<td align="left">&gt;= 1000 km^2</td>
-<td align="right">28910791.811</td>
+<td align="left">&gt;= 1000 km²</td>
+<td align="right">28910791.8</td>
 <td align="right">1074</td>
-<td align="right">5.988291</td>
-<td align="right">96.6053881</td>
+<td align="right">5.99</td>
+<td align="right">96.6054</td>
 </tr>
 </tbody>
 </table>
@@ -1664,32 +1664,32 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">&lt; 1 km^2</td>
-<td align="right">339.231</td>
+<td align="left">&lt; 1 km²</td>
+<td align="right">339.2</td>
 <td align="right">1287</td>
-<td align="right">38.648649</td>
-<td align="right">0.0030129</td>
+<td align="right">38.65</td>
+<td align="right">0.0030</td>
 </tr>
 <tr class="even">
-<td align="left">&lt; 100 km^2</td>
-<td align="right">24461.060</td>
+<td align="left">&lt; 100 km²</td>
+<td align="right">24461.1</td>
 <td align="right">1356</td>
-<td align="right">40.720721</td>
-<td align="right">0.2172490</td>
+<td align="right">40.72</td>
+<td align="right">0.2172</td>
 </tr>
 <tr class="odd">
-<td align="left">&lt; 1000 km^2</td>
-<td align="right">144854.132</td>
+<td align="left">&lt; 1000 km²</td>
+<td align="right">144854.1</td>
 <td align="right">409</td>
-<td align="right">12.282282</td>
-<td align="right">1.2865108</td>
+<td align="right">12.28</td>
+<td align="right">1.2865</td>
 </tr>
 <tr class="even">
-<td align="left">&gt;= 1000 km^2</td>
-<td align="right">11089803.108</td>
+<td align="left">&gt;= 1000 km²</td>
+<td align="right">11089803.1</td>
 <td align="right">278</td>
-<td align="right">8.348348</td>
-<td align="right">98.4932274</td>
+<td align="right">8.35</td>
+<td align="right">98.4932</td>
 </tr>
 </tbody>
 </table>
@@ -1699,18 +1699,18 @@ div.tocify {
 </div>
 <div id="proportional-error-by-size-class" class="section level3">
 <h3>Proportional error by size class</h3>
-<p>Proportional error calculated as <span class="math inline">\(\sum(A_{polygon} - A_{raster}) / \sum(A_{polygon})\)</span>. Negative differences and positive errors may offset each other; the aggregate is the total difference in MPA coverage.</p>
+<p>Proportional error in area calculated as <span class="math display">\[\sum_{i=1}^N \left(\frac{A_{polygon} - A_{raster}}{A_{polygon}}\right)\]</span></p>
 <table>
 <caption>Table SM3: Proportional total difference in area by size class</caption>
 <thead>
 <tr class="header">
-<th align="left">Size class</th>
+<th align="left">Size class, km²</th>
 <th align="right">Area in class, km² (polygons)</th>
-<th align="right">∆ Area in class, % (.5km cells)</th>
-<th align="right">∆ Area in class, % (1km cells)</th>
-<th align="right">∆ Area in class, % (2km cells)</th>
-<th align="right">∆ Area in class, % (3km cells)</th>
-<th align="right">∆ Area in class, % (5km cells)</th>
+<th align="right">Sum error (.5 km)</th>
+<th align="right">Sum error (1 km)</th>
+<th align="right">Sum error (2 km)</th>
+<th align="right">Sum error (3 km)</th>
+<th align="right">Sum error (5 km)</th>
 </tr>
 </thead>
 <tbody>
@@ -1797,125 +1797,122 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<p>Table SM3 shows that the rasterization process results in a total calculated area that differs from the original dataset by only 0.13%, when positive and negative errors are allowed to balance out.</p>
 </div>
-<div id="rms-error-by-size-class" class="section level3">
-<h3>RMS error by size class</h3>
-<p>Proportional RMS error in area calculated as <span class="math inline">\(\sqrt{\frac{1}{N}\sum_{i=1}^N (\frac{A_{polygon} - A_{raster}}{A_{polygon}})^2}\)</span>.</p>
+<div id="proportional-absolute-error-by-size-class" class="section level3">
+<h3>Proportional absolute error by size class</h3>
+<p>Proportional absolute error in area calculated as <span class="math display">\[\sum_{i=1}^N \left|\frac{A_{polygon} - A_{raster}}{A_{polygon}}\right|\]</span></p>
 <table>
 <caption>Table SM4: RMS proportional error in area by size class</caption>
 <thead>
 <tr class="header">
-<th align="left">Size class</th>
+<th align="left">Size class, km²</th>
 <th align="right">Area in class, km² (polygons)</th>
-<th align="right">RMSE(∆ Area) in class, % (.5km cells)</th>
-<th align="right">RMSE(∆ Area) in class, % (1km cells)</th>
-<th align="right">RMSE(∆ Area) in class, % (2km cells)</th>
-<th align="right">RMSE(∆ Area) in class, % (3km cells)</th>
-<th align="right">RMSE(∆ Area) in class, % (5km cells)</th>
+<th align="right">Sum |error| (.5 km)</th>
+<th align="right">Sum |error| (1 km)</th>
+<th align="right">Sum |error| (2 km)</th>
+<th align="right">Sum |error| (3 km)</th>
+<th align="right">Sum |error| (5 km)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">&lt; .001</td>
 <td align="right">0.004</td>
-<td align="right">15.560</td>
-<td align="right">15.560</td>
-<td align="right">15.560</td>
-<td align="right">15.560</td>
-<td align="right">15.560</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; .01</td>
 <td align="right">0.216</td>
-<td align="right">17.975</td>
-<td align="right">2.623</td>
-<td align="right">2.623</td>
-<td align="right">2.623</td>
-<td align="right">2.623</td>
+<td align="right">212.238</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
+<td align="right">100.000</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; .1</td>
 <td align="right">20.137</td>
-<td align="right">0.503</td>
-<td align="right">1.028</td>
-<td align="right">2.697</td>
-<td align="right">3.055</td>
-<td align="right">6.019</td>
+<td align="right">157.837</td>
+<td align="right">184.056</td>
+<td align="right">254.093</td>
+<td align="right">188.066</td>
+<td align="right">223.758</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 1</td>
 <td align="right">295.625</td>
-<td align="right">0.069</td>
-<td align="right">0.181</td>
-<td align="right">0.353</td>
-<td align="right">0.619</td>
-<td align="right">1.097</td>
+<td align="right">41.427</td>
+<td align="right">108.536</td>
+<td align="right">155.934</td>
+<td align="right">189.074</td>
+<td align="right">205.397</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 3</td>
 <td align="right">620.089</td>
-<td align="right">0.058</td>
-<td align="right">0.141</td>
-<td align="right">0.363</td>
-<td align="right">0.606</td>
-<td align="right">1.054</td>
+<td align="right">14.909</td>
+<td align="right">39.535</td>
+<td align="right">114.064</td>
+<td align="right">164.635</td>
+<td align="right">181.200</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 10</td>
 <td align="right">1945.573</td>
-<td align="right">0.028</td>
-<td align="right">0.070</td>
-<td align="right">0.174</td>
-<td align="right">0.319</td>
-<td align="right">0.575</td>
+<td align="right">6.646</td>
+<td align="right">17.085</td>
+<td align="right">44.020</td>
+<td align="right">81.912</td>
+<td align="right">145.538</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 100</td>
 <td align="right">17036.072</td>
-<td align="right">0.006</td>
-<td align="right">0.014</td>
-<td align="right">0.037</td>
-<td align="right">0.058</td>
-<td align="right">0.115</td>
+<td align="right">1.954</td>
+<td align="right">4.926</td>
+<td align="right">13.032</td>
+<td align="right">21.267</td>
+<td align="right">43.911</td>
 </tr>
 <tr class="even">
 <td align="left">&gt;= 100</td>
 <td align="right">6760307.542</td>
-<td align="right">0.008</td>
-<td align="right">0.009</td>
-<td align="right">0.009</td>
-<td align="right">0.010</td>
-<td align="right">0.010</td>
+<td align="right">0.273</td>
+<td align="right">0.337</td>
+<td align="right">0.448</td>
+<td align="right">0.563</td>
+<td align="right">0.838</td>
 </tr>
 <tr class="odd">
 <td align="left">Total</td>
 <td align="right">6780225.259</td>
-<td align="right">0.003</td>
-<td align="right">0.004</td>
-<td align="right">0.004</td>
-<td align="right">0.004</td>
-<td align="right">0.004</td>
+<td align="right">0.283</td>
+<td align="right">0.363</td>
+<td align="right">0.510</td>
+<td align="right">0.662</td>
+<td align="right">1.014</td>
 </tr>
 </tbody>
 </table>
-<p>Table SM4 shows that if high and low errors due to rasterization are counted as a positive difference, then the rasterization process results in a total error of 0.36% relative to the original dataset.</p>
 </div>
 <div id="number-of-mpas-dropped-due-to-rasterization" class="section level3">
 <h3>Number of MPAs dropped due to rasterization</h3>
-<p>MPA presence within a cell is determined by the overlap of the MPA polygon and the center of the cell. For very small MPAs, or MPAs with narrow aspect ratios, the polygon may not overlap the center, and thus may not be counted.</p>
 <table>
 <caption>Table SM5: Percent of MPAs dropped by size class</caption>
 <thead>
 <tr class="header">
-<th align="left">Size class</th>
+<th align="left">Size class, km²</th>
 <th align="right">N</th>
 <th align="right">Area in class, km²</th>
-<th align="right">% dropped (.5km cells)</th>
-<th align="right">% dropped (1km cells)</th>
-<th align="right">% dropped (2km cells)</th>
-<th align="right">% dropped (3km cells)</th>
-<th align="right">% dropped (5km cells)</th>
+<th align="right">% dropped (.5 km)</th>
+<th align="right">% dropped (1 km)</th>
+<th align="right">% dropped (2 km)</th>
+<th align="right">% dropped (3 km)</th>
+<th align="right">% dropped (5 km)</th>
 </tr>
 </thead>
 <tbody>
@@ -1923,91 +1920,91 @@ div.tocify {
 <td align="left">&lt; .001</td>
 <td align="right">7</td>
 <td align="right">4.449600e-03</td>
-<td align="right">100.00000</td>
-<td align="right">100.000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.000000</td>
-<td align="right">100.00000</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; .01</td>
 <td align="right">41</td>
 <td align="right">2.164264e-01</td>
-<td align="right">97.56098</td>
-<td align="right">100.000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.000000</td>
-<td align="right">100.00000</td>
+<td align="right">97.56</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
+<td align="right">100.00</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; .1</td>
 <td align="right">425</td>
 <td align="right">2.013718e+01</td>
-<td align="right">80.00000</td>
-<td align="right">95.529412</td>
-<td align="right">98.1176471</td>
-<td align="right">99.529412</td>
-<td align="right">99.76471</td>
+<td align="right">80.00</td>
+<td align="right">95.53</td>
+<td align="right">98.12</td>
+<td align="right">99.53</td>
+<td align="right">99.76</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 1</td>
 <td align="right">756</td>
 <td align="right">2.956252e+02</td>
-<td align="right">20.63492</td>
-<td align="right">64.814815</td>
-<td align="right">92.3280423</td>
-<td align="right">95.634921</td>
-<td align="right">98.28042</td>
+<td align="right">20.63</td>
+<td align="right">64.81</td>
+<td align="right">92.33</td>
+<td align="right">95.63</td>
+<td align="right">98.28</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 3</td>
 <td align="right">350</td>
 <td align="right">6.200887e+02</td>
-<td align="right">0.00000</td>
-<td align="right">9.714286</td>
-<td align="right">61.1428571</td>
-<td align="right">78.857143</td>
-<td align="right">93.42857</td>
+<td align="right">0.00</td>
+<td align="right">9.71</td>
+<td align="right">61.14</td>
+<td align="right">78.86</td>
+<td align="right">93.43</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 10</td>
 <td align="right">326</td>
 <td align="right">1.945573e+03</td>
-<td align="right">0.00000</td>
-<td align="right">0.000000</td>
-<td align="right">14.1104294</td>
-<td align="right">46.932515</td>
-<td align="right">79.44785</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">14.11</td>
+<td align="right">46.93</td>
+<td align="right">79.45</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 100</td>
 <td align="right">473</td>
 <td align="right">1.703607e+04</td>
-<td align="right">0.00000</td>
-<td align="right">0.000000</td>
-<td align="right">0.2114165</td>
-<td align="right">3.805497</td>
-<td align="right">23.67865</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.21</td>
+<td align="right">3.81</td>
+<td align="right">23.68</td>
 </tr>
 <tr class="even">
 <td align="left">&gt;= 100</td>
 <td align="right">484</td>
 <td align="right">6.760308e+06</td>
-<td align="right">0.00000</td>
-<td align="right">0.000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.000000</td>
-<td align="right">0.00000</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="odd">
 <td align="left">Total</td>
 <td align="right">2862</td>
 <td align="right">6.780225e+06</td>
-<td align="right">18.97275</td>
-<td align="right">34.171908</td>
-<td align="right">49.7554158</td>
-<td align="right">57.337526</td>
-<td align="right">66.84137</td>
+<td align="right">18.97</td>
+<td align="right">34.17</td>
+<td align="right">49.76</td>
+<td align="right">57.34</td>
+<td align="right">66.84</td>
 </tr>
 </tbody>
 </table>
@@ -2015,14 +2012,14 @@ div.tocify {
 <caption>Table SM6: Percent of MPA area dropped by size class</caption>
 <thead>
 <tr class="header">
-<th align="left">Size class</th>
+<th align="left">Size class, km²</th>
 <th align="right">N</th>
 <th align="right">Area in class, km²</th>
-<th align="right">% area dropped (.5km cells)</th>
-<th align="right">% area dropped (1km cells)</th>
-<th align="right">% area dropped (2km cells)</th>
-<th align="right">% area dropped (3km cells)</th>
-<th align="right">% area dropped (5km cells)</th>
+<th align="right">% area dropped (.5 km)</th>
+<th align="right">% area dropped (1 km)</th>
+<th align="right">% area dropped (2 km)</th>
+<th align="right">% area dropped (3 km)</th>
+<th align="right">% area dropped (5 km)</th>
 </tr>
 </thead>
 <tbody>
@@ -2030,99 +2027,128 @@ div.tocify {
 <td align="left">&lt; .001</td>
 <td align="right">7</td>
 <td align="right">4.449600e-03</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; .01</td>
 <td align="right">41</td>
 <td align="right">2.164264e-01</td>
-<td align="right">98.3626950</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
-<td align="right">100.0000000</td>
+<td align="right">98.3627</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
+<td align="right">100.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; .1</td>
 <td align="right">425</td>
 <td align="right">2.013718e+01</td>
-<td align="right">74.9140193</td>
-<td align="right">94.8514340</td>
-<td align="right">97.5916349</td>
-<td align="right">99.3396904</td>
-<td align="right">99.8047883</td>
+<td align="right">74.9140</td>
+<td align="right">94.8514</td>
+<td align="right">97.5916</td>
+<td align="right">99.3397</td>
+<td align="right">99.8048</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 1</td>
 <td align="right">756</td>
 <td align="right">2.956252e+02</td>
-<td align="right">10.7124634</td>
-<td align="right">53.0208291</td>
-<td align="right">88.7282337</td>
-<td align="right">94.3046066</td>
-<td align="right">97.7301973</td>
+<td align="right">10.7125</td>
+<td align="right">53.0208</td>
+<td align="right">88.7282</td>
+<td align="right">94.3046</td>
+<td align="right">97.7302</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 3</td>
 <td align="right">350</td>
 <td align="right">6.200887e+02</td>
-<td align="right">0.0000000</td>
-<td align="right">7.5386508</td>
-<td align="right">58.3292774</td>
-<td align="right">77.8897496</td>
-<td align="right">92.2197407</td>
+<td align="right">0.0000</td>
+<td align="right">7.5387</td>
+<td align="right">58.3293</td>
+<td align="right">77.8897</td>
+<td align="right">92.2197</td>
 </tr>
 <tr class="even">
 <td align="left">&lt; 10</td>
 <td align="right">326</td>
 <td align="right">1.945573e+03</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">9.5469433</td>
-<td align="right">41.9886681</td>
-<td align="right">76.5098893</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+<td align="right">9.5469</td>
+<td align="right">41.9887</td>
+<td align="right">76.5099</td>
 </tr>
 <tr class="odd">
 <td align="left">&lt; 100</td>
 <td align="right">473</td>
 <td align="right">1.703607e+04</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0671742</td>
-<td align="right">1.4061992</td>
-<td align="right">12.5913895</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+<td align="right">0.0672</td>
+<td align="right">1.4062</td>
+<td align="right">12.5914</td>
 </tr>
 <tr class="even">
 <td align="left">&gt;= 100</td>
 <td align="right">484</td>
 <td align="right">6.760308e+06</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Total</td>
 <td align="right">2862</td>
 <td align="right">6.780225e+06</td>
-<td align="right">0.0006928</td>
-<td align="right">0.0032862</td>
-<td align="right">0.0124045</td>
-<td align="right">0.0271153</td>
-<td align="right">0.0665865</td>
+<td align="right">0.0007</td>
+<td align="right">0.0033</td>
+<td align="right">0.0124</td>
+<td align="right">0.0271</td>
+<td align="right">0.0666</td>
 </tr>
 </tbody>
 </table>
-<p>Table SM5 shows that, indeed, many small MPAs are not included in the final raster depending on the cell resolution. Unsurprisingly, the smaller the MPA, the more likely to be dropped. Dropped MPAs will result in a certain underestimate of MPA coverage globally, though this is quite small: even at 5 km x 5 km cell resolution, the total difference due to these dropped MPAs is only 0.067% of the MPA coverage of this sample dataset, and only 0.0007% at 0.5 km x 0.5 km resolution. These results overestimate the loss, since many of these small MPAs would be overlapped by larger MPAs (and thus accounting for that protection). Additionally, this sample dataset removes larger MPAs that would obscure smaller MPAs, thus the total area of the sample dataset is biased toward smaller MPAs, inflating the relative proportion of dropped area.</p>
 </div>
-<div id="calculating-protected-area-at-100-km2-analysis-resolution" class="section level2">
-<h2>Calculating protected area at 100 km<sup>2</sup> analysis resolution</h2>
-<p>The biodiversity risk analysis is performed at a resolution of 10 km x 10 km cells. To determine the proportional coverage of MPAs at this analysis resolution, we count the number of protected cells at the MPA raster resolution that fall within a single 10 km x 10 km analysis cell, multiply by the MPA raster cell area, and divide by the analysis cell area, i.e. 100 km<sup>2</sup>. This results in a proportional protection from 0 to 1 in each 10 km x 10 km analysis cell. <span class="math display">\[\text{MPA protection} = \frac{N_{cells,MPA} * A_{cell, MPA}}{A_{cell, analysis}} = \frac{N_{cells,MPA} * .25 km^2}{100 km^2}\]</span></p>
+<div id="effect-of-area-calculation-at-100-km2-cells" class="section level2">
+<h2>Effect of area calculation at 100 km<sup>2</sup> cells</h2>
+<table>
+<caption>Table SM7: Calculated areas at original resolution and 10 km resolution</caption>
+<thead>
+<tr class="header">
+<th align="left">Original res</th>
+<th align="right">A_polygon</th>
+<th align="right">A_rast,orig</th>
+<th align="right">A_rast,10km</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">.5 km</td>
+<td align="right">6780225</td>
+<td align="right">6790273</td>
+<td align="right">6790273</td>
+</tr>
+<tr class="even">
+<td align="left">1 km</td>
+<td align="right">6780225</td>
+<td align="right">6789357</td>
+<td align="right">6789357</td>
+</tr>
+<tr class="odd">
+<td align="left">5 km</td>
+<td align="right">6780225</td>
+<td align="right">6797150</td>
+<td align="right">6797150</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
