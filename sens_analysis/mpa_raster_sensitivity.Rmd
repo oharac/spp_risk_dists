@@ -503,13 +503,13 @@ d_area_all_df <- notake_areas_df %>%
 
 pct_real_diff_all_df <- d_area_all_df %>%
   select(size_class, poly_area_in_class, res, pct_area_diff) %>%
-  mutate(res = paste0('Sum error (', res, ')'),
+  mutate(res = paste0('Sum diff (', res, ')'),
          pct_area_diff = round(pct_area_diff, 3)) %>%
   spread(res, pct_area_diff)
 
 pct_abs_diff_all_df <- d_area_all_df %>%
   select(size_class, poly_area_in_class, res, pct_abs_diff) %>%
-  mutate(res = paste0('Sum |error| (', res, ')'),
+  mutate(res = paste0('Sum |diff| (', res, ')'),
          pct_abs_diff = round(pct_abs_diff, 3)) %>%
   spread(res, pct_abs_diff)
 
@@ -530,7 +530,7 @@ d_area_df <- notake_areas_df %>%
 
 pct_real_diff_df <- d_area_df %>%
   select(size_class, poly_area_in_class, res, pct_area_diff) %>%
-  mutate(res = paste0('Sum error (', res, ')'),
+  mutate(res = paste0('Sum diff (', res, ')'),
          pct_area_diff = round(pct_area_diff, 3)) %>%
   spread(res, pct_area_diff) %>%
   bind_rows(pct_real_diff_all_df) %>%
@@ -539,7 +539,7 @@ pct_real_diff_df <- d_area_df %>%
 
 pct_abs_diff_df <- d_area_df %>%
   select(size_class, poly_area_in_class, res, pct_abs_diff) %>%
-  mutate(res = paste0('Sum |error| (', res, ')'),
+  mutate(res = paste0('Sum |diff| (', res, ')'),
          pct_abs_diff = round(pct_abs_diff, 3)) %>%
   spread(res, pct_abs_diff) %>%
   bind_rows(pct_abs_diff_all_df) %>%
@@ -686,31 +686,54 @@ calc_rast_to_10km <- function(mpa_rast, id_rast,
 }
 ```
 
+```{r create cell ID rasts at different resolutions, eval = FALSE}
+# cell_id <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
+# cell_id_3km_file  <- file.path(dir_o_anx, 'spatial/cell_id_3km.tif')
+# notake_3km  <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id_3km.tif'))
+# 
+# rast_cell_id <- resample(cell_id, notake_3km, 
+#                          method = 'ngb', filename = cell_id_3km_file,
+#                          progress = 'text', overwrite = TRUE)
+```
 
 ```{r}
 notake_1km  <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id.tif'))
 notake_500m <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id_500m.tif'))
+notake_2km  <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id_2km.tif'))
+notake_3km  <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id_3km.tif'))
 notake_5km  <- raster(file.path(dir_sa, 'notake_no_intsx_rast_by_id_5km.tif'))
 
 cell_id_500m <- raster(file.path(dir_o_anx, 'spatial/cell_id_500m.tif'))
-cell_id_1km <- raster(file.path(dir_o_anx, 'spatial/cell_id_1km.tif'))
-cell_id_5km <- raster(file.path(dir_o_anx, 'spatial/cell_id_5km.tif'))
+cell_id_1km  <- raster(file.path(dir_o_anx, 'spatial/cell_id_1km.tif'))
+cell_id_2km  <- raster(file.path(dir_o_anx, 'spatial/cell_id_2km.tif'))
+cell_id_3km  <- raster(file.path(dir_o_anx, 'spatial/cell_id_3km.tif'))
+cell_id_5km  <- raster(file.path(dir_o_anx, 'spatial/cell_id_5km.tif'))
 
 cell_area_file_500m <- file.path(dir_sa, 'notake_area_500m.csv')
-cell_area_file_1km <- file.path(dir_sa, 'notake_area_1km.csv')
-cell_area_file_5km <- file.path(dir_sa, 'notake_area_5km.csv')
+cell_area_file_1km  <- file.path(dir_sa, 'notake_area_1km.csv')
+cell_area_file_2km  <- file.path(dir_sa, 'notake_area_2km.csv')
+cell_area_file_3km  <- file.path(dir_sa, 'notake_area_3km.csv')
+cell_area_file_5km  <- file.path(dir_sa, 'notake_area_5km.csv')
 
 if(!file.exists(cell_area_file_5km)) {
-  cell_area_500m_df <- calc_rast_to_10km(notake_5km, cell_id_5km, 
-                                         cell_area_file_5km, mc.cores = 15)
+  df <- calc_rast_to_10km(notake_5km, cell_id_5km, 
+                          cell_area_file_5km, mc.cores = 15)
+}
+if(!file.exists(cell_area_file_3km)) {
+  df <- calc_rast_to_10km(notake_3km, cell_id_3km, 
+                          cell_area_file_3km, mc.cores = 15)
+}
+if(!file.exists(cell_area_file_2km)) {
+  df <- calc_rast_to_10km(notake_2km, cell_id_2km, 
+                          cell_area_file_2km, mc.cores = 15)
 }
 if(!file.exists(cell_area_file_1km)) {
-  cell_area_500m_df <- calc_rast_to_10km(notake_1km, cell_id_1km, 
-                                         cell_area_file_1km)
+  df <- calc_rast_to_10km(notake_1km, cell_id_1km, 
+                          cell_area_file_1km)
 }
 if(!file.exists(cell_area_file_500m)) {
-  cell_area_500m_df <- calc_rast_to_10km(notake_500m, cell_id_500m, 
-                                         cell_area_file_500m)
+  df <- calc_rast_to_10km(notake_500m, cell_id_500m, 
+                          cell_area_file_500m)
 }
 
 
@@ -720,6 +743,8 @@ if(!file.exists(cell_area_file_500m)) {
 
 notake_tot_areas_df <- bind_rows(notake_areas_500m_df,
                              notake_areas_1km_df,
+                             notake_areas_2km_df,
+                             notake_areas_3km_df,
                              notake_areas_5km_df) %>%
   select(-cells) %>%
   mutate(res = fct_inorder(res)) %>%
@@ -733,16 +758,22 @@ area_500m <- read_csv(cell_area_file_500m) %>%
 area_1km <- read_csv(cell_area_file_1km) %>%
   summarize(area_rast_10km = sum(prot_area_km2),
             res = '1 km')
+area_2km <- read_csv(cell_area_file_2km) %>%
+  summarize(area_rast_10km = sum(prot_area_km2),
+            res = '2 km')
+area_3km <- read_csv(cell_area_file_3km) %>%
+  summarize(area_rast_10km = sum(prot_area_km2),
+            res = '3 km')
 area_5km <- read_csv(cell_area_file_5km) %>%
   summarize(area_rast_10km = sum(prot_area_km2),
             res = '5 km')
 calc_areas <- notake_tot_areas_df %>%
-  left_join(bind_rows(area_500m, area_1km, area_5km),
+  left_join(bind_rows(area_500m, area_1km, area_2km, area_3km, area_5km),
             by = 'res') %>%
   rename(`Original res` = res,
-         `A_polygon` = area_poly,
-         `A_rast,orig` = area_rast,
-         `A_rast,10km` = area_rast_10km)
+         `Area (polygon)` = area_poly,
+         `Area (raster, orig)` = area_rast,
+         `Area (raster, 10km)` = area_rast_10km)
 write_csv(calc_areas, file.path(dir_git, 'sens_analysis/tableSM7_calc_to_10km.csv'))
 
 ```

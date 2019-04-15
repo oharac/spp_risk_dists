@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Apr 15 09:33:18 2019 by ohara" />
+<meta name="author" content="Compiled on Mon Apr 15 10:32:24 2019 by ohara" />
 
 
 <title>Sensitivity of MPA rasters to MPA size</title>
@@ -1600,7 +1600,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Sensitivity of MPA rasters to MPA size</h1>
-<h4 class="author"><em>Compiled on Mon Apr 15 09:33:18 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Mon Apr 15 10:32:24 2019 by ohara</em></h4>
 
 </div>
 
@@ -1706,11 +1706,11 @@ div.tocify {
 <tr class="header">
 <th align="left">Size class, km²</th>
 <th align="right">Area in class, km² (polygons)</th>
-<th align="right">Sum error (.5 km)</th>
-<th align="right">Sum error (1 km)</th>
-<th align="right">Sum error (2 km)</th>
-<th align="right">Sum error (3 km)</th>
-<th align="right">Sum error (5 km)</th>
+<th align="right">Sum diff (.5 km)</th>
+<th align="right">Sum diff (1 km)</th>
+<th align="right">Sum diff (2 km)</th>
+<th align="right">Sum diff (3 km)</th>
+<th align="right">Sum diff (5 km)</th>
 </tr>
 </thead>
 <tbody>
@@ -1807,11 +1807,11 @@ div.tocify {
 <tr class="header">
 <th align="left">Size class, km²</th>
 <th align="right">Area in class, km² (polygons)</th>
-<th align="right">Sum |error| (.5 km)</th>
-<th align="right">Sum |error| (1 km)</th>
-<th align="right">Sum |error| (2 km)</th>
-<th align="right">Sum |error| (3 km)</th>
-<th align="right">Sum |error| (5 km)</th>
+<th align="right">Sum |diff| (.5 km)</th>
+<th align="right">Sum |diff| (1 km)</th>
+<th align="right">Sum |diff| (2 km)</th>
+<th align="right">Sum |diff| (3 km)</th>
+<th align="right">Sum |diff| (5 km)</th>
 </tr>
 </thead>
 <tbody>
@@ -2123,9 +2123,9 @@ div.tocify {
 <thead>
 <tr class="header">
 <th align="left">Original res</th>
-<th align="right">A_polygon</th>
-<th align="right">A_rast,orig</th>
-<th align="right">A_rast,10km</th>
+<th align="right">Area (polygon)</th>
+<th align="right">Area (raster, orig)</th>
+<th align="right">Area (raster, 10km)</th>
 </tr>
 </thead>
 <tbody>
@@ -2140,6 +2140,18 @@ div.tocify {
 <td align="right">6780225</td>
 <td align="right">6789357</td>
 <td align="right">6789357</td>
+</tr>
+<tr class="odd">
+<td align="left">2 km</td>
+<td align="right">6780225</td>
+<td align="right">6791684</td>
+<td align="right">6791684</td>
+</tr>
+<tr class="even">
+<td align="left">3 km</td>
+<td align="right">6780225</td>
+<td align="right">6790725</td>
+<td align="right">6790725</td>
 </tr>
 <tr class="odd">
 <td align="left">5 km</td>

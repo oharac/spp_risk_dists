@@ -217,9 +217,9 @@ table_format <- table_sum %>%
          `Georegion` = rgn,
          `Area (x10³ km²)` = area_1000km2,
          `Pct marine reserve` = pct_prot,
-         `μ<sub>rsv</sub>` = mpa,
-         `μ<sub>non-rsv</sub>` = nonmpa,
-         `Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)` = risk_diff)
+         `μ₁` = mpa,
+         `μ₀` = nonmpa,
+         `Risk differential<br>(μ₁ - μ₀)` = risk_diff)
 
 write_csv(table_format, 'ms_figures/table_s2_risk_diff_by_eez.csv')
 knitr::kable(table_format, 
@@ -256,9 +256,9 @@ table_rr_format <- table_rr_sum %>%
          `Georegion` = rgn,
          `Area (x10³ km²)` = area_1000km2,
          `Pct marine reserve` = pct_prot,
-         `μ<sub>rsv</sub>` = mpa,
-         `μ<sub>non-rsv</sub>` = nonmpa,
-         `Risk differential<br>(μ<sub>rsv</sub> - μ<sub>non-rsv</sub>)` = risk_diff)
+         `μ₁` = mpa,
+         `μ₀` = nonmpa,
+         `Risk differential<br>(μ₁ - μ₀)` = risk_diff)
 
 write_csv(table_rr_format, 'ms_figures/table_s3_risk_diff_rr_by_eez.csv')
 knitr::kable(table_rr_format, 

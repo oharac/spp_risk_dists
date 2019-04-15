@@ -1,4 +1,4 @@
-"Size class, km²","Area in class, km² (polygons)",Sum error (.5 km),Sum error (1 km),Sum error (2 km),Sum error (3 km),Sum error (5 km)
+"Size class, km²","Area in class, km² (polygons)",Sum diff (.5 km),Sum diff (1 km),Sum diff (2 km),Sum diff (3 km),Sum diff (5 km)
 < .001,0.004,100,100,100,100,100
 < .01,0.216,-15.513,100,100,100,100
 < .1,20.137,-8.009,5.647,-58.91,10.613,-24.148
