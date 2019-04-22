@@ -112,9 +112,9 @@ mpa_poly_small <- mpa_poly_df %>%
                           area_km2 < 1000 ~ '< 1000 km²', 
                           TRUE ~ '>= 1000 km²')) %>%
   group_by(`MPA size`) %>%
-  summarize(`A total, km²` = sum(area_km2) %>% round(1),
+  summarize(`A total, km²` = sum(area_km2) %>% round(3),
             N = n()) %>%
-  mutate(`% MPA by count` = (N / sum(N) * 100) %>% round(2),
+  mutate(`% MPA by count` = (N / sum(N) * 100) %>% round(3),
          `% MPA by area` = (`A total, km²` / sum(`A total, km²`) * 100) %>% round(4))
 
 write_csv(mpa_poly_small, 'tableSM1_mpa_small.csv')
@@ -134,9 +134,9 @@ marine_notake_small <- marine_notake_df %>%
                           area_km2 < 1000 ~ '< 1000 km²', 
                           TRUE ~ '>= 1000 km²')) %>%
   group_by(`MPA size`) %>%
-  summarize(`A total, km²` = sum(area_km2) %>% round(1),
+  summarize(`A total, km²` = sum(area_km2) %>% round(3),
             N = n()) %>%
-  mutate(`% MPA by count` = (N / sum(N) * 100) %>% round(2),
+  mutate(`% MPA by count` = (N / sum(N) * 100) %>% round(3),
          `% MPA by area` = (`A total, km²` / sum(`A total, km²`) * 100) %>% round(4))
 
 write_csv(marine_notake_small, 'tableSM2_notake_small.csv')
@@ -770,6 +770,7 @@ area_5km <- read_csv(cell_area_file_5km) %>%
 calc_areas <- notake_tot_areas_df %>%
   left_join(bind_rows(area_500m, area_1km, area_2km, area_3km, area_5km),
             by = 'res') %>%
+  mutate(`Information loss = A(raster, orig) - A(raster, 10km)` = area_rast - area_rast_10km) %>%
   rename(`Original res` = res,
          `Area (polygon)` = area_poly,
          `Area (raster, orig)` = area_rast,
