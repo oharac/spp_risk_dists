@@ -247,6 +247,8 @@ plot_combined <- cowplot::plot_grid(hab_plot_unweighted +
                                     label_size = 9,
                                     rel_widths = c(2, 3))
 
+ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.tiff'),
+       height = 2.8, width = 4.75, dpi = 300, units = 'in')
 ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
        height = 2.8, width = 4.75, dpi = 300, units = 'in')
 

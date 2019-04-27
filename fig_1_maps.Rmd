@@ -213,6 +213,7 @@ threat_four_panel <- four_panel(threat_un_rast, threat_rr_rast,
 four_maps <- cowplot::plot_grid(mean_four_panel, threat_four_panel, 
                                 nrow = 1, ncol = 2, align = 'v')
 
+# fig1_path <- file.path(dir_git, 'ms_figures/fig1_comp_assessed.tiff')
 fig1_path <- file.path(dir_git, 'ms_figures/fig1_comp_assessed.png')
 ggsave(plot = four_maps,
        filename = fig1_path,

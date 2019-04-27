@@ -259,6 +259,8 @@ plot_combined <- cowplot::plot_grid(mpa_plot_unweighted +
                                     hjust = 0,
                                     rel_widths = c(2, 3))
 
+ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.tiff'),
+       height = 3, width = 4.75, dpi = 300, units = 'in')
 ggsave(file.path(dir_git, 'ms_figures/fig3_bd_risk_vs_mpas.png'),
        height = 3, width = 4.75, dpi = 300, units = 'in')
 ```
