@@ -127,8 +127,6 @@ taxa_gps <- c("Cnidaria",
 map_list <- vector('list', length = length(taxa_gps)) %>%
   setNames(taxa_gps)
 
-taxa_map_file <- file.path(dir_git, 'ms_figures/fig2_taxa_maps.png')
-
 for(i in seq_along(taxa_gps)) { ### i <- 5
     
   taxon_gp <- taxa_gps[i]
@@ -243,6 +241,9 @@ z <- cowplot::plot_grid(y, colorbar,
                         align = 'v', ncol = 1)
 plot_w <- 4.75
 plot_h <- 6.1
+
+taxa_map_file <- file.path(dir_git, 'ms_figures/fig2_taxa_maps.tiff')
+taxa_map_file <- file.path(dir_git, 'ms_figures/fig2_taxa_maps.png')
 
 ggsave(plot = z,
        filename = taxa_map_file,
