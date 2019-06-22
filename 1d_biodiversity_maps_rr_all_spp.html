@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Apr 8 13:42:44 2019 by ohara" />
+<meta name="author" content="Compiled on Sat Jun 22 05:57:15 2019 by ohara" />
 
 
 <title>Biodiversity risk maps - range-rarity weighting - all available maps</title>
@@ -1695,7 +1695,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - range-rarity weighting - all available maps</h1>
-<h4 class="author"><em>Compiled on Mon Apr 8 13:42:44 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Sat Jun 22 05:57:15 2019 by ohara</em></h4>
 
 </div>
 
@@ -1728,8 +1728,13 @@ div.tocify {
 <p>A selection of these maps will be generated for taxonomic groups and range sizes in a separate Rmd.</p>
 </div>
 <div id="data-sources" class="section level1">
-<h1><span class="header-section-number">2</span> Data Sources</h1>
-<p>IUCN Red List spatial data download IUCN Red List API Gina Ralph (IUCN)</p>
+<h1><span class="header-section-number">2</span> Data sources</h1>
+<ul>
+<li>IUCN species API: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.</li>
+<li>IUCN species shapefiles: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a></li>
+<li>BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at <a href="http://datazone.birdlife.org/species/requestdis" class="uri">http://datazone.birdlife.org/species/requestdis</a></li>
+<li>Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.</li>
+</ul>
 </div>
 <div id="methods" class="section level1">
 <h1><span class="header-section-number">3</span> Methods</h1>
@@ -1760,7 +1765,7 @@ div.tocify {
 \end{align*}\]</span> Because of file sizes, the intermediate files will be stored outside of GitHub.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;cell_summary_rr_weighted_all.csv&#39;</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">### unlink(cell_summary_file)</span></a>
-<a class="sourceLine" id="cb2-3" title="3">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb2-3" title="3">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {</a>
 <a class="sourceLine" id="cb2-6" title="6"></a>
@@ -1886,7 +1891,7 @@ div.tocify {
 </div>
 <div id="and-now-the-rasters" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> And now, the rasters</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb3-2" title="2"></a>
 <a class="sourceLine" id="cb3-3" title="3">rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">&#39;cell_id_rast.tif&#39;</span>))</a>
 <a class="sourceLine" id="cb3-4" title="4"></a>
@@ -2047,71 +2052,67 @@ div.tocify {
 <a class="sourceLine" id="cb6-59" title="59">} <span class="cf">else</span> {</a>
 <a class="sourceLine" id="cb6-60" title="60">  <span class="kw">message</span>(<span class="st">&#39;Map exists: &#39;</span>, map_rast_file)</a>
 <a class="sourceLine" id="cb6-61" title="61">}</a></code></pre></div>
-<pre><code>##          1%          5%         10%         20%         30%         40% 
-## 0.009025621 0.029609640 0.047550179 0.076642129 0.110777429 0.145670762 
-##         50%         60%         70%         80%         90%        100% 
-## 0.177928586 0.205957005 0.230392245 0.264462591 0.327198396 1.000000000</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_output, <span class="st">&#39;trend_rr_raster_all.tif&#39;</span>)</a>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_output, <span class="st">&#39;trend_rr_raster_all.tif&#39;</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2"></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {</a>
+<a class="sourceLine" id="cb7-4" title="4">  </a>
+<a class="sourceLine" id="cb7-5" title="5">  trend_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">&#39;cell_id&#39;</span>, <span class="dt">which =</span> <span class="st">&#39;mean_trend&#39;</span>)</a>
+<a class="sourceLine" id="cb7-6" title="6">  <span class="kw">writeRaster</span>(trend_rast, map_rast_file,</a>
+<a class="sourceLine" id="cb7-7" title="7">              <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb7-8" title="8">  </a>
+<a class="sourceLine" id="cb7-9" title="9">  trend_df &lt;-<span class="st"> </span>trend_rast <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="st">    </span><span class="co"># aggregate(fact = 4) %&gt;%</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="st">    </span><span class="kw">rasterToPoints</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="st">    </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="st">    </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&#39;long&#39;</span>, <span class="st">&#39;lat&#39;</span>, <span class="st">&#39;value&#39;</span>))</a>
+<a class="sourceLine" id="cb7-14" title="14">  </a>
+<a class="sourceLine" id="cb7-15" title="15">  trend_max &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">range</span>(trend_df<span class="op">$</span>value)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">max</span>()</a>
+<a class="sourceLine" id="cb7-16" title="16">  </a>
+<a class="sourceLine" id="cb7-17" title="17">  x &lt;-<span class="st"> </span><span class="kw">ggplot</span>(trend_df) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="st">    </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(long, lat, <span class="dt">fill =</span> value)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> land_poly, <span class="kw">aes</span>(<span class="dt">geometry =</span> geometry), <span class="dt">fill =</span> <span class="st">&#39;grey96&#39;</span>, <span class="dt">color =</span> <span class="st">&#39;grey40&#39;</span>, <span class="dt">size =</span> <span class="fl">.10</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-20" title="20"><span class="st">    </span><span class="kw">ggtheme_map</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-21" title="21"><span class="st">    </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&#39;green4&#39;</span>, <span class="st">&#39;green3&#39;</span>, <span class="st">&#39;grey90&#39;</span>, <span class="st">&#39;red3&#39;</span>, <span class="st">&#39;purple4&#39;</span>),</a>
+<a class="sourceLine" id="cb7-22" title="22">                         <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb7-23" title="23">                         <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span>trend_max, trend_max)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-24" title="24"><span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-25" title="25"><span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-26" title="26"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&#39;Annual change in risk, range-rarity weighted&#39;</span>,</a>
+<a class="sourceLine" id="cb7-27" title="27">         <span class="dt">fill  =</span> <span class="st">&#39;change in risk/yr&#39;</span>)</a>
+<a class="sourceLine" id="cb7-28" title="28"></a>
+<a class="sourceLine" id="cb7-29" title="29">} <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb7-30" title="30">  <span class="kw">message</span>(<span class="st">&#39;Map exists: &#39;</span>, map_rast_file)</a>
+<a class="sourceLine" id="cb7-31" title="31">}</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_output, <span class="st">&#39;sr_rr_trend_raster_all.tif&#39;</span>)</a>
 <a class="sourceLine" id="cb8-2" title="2"></a>
 <a class="sourceLine" id="cb8-3" title="3"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {</a>
 <a class="sourceLine" id="cb8-4" title="4">  </a>
-<a class="sourceLine" id="cb8-5" title="5">  trend_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">&#39;cell_id&#39;</span>, <span class="dt">which =</span> <span class="st">&#39;mean_trend&#39;</span>)</a>
-<a class="sourceLine" id="cb8-6" title="6">  <span class="kw">writeRaster</span>(trend_rast, map_rast_file,</a>
+<a class="sourceLine" id="cb8-5" title="5">  n_trend_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">&#39;cell_id&#39;</span>, <span class="dt">which =</span> <span class="st">&#39;sr_rr_trend&#39;</span>)</a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="kw">writeRaster</span>(n_trend_rast, map_rast_file,</a>
 <a class="sourceLine" id="cb8-7" title="7">              <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb8-8" title="8">  </a>
-<a class="sourceLine" id="cb8-9" title="9">  trend_df &lt;-<span class="st"> </span>trend_rast <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb8-9" title="9">  n_trend_df &lt;-<span class="st"> </span>n_trend_rast <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb8-10" title="10"><span class="st">    </span><span class="co"># aggregate(fact = 4) %&gt;%</span></a>
 <a class="sourceLine" id="cb8-11" title="11"><span class="st">    </span><span class="kw">rasterToPoints</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb8-12" title="12"><span class="st">    </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="st">    </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&#39;long&#39;</span>, <span class="st">&#39;lat&#39;</span>, <span class="st">&#39;value&#39;</span>))</a>
-<a class="sourceLine" id="cb8-14" title="14">  </a>
-<a class="sourceLine" id="cb8-15" title="15">  trend_max &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">range</span>(trend_df<span class="op">$</span>value)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">max</span>()</a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="st">    </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&#39;long&#39;</span>, <span class="st">&#39;lat&#39;</span>, <span class="st">&#39;value&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">value_expanded =</span> value<span class="op">/</span><span class="kw">max</span>(value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
+<a class="sourceLine" id="cb8-15" title="15">           <span class="dt">log_value =</span> <span class="kw">log10</span>(value_expanded))</a>
 <a class="sourceLine" id="cb8-16" title="16">  </a>
-<a class="sourceLine" id="cb8-17" title="17">  x &lt;-<span class="st"> </span><span class="kw">ggplot</span>(trend_df) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-18" title="18"><span class="st">    </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(long, lat, <span class="dt">fill =</span> value)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-17" title="17">  x &lt;-<span class="st"> </span><span class="kw">ggplot</span>(n_trend_df) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="st">    </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(long, lat, <span class="dt">fill =</span> log_value)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-19" title="19"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> land_poly, <span class="kw">aes</span>(<span class="dt">geometry =</span> geometry), <span class="dt">fill =</span> <span class="st">&#39;grey96&#39;</span>, <span class="dt">color =</span> <span class="st">&#39;grey40&#39;</span>, <span class="dt">size =</span> <span class="fl">.10</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-20" title="20"><span class="st">    </span><span class="kw">ggtheme_map</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-21" title="21"><span class="st">    </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&#39;green4&#39;</span>, <span class="st">&#39;green3&#39;</span>, <span class="st">&#39;grey90&#39;</span>, <span class="st">&#39;red3&#39;</span>, <span class="st">&#39;purple4&#39;</span>),</a>
-<a class="sourceLine" id="cb8-22" title="22">                         <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span>, <span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb8-23" title="23">                         <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span>trend_max, trend_max)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-24" title="24"><span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-25" title="25"><span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-26" title="26"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&#39;Annual change in risk, range-rarity weighted&#39;</span>,</a>
-<a class="sourceLine" id="cb8-27" title="27">         <span class="dt">fill  =</span> <span class="st">&#39;change in risk/yr&#39;</span>)</a>
-<a class="sourceLine" id="cb8-28" title="28"></a>
-<a class="sourceLine" id="cb8-29" title="29">} <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb8-30" title="30">  <span class="kw">message</span>(<span class="st">&#39;Map exists: &#39;</span>, map_rast_file)</a>
-<a class="sourceLine" id="cb8-31" title="31">}</a></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">map_rast_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_output, <span class="st">&#39;sr_rr_trend_raster_all.tif&#39;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2"></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(map_rast_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {</a>
-<a class="sourceLine" id="cb9-4" title="4">  </a>
-<a class="sourceLine" id="cb9-5" title="5">  n_trend_rast &lt;-<span class="st"> </span><span class="kw">subs</span>(rast_base, cell_summary, <span class="dt">by =</span> <span class="st">&#39;cell_id&#39;</span>, <span class="dt">which =</span> <span class="st">&#39;sr_rr_trend&#39;</span>)</a>
-<a class="sourceLine" id="cb9-6" title="6">  <span class="kw">writeRaster</span>(n_trend_rast, map_rast_file,</a>
-<a class="sourceLine" id="cb9-7" title="7">              <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb9-8" title="8">  </a>
-<a class="sourceLine" id="cb9-9" title="9">  n_trend_df &lt;-<span class="st"> </span>n_trend_rast <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-10" title="10"><span class="st">    </span><span class="co"># aggregate(fact = 4) %&gt;%</span></a>
-<a class="sourceLine" id="cb9-11" title="11"><span class="st">    </span><span class="kw">rasterToPoints</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-12" title="12"><span class="st">    </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-13" title="13"><span class="st">    </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&#39;long&#39;</span>, <span class="st">&#39;lat&#39;</span>, <span class="st">&#39;value&#39;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-14" title="14"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">value_expanded =</span> value<span class="op">/</span><span class="kw">max</span>(value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
-<a class="sourceLine" id="cb9-15" title="15">           <span class="dt">log_value =</span> <span class="kw">log10</span>(value_expanded))</a>
-<a class="sourceLine" id="cb9-16" title="16">  </a>
-<a class="sourceLine" id="cb9-17" title="17">  x &lt;-<span class="st"> </span><span class="kw">ggplot</span>(n_trend_df) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-18" title="18"><span class="st">    </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(long, lat, <span class="dt">fill =</span> log_value)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-19" title="19"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> land_poly, <span class="kw">aes</span>(<span class="dt">geometry =</span> geometry), <span class="dt">fill =</span> <span class="st">&#39;grey96&#39;</span>, <span class="dt">color =</span> <span class="st">&#39;grey40&#39;</span>, <span class="dt">size =</span> <span class="fl">.10</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-20" title="20"><span class="st">    </span><span class="kw">ggtheme_map</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-21" title="21"><span class="st">    </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&#39;lightblue&#39;</span>, <span class="st">&#39;blue1&#39;</span>, <span class="st">&#39;blue3&#39;</span>, <span class="st">&#39;purple4&#39;</span>),</a>
-<a class="sourceLine" id="cb9-22" title="22">                         <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">.7</span>, <span class="fl">.8</span>, <span class="fl">.9</span>, <span class="dv">1</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-23" title="23"><span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-24" title="24"><span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-25" title="25"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&#39;Number of trend-assessed species, range-rarity weighted&#39;</span>,</a>
-<a class="sourceLine" id="cb9-26" title="26">         <span class="dt">fill  =</span> <span class="st">&#39;log(sum(w_rr))&#39;</span>)</a>
-<a class="sourceLine" id="cb9-27" title="27">  </a>
-<a class="sourceLine" id="cb9-28" title="28">} <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb9-29" title="29">  <span class="kw">message</span>(<span class="st">&#39;Map exists: &#39;</span>, map_rast_file)</a>
-<a class="sourceLine" id="cb9-30" title="30">}</a></code></pre></div>
+<a class="sourceLine" id="cb8-21" title="21"><span class="st">    </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&#39;lightblue&#39;</span>, <span class="st">&#39;blue1&#39;</span>, <span class="st">&#39;blue3&#39;</span>, <span class="st">&#39;purple4&#39;</span>),</a>
+<a class="sourceLine" id="cb8-22" title="22">                         <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">.7</span>, <span class="fl">.8</span>, <span class="fl">.9</span>, <span class="dv">1</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-25" title="25"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&#39;Number of trend-assessed species, range-rarity weighted&#39;</span>,</a>
+<a class="sourceLine" id="cb8-26" title="26">         <span class="dt">fill  =</span> <span class="st">&#39;log(sum(w_rr))&#39;</span>)</a>
+<a class="sourceLine" id="cb8-27" title="27">  </a>
+<a class="sourceLine" id="cb8-28" title="28">} <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb8-29" title="29">  <span class="kw">message</span>(<span class="st">&#39;Map exists: &#39;</span>, map_rast_file)</a>
+<a class="sourceLine" id="cb8-30" title="30">}</a></code></pre></div>
 </div>
 </div>
 </div>

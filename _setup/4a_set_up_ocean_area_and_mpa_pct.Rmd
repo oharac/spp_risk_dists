@@ -43,7 +43,8 @@ To define spatial areas more accurately, create rasters of WDPA and ocean area a
 
 # Data Sources
 
-### WDPA
+* World Database on Protected Areas: IUCN, & UNEP-WCMC. (2018, June). The World Database on Protected Areas (WDPA). Retrieved June 9, 2018, from Cambridge, UK: UNEP-WCMC website: www.protectedplanet.net
+* Ocean outline: Natural Earth 10 m polygons. https://www.naturalearthdata.com/
 
 # Methods
 

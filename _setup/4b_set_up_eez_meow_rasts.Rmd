@@ -42,6 +42,11 @@ Set up analysis rasters for EEZs, MEOWs, and bathymetry at Gall-Peters 10 km^2 r
 * Bathymetry will include regions for 200m+, 20-200m, and <20m.  
 * All will be clipped to the same ocean presence using the area raster.
 
+# Data Sources
+
+* Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
+* Bathymetry (GEBCO): Sandwell, D. T., Gille, S. T., & Smith, W. H. F. (2002, June). Bathymetry from Space:Oceanography, Geophysics, and Climate. Retrieved from https://www.gebco.net/
+
 # Methods
 
 ## EEZ raster

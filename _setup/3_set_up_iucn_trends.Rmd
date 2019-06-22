@@ -23,17 +23,16 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
+dir_git <- here()
 
-### goal specific folders and info
-dir_data  <- file.path(dir_git, '_data')
-dir_setup <- file.path(dir_git, '_setup')
 
-# ### provenance tracking
+### provenance tracking
 library(provRmd); prov_setup()
 
-source(file.path(dir_setup, 'common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -43,7 +42,8 @@ Determine IUCN extinction risk trends for marine species by regressing time seri
 
 # Data Sources
 
-### IUCN Red List
+* IUCN API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. 
+* Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
 # Methods
 

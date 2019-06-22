@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Mon Apr 8 13:35:55 2019 by ohara" />
+<meta name="author" content="Compiled on Sat Jun 22 05:56:46 2019 by ohara" />
 
 
 <title>Biodiversity risk maps - all available maps</title>
@@ -1695,7 +1695,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Biodiversity risk maps - all available maps</h1>
-<h4 class="author"><em>Compiled on Mon Apr 8 13:35:55 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Sat Jun 22 05:56:46 2019 by ohara</em></h4>
 
 </div>
 
@@ -1733,8 +1733,13 @@ div.tocify {
 </ul>
 </div>
 <div id="data-sources" class="section level1">
-<h1><span class="header-section-number">2</span> Data Sources</h1>
-<p>IUCN Red List spatial data download IUCN Red List API Gina Ralph (IUCN)</p>
+<h1><span class="header-section-number">2</span> Data sources</h1>
+<ul>
+<li>IUCN species API: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.</li>
+<li>IUCN species shapefiles: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a></li>
+<li>BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at <a href="http://datazone.birdlife.org/species/requestdis" class="uri">http://datazone.birdlife.org/species/requestdis</a></li>
+<li>Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.</li>
+</ul>
 </div>
 <div id="methods" class="section level1">
 <h1><span class="header-section-number">3</span> Methods</h1>
@@ -1763,7 +1768,7 @@ div.tocify {
 \end{align*}\]</span> Because of file sizes, the intermediate files will be stored outside of GitHub.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">cell_summary_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;cell_summary_unweighted_all.csv&#39;</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">### unlink(cell_summary_file)</span></a>
-<a class="sourceLine" id="cb2-3" title="3">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb2-3" title="3">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(cell_summary_file) <span class="op">|</span><span class="st"> </span>reload <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) {</a>
 <a class="sourceLine" id="cb2-6" title="6">  dir_taxa_summaries &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;taxa_summaries&#39;</span>)</a>
@@ -1863,7 +1868,7 @@ div.tocify {
 </div>
 <div id="and-now-the-rasters" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> And now, the rasters</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">reload &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">reload &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb3-2" title="2"></a>
 <a class="sourceLine" id="cb3-3" title="3">rast_base &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">&#39;cell_id_rast.tif&#39;</span>))</a>
 <a class="sourceLine" id="cb3-4" title="4"></a>

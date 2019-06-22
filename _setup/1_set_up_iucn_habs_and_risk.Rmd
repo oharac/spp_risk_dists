@@ -23,17 +23,16 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
+dir_git <- here()
+
 
 ### provenance tracking
 library(provRmd); prov_setup()
 
-### goal specific folders and info
-dir_setup   <- file.path(dir_git, 'setup')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-
-source(file.path(dir_setup, 'common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -43,7 +42,7 @@ Get IUCN current risk assessments and historical assessments over time, for all 
 
 # Data Sources
 
-### IUCN Red List
+* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
 
 # Methods
 
@@ -419,7 +418,7 @@ spp_habs_clean <- spp_marine %>%
                                   any(cat %in% c(12))     ~ '< 20 m',
                                   TRUE                    ~ 'unknown'))
 
-write_csv(spp_habs_clean, file.path(dir_git, 'data',
+write_csv(spp_habs_clean, file.path(dir_data,
                                      sprintf('spp_marine_from_api_%s.csv', api_version)))
 
 ```
@@ -428,13 +427,13 @@ write_csv(spp_habs_clean, file.path(dir_git, 'data',
 
 ``` {r get_iucn_past_assessments}
 
-spp_timeseries_file <- file.path(dir_git, 'data',
+spp_timeseries_file <- file.path(dir_data,
                                  sprintf('iucn_risk_timeseries_%s.csv', api_version))
 
 iucn_spp_info <- read_csv(file.path(dir_o_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
+iucn_marine_spp <- read_csv(file.path(dir_data,
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 ### Subpopulations are in here too, by ID number
@@ -487,12 +486,12 @@ if(!file.exists(spp_timeseries_file) | reload) {
 
 ``` {r get_iucn_current_assessment}
 
-spp_current_file <- file.path(dir_git, 'data', 
+spp_current_file <- file.path(dir_data, 
                               sprintf('iucn_risk_current_%s.csv', api_version))
 iucn_spp_info <- read_csv(file.path(dir_o_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
+iucn_marine_spp <- read_csv(file.path(dir_data,
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 

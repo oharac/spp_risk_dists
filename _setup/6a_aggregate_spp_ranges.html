@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Apr 2 18:49:39 2019 by ohara" />
+<meta name="author" content="Compiled on Sat Jun 22 05:51:07 2019 by ohara" />
 
 
 <title>Aggregate IUCN spp ranges</title>
@@ -1695,7 +1695,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Aggregate IUCN spp ranges</h1>
-<h4 class="author"><em>Compiled on Tue Apr 2 18:49:39 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Sat Jun 22 05:51:07 2019 by ohara</em></h4>
 
 </div>
 
@@ -1704,29 +1704,31 @@ div.tocify {
 <a class="sourceLine" id="cb1-2" title="2">                      <span class="dt">echo =</span> <span class="ot">TRUE</span>, <span class="dt">message =</span> <span class="ot">FALSE</span>, <span class="dt">warning =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb1-3" title="3"></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="kw">library</span>(raster)</a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="kw">source</span>(<span class="st">&#39;https://raw.githubusercontent.com/oharac/src/master/R/common.R&#39;</span>)</a>
-<a class="sourceLine" id="cb1-6" title="6"></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">library</span>(sf)</a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="kw">library</span>(data.table)</a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">library</span>(data.table)</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">source</span>(<span class="st">&#39;https://raw.githubusercontent.com/oharac/src/master/R/common.R&#39;</span>)  <span class="co">###</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="co">### includes library(tidyverse); library(stringr); dir_M points to ohi directory</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">library</span>(sf)</a>
 <a class="sourceLine" id="cb1-9" title="9"></a>
-<a class="sourceLine" id="cb1-10" title="10">dir_git &lt;-<span class="st"> &#39;~/github/spp_risk_dists&#39;</span></a>
-<a class="sourceLine" id="cb1-11" title="11">dir_o_anx &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_O, <span class="st">&#39;git-annex/spp_risk_dists&#39;</span>)</a>
-<a class="sourceLine" id="cb1-12" title="12">dir_setup &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">&#39;_setup&#39;</span>)</a>
-<a class="sourceLine" id="cb1-13" title="13"></a>
-<a class="sourceLine" id="cb1-14" title="14"><span class="kw">source</span>(<span class="kw">file.path</span>(dir_setup, <span class="st">&#39;common_fxns.R&#39;</span>))</a>
-<a class="sourceLine" id="cb1-15" title="15"></a>
-<a class="sourceLine" id="cb1-16" title="16"><span class="co">### goal specific folders and info</span></a>
-<a class="sourceLine" id="cb1-17" title="17"></a>
-<a class="sourceLine" id="cb1-18" title="18">dir_data &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">&#39;_data&#39;</span>)</a>
-<a class="sourceLine" id="cb1-19" title="19">dir_spatial &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_git, <span class="st">&#39;_spatial&#39;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-10" title="10">dir_git &lt;-<span class="st"> </span><span class="kw">here</span>()</a>
+<a class="sourceLine" id="cb1-11" title="11"></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">&#39;_setup/common_fxns.R&#39;</span>))</a></code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>Using individual species range data (csv outputs from <code>5_process_spp_shps.Rmd</code>), collect into species groups. In each species group, process range and risk information to get mean risk, variance of risk, species richness, and threatened species count per cell. These will then be analyzed in the context of species range rarity weighting as well in a sister script.</p>
 </div>
+<div id="data-sources" class="section level1">
+<h1><span class="header-section-number">2</span> Data sources</h1>
+<ul>
+<li>IUCN species API: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.</li>
+<li>IUCN species shapefiles: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a></li>
+<li>BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at <a href="http://datazone.birdlife.org/species/requestdis" class="uri">http://datazone.birdlife.org/species/requestdis</a></li>
+<li>Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.</li>
+</ul>
+</div>
 <div id="methods" class="section level1">
-<h1><span class="header-section-number">2</span> Methods</h1>
+<h1><span class="header-section-number">3</span> Methods</h1>
 <div id="generate-species-group-maps---equal-weighting-per-cell" class="section level2">
-<h2><span class="header-section-number">2.1</span> Generate species group maps - equal weighting per cell</h2>
+<h2><span class="header-section-number">3.1</span> Generate species group maps - equal weighting per cell</h2>
 <p>From species maps data.frame, identify the IDs of species within each taxon. For each taxon:</p>
 <ul>
 <li>Collect all taxon species into a single data.frame.</li>
@@ -1772,7 +1774,7 @@ div.tocify {
 <a class="sourceLine" id="cb2-33" title="33"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(meow_id))</a>
 <a class="sourceLine" id="cb2-34" title="34">meow_to_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_spatial, <span class="st">&#39;iucn_rgn_to_meow.csv&#39;</span>))</a></code></pre></div>
 <div id="loop-over-comprehensively-assessed-species" class="section level3">
-<h3><span class="header-section-number">2.1.1</span> Loop over comprehensively assessed species</h3>
+<h3><span class="header-section-number">3.1.1</span> Loop over comprehensively assessed species</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co">### Make a list of taxonomic groups to loop over:</span></a>
 <a class="sourceLine" id="cb3-2" title="2">taxa &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-3" title="3"><span class="st">  </span><span class="kw">filter</span>(comp_assessed) <span class="op">%&gt;%</span></a>
@@ -1907,7 +1909,7 @@ div.tocify {
 <a class="sourceLine" id="cb3-132" title="132">} <span class="co">### end of taxonomic group loop</span></a></code></pre></div>
 </div>
 <div id="loop-over-non-comprehensively-assessed-species" class="section level3">
-<h3><span class="header-section-number">2.1.2</span> Loop over non-comprehensively-assessed species</h3>
+<h3><span class="header-section-number">3.1.2</span> Loop over non-comprehensively-assessed species</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">x &lt;-<span class="st"> </span>spp_maps <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>comp_assessed)</a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="kw">table</span>(x<span class="op">$</span>max_depth)</a>

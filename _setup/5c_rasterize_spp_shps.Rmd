@@ -47,10 +47,12 @@ Using a set of IUCN species range maps, rasterize each species to 10 km x 10 km 
 * Subpopulation polygons must be identified and rasterized separately from the parent polygon; this must be done by sciname and subpop fields since the polygon IDs are based upon the parent ID.
 * Regional assessments need not be determined at this stage - the ID numbers match the global ID numbers (including subpops).
 
-# Data source
+# Data sources
 
-IUCN Red List: Spatial Data Download
-IUCN: Gina Ralph direct communication
+* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at http://datazone.birdlife.org/species/requestdis
+* Bathymetry (GEBCO): Sandwell, D. T., Gille, S. T., & Smith, W. H. F. (2002, June). Bathymetry from Space:Oceanography, Geophysics, and Climate. Retrieved from https://www.gebco.net/
+
 
 # Methods
 

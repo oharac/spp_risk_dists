@@ -37,6 +37,14 @@ source(file.path(dir_git, '_setup/common_fxns.R'))
 
 Using individual species range data (csv outputs from `5_process_spp_shps.Rmd`), collect into species groups.  In each species group, process range and risk information to get mean risk, variance of risk, species richness, and threatened species count per cell.  These are all weighted by species range rarity as a metric of endemism.
 
+# Data sources
+
+* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
+* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
+* Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
+
+
 # Methods
 
 ## Generate species group maps - range-rarity weighting per cell

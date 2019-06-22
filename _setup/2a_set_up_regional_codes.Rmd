@@ -23,17 +23,16 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 
 source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+  ### includes library(tidyverse); library(stringr); 
+  ### dir_M points to ohi directory on Mazu; dir_O points to home dir on Mazu
 
-dir_git <- '~/github/spp_risk_dists'
+dir_git <- here()
 
-### goal specific folders and info
-dir_setup   <- file.path(dir_git, 'setup')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
 
-# ### provenance tracking
+### provenance tracking
 library(provRmd); prov_setup()
 
-source(file.path(dir_setup, 'common_fxns.R'))
+source(file.path(dir_git, '_setup/common_fxns.R'))
 
 ```
 
@@ -43,11 +42,12 @@ Examine IUCN Red List regional assessments for extinction risk categories.
 
 # Data Sources
 
-### IUCN Red List
+* IUCN API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
+* Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
 # Methods: Geographic scope of regional assessments
 
-For each regional assessment, spatially classify by [Large Marine Ecosystems](https://upload.wikimedia.org/wikipedia/commons/4/4d/Global_map_of_large_marine_ecosystems.jpg) (other potential options: EEZs and/or FAO Major Fishing Areas).  Use the [https://en.wikipedia.org/wiki/United_Nations_geoscheme](UN geoscheme) to roughly identify subregional zones.  Note there may be some overlaps.
+For each regional assessment, spatially classify by [Large Marine Ecosystems](https://upload.wikimedia.org/wikipedia/commons/4/4d/Global_map_of_large_marine_ecosystems.jpg) and Marine Ecoregions of the World.  Use the [https://en.wikipedia.org/wiki/United_Nations_geoscheme](UN geoscheme) to roughly identify subregional zones.  Note there may be some overlaps.
 
 ## Europe ('europe'):
 
@@ -146,7 +146,7 @@ rgn_to_meow_df <- data.frame(iucn_rgn = names(rgn_to_meow),
          priority = n()) %>%
   arrange(priority)
 
-write_csv(rgn_to_meow_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_meow.csv')))
+write_csv(rgn_to_meow_df, file.path(dir_spatial, sprintf('iucn_rgn_to_meow.csv')))
 
 ```
 
@@ -174,7 +174,7 @@ rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
          priority = n()) %>%
   arrange(priority)
 
-write_csv(rgn_to_lme_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_lme.csv')))
+write_csv(rgn_to_lme_df, file.path(dir_spatial, sprintf('iucn_rgn_to_lme.csv')))
 
 ```
 
