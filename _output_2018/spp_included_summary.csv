@@ -1,0 +1,31 @@
+spp_gp,kingdom,phylum,class,order,family,species,subpops
+angelfish,Animalia,Chordata,Actinopterygii,Perciformes,Pomacanthidae,84,NA
+bonefish_tarpons,Animalia,Chordata,Actinopterygii,Albuliformes,Albulidae,3,NA
+bonefish_tarpons,Animalia,Chordata,Actinopterygii,Elopiformes,"Elopidae, Megalopidae",4,NA
+butterflyfish,Animalia,Chordata,Actinopterygii,Perciformes,Chaetodontidae,120,NA
+chondrichthyes,Animalia,Chordata,Chondrichthyes,NA,NA,620,10
+combtoothblennies,Animalia,Chordata,Actinopterygii,Perciformes,"Blenniidae, Chaenopsidae, Clinidae, Dactyloscopidae, Labrisomidae, Tripterygiidae",832,NA
+conus,Animalia,Mollusca,Gastropoda,NA,NA,545,NA
+corals,Animalia,Cnidaria,Anthozoa,NA,NA,691,NA
+corals,Animalia,Cnidaria,Hydrozoa,NA,NA,14,NA
+crocodiles,Animalia,Chordata,Reptilia,Crocodylia,NA,2,NA
+groupers,Animalia,Chordata,Actinopterygii,Perciformes,Epinephelidae,110,NA
+hagfish,Animalia,Chordata,Myxini,NA,NA,46,NA
+lobsters,Animalia,Arthropoda,Malacostraca,NA,NA,159,NA
+mangroves,Plantae,Tracheophyta,Liliopsida,NA,NA,2,NA
+mangroves,Plantae,Tracheophyta,Magnoliopsida,NA,NA,59,NA
+mangroves,Plantae,Tracheophyta,Polypodiopsida,NA,NA,3,NA
+marine_mammals,Animalia,Chordata,Mammalia,Carnivora,NA,32,2
+marine_mammals,Animalia,Chordata,Mammalia,Cetartiodactyla,NA,44,11
+marine_mammals,Animalia,Chordata,Mammalia,Sirenia,NA,3,NA
+pufferfish,Animalia,Chordata,Actinopterygii,Tetraodontiformes,Tetraodontidae,132,NA
+reptiles,Animalia,Chordata,Reptilia,Squamata,NA,16,NA
+reptiles,Animalia,Chordata,Reptilia,Testudines,NA,6,17
+seabreams_porgies,Animalia,Chordata,Actinopterygii,Perciformes,"Centracanthidae, Sparidae",123,NA
+seacucumbers,Animalia,Echinodermata,Holothuroidea,NA,NA,127,NA
+seagrasses,Plantae,Tracheophyta,Liliopsida,NA,NA,61,NA
+seasnakes,Animalia,Chordata,Reptilia,Squamata,NA,35,NA
+surgeonfish_tangs_unicornfish,Animalia,Chordata,Actinopterygii,Perciformes,Acanthuridae,74,NA
+terrestrial_mammals,Animalia,Chordata,Mammalia,Carnivora,NA,10,NA
+tunas_billfishes,Animalia,Chordata,Actinopterygii,Perciformes,"Istiophoridae, Scombridae, Xiphiidae",50,NA
+wrasses_parrotfishes,Animalia,Chordata,Actinopterygii,Perciformes,Labridae,519,NA

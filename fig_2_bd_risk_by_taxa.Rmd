@@ -39,8 +39,8 @@ Examine biodiversity risk by taxonomic group.
 
 # Data sources
 
-* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
 * World Database on Protected Areas: IUCN, & UNEP-WCMC. (2018, June). The World Database on Protected Areas (WDPA). Retrieved June 9, 2018, from Cambridge, UK: UNEP-WCMC website: www.protectedplanet.net
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
@@ -57,7 +57,8 @@ spp_maps <- read_csv(file.path(dir_data,
   filter(comp_assessed == TRUE) %>%
   mutate(dbf_file = basename(dbf_file)) %>%
   select(iucn_sid, dbf_file)
-spp_info <- read_csv(file.path(dir_o_anx, 'iucn/spp_info_from_api_2018-1.csv')) %>%
+spp_info <- read_csv(file.path(dir_o_anx, 
+                               sprintf('iucn/spp_info_from_api_%s.csv', api_version))) %>%
   select(-sciname)
 
 taxa_list <- spp_maps %>%
@@ -79,10 +80,10 @@ class_list <- taxa_list %>%
 shp_to_taxa <- read_csv(file.path(dir_setup, 'raw', 'shps_to_taxa.csv'))
 
 taxa_sums <- data.frame(
-  unweighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
+  unweighted = list.files(file.path(dir_o_anx, 'taxa_summaries_2019'),
                           pattern = sprintf('cell_sum_comp_%s.csv', api_version),
                           full.names = TRUE),
-  rr_weighted = list.files(file.path(dir_o_anx, 'taxa_summaries'),
+  rr_weighted = list.files(file.path(dir_o_anx, 'taxa_summaries_2019'),
                            pattern = sprintf('cell_sum_comp_rrweight_%s.csv', 
                                              api_version),
                            full.names = TRUE)) %>%
@@ -116,9 +117,9 @@ spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_v
 
 ``` {r mean_risk_raster, results = 'asis', eval = TRUE}
 
-reload <- FALSE ### reload applies to building rasters, not the plot
+reload <- TRUE ### reload applies to building rasters, not the plot
 
-rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
+rast_base <- raster::raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 land_poly <- sf::read_sf(file.path(dir_spatial, 'ne_10m_land', 
                                    'ne_10m_land_no_casp.shp')) %>%
@@ -136,7 +137,7 @@ taxa_gps <- c("Cnidaria",
 map_list <- vector('list', length = length(taxa_gps)) %>%
   setNames(taxa_gps)
 
-for(i in seq_along(taxa_gps)) { ### i <- 5
+for(i in seq_along(taxa_gps)) { ### i <- 6
     
   taxon_gp <- taxa_gps[i]
   taxon_txt <- taxon_gp %>% 
@@ -146,7 +147,7 @@ for(i in seq_along(taxa_gps)) { ### i <- 5
   taxa_info <- taxa_sums %>%
     filter(taxon == taxon_gp)
   
-  taxa_rast_file <- file.path(dir_o_anx, 'taxa_rasters', 
+  taxa_rast_file <- file.path(dir_o_anx, 'taxa_rasters_2019', 
                               paste0(tolower(taxon_txt), '_rr_comp.tif'))
   
   if(!file.exists(taxa_rast_file) | reload == TRUE) {
@@ -163,10 +164,10 @@ for(i in seq_along(taxa_gps)) { ### i <- 5
       group_by(cell_id) %>%
       summarize(mean_risk_sum = 1/sum(sr_rr_risk) * sum(mean_risk * sr_rr_risk),
                 pct_threat_sum = sum(sr_rr_threatened) / sum(sr_rr_risk)) %>%
-      select(cell_id, mean_risk_sum, pct_threat_sum) %>%
-      mutate(wt = 'rr_weighted')
+      select(cell_id, mean_risk_sum, pct_threat_sum)
     
-    mean_rr_rast <- subs(rast_base, taxon_df_rr, by = 'cell_id', which = 'mean_risk_sum')
+    mean_rr_rast <- raster::subs(x = rast_base, y = taxon_df_rr,
+                                 by = 'cell_id', which = 'mean_risk_sum')
     
     raster::writeRaster(mean_rr_rast, filename = taxa_rast_file, overwrite = TRUE)
     

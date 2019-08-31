@@ -38,8 +38,8 @@ Compare biodiversity risk within various marine habitats
 
 # Data sources
 
-* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
 * World Database on Protected Areas: IUCN, & UNEP-WCMC. (2018, June). The World Database on Protected Areas (WDPA). Retrieved June 9, 2018, from Cambridge, UK: UNEP-WCMC website: www.protectedplanet.net
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
@@ -255,8 +255,8 @@ plot_combined <- cowplot::plot_grid(hab_plot_unweighted +
                                     label_size = 9,
                                     rel_widths = c(2, 3))
 
-ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.tiff'),
-       height = 2.8, width = 4.75, dpi = 300, units = 'in')
+# ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.tiff'),
+#        height = 2.8, width = 4.75, dpi = 300, units = 'in')
 ggsave(file.path(dir_git, 'ms_figures/fig4_bd_risk_vs_habitat.png'),
        height = 2.8, width = 4.75, dpi = 300, units = 'in')
 

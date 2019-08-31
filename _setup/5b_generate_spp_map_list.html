@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sat Jun 22 05:49:50 2019 by ohara" />
+<meta name="author" content="Compiled on Fri Aug 30 08:11:28 2019 by ohara" />
 
 
 <title>Generate IUCN spp map list</title>
@@ -1695,7 +1695,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Generate IUCN spp map list</h1>
-<h4 class="author"><em>Compiled on Sat Jun 22 05:49:50 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Fri Aug 30 08:11:28 2019 by ohara</em></h4>
 
 </div>
 
@@ -1713,11 +1713,10 @@ div.tocify {
 <a class="sourceLine" id="cb1-11" title="11"></a>
 <a class="sourceLine" id="cb1-12" title="12"><span class="kw">source</span>(<span class="kw">file.path</span>(dir_git, <span class="st">&#39;_setup/common_fxns.R&#39;</span>))</a>
 <a class="sourceLine" id="cb1-13" title="13"></a>
-<a class="sourceLine" id="cb1-14" title="14">dir_bli &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/birdlife_intl/d2018&#39;</span>)</a>
-<a class="sourceLine" id="cb1-15" title="15">dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/iucn_spp/d2018-1&#39;</span>)</a>
-<a class="sourceLine" id="cb1-16" title="16">  <span class="co">### in this folder are shapefiles at a taxonomic level, both from</span></a>
-<a class="sourceLine" id="cb1-17" title="17">  <span class="co">### IUCN spatial data download (version 2018-1) and direct from </span></a>
-<a class="sourceLine" id="cb1-18" title="18">  <span class="co">### IUCN (Gina Ralph)</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-14" title="14">dir_bli &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/birdlife_intl/d2019&#39;</span>)</a>
+<a class="sourceLine" id="cb1-15" title="15">dir_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_M, <span class="st">&#39;git-annex/globalprep/_raw_data/iucn_spp/d2019&#39;</span>)</a>
+<a class="sourceLine" id="cb1-16" title="16">  <span class="co">### in this folder are shapefiles at a taxonomic level, from</span></a>
+<a class="sourceLine" id="cb1-17" title="17">  <span class="co">### IUCN spatial data download (version 2019-2).</span></a></code></pre></div>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <ul>
@@ -1728,7 +1727,7 @@ div.tocify {
 <div id="data-sources" class="section level1">
 <h1><span class="header-section-number">2</span> Data sources</h1>
 <ul>
-<li>IUCN species shapefiles: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a></li>
+<li>IUCN species shapefiles: IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a></li>
 <li>BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at <a href="http://datazone.birdlife.org/species/requestdis" class="uri">http://datazone.birdlife.org/species/requestdis</a></li>
 </ul>
 </div>
@@ -1742,7 +1741,7 @@ div.tocify {
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">### convert BirdLife Int&#39;l .gdb to shapefile, after filtering to species in the &quot;marine&quot; list.</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">### Here we also standardize the column names to match the IUCN column names.</span></a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">bli_marine_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_bli, <span class="st">&#39;bli_marine_v2017.shp&#39;</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4">bli_marine_shp &lt;-<span class="st"> </span><span class="kw">file.path</span>(dir_bli, <span class="st">&#39;bli_marine_v2018.shp&#39;</span>)</a>
 <a class="sourceLine" id="cb2-5" title="5"></a>
 <a class="sourceLine" id="cb2-6" title="6"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(bli_marine_shp)) {</a>
 <a class="sourceLine" id="cb2-7" title="7">  </a>
@@ -1892,8 +1891,9 @@ div.tocify {
 <a class="sourceLine" id="cb3-115" title="115"><span class="co">### Orcaella brevirostris Chilika Lake, Mekong River, Songkhla Lake</span></a>
 <a class="sourceLine" id="cb3-116" title="116"><span class="co">### * In shapefile, but not showing up in assessments</span></a>
 <a class="sourceLine" id="cb3-117" title="117"><span class="kw">write_csv</span>(subpops_match, </a>
-<a class="sourceLine" id="cb3-118" title="118">          <span class="kw">file.path</span>(dir_setup, <span class="kw">sprintf</span>(<span class="st">&#39;int/subpops_match_api_to_shp_%s.csv&#39;</span>, </a>
-<a class="sourceLine" id="cb3-119" title="119">                                     api_version)))</a></code></pre></div>
+<a class="sourceLine" id="cb3-118" title="118">          <span class="kw">file.path</span>(dir_setup, </a>
+<a class="sourceLine" id="cb3-119" title="119">                    <span class="kw">sprintf</span>(<span class="st">&#39;int/subpops_match_api_to_shp_%s.csv&#39;</span>, </a>
+<a class="sourceLine" id="cb3-120" title="120">                            api_version)))</a></code></pre></div>
 </div>
 <div id="get-info-on-comprehensive-assessments" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> get info on comprehensive assessments</h3>
@@ -1996,23 +1996,25 @@ div.tocify {
 <a class="sourceLine" id="cb5-75" title="75">turtles &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Dermochelys&#39;</span>, <span class="st">&#39;Caretta&#39;</span>, <span class="st">&#39;Lepidochelys&#39;</span>, </a>
 <a class="sourceLine" id="cb5-76" title="76">             <span class="st">&#39;Natator&#39;</span>, <span class="st">&#39;Chelonia&#39;</span>, <span class="st">&#39;Eretmochelys&#39;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb5-77" title="77"><span class="st">  </span><span class="kw">paste0</span>(<span class="dt">collapse =</span> <span class="st">&#39;|&#39;</span>)</a>
-<a class="sourceLine" id="cb5-78" title="78">assessed_gps &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;BONEFISH&#39;</span>, <span class="st">&#39;CORALS&#39;</span>, <span class="st">&#39;SEACUCUMBERS&#39;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-79" title="79"><span class="st">  </span><span class="kw">paste0</span>(<span class="dt">collapse =</span> <span class="st">&#39;|&#39;</span>)</a>
-<a class="sourceLine" id="cb5-80" title="80">  <span class="co">### </span><span class="al">NOTE</span><span class="co">: Damselfish removed at recommendation of Gina Ralph</span></a>
-<a class="sourceLine" id="cb5-81" title="81">  <span class="co">### Others, assume that availability of maps on Spatial Data Download Page</span></a>
-<a class="sourceLine" id="cb5-82" title="82">  <span class="co">### is indication of comprehensive assessment despite API call</span></a>
-<a class="sourceLine" id="cb5-83" title="83"></a>
-<a class="sourceLine" id="cb5-84" title="84">marine_map_info &lt;-<span class="st"> </span>marine_map_info <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-85" title="85"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">comp_assessed =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(dbf_file, assessed_gps), </a>
-<a class="sourceLine" id="cb5-86" title="86">                                <span class="ot">TRUE</span>, comp_assessed),</a>
-<a class="sourceLine" id="cb5-87" title="87">         <span class="dt">comp_assessed =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(sciname, turtles), </a>
-<a class="sourceLine" id="cb5-88" title="88">                                <span class="ot">TRUE</span>, comp_assessed))</a>
-<a class="sourceLine" id="cb5-89" title="89"></a>
-<a class="sourceLine" id="cb5-90" title="90"><span class="kw">write_csv</span>(marine_map_info, </a>
-<a class="sourceLine" id="cb5-91" title="91">          <span class="kw">file.path</span>(dir_data,</a>
-<a class="sourceLine" id="cb5-92" title="92">                    <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version)))</a></code></pre></div>
+<a class="sourceLine" id="cb5-78" title="78">assessed_gps &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;BONEFISH&#39;</span>, <span class="st">&#39;CORALS&#39;</span>, <span class="st">&#39;SEACUCUMBERS&#39;</span>, </a>
+<a class="sourceLine" id="cb5-79" title="79">                  <span class="co"># &#39;CLUPEIFORM&#39;, &#39;SYNGATHIFORM&#39;, </span></a>
+<a class="sourceLine" id="cb5-80" title="80">                  <span class="st">&#39;bli_marine&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-81" title="81"><span class="st">  </span><span class="kw">paste0</span>(<span class="dt">collapse =</span> <span class="st">&#39;|&#39;</span>)</a>
+<a class="sourceLine" id="cb5-82" title="82">  <span class="co">### </span><span class="al">NOTE</span><span class="co">: Damselfish removed at recommendation of Gina Ralph</span></a>
+<a class="sourceLine" id="cb5-83" title="83">  <span class="co">### Others, assume that availability of maps on Spatial Data Download Page</span></a>
+<a class="sourceLine" id="cb5-84" title="84">  <span class="co">### is indication of comprehensive assessment despite API call</span></a>
+<a class="sourceLine" id="cb5-85" title="85"></a>
+<a class="sourceLine" id="cb5-86" title="86">marine_map_info &lt;-<span class="st"> </span>marine_map_info <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-87" title="87"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">comp_assessed =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(dbf_file, assessed_gps), </a>
+<a class="sourceLine" id="cb5-88" title="88">                                <span class="ot">TRUE</span>, comp_assessed),</a>
+<a class="sourceLine" id="cb5-89" title="89">         <span class="dt">comp_assessed =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(sciname, turtles), </a>
+<a class="sourceLine" id="cb5-90" title="90">                                <span class="ot">TRUE</span>, comp_assessed))</a>
+<a class="sourceLine" id="cb5-91" title="91"></a>
+<a class="sourceLine" id="cb5-92" title="92"><span class="kw">write_csv</span>(marine_map_info, </a>
+<a class="sourceLine" id="cb5-93" title="93">          <span class="kw">file.path</span>(dir_data,</a>
+<a class="sourceLine" id="cb5-94" title="94">                    <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version)))</a></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">marine_map_info &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data,</a>
-<a class="sourceLine" id="cb6-2" title="2">  <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version))) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-3" title="3"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>presence) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-4" title="4"><span class="st">  </span><span class="kw">distinct</span>()</a>
 <a class="sourceLine" id="cb6-5" title="5"></a>

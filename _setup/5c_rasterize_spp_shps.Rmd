@@ -31,12 +31,11 @@ dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
-dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
-dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2019')
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2019')
   ### These are shapefiles directly from IUCN as individual species map files
   ### (in the unzipped folder).
   ### in this folder are shapefiles at a taxonomic level.
-
 
 ```
 
@@ -49,7 +48,7 @@ Using a set of IUCN species range maps, rasterize each species to 10 km x 10 km 
 
 # Data sources
 
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0. Available at http://datazone.birdlife.org/species/requestdis
 * Bathymetry (GEBCO): Sandwell, D. T., Gille, S. T., & Smith, W. H. F. (2002, June). Bathymetry from Space:Oceanography, Geophysics, and Climate. Retrieved from https://www.gebco.net/
 
@@ -82,7 +81,7 @@ rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ### If some species already processed, remove from the list to process.
 if(reload == FALSE) {
-  maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+  maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters_2019'),
                                         pattern = '.csv') %>%
     str_replace_all('iucn_sid_|.csv$', '') %>%
     as.integer()
@@ -93,10 +92,10 @@ if(reload == FALSE) {
 
 ### for selectively rerunning taxonomic groups
 # maps_to_rasterize <- maps_to_rasterize %>%
-#   filter(str_detect(dbf_file, 'CHONDR'))
+#   filter(str_detect(dbf_file, 'CORALS'))
 # 
 # asdf <- paste0('iucn_sid_', maps_to_rasterize$iucn_sid, '.csv')
-# zxcv <- list.files(file.path(dir_o_anx, 'spp_rasters'), 
+# zxcv <- list.files(file.path(dir_o_anx, 'spp_rasters_2019'), 
 #                    full.names = TRUE, 
 #                    pattern = paste0(asdf, collapse = '|'))
 # zzz <- file.mtime(zxcv)
@@ -204,16 +203,19 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
         
         ### depth clip if necessary; otherwise clip to bathy raster (which previously
         ### was clipped to area raster - so cells with any marine area will be kept,
-        ### and non-marine cells will be dropped)
+        ### and non-marine cells will be dropped).
+        ### Manual adds of shallow spp:
+        spp_shallow <- c(133512)
+        
         if(spp_shp$max_depth == '< 20 m') {
           spp_rast <- mask(spp_rast, rast_shallow)
-        } else if(spp_shp$max_depth == '< 200 m') {
+        } else if(spp_shp$max_depth == '< 200 m' | spp_shp$iucn_sid %in% spp_shallow) {
           spp_rast <- mask(spp_rast, rast_neritic)
         } else {
           spp_rast <- mask(spp_rast, rast_bathy)
         }
         ### write out as a raster:
-        # rast_file <- file.path(dir_o_anx, sprintf('spp_rasters/iucn_sid_%s.tif', spp))
+        # rast_file <- file.path(dir_o_anx, sprintf('spp_rasters_2019/iucn_sid_%s.tif', spp))
         # raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)
         ### See note below about file size; rasters are larger than csvs in general
         
@@ -226,7 +228,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
           cat_msg('Species ID ', spp, ' resulted in a zero-length dataframe.')
         }
         
-        write_csv(spp_present, file.path(dir_o_anx, 'spp_rasters',
+        write_csv(spp_present, file.path(dir_o_anx, 'spp_rasters_2019',
                                          sprintf('iucn_sid_%s.csv', spp)))
         
         return(NA)
@@ -246,10 +248,10 @@ maps <- read_csv(file.path(dir_data,
   mutate(spp_group = str_replace(spp_group, '.dbf', '')) %>%
   distinct()
 
-csvs <- list.files(file.path(dir_o_anx, 'spp_rasters')) %>%
+csvs <- list.files(file.path(dir_o_anx, 'spp_rasters_2019')) %>%
   str_replace_all('iucn_sid_|.csv', '')
 
-x <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+x <- list.files(file.path(dir_o_anx, 'spp_rasters_2019'),
                 full.names = TRUE)
 x <- x[str_detect(x, paste0(csvs, collapse = '|'))]
 

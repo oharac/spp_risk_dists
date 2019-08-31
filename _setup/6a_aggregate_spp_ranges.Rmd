@@ -39,8 +39,8 @@ Using individual species range data (csv outputs from `5_process_spp_shps.Rmd`),
 
 # Data sources
 
-* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
@@ -61,16 +61,13 @@ __NOTE:__ Because the summary files are likely to be very large for globe-spanni
 
 ### Read in lots of data
 spp_maps <- read_csv(file.path(dir_data, 
-                               sprintf('spp_marine_maps_%s.csv', api_version)),
-                     col_types = 'ddcicccl')
+                               sprintf('spp_marine_maps_%s.csv', api_version)))
 
 spp_risk <- read_csv(file.path(dir_data, 
-                               sprintf('iucn_risk_current_%s.csv', api_version)),
-                     col_types = 'dccicccdc')
+                               sprintf('iucn_risk_current_%s.csv', api_version)))
 
 spp_risk_rgn <- read_csv(file.path(dir_data, 
-                                   sprintf('iucn_risk_rgn_current_%s.csv', api_version)),
-                         col_types = 'dcccdc')
+                                   sprintf('iucn_risk_rgn_current_%s.csv', api_version)))
 
 spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)),
                       col_types = 'dccdc') %>%
@@ -108,16 +105,16 @@ taxa <- spp_maps %>%
   str_replace('\\.dbf$', '')
 
 # taxa <- taxa[str_detect(taxa, 'SEAGRASS')]
-reload <- FALSE
+reload <- TRUE
 
 ##########################################################.
 ### Looping over taxonomic groups -----
 ##########################################################.
 for(taxon in taxa) {
-  ### taxon <- taxa[16]
+  ### taxon <- taxa[1]
   
-  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
-                                   sprintf('%s_cell_sum_comp_%s.csv', tolower(taxon), api_version))
+  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries_2019',
+                              sprintf('%s_cell_sum_comp_%s.csv', tolower(taxon), api_version))
   
   if(!file.exists(taxon_sum_file) | reload == TRUE) {
     
@@ -147,9 +144,9 @@ for(taxon in taxa) {
     ### this takes about 30-40 seconds
     taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
                                         FUN = function(x) {
-        ### x <- taxon_ids[16]
+        ### x <- taxon_ids[1]
         ### x <- 6336                            
-        csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+        csv_file <- file.path(dir_o_anx, 'spp_rasters_2019', 
                               sprintf('iucn_sid_%s.csv', x))
         
         spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -284,24 +281,27 @@ taxa <- spp_maps %>%
   unique() %>%
   str_replace('\\.dbf$', '')
 
+### exclude non-comp-assessed reptiles (turtles, crocs, and seasnakes are comp)
+taxa <- taxa[taxa != 'REPTILES']
+
 ##########################################################.
 ### Looping over taxonomic groups -----
 ##########################################################.
 for(taxon in taxa) {
-  ### taxon <- taxa[71]
+  ### taxon <- taxa[1]
   
-  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries_2019',
                                    sprintf('%s_cell_sum_noncomp_%s.csv', 
                                            tolower(taxon), api_version))
   
-  reload <- FALSE
+  reload <- TRUE
   if(!file.exists(taxon_sum_file) | reload == TRUE) {
     
     ### Filter to just this taxon, and only non-assessed within this taxon
     taxon_maps <- spp_maps %>%
       filter(str_detect(dbf_file, taxon)) %>%
-      filter(comp_assessed == FALSE) %>%
-      filter(max_depth != 'deep oceanic')
+      filter(comp_assessed == FALSE) # %>%
+      # filter(max_depth != 'deep oceanic')
     
     taxon_risk_trend <- spp_risk_trend %>%
       filter(iucn_sid %in% taxon_maps$iucn_sid) %>%
@@ -333,9 +333,9 @@ for(taxon in taxa) {
       ### this takes about 30-40 seconds
       taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
                                           FUN = function(x) {
-          ### x <- taxon_ids[16]
+          ### x <- taxon_ids[1]
           ### x <- 6336                            
-          csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+          csv_file <- file.path(dir_o_anx, 'spp_rasters_2019', 
                                 sprintf('iucn_sid_%s.csv', x))
           
           spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%

@@ -161,10 +161,10 @@ api_file <- file.path(dir_M, 'git-annex/globalprep/spp_ico',
                       'api_key.csv')
 api_key <- scan(api_file, what = 'character')
 
-# api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
-#   .$version
+api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
+  .$version
 
-api_version <- '2018-1'
+# api_version <- '2018-1'
 
 
 get_from_api <- function(url, param, api_key, delay) {
@@ -172,7 +172,7 @@ get_from_api <- function(url, param, api_key, delay) {
   i <- 1; tries <- 5; success <- FALSE
   
   while(i <= tries & success == FALSE) {
-    message('try #', i)
+    # message('try #', i)
     Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
     api_info <- fromJSON(sprintf(url, param, api_key)) 
     if (class(api_info) != 'try-error') {
@@ -180,7 +180,7 @@ get_from_api <- function(url, param, api_key, delay) {
     } else {
       warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
     }
-    message('... successful? ', success)
+    # message('... successful? ', success)
     i <- i + 1
   }
   

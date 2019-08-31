@@ -39,8 +39,8 @@ Using individual species range data (csv outputs from `5_process_spp_shps.Rmd`),
 
 # Data sources
 
-* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
@@ -67,7 +67,7 @@ This calculated range includes ONLY ocean area. For species such as birds whose 
 
 spp_range_file <- file.path(dir_data,
                             sprintf('iucn_spp_range_area_%s.csv', api_version))
-reload <- FALSE
+reload <- TRUE
 
 ### load area raster, convert to data frame
 area_rast <- raster(file.path(dir_spatial, 'ocean_area_rast.tif'))
@@ -96,7 +96,7 @@ if(length(spp_ids) > 0) { ### any more spp to calculate?
                                        FUN = function(i) {
     x <- spp_ids[i]
     cat_msg(i, ': Processing species ', x)
-    spp_map <- read_csv(file.path(dir_o_anx, 'spp_rasters',
+    spp_map <- read_csv(file.path(dir_o_anx, 'spp_rasters_2019',
                                   sprintf('iucn_sid_%s.csv', x)),
                         col_types = 'di')
     
@@ -149,7 +149,7 @@ spp_shps <- spp_dbfs %>%
 
 polygon_areas_file <- file.path(dir_setup, 'int/polygon_areas.csv')
 
-reload <- FALSE
+reload <- TRUE
 if(!file.exists(polygon_areas_file) | reload) {
   
   poly_range_list <- parallel::mclapply(seq_along(spp_shps), mc.cores = 36,
@@ -270,13 +270,13 @@ taxa <- spp_maps %>%
 
 # taxa <- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')]
 
-reload <- FALSE
+reload <- TRUE
 
 for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'
   ### taxon <- taxa[1]
   
-  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries_2019',
                                    sprintf('%s_cell_sum_comp_rrweight_%s.csv', 
                                            tolower(taxon), api_version))
   
@@ -307,7 +307,7 @@ for(taxon in taxa) {
                                         FUN = function(x) {
         ### x <- taxon_ids[11]
         ### x <- 6336                            
-        csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+        csv_file <- file.path(dir_o_anx, 'spp_rasters_2019', 
                               sprintf('iucn_sid_%s.csv', x))
         
         spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -418,11 +418,11 @@ for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'
   ### taxon <- taxa[1]
   
-  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries_2019',
                                    sprintf('%s_cell_sum_noncomp_rrweight_%s.csv', 
                                            tolower(taxon), api_version))
   
-  reload <- FALSE
+  reload <- TRUE
   if(!file.exists(taxon_risk_sum_file) | reload == TRUE) {
     
     taxon_maps <- spp_maps %>%
@@ -460,7 +460,7 @@ for(taxon in taxa) {
                                           FUN = function(x) {
           ### x <- taxon_ids[11]
           ### x <- 6336                            
-          csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+          csv_file <- file.path(dir_o_anx, 'spp_rasters_2019', 
                                 sprintf('iucn_sid_%s.csv', x))
           
           spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%

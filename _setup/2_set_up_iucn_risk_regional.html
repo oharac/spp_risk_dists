@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Sat Jun 22 05:43:56 2019 by ohara" />
+<meta name="author" content="Compiled on Wed Aug 28 11:36:11 2019 by ohara" />
 
 
 <title>Set up IUCN marine species risk by regional assessment</title>
@@ -4002,7 +4002,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Set up IUCN marine species risk by regional assessment</h1>
-<h4 class="author"><em>Compiled on Sat Jun 22 05:43:56 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Wed Aug 28 11:36:11 2019 by ohara</em></h4>
 
 </div>
 
@@ -4029,7 +4029,7 @@ div.tocify {
 <div id="data-sources" class="section level1">
 <h1><span class="header-section-number">2</span> Data Sources</h1>
 <ul>
-<li>IUCN species API: IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.</li>
+<li>IUCN species API: IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.</li>
 </ul>
 </div>
 <div id="methods" class="section level1">
@@ -4067,8 +4067,8 @@ div.tocify {
 <div id="for-each-regional-assessment-get-species-assessment-info" class="section level3">
 <h3><span class="header-section-number">3.1.2</span> For each regional assessment, get species assessment info</h3>
 <p>Regional Assessments:</p>
-<div id="htmlwidget-335133defe5b283be639" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-335133defe5b283be639">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11"],["Northern Africa","Eastern Africa","Persian Gulf","Europe","Southern Africa","Mediterranean","Western Africa","Central Africa","Gulf of Mexico","Pan-Africa","Northeastern Africa"],["northern_africa","eastern_africa","persian_gulf","europe","southern_africa","mediterranean","western_africa","central_africa","gulf_of_mexico","pan-africa","northeastern_africa"],["360","1604","471","13457","805","4706","977","1963","940","5119","305"],["2018-1","2018-1","2018-1","2018-1","2018-1","2018-1","2018-1","2018-1","2018-1","2018-1","2018-1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>name<\/th>\n      <th>identifier<\/th>\n      <th>spp_count<\/th>\n      <th>version<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0afadedc7079224eaff6" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0afadedc7079224eaff6">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11"],["Northeastern Africa","Eastern Africa","Pan-Africa","Gulf of Mexico","Southern Africa","Mediterranean","Western Africa","Persian Gulf","Northern Africa","Central Africa","Europe"],["northeastern_africa","eastern_africa","pan-africa","gulf_of_mexico","southern_africa","mediterranean","western_africa","persian_gulf","northern_africa","central_africa","europe"],["305","1602","5118","940","805","4714","976","471","360","1962","15270"],["2019-2","2019-2","2019-2","2019-2","2019-2","2019-2","2019-2","2019-2","2019-2","2019-2","2019-2"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>name<\/th>\n      <th>identifier<\/th>\n      <th>spp_count<\/th>\n      <th>version<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}]}},"evals":[],"jsHooks":[]}</script>
 <p>For each assessment, read the pages of species info. Pages are 10k spp long, so break into individual pages and then attach. Species lists will be matched to the marine habitats list, and updated category codes and scores attached.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">rgn_assess &lt;-<span class="st"> </span><span class="kw">read_csv</span>(rgn_assess_from_api_file)</a>
 <a class="sourceLine" id="cb3-2" title="2"></a>
@@ -4129,13 +4129,14 @@ div.tocify {
 <a class="sourceLine" id="cb4-3" title="3">rgn_marine_spp &lt;-<span class="st"> </span><span class="kw">read_csv</span>(rgn_spp_info_file)</a>
 <a class="sourceLine" id="cb4-4" title="4"></a>
 <a class="sourceLine" id="cb4-5" title="5">rgn_spp_list &lt;-<span class="st"> </span>global_marine_spp_risk <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, main_common_name, <span class="dt">global_cat =</span> cat, <span class="dt">global_cat_score =</span> cat_score) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="st">  </span><span class="kw">inner_join</span>(rgn_marine_spp <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="st">               </span><span class="kw">select</span>(iucn_sid, </a>
-<a class="sourceLine" id="cb4-9" title="9">                      <span class="co"># rgn_sciname = sciname, rgn_pop = population,</span></a>
-<a class="sourceLine" id="cb4-10" title="10">                      <span class="dt">rgn_cat =</span> cat_current, <span class="dt">rgn_cat_score =</span> cat_score, iucn_rgn),</a>
-<a class="sourceLine" id="cb4-11" title="11">             <span class="dt">by =</span> <span class="st">&#39;iucn_sid&#39;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="st">  </span><span class="kw">filter</span>(global_cat_score <span class="op">!=</span><span class="st"> </span>rgn_cat_score)</a></code></pre></div>
+<a class="sourceLine" id="cb4-6" title="6"><span class="st">  </span><span class="kw">select</span>(iucn_sid, sciname, main_common_name, </a>
+<a class="sourceLine" id="cb4-7" title="7">         <span class="dt">global_cat =</span> cat, <span class="dt">global_cat_score =</span> cat_score) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="st">  </span><span class="kw">inner_join</span>(rgn_marine_spp <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="st">               </span><span class="kw">select</span>(iucn_sid, </a>
+<a class="sourceLine" id="cb4-10" title="10">                      <span class="co"># rgn_sciname = sciname, rgn_pop = population,</span></a>
+<a class="sourceLine" id="cb4-11" title="11">                      <span class="dt">rgn_cat =</span> cat_current, <span class="dt">rgn_cat_score =</span> cat_score, iucn_rgn),</a>
+<a class="sourceLine" id="cb4-12" title="12">             <span class="dt">by =</span> <span class="st">&#39;iucn_sid&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="st">  </span><span class="kw">filter</span>(global_cat_score <span class="op">!=</span><span class="st"> </span>rgn_cat_score)</a></code></pre></div>
 </div>
 </div>
 <div id="get-iucn-regional-historical-assessments" class="section level2">
@@ -4209,75 +4210,83 @@ div.tocify {
 <div id="provenance" class="section level1">
 <h1><span class="header-section-number">4</span> Provenance</h1>
 <ul>
-<li><em>Run ID: 2 (539d084); run tag: “standard run”</em></li>
-<li><em>Run elapsed time: 11.965 seconds; run memory usage: 89.3 MB</em></li>
+<li><em>Run ID: 3 (a201058); run tag: “standard run”</em></li>
+<li><em>Run elapsed time: 411.79 seconds; run memory usage: 214.6 MB</em></li>
 <li><em>System info: </em>
 <ul>
 <li><em>System: Linux, Release: 4.4.0-148-generic. Machine: x86_64. User: ohara.</em></li>
-<li><em>R version: R version 3.6.0 (2019-04-26), Platform: x86_64-pc-linux-gnu, Running under: Ubuntu 18.04.2 LTS.</em></li>
+<li><em>R version: R version 3.6.1 (2019-07-05), Platform: x86_64-pc-linux-gnu, Running under: Ubuntu 18.04.3 LTS.</em></li>
 <li><em>Attached base packages: parallel, stats, graphics, grDevices, utils, datasets, methods, base</em></li>
 <li><em>Other attached packages: jsonlite_1.6, provRmd_0.1.1, here_0.1, RColorBrewer_1.1-2, forcats_0.4.0, stringr_1.4.0, dplyr_0.8.1, purrr_0.3.2, readr_1.3.1, tidyr_0.8.3, tibble_2.1.1, ggplot2_3.1.1, tidyverse_1.2.1</em></li>
 </ul></li>
 </ul>
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 &lt;!DOCTYPE svg PUBLIC “-//W3C//DTD SVG 1.1//EN” “<a href="http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" class="uri">http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd</a>”&gt; <!-- Generated by graphviz version 2.40.1 (20161225.0304)
- --> <!-- Title: %0 Pages: 1 --> <svg width="391pt" height="519pt" viewBox="0.00 0.00 391.00 519.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 515.2)">
+ --> <!-- Title: %0 Pages: 1 --> <svg width="437pt" height="519pt" viewBox="0.00 0.00 437.00 519.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 515.2)">
 <title>
 %0
 </title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-515.2 387,-515.2 387,4 -4,4"></polygon> <!-- 9&#45;&gt;6 --> <g id="edge3" class="edge">
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-515.2 433,-515.2 433,4 -4,4"></polygon> <!-- 9&#45;&gt;6 --> <g id="edge3" class="edge">
 <title>
 9-&gt;6
 </title>
-<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M242.2005,-320.6406C232.3216,-308.7859 218.0468,-291.6561 206.6264,-277.9517"></path> <polygon fill="#334766" stroke="#334766" points="207.7272,-276.539 203.1819,-273.8182 205.0384,-278.7797 207.7272,-276.539"></polygon> </a> </g> <text text-anchor="middle" x="229.5031" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 9&#45;&gt;2 --> <g id="edge10" class="edge">
+<g id="a_edge3"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M289.8069,-321.0044C279.2088,-309.0134 263.669,-291.4312 251.3698,-277.5156"></path> <polygon fill="#334766" stroke="#334766" points="252.6161,-276.2831 247.9936,-273.6956 249.9936,-278.601 252.6161,-276.2831"></polygon> </a> </g> <text text-anchor="middle" x="276.5031" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 9&#45;&gt;2 --> <g id="edge12" class="edge">
 <title>
 9-&gt;2
 </title>
-<g id="a_edge10"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M255.5932,-316.7801C258.2409,-284.8708 263.1489,-216.3294 262,-158.4 261.7777,-147.1934 262.4438,-144.3154 261,-133.2 260.4547,-129.0016 259.6573,-124.5703 258.7745,-120.3064"></path> <polygon fill="#334766" stroke="#334766" points="260.4807,-119.9163 257.7089,-115.4018 257.0605,-120.6594 260.4807,-119.9163"></polygon> </a> </g> <text text-anchor="middle" x="267.5031" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10&#45;&gt;7 --> <g id="edge6" class="edge">
+<g id="a_edge12"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M299.5035,-316.8106C296.0058,-292.8118 289.0472,-249.0842 280,-212.4 271.1614,-176.5618 266.8265,-168.1661 255,-133.2 253.5922,-129.0376 252.0443,-124.6236 250.5226,-120.3657"></path> <polygon fill="#334766" stroke="#334766" points="252.0981,-119.5754 248.7583,-115.4635 248.8049,-120.7607 252.0981,-119.5754"></polygon> </a> </g> <text text-anchor="middle" x="288.5031" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10&#45;&gt;6 --> <g id="edge4" class="edge">
 <title>
-10-&gt;7
+10-&gt;6
 </title>
-<g id="a_edge6"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M174.537,-159.2688C170.8199,-150.8379 165.575,-140.8666 159,-133.2 151.3403,-124.2686 141.0315,-116.3659 131.7645,-110.2569"></path> <polygon fill="#334766" stroke="#334766" points="132.4691,-108.6299 127.3151,-107.4053 130.5805,-111.5767 132.4691,-108.6299"></polygon> </a> </g> <text text-anchor="middle" x="170.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 10&#45;&gt;2 --> <g id="edge8" class="edge">
+<g id="a_edge4"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M202.2042,-317.8898C205.6757,-309.879 209.9543,-300.2026 213.9938,-291.6 216.0006,-287.3263 218.2023,-282.801 220.3563,-278.4544"></path> <polygon fill="#334766" stroke="#334766" points="221.9978,-279.084 222.6633,-273.8286 218.8657,-277.5219 221.9978,-279.084"></polygon> </a> </g> <text text-anchor="middle" x="220.5031" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11&#45;&gt;6 --> <g id="edge5" class="edge">
 <title>
-10-&gt;2
+11-&gt;6
 </title>
-<g id="a_edge8"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M193.2138,-162.9648C204.069,-151.0241 220.1469,-133.3384 232.8964,-119.314"></path> <polygon fill="#334766" stroke="#334766" points="234.3285,-120.3402 236.397,-115.4633 231.7387,-117.9858 234.3285,-120.3402"></polygon> </a> </g> <text text-anchor="middle" x="226.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11&#45;&gt;7 --> <g id="edge5" class="edge">
-<title>
-11-&gt;7
-</title>
-<g id="a_edge5"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M116.7977,-160.326C114.0999,-154.2439 111.4266,-147.1564 109.9938,-140.4 108.6564,-134.0932 108.1049,-127.1525 107.9624,-120.7142"></path> <polygon fill="#334766" stroke="#334766" points="109.7108,-120.4385 107.9306,-115.4492 106.2109,-120.4597 109.7108,-120.4385"></polygon> </a> </g> <text text-anchor="middle" x="116.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11&#45;&gt;2 --> <g id="edge7" class="edge">
+<g id="a_edge5"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M154.8209,-322.7712C169.5204,-309.9779 192.9771,-289.5628 210.1767,-274.5935"></path> <polygon fill="#334766" stroke="#334766" points="211.3425,-275.8988 213.9653,-271.2962 209.0447,-273.2587 211.3425,-275.8988"></polygon> </a> </g> <text text-anchor="middle" x="196.5031" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 11&#45;&gt;2 --> <g id="edge11" class="edge">
 <title>
 11-&gt;2
 </title>
-<g id="a_edge7"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M128.3279,-158.388C130.7749,-149.7326 134.9492,-139.8263 141.9938,-133.2 166.2421,-110.3915 205.0939,-102.0313 229.8132,-98.9686"></path> <polygon fill="#334766" stroke="#334766" points="230.094,-100.698 234.8632,-98.3921 229.697,-97.2206 230.094,-100.698"></polygon> </a> </g> <text text-anchor="middle" x="148.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12&#45;&gt;2 --> <g id="edge9" class="edge">
+<g id="a_edge11"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M146.0925,-317.3161C155.7463,-285.1028 178.1638,-214.5402 205,-158.4 211.3344,-145.1486 219.7154,-131.0758 226.8988,-119.7704"></path> <polygon fill="#334766" stroke="#334766" points="228.4611,-120.5761 229.6886,-115.4229 225.5154,-118.6859 228.4611,-120.5761"></polygon> </a> </g> <text text-anchor="middle" x="188.5031" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12&#45;&gt;7 --> <g id="edge8" class="edge">
+<title>
+12-&gt;7
+</title>
+<g id="a_edge8"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M216.6707,-166.5294C195.3304,-152.7884 156.5116,-127.7928 131.7782,-111.867"></path> <polygon fill="#334766" stroke="#334766" points="132.4826,-110.2391 127.3313,-109.0036 130.5878,-113.1819 132.4826,-110.2391"></polygon> </a> </g> <text text-anchor="middle" x="181.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 12&#45;&gt;2 --> <g id="edge10" class="edge">
 <title>
 12-&gt;2
 </title>
-<g id="a_edge9"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M238.9948,-158.823C241.5686,-147.4983 244.9431,-132.6502 247.7349,-120.3666"></path> <polygon fill="#334766" stroke="#334766" points="249.4899,-120.5405 248.8916,-115.277 246.0769,-119.7648 249.4899,-120.5405"></polygon> </a> </g> <text text-anchor="middle" x="250.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 1&#45;&gt;5 --> <g id="edge12" class="edge">
+<g id="a_edge10"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M234.2692,-158.4283C235.6911,-147.1668 237.538,-132.539 239.0701,-120.4052"></path> <polygon fill="#334766" stroke="#334766" points="240.815,-120.5546 239.7052,-115.3747 237.3426,-120.1161 240.815,-120.5546"></polygon> </a> </g> <text text-anchor="middle" x="244.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13&#45;&gt;7 --> <g id="edge7" class="edge">
+<title>
+13-&gt;7
+</title>
+<g id="a_edge7"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M122.1606,-162.659C117.4362,-156.3175 112.5249,-148.4239 109.9938,-140.4 108.0191,-134.1398 107.2782,-127.1122 107.1583,-120.5732"></path> <polygon fill="#334766" stroke="#334766" points="108.9103,-120.2332 107.1903,-115.2228 105.4104,-120.2122 108.9103,-120.2332"></polygon> </a> </g> <text text-anchor="middle" x="116.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 13&#45;&gt;2 --> <g id="edge9" class="edge">
+<title>
+13-&gt;2
+</title>
+<g id="a_edge9"><a xlink:title="prov:used"> <path fill="none" stroke="#334766" d="M135.2908,-158.179C136.7581,-149.6814 139.7909,-139.9738 145.9938,-133.2 164.914,-112.5383 196.8564,-103.675 218.6586,-99.9125"></path> <polygon fill="#334766" stroke="#334766" points="219.0361,-101.6244 223.6947,-99.1025 218.4802,-98.1688 219.0361,-101.6244"></polygon> </a> </g> <text text-anchor="middle" x="152.5031" y="-135" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">used</text> </g> <!-- 1&#45;&gt;5 --> <g id="edge14" class="edge">
 <title>
 1-&gt;5
 </title>
-<g id="a_edge12"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M191.7228,-492.5517C148.4209,-490.5981 41.5424,-483.1897 19.3214,-457.2 14.7363,-451.8373 13.3412,-444.5857 13.4113,-437.5564"></path> <polygon fill="#665233" stroke="#665233" points="15.1762,-437.3533 13.722,-432.2594 11.6822,-437.1483 15.1762,-437.3533"></polygon> </a> </g> <text text-anchor="middle" x="41.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;3 --> <g id="edge13" class="edge">
+<g id="a_edge14"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M241.6765,-491.7983C188.0274,-487.5132 34.1245,-473.86 19.3214,-457.2 14.6349,-451.9256 13.2129,-444.6975 13.2896,-437.6626"></path> <polygon fill="#665233" stroke="#665233" points="15.0554,-437.4528 13.611,-432.3561 11.5618,-437.2411 15.0554,-437.4528"></polygon> </a> </g> <text text-anchor="middle" x="41.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;3 --> <g id="edge15" class="edge">
 <title>
 1-&gt;3
 </title>
-<g id="a_edge13"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M217.8857,-474.8309C222.7348,-463.5353 228.9886,-448.9678 234.1604,-436.9204"></path> <polygon fill="#665233" stroke="#665233" points="235.7927,-437.5544 236.157,-432.2695 232.5765,-436.1737 235.7927,-437.5544"></polygon> </a> </g> <text text-anchor="middle" x="250.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;6 --> <g id="edge14" class="edge">
+<g id="a_edge15"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M267.8857,-474.8309C272.7348,-463.5353 278.9886,-448.9678 284.1604,-436.9204"></path> <polygon fill="#665233" stroke="#665233" points="285.7927,-437.5544 286.157,-432.2695 282.5765,-436.1737 285.7927,-437.5544"></polygon> </a> </g> <text text-anchor="middle" x="300.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;6 --> <g id="edge16" class="edge">
 <title>
 1-&gt;6
 </title>
-<g id="a_edge14"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M208.3102,-474.9504C204.3671,-432.3646 194.5611,-326.4598 190.1775,-279.1175"></path> <polygon fill="#665233" stroke="#665233" points="191.8992,-278.7291 189.6955,-273.9117 188.4141,-279.0518 191.8992,-278.7291"></polygon> </a> </g> <text text-anchor="middle" x="221.3393" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;7 --> <g id="edge15" class="edge">
+<g id="a_edge16"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M257.8494,-474.9504C252.8308,-432.3646 240.3505,-326.4598 234.7714,-279.1175"></path> <polygon fill="#665233" stroke="#665233" points="236.4812,-278.6725 234.1579,-273.9117 233.0052,-279.0822 236.4812,-278.6725"></polygon> </a> </g> <text text-anchor="middle" x="268.3393" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;7 --> <g id="edge17" class="edge">
 <title>
 1-&gt;7
 </title>
-<g id="a_edge15"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M191.9282,-491.0018C155.3519,-485.4392 76,-467.2363 76,-414 76,-414 76,-414 76,-176.4 76,-156.286 85.1813,-135.3558 93.8582,-120.0666"></path> <polygon fill="#665233" stroke="#665233" points="95.5096,-120.7094 96.5241,-115.51 92.4887,-118.9419 95.5096,-120.7094"></polygon> </a> </g> <text text-anchor="middle" x="97.3393" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge16" class="edge">
+<g id="a_edge17"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M241.6847,-489.4159C195.144,-479.2765 76,-449.8214 76,-414 76,-414 76,-414 76,-176.4 76,-156.286 85.1813,-135.3558 93.8582,-120.0666"></path> <polygon fill="#665233" stroke="#665233" points="95.5096,-120.7094 96.5241,-115.51 92.4887,-118.9419 95.5096,-120.7094"></polygon> </a> </g> <text text-anchor="middle" x="97.3393" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;2 --> <g id="edge18" class="edge">
 <title>
 1-&gt;2
 </title>
-<g id="a_edge16"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M228.4904,-488.8495C259.5885,-480.3099 319,-458.2101 319,-414 319,-414 319,-414 319,-176.4 319,-148.4448 294.4327,-125.1202 275.2756,-111.1818"></path> <polygon fill="#665233" stroke="#665233" points="276.1275,-109.6408 271.0348,-108.1824 274.1064,-112.4984 276.1275,-109.6408"></polygon> </a> </g> <text text-anchor="middle" x="340.3393" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge17" class="edge">
+<g id="a_edge18"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M278.2896,-488.4907C308.3728,-479.518 365,-456.9268 365,-414 365,-414 365,-414 365,-176.4 365,-129.4373 300.8305,-108.9971 265.1895,-101.2661"></path> <polygon fill="#665233" stroke="#665233" points="265.4009,-99.5227 260.1491,-100.2161 264.687,-102.9491 265.4009,-99.5227"></polygon> </a> </g> <text text-anchor="middle" x="386.3393" y="-293.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 1&#45;&gt;4 --> <g id="edge19" class="edge">
 <title>
 1-&gt;4
 </title>
-<g id="a_edge17"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M228.2505,-491.5201C253.7389,-488.4103 300.5149,-479.8556 333,-457.2 340.6077,-451.8942 347.131,-444.1981 352.2655,-436.7668"></path> <polygon fill="#665233" stroke="#665233" points="353.9872,-437.335 355.2801,-432.1977 351.0658,-435.4074 353.9872,-437.335"></polygon> </a> </g> <text text-anchor="middle" x="361.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 5&#45;&gt;8 --> <g id="edge1" class="edge">
+<g id="a_edge19"><a xlink:title="prov:wasExecutedBy"> <path fill="none" stroke="#665233" d="M278.0788,-491.315C302.8337,-487.985 347.7628,-479.1958 379,-457.2 386.5837,-451.8599 393.1016,-444.1561 398.2384,-436.7282"></path> <polygon fill="#665233" stroke="#665233" points="399.9589,-437.2989 401.2556,-432.1626 397.0389,-435.3693 399.9589,-437.2989"></polygon> </a> </g> <text text-anchor="middle" x="407.3393" y="-451.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasExecutedBy</text> </g> <!-- 5&#45;&gt;8 --> <g id="edge1" class="edge">
 <title>
 5-&gt;8
 </title>
@@ -4285,69 +4294,73 @@ div.tocify {
 <title>
 3-&gt;9
 </title>
-<g id="a_edge2"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M246.3193,-395.6309C247.743,-384.3553 249.5784,-369.8193 251.0979,-357.7844"></path> <polygon fill="#3d6633" stroke="#3d6633" points="252.8375,-357.9763 251.7277,-352.7965 249.3651,-357.5378 252.8375,-357.9763"></polygon> </a> </g> <text text-anchor="middle" x="272.0064" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 6&#45;&gt;10 --> <g id="edge4" class="edge">
+<g id="a_edge2"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M295.8555,-395.6309C296.9944,-384.3553 298.4627,-369.8193 299.6783,-357.7844"></path> <polygon fill="#3d6633" stroke="#3d6633" points="301.4207,-357.9471 300.1822,-352.7965 297.9385,-357.5952 301.4207,-357.9471"></polygon> </a> </g> <text text-anchor="middle" x="321.0064" y="-372.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 6&#45;&gt;12 --> <g id="edge6" class="edge">
 <title>
-6-&gt;10
+6-&gt;12
 </title>
-<g id="a_edge4"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M186.3765,-237.2309C185.3799,-225.9553 184.0951,-211.4193 183.0314,-199.3844"></path> <polygon fill="#3d6633" stroke="#3d6633" points="184.7741,-199.2229 182.5906,-194.3965 181.2877,-199.5312 184.7741,-199.2229"></polygon> </a> </g> <text text-anchor="middle" x="208.0064" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;13 --> <g id="edge11" class="edge">
+<g id="a_edge6"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M232,-237.2309C232,-226.1352 232,-211.8824 232,-199.9624"></path> <polygon fill="#3d6633" stroke="#3d6633" points="233.7501,-199.6695 232,-194.6695 230.2501,-199.6696 233.7501,-199.6695"></polygon> </a> </g> <text text-anchor="middle" x="255.0064" y="-214.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 2&#45;&gt;14 --> <g id="edge13" class="edge">
 <title>
-2-&gt;13
+2-&gt;14
 </title>
-<g id="a_edge11"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M253,-78.8309C253,-67.7352 253,-53.4824 253,-41.5624"></path> <polygon fill="#3d6633" stroke="#3d6633" points="254.7501,-41.2695 253,-36.2695 251.2501,-41.2696 254.7501,-41.2695"></polygon> </a> </g> <text text-anchor="middle" x="276.0064" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 8 --> <g id="node1" class="node">
+<g id="a_edge13"><a xlink:title="prov:wasGeneratedBy"> <path fill="none" stroke="#3d6633" d="M242,-78.8309C242,-67.7352 242,-53.4824 242,-41.5624"></path> <polygon fill="#3d6633" stroke="#3d6633" points="243.7501,-41.2695 242,-36.2695 240.2501,-41.2696 243.7501,-41.2695"></polygon> </a> </g> <text text-anchor="middle" x="265.0064" y="-55.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">wasGeneratedBy</text> </g> <!-- 8 --> <g id="node1" class="node">
 <title>
 8
 </title>
-<g id="a_node1"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/e809fc9f70d5786cd18be9015794678671800af1"> <polygon fill="#fffacc" stroke="#b38f59" stroke-width="2" points="36,-352.8 0,-352.8 0,-316.8 36,-316.8 36,-352.8"></polygon> <text text-anchor="middle" x="18" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">common_fxns.R</text> </a> </g> </g> <!-- 9 --> <g id="node2" class="node">
+<g id="a_node1"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/e809fc9f70d5786cd18be9015794678671800af1"> <polygon fill="#fffacc" stroke="#ffff00" stroke-width="3" points="36,-352.8 0,-352.8 0,-316.8 36,-316.8 36,-352.8"></polygon> <text text-anchor="middle" x="18" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">common_fxns.R</text> </a> </g> </g> <!-- 9 --> <g id="node2" class="node">
 <title>
 9
 </title>
-<g id="a_node2"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#9ce68a" stroke="#ffff00" stroke-width="3" cx="254" cy="-334.8" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="254" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_rgn_assess_2018-1.csv</text> </a> </g> </g> <!-- 10 --> <g id="node3" class="node">
+<g id="a_node2"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="#ff0000" stroke-width="3" cx="302" cy="-334.8" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="302" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_rgn_assess_2019-2.csv</text> </a> </g> </g> <!-- 10 --> <g id="node3" class="node">
 <title>
 10
 </title>
-<g id="a_node3"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="181" cy="-176.4" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="181" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_rgn_current_2018-1.csv</text> </a> </g> </g> <!-- 11 --> <g id="node4" class="node">
+<g id="a_node3"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="#ff0000" stroke-width="3" cx="195" cy="-334.8" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="195" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">spp_marine_from_api_2019-2.csv</text> </a> </g> </g> <!-- 11 --> <g id="node4" class="node">
 <title>
 11
 </title>
-<g id="a_node4"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="125" cy="-176.4" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="125" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_current_2018-1.csv</text> </a> </g> </g> <!-- 12 --> <g id="node5" class="node">
+<g id="a_node4"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="141" cy="-334.8" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="141" y="-333" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">risk_code_lookup.csv</text> </a> </g> </g> <!-- 12 --> <g id="node5" class="node">
 <title>
 12
 </title>
-<g id="a_node5"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#a1bce6" stroke="#597db3" stroke-width="2" cx="235" cy="-176.4" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="235" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">risk_code_lookup.csv</text> </a> </g> </g> <!-- 13 --> <g id="node6" class="node">
+<g id="a_node5"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="#ff0000" stroke-width="3" cx="232" cy="-176.4" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="232" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_rgn_current_2019-2.csv</text> </a> </g> </g> <!-- 13 --> <g id="node6" class="node">
 <title>
 13
 </title>
-<g id="a_node6"><a xlink:title="Previous commit: https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <ellipse fill="#9ce68a" stroke="#6bb359" stroke-width="2" cx="253" cy="-18" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="253" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_ts_rgn_2018-1.csv</text> </a> </g> </g> <!-- 1 --> <g id="node7" class="node">
+<g id="a_node6"><a xlink:title="no version control info found"> <ellipse fill="#a1bce6" stroke="#ff0000" stroke-width="3" cx="134" cy="-176.4" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="134" y="-174.6" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_current_2019-2.csv</text> </a> </g> </g> <!-- 14 --> <g id="node7" class="node">
+<title>
+14
+</title>
+<g id="a_node7"><a xlink:title="no version control info found"> <ellipse fill="#9ce68a" stroke="#ff0000" stroke-width="3" cx="242" cy="-18" rx="18" ry="18"></ellipse> <text text-anchor="middle" x="242" y="-16.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">iucn_risk_ts_rgn_2019-2.csv</text> </a> </g> </g> <!-- 1 --> <g id="node8" class="node">
 <title>
 1
 </title>
-<g id="a_node7"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="228,-511.2 192,-511.2 192,-475.2 228,-475.2 228,-511.2"></polygon> <text text-anchor="middle" x="210" y="-491.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd</text> </a> </g> </g> <!-- 5 --> <g id="node8" class="node">
+<g id="a_node8"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="278,-511.2 242,-511.2 242,-475.2 278,-475.2 278,-511.2"></polygon> <text text-anchor="middle" x="260" y="-491.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd</text> </a> </g> </g> <!-- 5 --> <g id="node9" class="node">
 <title>
 5
 </title>
-<g id="a_node8"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="36,-432 0,-432 0,-396 36,-396 36,-432"></polygon> <text text-anchor="middle" x="18" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#setup</text> </a> </g> </g> <!-- 3 --> <g id="node9" class="node">
+<g id="a_node9"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="36,-432 0,-432 0,-396 36,-396 36,-432"></polygon> <text text-anchor="middle" x="18" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#setup</text> </a> </g> </g> <!-- 3 --> <g id="node10" class="node">
 <title>
 3
 </title>
-<g id="a_node9"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="262,-432 226,-432 226,-396 262,-396 262,-432"></polygon> <text text-anchor="middle" x="244" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#get_rgn_assess_info_from_api</text> </a> </g> </g> <!-- 6 --> <g id="node10" class="node">
+<g id="a_node10"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="312,-432 276,-432 276,-396 312,-396 312,-432"></polygon> <text text-anchor="middle" x="294" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#get_rgn_assess_info_from_api</text> </a> </g> </g> <!-- 6 --> <g id="node11" class="node">
 <title>
 6
 </title>
-<g id="a_node10"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="206,-273.6 170,-273.6 170,-237.6 206,-237.6 206,-273.6"></polygon> <text text-anchor="middle" x="188" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-1</text> </a> </g> </g> <!-- 7 --> <g id="node11" class="node">
+<g id="a_node11"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="250,-273.6 214,-273.6 214,-237.6 250,-237.6 250,-273.6"></polygon> <text text-anchor="middle" x="232" y="-253.8" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-1</text> </a> </g> </g> <!-- 7 --> <g id="node12" class="node">
 <title>
 7
 </title>
-<g id="a_node11"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="127,-115.2 91,-115.2 91,-79.2 127,-79.2 127,-115.2"></polygon> <text text-anchor="middle" x="109" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-2</text> </a> </g> </g> <!-- 2 --> <g id="node12" class="node">
+<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="127,-115.2 91,-115.2 91,-79.2 127,-79.2 127,-115.2"></polygon> <text text-anchor="middle" x="109" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-2</text> </a> </g> </g> <!-- 2 --> <g id="node13" class="node">
 <title>
 2
 </title>
-<g id="a_node12"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="271,-115.2 235,-115.2 235,-79.2 271,-79.2 271,-115.2"></polygon> <text text-anchor="middle" x="253" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#get_iucn_past_assessments</text> </a> </g> </g> <!-- 4 --> <g id="node13" class="node">
+<g id="a_node13"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="260,-115.2 224,-115.2 224,-79.2 260,-79.2 260,-115.2"></polygon> <text text-anchor="middle" x="242" y="-95.4" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#get_iucn_past_assessments</text> </a> </g> </g> <!-- 4 --> <g id="node14" class="node">
 <title>
 4
 </title>
-<p><g id="a_node13"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/2975a5ef0fb4108b482978cf35063c72929b0adc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="383,-432 347,-432 347,-396 383,-396 383,-432"></polygon> <text text-anchor="middle" x="365" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#prov_footer</text> </a> </g> </g> </g> </svg></p>
-<div id="htmlwidget-d7b0c098d66f60ec5273" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d7b0c098d66f60ec5273">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 2 (539d084): standard run (Sat Jun 22 05:44:09 2019)<\/caption>","data":[[0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11],["2_set_up_iucn_risk_regional.Rmd","2_set_up_iucn_risk_regional.Rmd#get_iucn_past_assessments","2_set_up_iucn_risk_regional.Rmd#get_rgn_assess_info_from_api","2_set_up_iucn_risk_regional.Rmd#prov_footer","2_set_up_iucn_risk_regional.Rmd#setup","2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-1","2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-2","common_fxns.R","spp_rgn_assess_2018-1.csv","spp_rgn_assess_2018-1.csv","iucn_risk_rgn_current_2018-1.csv","iucn_risk_current_2018-1.csv","iucn_risk_rgn_current_2018-1.csv","iucn_risk_current_2018-1.csv","iucn_risk_rgn_current_2018-1.csv","risk_code_lookup.csv","spp_rgn_assess_2018-1.csv","iucn_risk_ts_rgn_2018-1.csv"],["prov_footer","get_iucn_past_assessments","get_rgn_assess_info_from_api","prov_footer","setup","unnamed-chunk-1","unnamed-chunk-2","setup","get_rgn_assess_info_from_api","unnamed-chunk-1","unnamed-chunk-1","unnamed-chunk-2","unnamed-chunk-2","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments"],["~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_setup/raw","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_data"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","sourced_script","output","input","output","input","input","input","input","input","input","output"],[true,true,true,true,true,true,true,false,true,true,false,false,false,false,false,false,true,false],["2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","e809fc9","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e","2975a5e"]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p><g id="a_node14"><a xlink:title="https://github.com/oharac/spp_risk_dists/commit/27783bcc4c3b8ad00016332b64d656b7420348bc"> <polygon fill="#e6c18a" stroke="#ffff00" stroke-width="3" points="429,-432 393,-432 393,-396 429,-396 429,-432"></polygon> <text text-anchor="middle" x="411" y="-412.2" font-family="Helvetica,sans-Serif" font-size="6.00" fill="#333333">2_set_up_iucn_risk_regional.Rmd#prov_footer</text> </a> </g> </g> </g> </svg></p>
+<div id="htmlwidget-7fd7ee2db472b22893cb" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7fd7ee2db472b22893cb">{"x":{"filter":"none","caption":"<caption>Provenance summary for run 3 (a201058): standard run (Wed Aug 28 11:43:04 2019)<\/caption>","data":[[0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13],["2_set_up_iucn_risk_regional.Rmd","2_set_up_iucn_risk_regional.Rmd#get_iucn_past_assessments","2_set_up_iucn_risk_regional.Rmd#get_rgn_assess_info_from_api","2_set_up_iucn_risk_regional.Rmd#prov_footer","2_set_up_iucn_risk_regional.Rmd#setup","2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-1","2_set_up_iucn_risk_regional.Rmd#unnamed-chunk-2","common_fxns.R","spp_rgn_assess_2019-2.csv","spp_rgn_assess_2019-2.csv","spp_marine_from_api_2019-2.csv","risk_code_lookup.csv","iucn_risk_rgn_current_2019-2.csv","iucn_risk_current_2019-2.csv","iucn_risk_rgn_current_2019-2.csv","iucn_risk_current_2019-2.csv","iucn_risk_rgn_current_2019-2.csv","risk_code_lookup.csv","spp_rgn_assess_2019-2.csv","iucn_risk_ts_rgn_2019-2.csv"],["prov_footer","get_iucn_past_assessments","get_rgn_assess_info_from_api","prov_footer","setup","unnamed-chunk-1","unnamed-chunk-2","setup","get_rgn_assess_info_from_api","unnamed-chunk-1","unnamed-chunk-1","unnamed-chunk-1","unnamed-chunk-1","unnamed-chunk-2","unnamed-chunk-2","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments","get_iucn_past_assessments"],["~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_setup/raw","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_data","~/github/spp_risk_dists/_setup/raw","~/github/spp_risk_dists/_setup/int","~/github/spp_risk_dists/_data"],["parent_script","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","parent_chunk","sourced_script","output","input","input","input","output","input","input","input","input","input","input","output"],[true,true,true,true,true,true,true,true,null,null,null,false,null,null,null,null,null,false,null,null],["27783bc","27783bc","27783bc","27783bc","27783bc","27783bc","27783bc","e809fc9",null,null,null,"2975a5e",null,null,null,null,null,"2975a5e",null,null]],"container":"<table class=\"stripe hover compact\">\n  <thead>\n    <tr>\n      <th>sequence<\/th>\n      <th>file_name<\/th>\n      <th>parent_chunk<\/th>\n      <th>file_dir<\/th>\n      <th>filetype<\/th>\n      <th>uncomm_chgs<\/th>\n      <th>commit_hash_short<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tp","columnDefs":[{"className":"dt-right","targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 

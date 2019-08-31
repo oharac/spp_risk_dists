@@ -30,7 +30,7 @@ dir_git <- here()
 
 
 ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -42,7 +42,7 @@ Determine IUCN extinction risk trends for marine species by regressing time seri
 
 # Data Sources
 
-* IUCN API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. 
+* IUCN API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. 
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
 # Methods
@@ -53,14 +53,14 @@ This process is accomplished in `1_set_up_iucn_risk.Rmd` and `2_set_up_iucn_risk
 
 ## Get all population trends for assessed marine species
 
-Both global and regional trends are gleaned from the API.
+Both global and regional trends are gleaned from the API.  First, get the narratives and save them for future use.  Then pull the trend column (stable, increasing, decreasing, unknown).
 
-``` {r get_trends_global}
+``` {r get_global_narratives}
 
-trends_file <- file.path(dir_setup, 'int/trend_calcs',
-                         sprintf('iucn_risk_ts_and_trends_%s.csv', api_version))
+spp_narr_file <- file.path(dir_o_anx, 'iucn',
+                           sprintf('spp_narrs_from_iucn_%s.csv', api_version))
 
-if(!file.exists(trends_file)) {
+if(!file.exists(spp_narr_file)) {
   
   spp_risk_file <- file.path(dir_data,
                              sprintf('iucn_risk_current_%s.csv', api_version))
@@ -75,30 +75,43 @@ if(!file.exists(trends_file)) {
   ### /api/v3/species/narrative/id/:id?token='YOUR TOKEN'
   spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s?token=%s'
   
-  spp_narr <- vector('list', length = length(spp_ids_valid))
   for(i in seq_along(spp_ids_valid)) { # i <- 1
     spp_id <- spp_ids_valid[i]
-    cat_msg(i, 'Trying ', spp_id, '\n')
-    spp_narr_tmp <- get_from_api(spp_narr_url, spp_id, api_key, delay = .1)
-    spp_narr[[i]] <- spp_narr_tmp
+    tmp_narr_file <- file.path(dir_o_anx, 'tmp', 
+                              sprintf('narr_tmp_%s.csv', spp_id))
+    if(!file.exists(tmp_narr_file)) {
+      cat_msg(i, ' Trying ', spp_id, '\n')
+      spp_narr_tmp <- get_from_api(spp_narr_url, spp_id, api_key, delay = 0)
+      write_csv(spp_narr_tmp, tmp_narr_file)
+    } else {
+      message('File exists: ', basename(tmp_narr_file))
+    }
   }
-  ### the mclapply version seems to hang for some reason.
-  # spp_narr_iucn <- mc_get_from_api(spp_narr_url,
-  #                             spp_iucn_ids_valid,
-  #                             api_key, cores = 12, delay = .5)
 
-  spp_trend_reclass <- spp_narr %>%
-    lapply(FUN = function(x) select(x, iucn_sid = name, pop_trend = result.populationtrend))
-  ### have to select out the columns of interest b/c one of the other cols was
-  ### switching between character and logical, so bind_rows wouldn't work
+  tmp_narr_files <- list.files(file.path(dir_o_anx, 'tmp'),
+                               pattern = 'narr_tmp',
+                               full.names = TRUE)
   
-  spp_trend_global <- spp_trend_reclass %>%
+  spp_narr <- mclapply(tmp_narr_files, 
+                       FUN = function(x) {
+                         read_csv(x, col_types = cols(.default = 'c'))
+                         }, mc.cores = 16) %>%
     bind_rows() %>%
-    mutate(iucn_sid = as.integer(iucn_sid)) %>%
-    mutate(iucn_version = api_version)
+    setNames(str_replace(names(.), 'result.', '')) %>%
+    select(-name, iucn_sid = species_id) %>%
+    mutate(iucn_sid = as.integer(iucn_sid))
   
+  write_csv(spp_narr, spp_narr_file)
+}
   
-  ### Repeat for regional
+```
+
+``` {r}
+    
+spp_narr_rgn_file <- file.path(dir_o_anx, 'iucn',
+                           sprintf('spp_rgn_narrs_from_iucn_%s.csv', api_version))
+
+if(!file.exists(spp_narr_rgn_file)) {
   
   spp_risk_file <- file.path(dir_data,
                              sprintf('iucn_risk_rgn_current_%s.csv', api_version))
@@ -112,36 +125,51 @@ if(!file.exists(trends_file)) {
   ### /api/v3/species/narrative/id/:id/region/:region_identifier?token='YOUR TOKEN'
   spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s/region/RGN_ID?token=%s'
   
-  spp_narr <- vector('list', length = nrow(spp_ids_valid))
   for(i in 1:nrow(spp_ids_valid)) { # i <- 1
     spp_id <- spp_ids_valid$iucn_sid[i]
     rgn_id <- spp_ids_valid$iucn_rgn[i]
-    cat_msg(i, 'of', nrow(spp_ids_valid), ': Trying spp', spp_id, 'from', rgn_id, '\n')
-    spp_narr_rgn_url <- spp_narr_url %>% str_replace('RGN_ID', rgn_id)
+    tmp_narr_file <- file.path(dir_o_anx, 'tmp', 
+                              sprintf('narr_rgn_tmp_%s_%s.csv', spp_id, rgn_id))
+    if(!file.exists(tmp_narr_file)) {
+      cat_msg(i, 'of', nrow(spp_ids_valid), ': Trying spp', spp_id, 'from', rgn_id, '\n')
+      spp_narr_rgn_url <- spp_narr_url %>% str_replace('RGN_ID', rgn_id)
     
-    spp_narr_tmp <- get_from_api(spp_narr_rgn_url, spp_id, api_key, delay = .1)
-    spp_narr[[i]] <- spp_narr_tmp
+      spp_narr_tmp <- get_from_api(spp_narr_rgn_url, spp_id, api_key, delay = 0)
+      write_csv(spp_narr_tmp, tmp_narr_file)
+    } else {
+      message('File exists: ', basename(tmp_narr_file))
+    }
   }
-
-  spp_trend_reclass <- spp_narr %>%
-    lapply(FUN = function(x) select(x, iucn_sid = name, 
-                                    iucn_rgn = region_identifier, 
-                                    pop_trend = result.populationtrend))
-  ### have to select out the columns of interest b/c one of the other cols was
-  ### switching between character and logical, so bind_rows wouldn't work
   
-  spp_trend_rgn <- spp_trend_reclass %>%
+  tmp_narr_files <- list.files(file.path(dir_o_anx, 'tmp'),
+                               pattern = 'narr_rgn_tmp',
+                               full.names = TRUE)
+  
+  spp_narr <- mclapply(tmp_narr_files, 
+                       FUN = function(x) {
+                         read_csv(x, col_types = cols(.default = 'c'))
+                         }, mc.cores = 16) %>%
     bind_rows() %>%
-    mutate(iucn_sid = as.integer(iucn_sid)) %>%
-    mutate(iucn_version = api_version)
+    setNames(str_replace(names(.), 'result.', '')) %>%
+    select(-name, iucn_sid = species_id, iucn_rgn = region_identifier) %>%
+    mutate(iucn_sid = as.integer(iucn_sid))
   
-  spp_trend_all <- spp_trend_global %>%
-    mutate(iucn_rgn = 'global') %>%
-    bind_rows(spp_trend_rgn)
-  
-  write_csv(spp_trend_all, trends_file)
-
+  write_csv(spp_narr, spp_narr_rgn_file)
 }
+```
+
+``` {r}
+
+trends_file <- file.path(dir_setup, 'int/trend_calcs',
+                         sprintf('iucn_risk_ts_and_trends_%s.csv', api_version))
+
+spp_trend_all <- read_csv(spp_narr_file) %>%
+  mutate(iucn_rgn = 'global') %>%
+  bind_rows(read_csv(spp_narr_rgn_file)) %>%
+  select(iucn_sid, iucn_rgn, pop_trend = populationtrend) %>%
+  distinct()
+
+write_csv(spp_trend_all, trends_file)
 
 ```
 
@@ -165,7 +193,7 @@ spp_risk_ts <- read_csv(spp_risk_ts_file) %>%
               rename(cat_ts = rgn_cat_ts, cat_ts_score = rgn_cat_ts_score))
 
 cat_trend_91 <- read_csv(trends_file) %>%
-  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_version', 'iucn_rgn')) %>%
+  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_rgn')) %>%
   distinct() %>%
   filter(year >= 1991 & !is.na(cat_ts_score) & !is.na(pop_trend)) %>%
   group_by(iucn_sid, iucn_rgn) %>%
@@ -196,7 +224,7 @@ DT::datatable(trend_91)
 ``` {r gather_data_clip_from_2001}
 
 cat_trend_01 <- read_csv(trends_file) %>%
-  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_version', 'iucn_rgn')) %>%
+  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_rgn')) %>%
   distinct() %>%
   filter(year >= 2001 & !is.na(cat_ts_score) & !is.na(pop_trend)) %>%
   group_by(iucn_sid, iucn_rgn) %>%
@@ -350,7 +378,7 @@ trend_91 <- read_csv(file.path(dir_setup, 'int/trend_calcs/trend_lm_vs_pop_91.cs
   distinct()
 
 trend_df <- read_csv(trends_file) %>%
-  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_rgn', 'iucn_version')) %>%
+  left_join(spp_risk_ts, by = c('iucn_sid', 'iucn_rgn')) %>%
   distinct() %>%
   left_join(trend_91, by = c('iucn_sid', 'iucn_rgn')) %>%
   mutate(trend_score  = ifelse(is.na(calc_trend), trend_score_lookup[pop_trend], calc_trend),
@@ -368,6 +396,6 @@ DT::datatable(trend_df)
 -----
 
 ``` {r prov_footer, results = 'asis'}
-prov_wrapup(commit_outputs = FALSE)
+# prov_wrapup(commit_outputs = FALSE)
 ```
 

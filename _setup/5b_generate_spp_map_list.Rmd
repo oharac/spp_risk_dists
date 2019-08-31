@@ -31,11 +31,10 @@ dir_git <- here()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
-dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
-dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
-  ### in this folder are shapefiles at a taxonomic level, both from
-  ### IUCN spatial data download (version 2018-1) and direct from 
-  ### IUCN (Gina Ralph)
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2019')
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2019')
+  ### in this folder are shapefiles at a taxonomic level, from
+  ### IUCN spatial data download (version 2019-2).
 
 ```
 
@@ -46,7 +45,7 @@ dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
 
 # Data sources
 
-* IUCN species shapefiles:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1. Retrieved July 11, 2018, from http://www.iucnredlist.org
+* IUCN species shapefiles:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2. Retrieved August 2019, from http://www.iucnredlist.org
 * BirdLife International shapefiles: BirdLife International and Handbook of the Birds of the World. (2018). Bird species distribution maps of the world. Version 7.0.  Available at http://datazone.birdlife.org/species/requestdis
 
 
@@ -63,7 +62,7 @@ From available shapefiles, reclassify subpopulation polygons into subpop ID numb
 ### convert BirdLife Int'l .gdb to shapefile, after filtering to species in the "marine" list.
 ### Here we also standardize the column names to match the IUCN column names.
 
-bli_marine_shp <- file.path(dir_bli, 'bli_marine_v2017.shp')
+bli_marine_shp <- file.path(dir_bli, 'bli_marine_v2018.shp')
 
 if(!file.exists(bli_marine_shp)) {
   
@@ -219,8 +218,9 @@ subpops_match <- subpops_match_raw %>%
 ### Orcaella brevirostris Chilika Lake, Mekong River, Songkhla Lake
 ### * In shapefile, but not showing up in assessments
 write_csv(subpops_match, 
-          file.path(dir_setup, sprintf('int/subpops_match_api_to_shp_%s.csv', 
-                                     api_version)))
+          file.path(dir_setup, 
+                    sprintf('int/subpops_match_api_to_shp_%s.csv', 
+                            api_version)))
 
 ```
 
@@ -332,7 +332,9 @@ marine_map_info <- map_info_add_subpops %>%
 turtles <- c('Dermochelys', 'Caretta', 'Lepidochelys', 
              'Natator', 'Chelonia', 'Eretmochelys') %>%
   paste0(collapse = '|')
-assessed_gps <- c('BONEFISH', 'CORALS', 'SEACUCUMBERS') %>%
+assessed_gps <- c('BONEFISH', 'CORALS', 'SEACUCUMBERS', 
+                  # 'CLUPEIFORM', 'SYNGATHIFORM', 
+                  'bli_marine') %>%
   paste0(collapse = '|')
   ### NOTE: Damselfish removed at recommendation of Gina Ralph
   ### Others, assume that availability of maps on Spatial Data Download Page
@@ -353,7 +355,7 @@ write_csv(marine_map_info,
 ``` {r generate table of species}
 
 marine_map_info <- read_csv(file.path(dir_data,
-  sprintf('spp_marine_maps_%s.csv', api_version))) %>%
+    sprintf('spp_marine_maps_%s.csv', api_version))) %>%
   select(-presence) %>%
   distinct()
 

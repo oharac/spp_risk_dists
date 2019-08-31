@@ -30,7 +30,7 @@ dir_git <- here()
 
 
 ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -42,7 +42,7 @@ Examine IUCN Red List regional assessments for conservation status categories.
 
 # Data Sources
 
-* IUCN species API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
+* IUCN species API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
 
 # Methods
 
@@ -136,7 +136,7 @@ if(!file.exists(rgn_spp_info_file)) {
 } else {
   
   message('File of API species regional assessments exists: \n  ', rgn_spp_info_file)
-  git_prov(rgn_spp_info_file, filetype = 'output')
+  # git_prov(rgn_spp_info_file, filetype = 'output')
   
 }
 
@@ -154,7 +154,8 @@ global_marine_spp_risk <- read_csv(file.path(dir_data, sprintf('iucn_risk_curren
 rgn_marine_spp <- read_csv(rgn_spp_info_file)
 
 rgn_spp_list <- global_marine_spp_risk %>%
-  select(iucn_sid, sciname, main_common_name, global_cat = cat, global_cat_score = cat_score) %>%
+  select(iucn_sid, sciname, main_common_name, 
+         global_cat = cat, global_cat_score = cat_score) %>%
   inner_join(rgn_marine_spp %>%
                select(iucn_sid, 
                       # rgn_sciname = sciname, rgn_pop = population,
@@ -227,7 +228,7 @@ if(!file.exists(spp_timeseries_file)) {
   
 } else {
   
-  git_prov(spp_timeseries_file, filetype = 'output')
+  # git_prov(spp_timeseries_file, filetype = 'output')
   
 }
 
@@ -237,7 +238,7 @@ if(!file.exists(spp_timeseries_file)) {
 
 ``` {r prov_footer, results = 'asis'}
 
-prov_wrapup(commit_outputs = FALSE)
+# prov_wrapup(commit_outputs = FALSE)
 
 ```
 

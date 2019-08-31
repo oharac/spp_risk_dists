@@ -30,7 +30,7 @@ dir_git <- here()
 
 
 ### provenance tracking
-library(provRmd); prov_setup()
+# library(provRmd); prov_setup()
 
 source(file.path(dir_git, '_setup/common_fxns.R'))
 
@@ -42,7 +42,7 @@ Examine IUCN Red List regional assessments for extinction risk categories.
 
 # Data Sources
 
-* IUCN API:  IUCN. (2018). The IUCN Red List of Threatened Species. Version 2018-1.
+* IUCN API:  IUCN. (2019). The IUCN Red List of Threatened Species. Version 2019-2.
 * Marine Ecoregions of the World: Spalding, M. D., Fox, H. E., Allen, G. R., Davidson, N., Ferdaña, Z. A., Finlayson, M. A. X., … others. (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. BioScience, 57(7), 573–583.
 
 # Methods: Geographic scope of regional assessments
@@ -187,7 +187,7 @@ Where an LME is assigned to multiple regions, use a prioritization then averagin
 
 ``` {r prov_footer, results = 'asis'}
 
-prov_wrapup(commit_outputs = FALSE)
+# prov_wrapup(commit_outputs = FALSE)
 
 ```
 

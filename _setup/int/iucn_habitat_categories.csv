@@ -64,6 +64,7 @@ Foreslope (Outer Reef Slope),9.8.3,9,8,3,TRUE
 Lagoon,9.8.4,9,8,4,TRUE
 Inter-Reef Soft Substrate,9.8.5,9,8,5,TRUE
 Inter-Reef Rubble Substrate,9.8.6,9,8,6,TRUE
+Marine Neritic - Coral Reef,9.8,9,8,NA,TRUE
 Marine Neritic - Seagrass (Submerged),9.9,9,9,NA,TRUE
 Marine Neritic - Estuaries,9.10,9,10,NA,TRUE
 Marine Oceanic - Epipelagic (0-200m),10.1,10,1,NA,TRUE
@@ -72,6 +73,7 @@ Marine Oceanic - Bathypelagic (1000-4000m),10.3,10,3,NA,TRUE
 Marine Oceanic - Abyssopelagic (4000-6000m),10.4,10,4,NA,TRUE
 Hard Substrate,11.1.1,11,1,1,TRUE
 Soft Substrate,11.1.2,11,1,2,TRUE
+"Marine Deep Benthic - Continental Slope/Bathyl Zone (200-4,000m)",11.1,11,1,NA,TRUE
 "Marine Deep Benthic - Abyssal Plain (4,000-6,000m)",11.2,11,2,NA,TRUE
 "Marine Deep Benthic - Abyssal Mountain/Hills (4,000-6,000m)",11.3,11,3,NA,TRUE
 "Marine Deep Benthic - Hadal/Deep Sea Trench (>6,000m)",11.4,11,4,NA,TRUE
