@@ -1,0 +1,88 @@
+---
+title: 'Set up ocean area raster and cell ID raster for Mollweide'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/src/templates/ohara_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(raster)
+library(sf)
+library(fasterize)
+
+source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
+  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+
+dir_git <- '~/github/spp_risk_dists'
+
+### project specific folders and info
+source(file.path(dir_git, '_setup/common_fxns.R'))
+
+```
+
+# Summary
+
+* Ocean area - use CHI base layer, aggregated by a factor of 11 to get ~100 km^2^ cells: $(.934 \text{ km} \times 11)^2 = 105.7 \text{ km}^2$.
+
+# Data Sources
+
+
+# Methods
+
+## Aggregate the CHI native ocean area raster.
+
+First, get a local copy of the CHI raster.  Then aggregate by a factor of 11, divide by total cell area to get pct of ocean cover, and then 
+
+```{r}
+
+ocean_mol_1km_file <- file.path(dir_o_anx, 'spatial/ocean_mol.tif')
+if(!file.exists(ocean_mol_1km_file)) {
+  file.copy(from = '/home/shares/ohi/model/GL-NCEAS-Halpern2008/tmp/ocean.tif',
+            to = ocean_mol_1km_file)
+}
+
+cell_id_mol_file    <- file.path(dir_spatial, 'cell_id_mol.tif')
+ocean_area_mol_file <- file.path(dir_spatial, 'ocean_area_mol.tif')
+  
+if(!file.exists(cell_id_mol_file) |
+   !file.exists(ocean_area_mol_file)) {
+  
+  ocean_mol_1km_file <- raster(ocean_mol_1km_file)
+
+  agg_fact <- 11
+  
+  ### normalize it to all ocean cells valued at 1, then aggregate
+  ### by counting all native cells in the new cells
+  ocean_mol_1km_file <- ocean_mol_1km_file / ocean_mol_1km_file
+  ocean_area_mol_10km <- aggregate(ocean_mol_1km_file, 
+                                   fact = agg_fact, fun = sum)
+  
+  ocean_area_mol_10km_pct <- ocean_area_mol_10km / agg_fact^2
+  
+  writeRaster(ocean_area_mol_10km_pct, ocean_area_mol_file, overwrite = TRUE)
+  
+  ### create a new cell ID raster by assigning sequential values to the
+  ### aggregated ocean area raster
+  cell_id_mol <- ocean_area_mol_10km_pct
+  values(cell_id_mol) <- 1:ncell(cell_id_mol)
+  
+  writeRaster(cell_id_mol, cell_id_mol_file, overwrite = TRUE)
+}
+```
+
+

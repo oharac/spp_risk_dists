@@ -92,7 +92,7 @@ if(reload == FALSE) {
 
 ### for selectively rerunning taxonomic groups
 # maps_to_rasterize <- maps_to_rasterize %>%
-#   filter(str_detect(dbf_file, 'CORALS'))
+#   filter(str_detect(dbf_file, 'REPTILES'))
 # 
 # asdf <- paste0('iucn_sid_', maps_to_rasterize$iucn_sid, '.csv')
 # zxcv <- list.files(file.path(dir_o_anx, 'spp_rasters_2019'), 
