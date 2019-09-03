@@ -223,27 +223,8 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
         spp_shp <- valid_check(spp_shp)
           ### if invalid geom, and bounds exceeded, buffer to 0
         
-        ### This is a bunch of stuff to test the new clipping
-        ### algorithm that provides for segmentation along
-        ### clipped edges, so Mollweide can round the corners.
-        # test <- st_polygon(x = list(
-        #   matrix(c(-185, -185, 185, 185, -185,
-        #            -40,    40,  70, -70,  -40), ncol = 2))) %>%
-        #   st_sfc() %>%
-        #   st_set_crs(4326)
-        # test_clip <- test %>%
-        #   clip_to_globe() %>%
-        #   smoothr::densify(max_distance = 0.5) %>%
-        #   st_transform(crs(rast_base))
-        # test_clip2 <- test %>%
-        #   clip_to_globe_segmented() %>%
-        #   st_transform(crs(rast_base))
-        
         spp_shp <- spp_shp %>%
           clip_to_globe() %>%
-          # clip_to_globe_segmented() %>%
-            ### indiv files should have adjusted boundaries already; only 
-            ### files from Spatial Data Download should run into this
           smoothr::densify(max_distance = 0.5) %>%
           st_transform(crs(rast_base))
         
