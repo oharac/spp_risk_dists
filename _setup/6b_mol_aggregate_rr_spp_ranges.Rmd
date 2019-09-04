@@ -68,6 +68,8 @@ This calculated range includes ONLY ocean area. For species such as birds whose 
 spp_range_file <- file.path(dir_data,
                             sprintf('iucn_spp_range_area_%s_mol.csv', api_version))
 reload <- TRUE
+### unlink(spp_range_file)
+
 
 ### load area raster, convert to data frame
 area_rast <- raster(file.path(dir_spatial, 'ocean_area_mol.tif'))
@@ -227,8 +229,7 @@ spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', ap
                       col_types = 'dc_d_')
 
 ### load range info and ocean area info
-spp_range <- read_csv(file.path(dir_data,
-                                sprintf('iucn_spp_range_area_%s.csv', api_version)),
+spp_range <- read_csv(spp_range_file,
                       col_types = 'dd__')
 
 # ocean_area_rast <- raster(file.path(dir_spatial, 'ocean_area_mol.tif'))
@@ -270,7 +271,7 @@ taxa <- spp_maps %>%
 
 # taxa <- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')]
 
-reload <- FALSE
+reload <- TRUE
 
 for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'

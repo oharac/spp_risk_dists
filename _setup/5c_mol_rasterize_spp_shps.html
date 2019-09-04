@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Sep 3 07:35:38 2019 by ohara" />
+<meta name="author" content="Compiled on Tue Sep 3 15:51:36 2019 by ohara" />
 
 
 <title>Process IUCN spp shapes to Mollweide</title>
@@ -4002,7 +4002,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Process IUCN spp shapes to Mollweide</h1>
-<h4 class="author"><em>Compiled on Tue Sep 3 07:35:38 2019 by ohara</em></h4>
+<h4 class="author"><em>Compiled on Tue Sep 3 15:51:36 2019 by ohara</em></h4>
 
 </div>
 
@@ -4157,33 +4157,33 @@ div.tocify {
 <a class="sourceLine" id="cb2-96" title="96">             <span class="dt">subpop   =</span> <span class="kw">as.character</span>(subpop)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-97" title="97"><span class="st">      </span><span class="kw">inner_join</span>(id_fix, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&#39;shp_iucn_sid&#39;</span>, <span class="st">&#39;subpop&#39;</span>)) </a>
 <a class="sourceLine" id="cb2-98" title="98">    </a>
-<a class="sourceLine" id="cb2-99" title="99">    <span class="cf">if</span>(<span class="kw">str_detect</span>(shp, <span class="st">&#39;REPTILES&#39;</span>) ) {</a>
-<a class="sourceLine" id="cb2-100" title="100">      <span class="kw">cat_msg</span>(<span class="st">&#39;Replacing REPTILES with buffered turtle polygons!!!&#39;</span>)</a>
-<a class="sourceLine" id="cb2-101" title="101">      <span class="co">### the turtle polys have issues with the western boundary - not quite at</span></a>
-<a class="sourceLine" id="cb2-102" title="102">      <span class="co">### +180; some have issues on the east as well. Buffer problem spp by </span></a>
-<a class="sourceLine" id="cb2-103" title="103">      <span class="co">### 0.25 degrees before clipping.  Near the equator this adds an error of </span></a>
-<a class="sourceLine" id="cb2-104" title="104">      <span class="co">### ~ 28 km!  But clearly the shitty polygons are creating an error as well.</span></a>
-<a class="sourceLine" id="cb2-105" title="105">      <span class="co">### Identify the problem ones:</span></a>
-<a class="sourceLine" id="cb2-106" title="106">      <span class="co">### Caretta caretta 3897</span></a>
-<a class="sourceLine" id="cb2-107" title="107">      <span class="co">### Dermochelys coriacea 6494</span></a>
-<a class="sourceLine" id="cb2-108" title="108">      <span class="co">### Eretmochelys imbricata 8005</span></a>
-<a class="sourceLine" id="cb2-109" title="109">      <span class="co">### Chelonia mydas 4615</span></a>
-<a class="sourceLine" id="cb2-110" title="110">      <span class="co">### I&#39;ll just buffer all subpops, for ease.  Land will get clipped</span></a>
-<a class="sourceLine" id="cb2-111" title="111">      <span class="co">### later.</span></a>
-<a class="sourceLine" id="cb2-112" title="112">      <span class="co"># polys_match_buff &lt;- polys_match %&gt;%</span></a>
-<a class="sourceLine" id="cb2-113" title="113">      <span class="co">#   filter(shp_iucn_sid %in% c(3897, 6494, 8005, 4615)) %&gt;%</span></a>
-<a class="sourceLine" id="cb2-114" title="114">      <span class="co">#   st_buffer(dist = 0.25)</span></a>
-<a class="sourceLine" id="cb2-115" title="115">      <span class="co"># polys_match_non_buff &lt;- polys_match %&gt;%</span></a>
-<a class="sourceLine" id="cb2-116" title="116">      <span class="co">#   filter(!shp_iucn_sid %in% c(3897, 6494, 8005, 4615))</span></a>
-<a class="sourceLine" id="cb2-117" title="117">      <span class="co"># polys_match &lt;- rbind(polys_match_non_buff, polys_match_buff)</span></a>
-<a class="sourceLine" id="cb2-118" title="118">      <span class="co"># st_write(polys_match, file.path(dir_o_anx, &#39;reptiles_shp_buffered.shp&#39;))</span></a>
-<a class="sourceLine" id="cb2-119" title="119">      <span class="co"># dbf &lt;- foreign::read.dbf(file.path(dir_o_anx, &#39;reptiles_shp_buffered.dbf&#39;))</span></a>
-<a class="sourceLine" id="cb2-120" title="120">      <span class="co"># foreign::write.dbf(dbf, file.path(dir_o_anx, &#39;reptiles_shp_buffered.dbf&#39;))</span></a>
-<a class="sourceLine" id="cb2-121" title="121">      </a>
-<a class="sourceLine" id="cb2-122" title="122">      polys_match &lt;-<span class="st"> </span><span class="kw">st_read</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;reptiles_shp_buffered.shp&#39;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-123" title="123"><span class="st">        </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&quot;shp_iucn_sid&quot;</span>, <span class="st">&quot;sciname&quot;</span>, <span class="st">&quot;subpop&quot;</span>, <span class="st">&quot;presence&quot;</span>,</a>
-<a class="sourceLine" id="cb2-124" title="124">                   <span class="st">&quot;iucn_sid&quot;</span>, <span class="st">&quot;max_depth&quot;</span>, <span class="st">&quot;geometry&quot;</span>))</a>
-<a class="sourceLine" id="cb2-125" title="125">    }</a>
+<a class="sourceLine" id="cb2-99" title="99">    <span class="co"># if(str_detect(shp, &#39;REPTILES&#39;) ) {</span></a>
+<a class="sourceLine" id="cb2-100" title="100">    <span class="co">#   cat_msg(&#39;Replacing REPTILES with buffered turtle polygons!!!&#39;)</span></a>
+<a class="sourceLine" id="cb2-101" title="101">    <span class="co">#   </span><span class="al">###</span><span class="co"> the turtle polys have issues with the western boundary - not quite at</span></a>
+<a class="sourceLine" id="cb2-102" title="102">    <span class="co">#   </span><span class="al">###</span><span class="co"> +180; some have issues on the east as well. Buffer problem spp by </span></a>
+<a class="sourceLine" id="cb2-103" title="103">    <span class="co">#   </span><span class="al">###</span><span class="co"> 0.25 degrees before clipping.  Near the equator this adds an error of </span></a>
+<a class="sourceLine" id="cb2-104" title="104">    <span class="co">#   </span><span class="al">###</span><span class="co"> ~ 28 km!  But clearly the shitty polygons are creating an error as well.</span></a>
+<a class="sourceLine" id="cb2-105" title="105">    <span class="co">#   </span><span class="al">###</span><span class="co"> Identify the problem ones:</span></a>
+<a class="sourceLine" id="cb2-106" title="106">    <span class="co">#   </span><span class="al">###</span><span class="co"> Caretta caretta 3897</span></a>
+<a class="sourceLine" id="cb2-107" title="107">    <span class="co">#   </span><span class="al">###</span><span class="co"> Dermochelys coriacea 6494</span></a>
+<a class="sourceLine" id="cb2-108" title="108">    <span class="co">#   </span><span class="al">###</span><span class="co"> Eretmochelys imbricata 8005</span></a>
+<a class="sourceLine" id="cb2-109" title="109">    <span class="co">#   </span><span class="al">###</span><span class="co"> Chelonia mydas 4615</span></a>
+<a class="sourceLine" id="cb2-110" title="110">    <span class="co">#   </span><span class="al">###</span><span class="co"> I&#39;ll just buffer all subpops, for ease.  Land will get clipped</span></a>
+<a class="sourceLine" id="cb2-111" title="111">    <span class="co">#   </span><span class="al">###</span><span class="co"> later.</span></a>
+<a class="sourceLine" id="cb2-112" title="112">    <span class="co">#   # polys_match_buff &lt;- polys_match %&gt;%</span></a>
+<a class="sourceLine" id="cb2-113" title="113">    <span class="co">#   #   filter(shp_iucn_sid %in% c(3897, 6494, 8005, 4615)) %&gt;%</span></a>
+<a class="sourceLine" id="cb2-114" title="114">    <span class="co">#   #   st_buffer(dist = 0.25)</span></a>
+<a class="sourceLine" id="cb2-115" title="115">    <span class="co">#   # polys_match_non_buff &lt;- polys_match %&gt;%</span></a>
+<a class="sourceLine" id="cb2-116" title="116">    <span class="co">#   #   filter(!shp_iucn_sid %in% c(3897, 6494, 8005, 4615))</span></a>
+<a class="sourceLine" id="cb2-117" title="117">    <span class="co">#   # polys_match &lt;- rbind(polys_match_non_buff, polys_match_buff)</span></a>
+<a class="sourceLine" id="cb2-118" title="118">    <span class="co">#   # st_write(polys_match, file.path(dir_o_anx, &#39;reptiles_shp_buffered.shp&#39;))</span></a>
+<a class="sourceLine" id="cb2-119" title="119">    <span class="co">#   # dbf &lt;- foreign::read.dbf(file.path(dir_o_anx, &#39;reptiles_shp_buffered.dbf&#39;))</span></a>
+<a class="sourceLine" id="cb2-120" title="120">    <span class="co">#   # foreign::write.dbf(dbf, file.path(dir_o_anx, &#39;reptiles_shp_buffered.dbf&#39;))</span></a>
+<a class="sourceLine" id="cb2-121" title="121">    <span class="co">#   </span></a>
+<a class="sourceLine" id="cb2-122" title="122">    <span class="co">#   polys_match &lt;- st_read(file.path(dir_o_anx, &#39;reptiles_shp_buffered.shp&#39;)) %&gt;%</span></a>
+<a class="sourceLine" id="cb2-123" title="123">    <span class="co">#     setNames(c(&quot;shp_iucn_sid&quot;, &quot;sciname&quot;, &quot;subpop&quot;, &quot;presence&quot;,</span></a>
+<a class="sourceLine" id="cb2-124" title="124">    <span class="co">#                &quot;iucn_sid&quot;, &quot;max_depth&quot;, &quot;geometry&quot;))</span></a>
+<a class="sourceLine" id="cb2-125" title="125">    <span class="co"># }</span></a>
 <a class="sourceLine" id="cb2-126" title="126">    </a>
 <a class="sourceLine" id="cb2-127" title="127">    spp_ids &lt;-<span class="st"> </span>maps_in_shp<span class="op">$</span>iucn_sid <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb2-128" title="128"><span class="st">      </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -4213,114 +4213,91 @@ div.tocify {
 <a class="sourceLine" id="cb2-152" title="152">        spp_shp &lt;-<span class="st"> </span><span class="kw">valid_check</span>(spp_shp)</a>
 <a class="sourceLine" id="cb2-153" title="153">          <span class="co">### if invalid geom, and bounds exceeded, buffer to 0</span></a>
 <a class="sourceLine" id="cb2-154" title="154">        </a>
-<a class="sourceLine" id="cb2-155" title="155">        <span class="co">### This is a bunch of stuff to test the new clipping</span></a>
-<a class="sourceLine" id="cb2-156" title="156">        <span class="co">### algorithm that provides for segmentation along</span></a>
-<a class="sourceLine" id="cb2-157" title="157">        <span class="co">### clipped edges, so Mollweide can round the corners.</span></a>
-<a class="sourceLine" id="cb2-158" title="158">        <span class="co"># test &lt;- st_polygon(x = list(</span></a>
-<a class="sourceLine" id="cb2-159" title="159">        <span class="co">#   matrix(c(-185, -185, 185, 185, -185,</span></a>
-<a class="sourceLine" id="cb2-160" title="160">        <span class="co">#            -40,    40,  70, -70,  -40), ncol = 2))) %&gt;%</span></a>
-<a class="sourceLine" id="cb2-161" title="161">        <span class="co">#   st_sfc() %&gt;%</span></a>
-<a class="sourceLine" id="cb2-162" title="162">        <span class="co">#   st_set_crs(4326)</span></a>
-<a class="sourceLine" id="cb2-163" title="163">        <span class="co"># test_clip &lt;- test %&gt;%</span></a>
-<a class="sourceLine" id="cb2-164" title="164">        <span class="co">#   clip_to_globe() %&gt;%</span></a>
-<a class="sourceLine" id="cb2-165" title="165">        <span class="co">#   st_transform(crs(rast_base))</span></a>
-<a class="sourceLine" id="cb2-166" title="166">        <span class="co"># test_clip2 &lt;- test %&gt;%</span></a>
-<a class="sourceLine" id="cb2-167" title="167">        <span class="co">#   clip_to_globe_segmented() %&gt;%</span></a>
-<a class="sourceLine" id="cb2-168" title="168">        <span class="co">#   st_transform(crs(rast_base))</span></a>
-<a class="sourceLine" id="cb2-169" title="169">        </a>
-<a class="sourceLine" id="cb2-170" title="170">        spp_shp &lt;-<span class="st"> </span>spp_shp <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-171" title="171"><span class="st">          </span><span class="kw">clip_to_globe_segmented</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-172" title="172"><span class="st">            </span><span class="co">### indiv files should have adjusted boundaries already; only </span></a>
-<a class="sourceLine" id="cb2-173" title="173"><span class="st">            </span><span class="co">### files from Spatial Data Download should run into this</span></a>
-<a class="sourceLine" id="cb2-174" title="174"><span class="st">          </span><span class="kw">st_transform</span>(<span class="kw">crs</span>(rast_base))</a>
-<a class="sourceLine" id="cb2-175" title="175">        </a>
-<a class="sourceLine" id="cb2-176" title="176">        spp_rast &lt;-<span class="st"> </span>fasterize<span class="op">::</span><span class="kw">fasterize</span>(spp_shp, rast_base, </a>
-<a class="sourceLine" id="cb2-177" title="177">                                         <span class="dt">field =</span> <span class="st">&#39;presence&#39;</span>, <span class="dt">fun =</span> <span class="st">&#39;min&#39;</span>)</a>
-<a class="sourceLine" id="cb2-178" title="178">        </a>
-<a class="sourceLine" id="cb2-179" title="179">        <span class="co">### depth clip if necessary; otherwise clip to bathy raster (which previously</span></a>
-<a class="sourceLine" id="cb2-180" title="180">        <span class="co">### was clipped to area raster - so cells with any marine area will be kept,</span></a>
-<a class="sourceLine" id="cb2-181" title="181">        <span class="co">### and non-marine cells will be dropped).</span></a>
-<a class="sourceLine" id="cb2-182" title="182">        <span class="co">### Manual adds of shallow spp:</span></a>
-<a class="sourceLine" id="cb2-183" title="183">        spp_shallow &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">133512</span>)</a>
-<a class="sourceLine" id="cb2-184" title="184">        </a>
-<a class="sourceLine" id="cb2-185" title="185">        <span class="cf">if</span>(spp_shp<span class="op">$</span>max_depth <span class="op">==</span><span class="st"> &#39;&lt; 20 m&#39;</span>) {</a>
-<a class="sourceLine" id="cb2-186" title="186">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_shallow)</a>
-<a class="sourceLine" id="cb2-187" title="187">        } <span class="cf">else</span> <span class="cf">if</span>(spp_shp<span class="op">$</span>max_depth <span class="op">==</span><span class="st"> &#39;&lt; 200 m&#39;</span> <span class="op">|</span><span class="st"> </span>spp_shp<span class="op">$</span>iucn_sid <span class="op">%in%</span><span class="st"> </span>spp_shallow) {</a>
-<a class="sourceLine" id="cb2-188" title="188">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_neritic)</a>
-<a class="sourceLine" id="cb2-189" title="189">        } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb2-190" title="190">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_bathy)</a>
-<a class="sourceLine" id="cb2-191" title="191">        }</a>
-<a class="sourceLine" id="cb2-192" title="192">        <span class="co">### write out as a raster:</span></a>
-<a class="sourceLine" id="cb2-193" title="193">        <span class="co"># rast_file &lt;- file.path(dir_o_anx, &#39;spp_rasts_mol_2019&#39;,</span></a>
-<a class="sourceLine" id="cb2-194" title="194">        <span class="co">#                        sprintf(&#39;iucn_sid_%s_mol.tif&#39;, spp))</span></a>
-<a class="sourceLine" id="cb2-195" title="195">        <span class="co"># raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)</span></a>
-<a class="sourceLine" id="cb2-196" title="196">        <span class="co">### See note below about file size; rasters are larger than csvs in general</span></a>
-<a class="sourceLine" id="cb2-197" title="197">        </a>
-<a class="sourceLine" id="cb2-198" title="198">        <span class="co">### convert to dataframe and write out as a csv:</span></a>
-<a class="sourceLine" id="cb2-199" title="199">        spp_present &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id  =</span> <span class="kw">values</span>(rast_base),</a>
-<a class="sourceLine" id="cb2-200" title="200">                                  <span class="dt">presence =</span> <span class="kw">values</span>(spp_rast)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-201" title="201"><span class="st">          </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(presence))</a>
-<a class="sourceLine" id="cb2-202" title="202">        </a>
-<a class="sourceLine" id="cb2-203" title="203">        <span class="cf">if</span>(<span class="kw">nrow</span>(spp_present) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {</a>
-<a class="sourceLine" id="cb2-204" title="204">          <span class="kw">cat_msg</span>(<span class="st">&#39;Species ID &#39;</span>, spp, <span class="st">&#39; resulted in a zero-length dataframe.&#39;</span>)</a>
-<a class="sourceLine" id="cb2-205" title="205">        }</a>
-<a class="sourceLine" id="cb2-206" title="206">        </a>
-<a class="sourceLine" id="cb2-207" title="207">        <span class="kw">write_csv</span>(spp_present, <span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>,</a>
-<a class="sourceLine" id="cb2-208" title="208">                                         <span class="kw">sprintf</span>(<span class="st">&#39;iucn_sid_%s_mol.csv&#39;</span>, spp)))</a>
-<a class="sourceLine" id="cb2-209" title="209">        </a>
-<a class="sourceLine" id="cb2-210" title="210">        <span class="kw">return</span>(<span class="ot">NA</span>)</a>
-<a class="sourceLine" id="cb2-211" title="211">      }) <span class="co">### end of mclapply FUN definition</span></a>
-<a class="sourceLine" id="cb2-212" title="212">    <span class="co"># }) </span><span class="al">###</span><span class="co"> end of system.time call</span></a>
-<a class="sourceLine" id="cb2-213" title="213">  } <span class="co">### end of for loop over each species group</span></a>
-<a class="sourceLine" id="cb2-214" title="214">} <span class="co">### end of &quot;if&quot; check to make sure there are any maps to rasterize</span></a></code></pre></div>
-<pre><code>## Reading layer `reptiles_shp_buffered&#39; from data source `/home/ohara/git-annex/spp_risk_dists/reptiles_shp_buffered.shp&#39; using driver `ESRI Shapefile&#39;
-## Simple feature collection with 54 features and 6 fields
-## geometry type:  MULTIPOLYGON
-## dimension:      XY
-## bbox:           xmin: -181.8399 ymin: -47.80406 xmax: 181.4081 ymax: 61.74247
-## epsg (SRID):    4326
-## proj4string:    +proj=longlat +datum=WGS84 +no_defs</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data,</a>
-<a class="sourceLine" id="cb4-2" title="2">                           <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version)),</a>
-<a class="sourceLine" id="cb4-3" title="3">                 <span class="dt">col_types =</span> <span class="st">&#39;ddciccc&#39;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="st">  </span><span class="kw">select</span>(<span class="dt">spp_group =</span> dbf_file, iucn_sid, sciname, subpop) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">spp_group =</span> <span class="kw">str_replace</span>(spp_group, <span class="st">&#39;.dbf&#39;</span>, <span class="st">&#39;&#39;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="st">  </span><span class="kw">distinct</span>()</a>
-<a class="sourceLine" id="cb4-7" title="7"></a>
-<a class="sourceLine" id="cb4-8" title="8">csvs &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="st">  </span><span class="kw">str_extract</span>(<span class="st">&#39;[0-9]+&#39;</span>)</a>
-<a class="sourceLine" id="cb4-10" title="10"></a>
-<a class="sourceLine" id="cb4-11" title="11">x &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>),</a>
-<a class="sourceLine" id="cb4-12" title="12">                <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-13" title="13">x &lt;-<span class="st"> </span>x[<span class="kw">str_detect</span>(x, <span class="kw">paste0</span>(csvs, <span class="dt">collapse =</span> <span class="st">&#39;|&#39;</span>))]</a>
-<a class="sourceLine" id="cb4-14" title="14"></a>
-<a class="sourceLine" id="cb4-15" title="15">y &lt;-<span class="st"> </span><span class="kw">file.info</span>(x) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">f =</span> <span class="kw">basename</span>(<span class="kw">rownames</span>(.)),</a>
-<a class="sourceLine" id="cb4-17" title="17">         <span class="dt">type =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(f, <span class="st">&#39;csv$&#39;</span>), <span class="st">&#39;csv&#39;</span>, <span class="st">&#39;tif&#39;</span>),</a>
-<a class="sourceLine" id="cb4-18" title="18">         <span class="dt">iucn_sid =</span> <span class="kw">str_extract</span>(f, <span class="st">&#39;[0-9]+&#39;</span>),</a>
-<a class="sourceLine" id="cb4-19" title="19">         <span class="dt">iucn_sid =</span> <span class="kw">as.integer</span>(iucn_sid)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-20" title="20"><span class="st">  </span><span class="kw">left_join</span>(maps, <span class="dt">by =</span> <span class="st">&#39;iucn_sid&#39;</span>)</a>
-<a class="sourceLine" id="cb4-21" title="21"></a>
-<a class="sourceLine" id="cb4-22" title="22">z &lt;-<span class="st"> </span>y <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-23" title="23"><span class="st">  </span><span class="kw">group_by</span>(type, spp_group) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-24" title="24"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean_size =</span> <span class="kw">mean</span>(size), <span class="dt">n_spp =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-25" title="25"><span class="st">  </span><span class="kw">spread</span>(type, mean_size) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-26" title="26"><span class="st">  </span><span class="co"># mutate(ratio = tif / csv) %&gt;%</span></a>
-<a class="sourceLine" id="cb4-27" title="27"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-28" title="28"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(csv))</a>
-<a class="sourceLine" id="cb4-29" title="29"></a>
-<a class="sourceLine" id="cb4-30" title="30"><span class="co"># sum(z$tif * z$n_spp) </span><span class="al">###</span><span class="co"> 8,146,818,040:  8.1 GB for 5369 spp (pre depth clip) (some dupes, oops)</span></a>
-<a class="sourceLine" id="cb4-31" title="31"><span class="co"># sum(z$csv * z$n_spp) </span><span class="al">###</span><span class="co"> 3,179,096,927:  3.2 GB for 5369 spp (pre depth clip) (some dupes, oops)</span></a>
-<a class="sourceLine" id="cb4-32" title="32"><span class="co"># sum(z$csv * z$n_spp) </span><span class="al">###</span><span class="co"> 2,218,041,470:  2.2 GB for 5332 spp (post depth clip) (dupes removed!)</span></a>
-<a class="sourceLine" id="cb4-33" title="33"></a>
-<a class="sourceLine" id="cb4-34" title="34">zz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">spp_group =</span> <span class="st">&#39;TOTAL: all available spp maps&#39;</span>,</a>
-<a class="sourceLine" id="cb4-35" title="35">                <span class="dt">n_spp =</span> <span class="kw">sum</span>(z<span class="op">$</span>n_spp),</a>
-<a class="sourceLine" id="cb4-36" title="36">                <span class="dt">csv   =</span> <span class="kw">sum</span>(z<span class="op">$</span>csv <span class="op">*</span><span class="st"> </span>z<span class="op">$</span>n_spp)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-37" title="37"><span class="st">  </span><span class="kw">bind_rows</span>(z)</a>
-<a class="sourceLine" id="cb4-38" title="38"></a>
-<a class="sourceLine" id="cb4-39" title="39">DT<span class="op">::</span><span class="kw">datatable</span>(zz, <span class="dt">caption =</span> <span class="st">&#39;Mean file size by group and type&#39;</span>)</a></code></pre></div>
-<div id="htmlwidget-7fdc6818e6cf2ed456da" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7fdc6818e6cf2ed456da">{"x":{"filter":"none","caption":"<caption>Mean file size by group and type<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["TOTAL: all available spp maps","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/MARINE_MAMMALS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/TUNAS_BILLFISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/REPTILES","/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2019/bli_marine_v2018","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CHONDRICHTHYES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART2","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART1","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART3","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/LOBSTERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/BONEFISH_TARPONS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/PUFFERFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SURGEONFISH_TANGS_UNICORNFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEACUCUMBERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/GROUPERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/BUTTERFLYFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/TERRESTRIAL_MAMMALS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/MANGROVES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEAGRASSES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CONUS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/ANGELFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SYNGATHIFORM_FISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CLUPEIFORMES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/DAMSELFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/WRASSES_PARROTFISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEASNAKES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEABREAMS_PORGIES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/COMBTOOTHBLENNIES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CROCODILES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/HAGFISH"],[7444,134,61,50,771,1081,280,281,282,246,19,152,81,369,166,128,10,67,70,632,86,275,294,127,601,51,143,909,3,75],[3259341311,5583201.20895522,4567448.13114754,2102736.28,1084200.38002594,421317.019426457,328774.071428571,326634.224199288,321540.794326241,287265.304878049,282133.263157895,232180.605263158,217446.75308642,187150.325203252,181884.831325301,165842.234375,163575.2,154721.029850746,129147.471428571,126118.360759494,122172.581395349,121399.734545455,114174.183673469,108084.874015748,103293.795341098,78827,74315.8741258741,45882.6820682068,24313.6666666667,22797.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>spp_group<\/th>\n      <th>n_spp<\/th>\n      <th>csv<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<a class="sourceLine" id="cb2-155" title="155">        spp_shp &lt;-<span class="st"> </span>spp_shp <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-156" title="156"><span class="st">          </span><span class="kw">clip_to_globe</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-157" title="157"><span class="st">          </span>smoothr<span class="op">::</span><span class="kw">densify</span>(<span class="dt">max_distance =</span> <span class="fl">0.5</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-158" title="158"><span class="st">          </span><span class="kw">st_transform</span>(<span class="kw">crs</span>(rast_base))</a>
+<a class="sourceLine" id="cb2-159" title="159">        </a>
+<a class="sourceLine" id="cb2-160" title="160">        spp_rast &lt;-<span class="st"> </span>fasterize<span class="op">::</span><span class="kw">fasterize</span>(spp_shp, rast_base, </a>
+<a class="sourceLine" id="cb2-161" title="161">                                         <span class="dt">field =</span> <span class="st">&#39;presence&#39;</span>, <span class="dt">fun =</span> <span class="st">&#39;min&#39;</span>)</a>
+<a class="sourceLine" id="cb2-162" title="162">        </a>
+<a class="sourceLine" id="cb2-163" title="163">        <span class="co">### depth clip if necessary; otherwise clip to bathy raster (which previously</span></a>
+<a class="sourceLine" id="cb2-164" title="164">        <span class="co">### was clipped to area raster - so cells with any marine area will be kept,</span></a>
+<a class="sourceLine" id="cb2-165" title="165">        <span class="co">### and non-marine cells will be dropped).</span></a>
+<a class="sourceLine" id="cb2-166" title="166">        <span class="co">### Manual adds of shallow spp:</span></a>
+<a class="sourceLine" id="cb2-167" title="167">        spp_shallow &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">133512</span>)</a>
+<a class="sourceLine" id="cb2-168" title="168">        </a>
+<a class="sourceLine" id="cb2-169" title="169">        <span class="cf">if</span>(spp_shp<span class="op">$</span>max_depth <span class="op">==</span><span class="st"> &#39;&lt; 20 m&#39;</span>) {</a>
+<a class="sourceLine" id="cb2-170" title="170">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_shallow)</a>
+<a class="sourceLine" id="cb2-171" title="171">        } <span class="cf">else</span> <span class="cf">if</span>(spp_shp<span class="op">$</span>max_depth <span class="op">==</span><span class="st"> &#39;&lt; 200 m&#39;</span> <span class="op">|</span><span class="st"> </span>spp_shp<span class="op">$</span>iucn_sid <span class="op">%in%</span><span class="st"> </span>spp_shallow) {</a>
+<a class="sourceLine" id="cb2-172" title="172">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_neritic)</a>
+<a class="sourceLine" id="cb2-173" title="173">        } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb2-174" title="174">          spp_rast &lt;-<span class="st"> </span><span class="kw">mask</span>(spp_rast, rast_bathy)</a>
+<a class="sourceLine" id="cb2-175" title="175">        }</a>
+<a class="sourceLine" id="cb2-176" title="176">        <span class="co">### write out as a raster:</span></a>
+<a class="sourceLine" id="cb2-177" title="177">        <span class="co"># rast_file &lt;- file.path(dir_o_anx, &#39;spp_rasts_mol_2019&#39;,</span></a>
+<a class="sourceLine" id="cb2-178" title="178">        <span class="co">#                        sprintf(&#39;iucn_sid_%s_mol.tif&#39;, spp))</span></a>
+<a class="sourceLine" id="cb2-179" title="179">        <span class="co"># raster::writeRaster(spp_rast, rast_file, overwrite = TRUE)</span></a>
+<a class="sourceLine" id="cb2-180" title="180">        <span class="co">### See note below about file size; rasters are larger than csvs in general</span></a>
+<a class="sourceLine" id="cb2-181" title="181">        </a>
+<a class="sourceLine" id="cb2-182" title="182">        <span class="co">### convert to dataframe and write out as a csv:</span></a>
+<a class="sourceLine" id="cb2-183" title="183">        spp_present &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">cell_id  =</span> <span class="kw">values</span>(rast_base),</a>
+<a class="sourceLine" id="cb2-184" title="184">                                  <span class="dt">presence =</span> <span class="kw">values</span>(spp_rast)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-185" title="185"><span class="st">          </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(presence))</a>
+<a class="sourceLine" id="cb2-186" title="186">        </a>
+<a class="sourceLine" id="cb2-187" title="187">        <span class="cf">if</span>(<span class="kw">nrow</span>(spp_present) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb2-188" title="188">          <span class="kw">cat_msg</span>(<span class="st">&#39;Species ID &#39;</span>, spp, <span class="st">&#39; resulted in a zero-length dataframe.&#39;</span>)</a>
+<a class="sourceLine" id="cb2-189" title="189">        }</a>
+<a class="sourceLine" id="cb2-190" title="190">        </a>
+<a class="sourceLine" id="cb2-191" title="191">        <span class="kw">write_csv</span>(spp_present, <span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>,</a>
+<a class="sourceLine" id="cb2-192" title="192">                                         <span class="kw">sprintf</span>(<span class="st">&#39;iucn_sid_%s_mol.csv&#39;</span>, spp)))</a>
+<a class="sourceLine" id="cb2-193" title="193">        </a>
+<a class="sourceLine" id="cb2-194" title="194">        <span class="kw">return</span>(<span class="ot">NA</span>)</a>
+<a class="sourceLine" id="cb2-195" title="195">      }) <span class="co">### end of mclapply FUN definition</span></a>
+<a class="sourceLine" id="cb2-196" title="196">    <span class="co"># }) </span><span class="al">###</span><span class="co"> end of system.time call</span></a>
+<a class="sourceLine" id="cb2-197" title="197">  } <span class="co">### end of for loop over each species group</span></a>
+<a class="sourceLine" id="cb2-198" title="198">} <span class="co">### end of &quot;if&quot; check to make sure there are any maps to rasterize</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">maps &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_data,</a>
+<a class="sourceLine" id="cb3-2" title="2">                           <span class="kw">sprintf</span>(<span class="st">&#39;spp_marine_maps_%s.csv&#39;</span>, api_version)),</a>
+<a class="sourceLine" id="cb3-3" title="3">                 <span class="dt">col_types =</span> <span class="st">&#39;ddciccc&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="st">  </span><span class="kw">select</span>(<span class="dt">spp_group =</span> dbf_file, iucn_sid, sciname, subpop) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">spp_group =</span> <span class="kw">str_replace</span>(spp_group, <span class="st">&#39;.dbf&#39;</span>, <span class="st">&#39;&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="st">  </span><span class="kw">distinct</span>()</a>
+<a class="sourceLine" id="cb3-7" title="7"></a>
+<a class="sourceLine" id="cb3-8" title="8">csvs &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="st">  </span><span class="kw">str_extract</span>(<span class="st">&#39;[0-9]+&#39;</span>)</a>
+<a class="sourceLine" id="cb3-10" title="10"></a>
+<a class="sourceLine" id="cb3-11" title="11">x &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(dir_o_anx, <span class="st">&#39;spp_rasts_mol_2019&#39;</span>),</a>
+<a class="sourceLine" id="cb3-12" title="12">                <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-13" title="13">x &lt;-<span class="st"> </span>x[<span class="kw">str_detect</span>(x, <span class="kw">paste0</span>(csvs, <span class="dt">collapse =</span> <span class="st">&#39;|&#39;</span>))]</a>
+<a class="sourceLine" id="cb3-14" title="14"></a>
+<a class="sourceLine" id="cb3-15" title="15">y &lt;-<span class="st"> </span><span class="kw">file.info</span>(x) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-16" title="16"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">f =</span> <span class="kw">basename</span>(<span class="kw">rownames</span>(.)),</a>
+<a class="sourceLine" id="cb3-17" title="17">         <span class="dt">type =</span> <span class="kw">ifelse</span>(<span class="kw">str_detect</span>(f, <span class="st">&#39;csv$&#39;</span>), <span class="st">&#39;csv&#39;</span>, <span class="st">&#39;tif&#39;</span>),</a>
+<a class="sourceLine" id="cb3-18" title="18">         <span class="dt">iucn_sid =</span> <span class="kw">str_extract</span>(f, <span class="st">&#39;[0-9]+&#39;</span>),</a>
+<a class="sourceLine" id="cb3-19" title="19">         <span class="dt">iucn_sid =</span> <span class="kw">as.integer</span>(iucn_sid)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-20" title="20"><span class="st">  </span><span class="kw">left_join</span>(maps, <span class="dt">by =</span> <span class="st">&#39;iucn_sid&#39;</span>)</a>
+<a class="sourceLine" id="cb3-21" title="21"></a>
+<a class="sourceLine" id="cb3-22" title="22">z &lt;-<span class="st"> </span>y <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-23" title="23"><span class="st">  </span><span class="kw">group_by</span>(type, spp_group) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-24" title="24"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean_size =</span> <span class="kw">mean</span>(size), <span class="dt">n_spp =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-25" title="25"><span class="st">  </span><span class="kw">spread</span>(type, mean_size) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-26" title="26"><span class="st">  </span><span class="co"># mutate(ratio = tif / csv) %&gt;%</span></a>
+<a class="sourceLine" id="cb3-27" title="27"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-28" title="28"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(csv))</a>
+<a class="sourceLine" id="cb3-29" title="29"></a>
+<a class="sourceLine" id="cb3-30" title="30"><span class="co"># sum(z$tif * z$n_spp) </span><span class="al">###</span><span class="co"> 8,146,818,040:  8.1 GB for 5369 spp (pre depth clip) (some dupes, oops)</span></a>
+<a class="sourceLine" id="cb3-31" title="31"><span class="co"># sum(z$csv * z$n_spp) </span><span class="al">###</span><span class="co"> 3,179,096,927:  3.2 GB for 5369 spp (pre depth clip) (some dupes, oops)</span></a>
+<a class="sourceLine" id="cb3-32" title="32"><span class="co"># sum(z$csv * z$n_spp) </span><span class="al">###</span><span class="co"> 2,218,041,470:  2.2 GB for 5332 spp (post depth clip) (dupes removed!)</span></a>
+<a class="sourceLine" id="cb3-33" title="33"></a>
+<a class="sourceLine" id="cb3-34" title="34">zz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">spp_group =</span> <span class="st">&#39;TOTAL: all available spp maps&#39;</span>,</a>
+<a class="sourceLine" id="cb3-35" title="35">                <span class="dt">n_spp =</span> <span class="kw">sum</span>(z<span class="op">$</span>n_spp),</a>
+<a class="sourceLine" id="cb3-36" title="36">                <span class="dt">csv   =</span> <span class="kw">sum</span>(z<span class="op">$</span>csv <span class="op">*</span><span class="st"> </span>z<span class="op">$</span>n_spp)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-37" title="37"><span class="st">  </span><span class="kw">bind_rows</span>(z)</a>
+<a class="sourceLine" id="cb3-38" title="38"></a>
+<a class="sourceLine" id="cb3-39" title="39">DT<span class="op">::</span><span class="kw">datatable</span>(zz, <span class="dt">caption =</span> <span class="st">&#39;Mean file size by group and type&#39;</span>)</a></code></pre></div>
+<div id="htmlwidget-5dea3084a0fe58372c9e" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5dea3084a0fe58372c9e">{"x":{"filter":"none","caption":"<caption>Mean file size by group and type<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["TOTAL: all available spp maps","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/MARINE_MAMMALS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/TUNAS_BILLFISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/REPTILES","/home/shares/ohi/git-annex/globalprep/_raw_data/birdlife_intl/d2019/bli_marine_v2018","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CHONDRICHTHYES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART2","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART1","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CORALS_PART3","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/LOBSTERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/BONEFISH_TARPONS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/PUFFERFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SURGEONFISH_TANGS_UNICORNFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEACUCUMBERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/GROUPERS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/TERRESTRIAL_MAMMALS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/BUTTERFLYFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/MANGROVES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEAGRASSES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CONUS","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/ANGELFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SYNGATHIFORM_FISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CLUPEIFORMES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/DAMSELFISH","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/WRASSES_PARROTFISHES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEASNAKES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/SEABREAMS_PORGIES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/COMBTOOTHBLENNIES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/CROCODILES","/home/shares/ohi/git-annex/globalprep/_raw_data/iucn_spp/d2019/HAGFISH"],[7444,134,61,50,771,1081,280,281,282,246,19,152,81,369,166,10,128,67,70,632,86,275,294,127,601,51,143,909,3,75],[3294638966,5796273.91044776,4572957.49180328,2064877.6,1090166.88715953,423874.037927845,328771.464285714,326632.800711744,321538.985815603,289964.467479675,282147.473684211,232806.664473684,217449.962962963,187305.151761518,181886.21686747,175547.2,165845.046875,154721.029850746,129148.757142857,126117.506329114,122172.813953488,121403.436363636,114176.884353741,108084.165354331,103295.742096506,78827,74316.013986014,45883.1793179318,24313.6666666667,22797.76]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>spp_group<\/th>\n      <th>n_spp<\/th>\n      <th>csv<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 
